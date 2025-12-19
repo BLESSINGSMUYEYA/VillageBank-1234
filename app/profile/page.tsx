@@ -53,16 +53,32 @@ export default function ProfilePage() {
   const [memberships, setMemberships] = useState<GroupMembership[]>([])
   const [financials, setFinancials] = useState<FinancialSummary | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetchProfileData()
-  }, [])
+    if (user) {
+      fetchProfileData()
+    } else {
+      // If no user, redirect to sign-in
+      window.location.href = '/sign-in'
+    }
+  }, [user])
 
   const fetchProfileData = async () => {
     setLoading(true)
+    setError(null)
     try {
       const response = await fetch('/api/users/profile')
-      if (!response.ok) throw new Error('Failed to fetch profile data')
+      
+      if (response.status === 401) {
+        // User is not authenticated, redirect to sign-in
+        window.location.href = '/sign-in'
+        return
+      }
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch profile data: ${response.statusText}`)
+      }
       
       const data = await response.json()
       setProfile({
@@ -87,6 +103,7 @@ export default function ProfilePage() {
       })
     } catch (error) {
       console.error('Failed to fetch profile data:', error)
+      setError('Failed to load profile data. Please try again later.')
     } finally {
       setLoading(false)
     }
@@ -100,15 +117,32 @@ export default function ProfilePage() {
     )
   }
 
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-lg text-red-600 mb-4">Error loading profile</div>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button 
+            onClick={() => fetchProfileData()}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="max-w-6xl mx-auto py-6">
-      <div className="mb-6">
+    <div className="space-y-6">
+      <div>
         <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
         <p className="text-gray-600">View your personal information and activity</p>
       </div>
 
       {/* Profile Header */}
-      <Card className="mb-6">
+      <Card>
         <CardContent className="p-6">
           <div className="flex items-center space-x-6">
             <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center">
@@ -140,7 +174,7 @@ export default function ProfilePage() {
       </Card>
 
       {/* Financial Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Contributions</CardTitle>

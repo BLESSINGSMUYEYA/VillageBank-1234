@@ -24,7 +24,6 @@ export async function GET(
         phoneNumber: true,
         role: true,
         region: true,
-        isActive: true,
         createdAt: true,
       }
     })

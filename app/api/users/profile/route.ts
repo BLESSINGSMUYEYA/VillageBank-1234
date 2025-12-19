@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
       role: user.role,
       region: user.region,
       joinedAt: user.createdAt,
-      isActive: user.isActive,
+      isActive: true, // Default to true since User model doesn't have isActive field
       memberships: user.groupMembers.map(member => ({
         id: member.group.id,
         name: member.group.name,
@@ -154,7 +154,7 @@ export async function PUT(request: NextRequest) {
       phoneNumber: updatedUser.phoneNumber,
       role: updatedUser.role,
       region: updatedUser.region,
-      isActive: updatedUser.isActive
+      isActive: true // Default to true since User model doesn't have isActive field
     })
   } catch (error) {
     console.error('Profile update error:', error)
