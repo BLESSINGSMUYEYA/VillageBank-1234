@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { getAuth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 import { checkLoanEligibility } from '@/lib/permissions'
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const { userId } = getAuth(request)
     
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -29,7 +28,7 @@ export async function GET(request: NextRequest) {
     const groupMember = await prisma.groupMember.findFirst({
       where: {
         groupId,
-        userId: session.user.id,
+        userId: userId,
         status: 'ACTIVE',
       },
     })
@@ -42,7 +41,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Check loan eligibility
-    const eligibility = await checkLoanEligibility(session.user.id, groupId)
+    const eligibility = await checkLoanEligibility(userId, groupId)
 
     return NextResponse.json(eligibility)
 

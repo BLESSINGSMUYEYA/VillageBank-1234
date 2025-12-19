@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
   webpack: (config, { isServer }) => {
     return config;
   },
+  // Add path mapping for TypeScript
+  transpilePackages: [],
 };
 
 export default nextConfig;

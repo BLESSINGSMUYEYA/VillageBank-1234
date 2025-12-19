@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { getAuth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
@@ -13,9 +12,9 @@ const createContributionSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const { userId } = getAuth(request)
     
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -29,7 +28,7 @@ export async function POST(request: NextRequest) {
     const groupMember = await prisma.groupMember.findFirst({
       where: {
         groupId: validatedData.groupId,
-        userId: session.user.id,
+        userId: userId,
         status: 'ACTIVE',
       },
       include: {
@@ -52,7 +51,7 @@ export async function POST(request: NextRequest) {
       where: {
         groupId_userId_month_year: {
           groupId: validatedData.groupId,
-          userId: session.user.id,
+          userId: userId,
           month: currentMonth,
           year: currentYear,
         },
@@ -70,7 +69,7 @@ export async function POST(request: NextRequest) {
     const contribution = await prisma.contribution.create({
       data: {
         groupId: validatedData.groupId,
-        userId: session.user.id,
+        userId: userId,
         amount: validatedData.amount,
         month: currentMonth,
         year: currentYear,
@@ -83,7 +82,7 @@ export async function POST(request: NextRequest) {
     // Create activity log
     await prisma.activity.create({
       data: {
-        userId: session.user.id,
+        userId: userId,
         groupId: validatedData.groupId,
         actionType: 'CONTRIBUTION_MADE',
         description: `Made contribution of MWK ${validatedData.amount.toLocaleString()}`,
@@ -118,9 +117,9 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const { userId } = getAuth(request)
     
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -130,7 +129,7 @@ export async function GET(request: NextRequest) {
     // Get user's contributions
     const contributions = await prisma.contribution.findMany({
       where: {
-        userId: session.user.id,
+        userId: userId,
       },
       include: {
         group: true,

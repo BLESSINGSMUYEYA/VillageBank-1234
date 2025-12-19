@@ -11,22 +11,23 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(cuid())
-  email         String   @unique
-  firstName     String
-  lastName      String
-  phoneNumber   String   @unique
-  passwordHash  String?  // For NextAuth compatibility
-  role          UserRole @default(MEMBER)
-  region        Region?
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id            String    @id @default(cuid())
+  email         String    @unique
+  firstName     String?
+  lastName      String?
+  phoneNumber   String?
+  region        String?
+  role          UserRole  @default(MEMBER)
+  emailVerified DateTime? @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
   
-  groupMembers  GroupMember[]
-  contributions Contribution[]
-  loans         Loan[]
-  activities    Activity[]
+  groupMembers    GroupMember[]
+  contributions    Contribution[]
+  loans           Loan[]
+  loanRepayments  LoanRepayment[]
+  activities      Activity[]
+  notifications   Notification[]
 }
 
 enum UserRole {
@@ -123,6 +124,9 @@ model Loan {
   status                LoanStatus   @default(PENDING)
   approvedById          String?
   approvedAt            DateTime?
+  rejectedById          String?
+  rejectedAt            DateTime?
+  rejectionReason       String?
   createdAt             DateTime     @default(now())
   updatedAt             DateTime     @updatedAt
   
@@ -143,6 +147,7 @@ enum LoanStatus {
 model LoanRepayment {
   id              String   @id @default(cuid())
   loanId          String
+  userId          String
   amount          Float
   paymentMethod   String?
   transactionRef  String?
@@ -150,6 +155,7 @@ model LoanRepayment {
   createdAt       DateTime @default(now())
   
   loan            Loan     @relation(fields: [loanId], references: [id])
+  user            User     @relation(fields: [userId], references: [id])
 }
 
 model PaymentMethod {
@@ -182,4 +188,25 @@ model Activity {
   
   user        User     @relation(fields: [userId], references: [id])
   group       Group?   @relation(fields: [groupId], references: [id])
+}
+
+model Notification {
+  id         String              @id @default(cuid())
+  userId     String
+  type       NotificationType    @default(INFO)
+  title      String
+  message    String
+  read       Boolean             @default(false)
+  actionUrl  String?
+  actionText String?
+  createdAt  DateTime            @default(now())
+  
+  user       User                @relation(fields: [userId], references: [id])
+}
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
 }

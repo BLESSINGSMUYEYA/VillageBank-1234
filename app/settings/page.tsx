@@ -1,7 +1,7 @@
 'use client'
 
 import { useUser } from '@clerk/nextjs'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -11,15 +11,71 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { User, Bell, Shield, CreditCard } from 'lucide-react'
 
+interface UserProfile {
+  firstName: string
+  lastName: string
+  email: string
+  phoneNumber: string
+  region: string
+  role: string
+}
+
 export default function SettingsPage() {
   const { user } = useUser()
   const [isLoading, setIsLoading] = useState(false)
+  const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    phoneNumber: '',
+    region: '',
+  })
+
+  useEffect(() => {
+    fetchProfile()
+  }, [user])
+
+  const fetchProfile = async () => {
+    try {
+      const response = await fetch('/api/users/profile')
+      if (response.ok) {
+        const data = await response.json()
+        setProfile(data)
+        setFormData({
+          firstName: data.firstName,
+          lastName: data.lastName,
+          phoneNumber: data.phoneNumber,
+          region: data.region || '',
+        })
+      }
+    } catch (error) {
+      console.error('Failed to fetch profile:', error)
+    }
+  }
 
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    // TODO: Implement profile update API
-    setTimeout(() => setIsLoading(false), 1000)
+    
+    try {
+      const response = await fetch('/api/users/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (response.ok) {
+        await fetchProfile() // Refresh profile data
+      } else {
+        throw new Error('Failed to update profile')
+      }
+    } catch (error) {
+      console.error('Profile update error:', error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleSaveNotifications = async (e: React.FormEvent) => {
@@ -71,7 +127,8 @@ export default function SettingsPage() {
                     <Label htmlFor="firstName">First Name</Label>
                     <Input
                       id="firstName"
-                      defaultValue={user?.firstName || ''}
+                      value={formData.firstName}
+                      onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
                       placeholder="Enter your first name"
                     />
                   </div>
@@ -79,7 +136,8 @@ export default function SettingsPage() {
                     <Label htmlFor="lastName">Last Name</Label>
                     <Input
                       id="lastName"
-                      defaultValue={user?.lastName || ''}
+                      value={formData.lastName}
+                      onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
                       placeholder="Enter your last name"
                     />
                   </div>
@@ -90,7 +148,7 @@ export default function SettingsPage() {
                   <Input
                     id="email"
                     type="email"
-                    defaultValue={user?.primaryEmailAddress?.emailAddress || ''}
+                    value={profile?.email || user?.primaryEmailAddress?.emailAddress || ''}
                     disabled
                   />
                   <p className="text-sm text-gray-500 mt-1">
@@ -103,28 +161,29 @@ export default function SettingsPage() {
                   <Input
                     id="phone"
                     type="tel"
-                    defaultValue="+265 99 123 456"
+                    value={formData.phoneNumber}
+                    onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
                     placeholder="Enter your phone number"
                   />
                 </div>
 
                 <div>
                   <Label htmlFor="region">Region</Label>
-                  <Select defaultValue="central">
+                  <Select value={formData.region} onValueChange={(value) => setFormData(prev => ({ ...prev, region: value }))}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select your region" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="northern">Northern Region</SelectItem>
-                      <SelectItem value="central">Central Region</SelectItem>
-                      <SelectItem value="southern">Southern Region</SelectItem>
+                      <SelectItem value="NORTHERN">Northern Region</SelectItem>
+                      <SelectItem value="CENTRAL">Central Region</SelectItem>
+                      <SelectItem value="SOUTHERN">Southern Region</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <Badge variant="outline">
-                    {user?.publicMetadata?.role as string || 'MEMBER'}
+                    {profile?.role || user?.publicMetadata?.role as string || 'MEMBER'}
                   </Badge>
                   <span className="text-sm text-gray-500">Account Role</span>
                 </div>

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { getAuth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 import { checkPermission } from '@/lib/permissions'
 import { z } from 'zod'
@@ -15,9 +14,9 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const { userId } = getAuth(request)
     
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -49,7 +48,7 @@ export async function POST(
 
     // Check if user is treasurer of the group
     const isTreasurer = await checkPermission(
-      session.user.id,
+      userId,
       loan.groupId,
       'TREASURER'
     )
@@ -67,7 +66,7 @@ export async function POST(
       data: {
         status: approved ? 'APPROVED' : 'REJECTED',
         amountApproved: approved ? (amountApproved || loan.amountRequested) : null,
-        approvedById: session.user.id,
+        approvedById: userId,
         approvedAt: approved ? new Date() : null,
       },
     })
@@ -75,7 +74,7 @@ export async function POST(
     // Create activity log
     await prisma.activity.create({
       data: {
-        userId: session.user.id,
+        userId: userId,
         groupId: loan.groupId,
         actionType: approved ? 'LOAN_APPROVED' : 'LOAN_REJECTED',
         description: approved 
