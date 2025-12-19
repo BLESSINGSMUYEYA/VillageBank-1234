@@ -8,7 +8,6 @@ async function createSuperAdmin() {
       update: {
         role: 'SUPER_ADMIN',
         region: 'CENTRAL',
-        isActive: true,
         updatedAt: new Date(),
       },
       create: {
@@ -19,7 +18,6 @@ async function createSuperAdmin() {
         phoneNumber: '+260123456789',
         role: 'SUPER_ADMIN',
         region: 'CENTRAL',
-        isActive: true,
       },
     })
 

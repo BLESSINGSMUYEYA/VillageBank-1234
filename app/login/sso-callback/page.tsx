@@ -2,9 +2,9 @@
 
 import { useUser } from '@clerk/nextjs'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, Suspense } from 'react'
 
-export default function SSOCallback() {
+function SSOCallbackContent() {
   const { isSignedIn, isLoaded } = useUser()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -28,5 +28,13 @@ export default function SSOCallback() {
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-lg">Redirecting...</div>
     </div>
+  )
+}
+
+export default function SSOCallback() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SSOCallbackContent />
+    </Suspense>
   )
 }

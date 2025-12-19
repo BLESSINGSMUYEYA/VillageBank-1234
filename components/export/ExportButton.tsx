@@ -134,7 +134,9 @@ export function ExportButton({
                       <span className="font-medium">
                         {typeof value === 'number' && value > 1000 
                           ? value.toLocaleString() 
-                          : value}
+                          : typeof value === 'string' || typeof value === 'number' 
+                            ? value.toString()
+                            : JSON.stringify(value)}
                       </span>
                     </div>
                   ))}

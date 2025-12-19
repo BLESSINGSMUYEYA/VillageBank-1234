@@ -2,9 +2,9 @@
 
 import { useUser } from '@clerk/nextjs'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, Suspense } from 'react'
 
-export default function RegisterContinue() {
+function RegisterContinueContent() {
   const { isSignedIn, isLoaded } = useUser()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -28,5 +28,13 @@ export default function RegisterContinue() {
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-lg">Completing registration...</div>
     </div>
+  )
+}
+
+export default function RegisterContinue() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <RegisterContinueContent />
+    </Suspense>
   )
 }

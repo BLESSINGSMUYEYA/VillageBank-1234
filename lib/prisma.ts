@@ -11,9 +11,7 @@ export const prisma = globalForPrisma.prisma ?? new PrismaClient({
   log: ['query', 'info', 'warn', 'error'],
   datasources: {
     db: {
-      url: databaseUrl.includes("?") 
-        ? `${databaseUrl}&connection_limit=20&pool_timeout=30`
-        : `${databaseUrl}?connection_limit=20&pool_timeout=30`,
+      url: databaseUrl,
     },
   },
 })

@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
       id: activity.id,
       type: activity.actionType,
       description: activity.description,
-      amount: activity.metadata?.amount as number | undefined,
+      amount: (activity.metadata as any)?.amount as number | undefined,
       createdAt: activity.createdAt.toISOString(),
       groupName: activity.group?.name || 'Unknown Group',
     }))

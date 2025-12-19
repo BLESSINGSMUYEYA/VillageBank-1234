@@ -11,7 +11,7 @@ const approveLoanSchema = z.object({
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = getAuth(request)
@@ -23,7 +23,7 @@ export async function POST(
       )
     }
 
-    const loanId = params.id
+    const { id: loanId } = await params
     const body = await request.json()
     const { approved, amountApproved } = approveLoanSchema.parse(body)
 

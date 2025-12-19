@@ -1,18 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { getAuth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const { userId } = getAuth(request)
     
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: userId },
       select: { role: true, region: true }
     })
 
@@ -35,8 +34,7 @@ export async function GET(request: NextRequest) {
                 firstName: true,
                 lastName: true,
                 email: true,
-                phoneNumber: true,
-                isActive: true
+                phoneNumber: true
               }
             }
           }
@@ -111,7 +109,7 @@ export async function GET(request: NextRequest) {
         id: group.id,
         name: group.name,
         members: group._count.members,
-        activeMembers: group.members.filter(m => m.user.isActive && m.status === 'ACTIVE').length,
+        activeMembers: group.members.filter(m => m.status === 'ACTIVE').length,
         monthlyContribution: group.monthlyContribution,
         totalContributions: group.contributions.reduce((sum, c) => sum + c.amount, 0),
         status: group.isActive ? 'ACTIVE' : 'INACTIVE',
@@ -130,14 +128,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const { userId } = getAuth(request)
     
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: userId },
       select: { role: true }
     })
 

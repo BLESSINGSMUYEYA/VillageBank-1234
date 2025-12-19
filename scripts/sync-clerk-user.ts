@@ -28,7 +28,6 @@ async function syncClerkUser(clerkId: string, email: string, firstName: string, 
         phoneNumber: '',
         role: 'MEMBER', // Default role, can be upgraded later
         region: 'CENTRAL',
-        isActive: true,
       },
       create: {
         id: clerkId,
@@ -38,7 +37,6 @@ async function syncClerkUser(clerkId: string, email: string, firstName: string, 
         phoneNumber: '',
         role: 'MEMBER', // Default role, can be upgraded later
         region: 'CENTRAL',
-        isActive: true,
       }
     })
 

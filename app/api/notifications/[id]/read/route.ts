@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = getAuth(request)
@@ -16,7 +16,7 @@ export async function PUT(
       )
     }
 
-    const notificationId = params.id
+    const { id: notificationId } = await params
 
     // Mark notification as read
     const notification = await prisma.notification.updateMany({

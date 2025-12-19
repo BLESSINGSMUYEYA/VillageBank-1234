@@ -10,7 +10,7 @@ const updateLoanSchema = z.object({
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = getAuth(request)
@@ -22,7 +22,7 @@ export async function GET(
       )
     }
 
-    const loanId = params.id
+    const { id: loanId } = await params
 
     // Get loan details with user access verification
     const loan = await prisma.loan.findFirst({
@@ -95,7 +95,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = getAuth(request)
@@ -107,7 +107,7 @@ export async function PUT(
       )
     }
 
-    const loanId = params.id
+    const { id: loanId } = await params
     const body = await request.json()
     const validatedData = updateLoanSchema.parse(body)
 
@@ -192,7 +192,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = getAuth(request)
@@ -204,7 +204,7 @@ export async function DELETE(
       )
     }
 
-    const loanId = params.id
+    const { id: loanId } = await params
 
     // Check if user owns the loan or is admin
     const loan = await prisma.loan.findUnique({

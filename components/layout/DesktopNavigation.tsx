@@ -13,7 +13,8 @@ import {
   CreditCard, 
   Settings, 
   LogOut,
-  Shield
+  Shield,
+  User
 } from 'lucide-react'
 
 export function DesktopNavigation() {
@@ -107,6 +108,12 @@ export function DesktopNavigation() {
                     </div>
                   </div>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile" className="w-full cursor-pointer">
+                      <User className="mr-2 h-4 w-4" />
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/settings" className="w-full cursor-pointer">
                       <Settings className="mr-2 h-4 w-4" />

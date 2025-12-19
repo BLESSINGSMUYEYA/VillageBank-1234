@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { ArrowLeft, DollarSign } from 'lucide-react'
+import { ArrowLeft, DollarSign, CheckCircle } from 'lucide-react'
 
 interface Group {
   id: string
@@ -17,7 +17,7 @@ interface Group {
   region: string
 }
 
-export default function NewContributionPage() {
+function NewContributionPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [groups, setGroups] = useState<Group[]>([])
@@ -29,9 +29,12 @@ export default function NewContributionPage() {
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [userContributions, setUserContributions] = useState<any[]>([])
+  const [success, setSuccess] = useState('')
 
   useEffect(() => {
     fetchGroups()
+    fetchUserContributions()
     
     // Pre-select group if provided in URL
     const groupId = searchParams.get('groupId')
@@ -39,6 +42,18 @@ export default function NewContributionPage() {
       fetchGroupDetails(groupId)
     }
   }, [searchParams])
+
+  const fetchUserContributions = async () => {
+    try {
+      const response = await fetch('/api/contributions')
+      const data = await response.json()
+      if (response.ok) {
+        setUserContributions(data.contributions || [])
+      }
+    } catch (error) {
+      console.error('Error fetching user contributions:', error)
+    }
+  }
 
   const fetchGroups = async () => {
     try {
@@ -105,12 +120,33 @@ export default function NewContributionPage() {
       return false
     }
 
+    // Check if amount matches expected monthly contribution
+    if (selectedGroup && parseFloat(formData.amount) !== selectedGroup.monthlyContribution) {
+      setError(`Amount must be exactly MWK ${selectedGroup.monthlyContribution.toLocaleString()} for this group`)
+      return false
+    }
+
+    // Check for duplicate contribution for current month
+    const currentMonth = new Date().getMonth() + 1
+    const currentYear = new Date().getFullYear()
+    const existingContribution = userContributions.find(
+      c => c.groupId === selectedGroup.id && 
+           c.month === currentMonth && 
+           c.year === currentYear
+    )
+
+    if (existingContribution) {
+      setError(`You have already made a contribution for ${new Date(currentYear, currentMonth - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`)
+      return false
+    }
+
     return true
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setSuccess('')
 
     if (!validateForm()) {
       return
@@ -119,25 +155,44 @@ export default function NewContributionPage() {
     setLoading(true)
 
     try {
+      const requestData = {
+        groupId: selectedGroup!.id,
+        amount: parseFloat(formData.amount),
+        paymentMethod: formData.paymentMethod,
+        transactionRef: formData.transactionRef || undefined,
+      }
+      
+      console.log('Sending contribution request:', requestData)
+      console.log('Selected group:', selectedGroup)
+      console.log('Form data:', formData)
+      
       const response = await fetch('/api/contributions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          groupId: selectedGroup!.id,
-          amount: parseFloat(formData.amount),
-          paymentMethod: formData.paymentMethod,
-          transactionRef: formData.transactionRef,
-        }),
+        body: JSON.stringify(requestData),
       })
 
+      console.log('Response status:', response.status)
+      console.log('Response headers:', response.headers)
+
       const data = await response.json()
+      console.log('Contribution response:', { status: response.status, data })
 
       if (!response.ok) {
+        console.error('API Error Details:', {
+          status: response.status,
+          statusText: response.statusText,
+          data: data,
+          requestData: requestData
+        })
         setError(data.error || 'Failed to create contribution')
       } else {
-        router.push('/contributions?message=Contribution created successfully')
+        setSuccess('Contribution created successfully! Redirecting...')
+        setTimeout(() => {
+          router.push('/contributions?message=Contribution created successfully')
+        }, 2000)
       }
     } catch (error) {
       setError('An error occurred. Please try again.')
@@ -174,6 +229,13 @@ export default function NewContributionPage() {
                 </Alert>
               )}
               
+              {success && (
+                <Alert className="border-green-200 bg-green-50">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <AlertDescription className="text-green-800">{success}</AlertDescription>
+                </Alert>
+              )}
+              
               <div className="space-y-2">
                 <Label htmlFor="groupId">Select Group *</Label>
                 <select
@@ -196,10 +258,15 @@ export default function NewContributionPage() {
               {selectedGroup && (
                 <div className="bg-blue-50 p-4 rounded-lg">
                   <h3 className="font-medium text-blue-900 mb-2">Group Information</h3>
-                  <p className="text-sm text-blue-700 space-y-1">
+                  <div className="text-sm text-blue-700 space-y-1">
                     <p><strong>Monthly Contribution:</strong> MWK {selectedGroup?.monthlyContribution.toLocaleString()}</p>
                     <p><strong>Region:</strong> {selectedGroup?.region}</p>
-                  </p>
+                  </div>
+                  <div className="mt-3 p-2 bg-blue-100 rounded">
+                    <p className="text-xs text-blue-800">
+                      <strong>Note:</strong> You must contribute exactly MWK {selectedGroup.monthlyContribution.toLocaleString()} for this group
+                    </p>
+                  </div>
                 </div>
               )}
               
@@ -271,5 +338,13 @@ export default function NewContributionPage() {
         </Card>
       </div>
     </div>
+  )
+}
+
+export default function NewContributionPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <NewContributionPageContent />
+    </Suspense>
   )
 }

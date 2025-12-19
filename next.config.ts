@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
   webpack: (config, { isServer }) => {
     return config;
   },
+  // Add empty turbopack config to silence the error
+  turbopack: {},
   // Add path mapping for TypeScript
   transpilePackages: [],
 };

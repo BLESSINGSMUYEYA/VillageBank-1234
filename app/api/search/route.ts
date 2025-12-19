@@ -199,7 +199,7 @@ export async function GET(request: NextRequest) {
         id: loan.id,
         type: 'loan',
         title: `Loan - ${loan.group.name}`,
-        description: loan.purpose || 'No purpose specified',
+        description: `Loan of MWK ${Number(loan.amountApproved || loan.amountRequested).toLocaleString()}`,
         amount: Number(loan.amountApproved || loan.amountRequested),
         status: loan.status,
         date: loan.createdAt.toISOString(),

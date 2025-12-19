@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -28,12 +28,12 @@ interface EligibilityInfo {
   totalContributions?: number
 }
 
-export default function NewLoanPage() {
+function NewLoanPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [groups, setGroups] = useState<Group[]>([])
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null)
   const [eligibility, setEligibility] = useState<EligibilityInfo | null>(null)
+  const [groups, setGroups] = useState<Group[]>([])
   const [formData, setFormData] = useState({
     amountRequested: '',
     repaymentPeriodMonths: '6',
@@ -63,7 +63,14 @@ export default function NewLoanPage() {
       const response = await fetch('/api/groups')
       const data = await response.json()
       if (response.ok) {
-        setGroups(data.groups.filter((g: any) => g.members[0]?.status === 'ACTIVE'))
+        setGroups(data.groups.filter((g: any) => g.members?.some((m: any) => m.status === 'ACTIVE')).map((g: any) => ({
+  id: g.id,
+  name: g.name,
+  monthlyContribution: g.monthlyContribution,
+  maxLoanMultiplier: g.maxLoanMultiplier,
+  interestRate: g.interestRate,
+  region: g.region
+})))
       }
     } catch (error) {
       console.error('Error fetching groups:', error)
@@ -203,7 +210,7 @@ export default function NewLoanPage() {
             id="group"
             name="group"
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2"
-            value={selectedGroup?.id || ''}
+            value={(selectedGroup as Group | null)?.id || ''}
             onChange={(e) => handleGroupChange(e.target.value)}
           >
             <option value="">Select a group</option>
@@ -416,5 +423,13 @@ export default function NewLoanPage() {
         </Card>
       </div>
     </div>
+  )
+}
+
+export default function NewLoanPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <NewLoanPageContent />
+    </Suspense>
   )
 }

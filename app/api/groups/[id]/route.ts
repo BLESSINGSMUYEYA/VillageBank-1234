@@ -13,7 +13,7 @@ const updateGroupSchema = z.object({
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = getAuth(request)
@@ -25,7 +25,7 @@ export async function GET(
       )
     }
 
-    const groupId = params.id
+    const { id: groupId } = await params
 
     // Get group details with user membership verification
     const group = await prisma.group.findFirst({
@@ -135,7 +135,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = getAuth(request)
@@ -147,7 +147,7 @@ export async function PUT(
       )
     }
 
-    const groupId = params.id
+    const { id: groupId } = await params
     const body = await request.json()
     const validatedData = updateGroupSchema.parse(body)
 
@@ -208,7 +208,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = getAuth(request)
@@ -220,7 +220,7 @@ export async function DELETE(
       )
     }
 
-    const groupId = params.id
+    const { id: groupId } = await params
 
     // Check if user is admin of the group
     const membership = await prisma.groupMember.findFirst({

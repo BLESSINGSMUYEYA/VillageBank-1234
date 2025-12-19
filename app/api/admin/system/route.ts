@@ -1,18 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { getAuth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const { userId } = getAuth(request)
     
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: userId },
       select: { role: true }
     })
 
@@ -22,7 +21,7 @@ export async function GET() {
 
     // Get system-wide metrics
     const [totalUsers, totalGroups, totalContributions, activeLoans, pendingApprovals] = await Promise.all([
-      prisma.user.count({ where: { isActive: true } }),
+      prisma.user.count(),
       prisma.group.count({ where: { isActive: true } }),
       prisma.contribution.aggregate({
         where: { status: 'COMPLETED' },
@@ -90,14 +89,14 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const { userId } = getAuth(request)
     
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: userId },
       select: { role: true }
     })
 

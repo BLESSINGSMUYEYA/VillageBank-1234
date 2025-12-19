@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
 const createContributionSchema = z.object({
-  groupId: z.string().uuid('Invalid group ID'),
+  groupId: z.string().min(1, 'Group ID is required'),
   amount: z.number().positive('Amount must be positive'),
   paymentMethod: z.enum(['AIRTEL_MONEY', 'MPAMBA', 'BANK_CARD', 'CASH', 'OTHER']),
   transactionRef: z.string().optional(),
@@ -22,7 +22,11 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
+    console.log('Received contribution request:', body)
+    console.log('UserId:', userId)
+    
     const validatedData = createContributionSchema.parse(body)
+    console.log('Validated data:', validatedData)
 
     // Check if user is an active member of the group
     const groupMember = await prisma.groupMember.findFirst({
@@ -101,8 +105,11 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.error('Validation error:', error.issues)
       return NextResponse.json(
-        { error: error.issues[0].message },
+        { 
+          error: 'Validation failed: ' + error.issues.map(issue => `${issue.path.join('.')}: ${issue.message}`).join(', ')
+        },
         { status: 400 }
       )
     }

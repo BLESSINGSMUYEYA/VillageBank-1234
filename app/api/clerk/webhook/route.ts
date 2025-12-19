@@ -73,7 +73,6 @@ async function handleUserCreated(data: any) {
       phoneNumber: primaryPhone || '',
       role: public_metadata?.role || 'MEMBER',
       region: public_metadata?.region || 'CENTRAL',
-      isActive: true,
     },
   })
 }
@@ -104,7 +103,6 @@ async function handleUserDeleted(data: any) {
   await prisma.user.update({
     where: { id },
     data: {
-      isActive: false,
       updatedAt: new Date(),
     },
   })

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
+import { checkLoanEligibility } from '@/lib/permissions'
 import { z } from 'zod'
 
 const createLoanSchema = z.object({

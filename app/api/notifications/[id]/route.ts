@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = getAuth(request)
@@ -16,7 +16,7 @@ export async function DELETE(
       )
     }
 
-    const notificationId = params.id
+    const { id: notificationId } = await params
 
     // Delete the notification
     const result = await prisma.notification.deleteMany({

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useUser } from '@clerk/nextjs'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
 import { Badge } from '@/components/ui/badge'
 import { 
   Menu, 
@@ -50,6 +50,7 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-64 p-0">
+              <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
               <div className="flex flex-col h-full">
                 {/* User Info */}
                 <div className="p-4 border-b">
@@ -113,7 +114,7 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
         <div className="flex items-center space-x-2">
           <NotificationCenter />
           <Badge variant="outline" className="text-xs">
-            {user?.publicMetadata?.role || 'MEMBER'}
+            {(user?.publicMetadata?.role as string) || 'MEMBER'}
           </Badge>
         </div>
       </div>
