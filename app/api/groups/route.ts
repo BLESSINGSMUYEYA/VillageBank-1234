@@ -12,37 +12,6 @@ const createGroupSchema = z.object({
   interestRate: z.number().min(0).max(100),
 })
 
-async function ensureUserExists(userId: string, clerkUser: any) {
-  console.log(`Checking if user ${userId} exists in database...`)
-  const existingUser = await prisma.user.findUnique({
-    where: { id: userId }
-  })
-
-  if (!existingUser) {
-    console.log(`User ${userId} not found, creating...`)
-    const primaryEmail = clerkUser.email_addresses?.[0]?.email_address || ''
-    const primaryPhone = clerkUser.phone_numbers?.[0]?.phone_number || ''
-    
-    console.log(`Creating user with email: ${primaryEmail}, phone: ${primaryPhone}`)
-    
-    await prisma.user.create({
-      data: {
-        id: userId,
-        email: primaryEmail,
-        firstName: clerkUser.first_name || '',
-        lastName: clerkUser.last_name || '',
-        phoneNumber: primaryPhone,
-        role: clerkUser.public_metadata?.role || 'MEMBER',
-        region: clerkUser.public_metadata?.region || 'CENTRAL',
-        isActive: true,
-      },
-    })
-    console.log(`Successfully created user ${userId} in database`)
-  } else {
-    console.log(`User ${userId} already exists in database`)
-  }
-}
-
 export async function POST(request: NextRequest) {
   try {
     const { userId } = getAuth(request)
@@ -59,21 +28,32 @@ export async function POST(request: NextRequest) {
     const user = await clerk.users.getUser(userId)
     const userRole = user.publicMetadata?.role as string
 
-    // Ensure user exists in database (outside of group transaction)
-    await ensureUserExists(userId, user)
-
     const body = await request.json()
     const validatedData = createGroupSchema.parse(body)
 
-    // Create group and add creator as admin in a separate transaction
+    // Create group and add creator as admin in a single transaction
     const group = await prisma.$transaction(async (tx) => {
-      // Verify user exists again in this transaction
-      const userExists = await tx.user.findUnique({
+      // Ensure user exists in this transaction
+      const existingUser = await tx.user.findUnique({
         where: { id: userId }
       })
 
-      if (!userExists) {
-        throw new Error(`User ${userId} does not exist in database`)
+      if (!existingUser) {
+        // Get user details from Clerk (we already have them from earlier)
+        const primaryEmail = user.emailAddresses?.[0]?.emailAddress || ''
+        const primaryPhone = user.phoneNumbers?.[0]?.phoneNumber || ''
+        
+        await tx.user.create({
+          data: {
+            id: userId,
+            email: primaryEmail,
+            firstName: user.firstName || '',
+            lastName: user.lastName || '',
+            phoneNumber: primaryPhone,
+            role: (user.publicMetadata?.role as 'MEMBER' | 'REGIONAL_ADMIN' | 'SUPER_ADMIN') || 'MEMBER',
+            region: (user.publicMetadata?.region as string) || 'CENTRAL',
+          },
+        })
       }
 
       const newGroup = await tx.group.create({
@@ -119,14 +99,37 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: error.issues[0].message },
+        { error: `Validation error: ${error.issues[0].message}` },
         { status: 400 }
       )
     }
 
     console.error('Create group error:', error)
+    
+    // Provide more specific error messages based on common issues
+    if (error instanceof Error) {
+      if (error.message.includes('User') && error.message.includes('does not exist')) {
+        return NextResponse.json(
+          { error: 'User account issue. Please try signing out and back in.' },
+          { status: 400 }
+        )
+      }
+      if (error.message.includes('Unique constraint')) {
+        return NextResponse.json(
+          { error: 'A group with this name already exists. Please choose a different name.' },
+          { status: 409 }
+        )
+      }
+      if (error.message.includes('permission') || error.message.includes('unauthorized')) {
+        return NextResponse.json(
+          { error: 'You do not have permission to create groups.' },
+          { status: 403 }
+        )
+      }
+    }
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to create group. Please check your connection and try again.' },
       { status: 500 }
     )
   }

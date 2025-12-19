@@ -21,12 +21,56 @@ export default function CreateGroupPage() {
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const router = useRouter()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [name]: value
+    }))
+    
+    // Real-time validation
+    validateField(name, value)
+  }
+
+  const validateField = (name: string, value: string) => {
+    const errors: Record<string, string> = {}
+    
+    switch (name) {
+      case 'name':
+        if (value && value.length < 3) {
+          errors.name = 'Group name must be at least 3 characters long'
+        } else if (value && value.length > 50) {
+          errors.name = 'Group name must be less than 50 characters'
+        }
+        break
+      case 'monthlyContribution':
+        const contribution = parseFloat(value)
+        if (value && (isNaN(contribution) || contribution <= 0)) {
+          errors.monthlyContribution = 'Monthly contribution must be a positive number'
+        } else if (value && contribution > 1000000) {
+          errors.monthlyContribution = 'Monthly contribution seems too high'
+        }
+        break
+      case 'maxLoanMultiplier':
+        const multiplier = parseInt(value)
+        if (value && (isNaN(multiplier) || multiplier < 1 || multiplier > 10)) {
+          errors.maxLoanMultiplier = 'Loan multiplier must be between 1 and 10'
+        }
+        break
+      case 'interestRate':
+        const interest = parseFloat(value)
+        if (value && (isNaN(interest) || interest < 0 || interest > 100)) {
+          errors.interestRate = 'Interest rate must be between 0 and 100'
+        }
+        break
+    }
+    
+    setFieldErrors(prev => ({
+      ...prev,
+      [name]: errors[name] || ''
     }))
   }
 
@@ -93,10 +137,23 @@ export default function CreateGroupPage() {
       if (!response.ok) {
         setError(data.error || 'Failed to create group')
       } else {
+        // Add a small delay to ensure database transaction is complete
+        await new Promise(resolve => setTimeout(resolve, 500))
         router.push(`/groups/${data.groupId}`)
       }
     } catch (error) {
-      setError('An error occurred. Please try again.')
+      console.error('Group creation error:', error)
+      if (error instanceof Error) {
+        if (error.message.includes('Failed to fetch')) {
+          setError('Network error. Please check your internet connection and try again.')
+        } else if (error.message.includes('timeout')) {
+          setError('Request timed out. Please try again.')
+        } else {
+          setError('An unexpected error occurred. Please try again.')
+        }
+      } else {
+        setError('An unexpected error occurred. Please try again.')
+      }
     } finally {
       setLoading(false)
     }
@@ -104,6 +161,16 @@ export default function CreateGroupPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
+      {/* Loading overlay */}
+      {loading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 flex items-center space-x-3">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+            <span className="text-gray-700">Creating your group...</span>
+          </div>
+        </div>
+      )}
+      
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
@@ -140,7 +207,11 @@ export default function CreateGroupPage() {
                   value={formData.name}
                   onChange={handleChange}
                   required
+                  className={fieldErrors.name ? 'border-red-500' : ''}
                 />
+                {fieldErrors.name && (
+                  <p className="text-sm text-red-500">{fieldErrors.name}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -148,7 +219,7 @@ export default function CreateGroupPage() {
                 <textarea
                   id="description"
                   name="description"
-                  className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder="Describe the purpose of this group (optional)"
                   value={formData.description}
                   onChange={handleChange}
@@ -183,7 +254,11 @@ export default function CreateGroupPage() {
                   value={formData.monthlyContribution}
                   onChange={handleChange}
                   required
+                  className={fieldErrors.monthlyContribution ? 'border-red-500' : ''}
                 />
+                {fieldErrors.monthlyContribution && (
+                  <p className="text-sm text-red-500">{fieldErrors.monthlyContribution}</p>
+                )}
               </div>
               
               <div className="grid grid-cols-2 gap-4">
@@ -198,10 +273,14 @@ export default function CreateGroupPage() {
                     placeholder="3"
                     value={formData.maxLoanMultiplier}
                     onChange={handleChange}
+                    className={fieldErrors.maxLoanMultiplier ? 'border-red-500' : ''}
                   />
                   <p className="text-xs text-gray-500">
                     Maximum loan = contributions × multiplier
                   </p>
+                  {fieldErrors.maxLoanMultiplier && (
+                    <p className="text-sm text-red-500">{fieldErrors.maxLoanMultiplier}</p>
+                  )}
                 </div>
                 
                 <div className="space-y-2">
@@ -216,10 +295,14 @@ export default function CreateGroupPage() {
                     placeholder="10"
                     value={formData.interestRate}
                     onChange={handleChange}
+                    className={fieldErrors.interestRate ? 'border-red-500' : ''}
                   />
                   <p className="text-xs text-gray-500">
                     Annual interest rate on loans
                   </p>
+                  {fieldErrors.interestRate && (
+                    <p className="text-sm text-red-500">{fieldErrors.interestRate}</p>
+                  )}
                 </div>
               </div>
               
@@ -229,8 +312,15 @@ export default function CreateGroupPage() {
                     Cancel
                   </Button>
                 </Link>
-                <Button type="submit" disabled={loading}>
-                  {loading ? 'Creating...' : 'Create Group'}
+                <Button type="submit" disabled={loading} className="min-w-30">
+                  {loading ? (
+                    <div className="flex items-center">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Creating...
+                    </div>
+                  ) : (
+                    'Create Group'
+                  )}
                 </Button>
               </div>
             </form>
