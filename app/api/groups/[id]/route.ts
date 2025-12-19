@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { clerkClient, getAuth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
+import { z } from 'zod'
+
+const updateGroupSchema = z.object({
+  name: z.string().min(3).optional(),
+  description: z.string().optional(),
+  monthlyContribution: z.number().positive().optional(),
+  maxLoanMultiplier: z.number().min(1).max(10).optional(),
+  interestRate: z.number().min(0).max(100).optional(),
+})
 
 export async function GET(
   request: NextRequest,
@@ -117,6 +126,141 @@ export async function GET(
 
   } catch (error) {
     console.error('Get group error:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { userId } = getAuth(request)
+    
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    const groupId = params.id
+    const body = await request.json()
+    const validatedData = updateGroupSchema.parse(body)
+
+    // Check if user is admin of the group
+    const membership = await prisma.groupMember.findFirst({
+      where: {
+        groupId: groupId,
+        userId: userId,
+        role: 'ADMIN',
+        status: 'ACTIVE',
+      },
+    })
+
+    if (!membership) {
+      return NextResponse.json(
+        { error: 'Only group admins can update group settings' },
+        { status: 403 }
+      )
+    }
+
+    // Update group
+    const group = await prisma.group.update({
+      where: { id: groupId },
+      data: validatedData,
+    })
+
+    // Create activity log
+    await prisma.activity.create({
+      data: {
+        userId: userId,
+        groupId: groupId,
+        actionType: 'GROUP_UPDATED',
+        description: `Updated group settings`,
+        metadata: validatedData,
+      },
+    })
+
+    return NextResponse.json({
+      message: 'Group updated successfully',
+      group,
+    })
+
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: error.issues[0].message },
+        { status: 400 }
+      )
+    }
+
+    console.error('Update group error:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { userId } = getAuth(request)
+    
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    const groupId = params.id
+
+    // Check if user is admin of the group
+    const membership = await prisma.groupMember.findFirst({
+      where: {
+        groupId: groupId,
+        userId: userId,
+        role: 'ADMIN',
+        status: 'ACTIVE',
+      },
+    })
+
+    if (!membership) {
+      return NextResponse.json(
+        { error: 'Only group admins can delete groups' },
+        { status: 403 }
+      )
+    }
+
+    // Soft delete by setting isActive to false
+    await prisma.group.update({
+      where: { id: groupId },
+      data: { isActive: false },
+    })
+
+    // Create activity log
+    await prisma.activity.create({
+      data: {
+        userId: userId,
+        groupId: groupId,
+        actionType: 'GROUP_DELETED',
+        description: `Deleted group`,
+      },
+    })
+
+    return NextResponse.json({
+      message: 'Group deleted successfully',
+    })
+
+  } catch (error) {
+    console.error('Delete group error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
