@@ -1,0 +1,185 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  firstName     String
+  lastName      String
+  phoneNumber   String   @unique
+  passwordHash  String?  // For NextAuth compatibility
+  role          UserRole @default(MEMBER)
+  region        Region?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  groupMembers  GroupMember[]
+  contributions Contribution[]
+  loans         Loan[]
+  activities    Activity[]
+}
+
+enum UserRole {
+  MEMBER
+  REGIONAL_ADMIN
+  SUPER_ADMIN
+}
+
+enum Region {
+  NORTHERN
+  SOUTHERN
+  CENTRAL
+}
+
+model Group {
+  id                      String   @id @default(cuid())
+  name                    String
+  description             String?
+  region                  Region
+  monthlyContribution     Float
+  maxLoanMultiplier       Int      @default(3)
+  interestRate            Float    @default(10)
+  isActive                Boolean  @default(true)
+  createdById             String
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  
+  members                 GroupMember[]
+  contributions           Contribution[]
+  loans                   Loan[]
+  paymentMethods          PaymentMethod[]
+  activities              Activity[]
+}
+
+model GroupMember {
+  id        String           @id @default(cuid())
+  groupId   String
+  userId    String
+  role      GroupRole        @default(MEMBER)
+  status    MemberStatus     @default(PENDING)
+  joinedAt  DateTime         @default(now())
+  
+  group     Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([groupId, userId])
+}
+
+enum GroupRole {
+  ADMIN
+  TREASURER
+  SECRETARY
+  MEMBER
+}
+
+enum MemberStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+}
+
+model Contribution {
+  id                  String             @id @default(cuid())
+  groupId             String
+  userId              String
+  amount              Float
+  month               Int
+  year                Int
+  paymentMethod       String?
+  transactionRef      String?
+  status              PaymentStatus      @default(PENDING)
+  createdAt           DateTime           @default(now())
+  
+  group               Group   @relation(fields: [groupId], references: [id])
+  user                User    @relation(fields: [userId], references: [id])
+  
+  @@unique([groupId, userId, month, year])
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model Loan {
+  id                    String       @id @default(cuid())
+  groupId               String
+  userId                String
+  amountRequested       Float
+  amountApproved        Float?
+  interestRate          Float
+  repaymentPeriodMonths Int
+  status                LoanStatus   @default(PENDING)
+  approvedById          String?
+  approvedAt            DateTime?
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+  
+  group                 Group          @relation(fields: [groupId], references: [id])
+  user                  User           @relation(fields: [userId], references: [id])
+  repayments            LoanRepayment[]
+}
+
+enum LoanStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  ACTIVE
+  COMPLETED
+  DEFAULTED
+}
+
+model LoanRepayment {
+  id              String   @id @default(cuid())
+  loanId          String
+  amount          Float
+  paymentMethod   String?
+  transactionRef  String?
+  paidAt          DateTime @default(now())
+  createdAt       DateTime @default(now())
+  
+  loan            Loan     @relation(fields: [loanId], references: [id])
+}
+
+model PaymentMethod {
+  id            String              @id @default(cuid())
+  groupId       String
+  type          PaymentMethodType
+  accountNumber String
+  accountName   String
+  isActive      Boolean             @default(true)
+  addedById     String
+  createdAt     DateTime            @default(now())
+  
+  group         Group               @relation(fields: [groupId], references: [id])
+}
+
+enum PaymentMethodType {
+  AIRTEL_MONEY
+  MPAMBA
+  BANK_CARD
+}
+
+model Activity {
+  id          String   @id @default(cuid())
+  userId      String
+  groupId     String?
+  actionType  String
+  description String
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  
+  user        User     @relation(fields: [userId], references: [id])
+  group       Group?   @relation(fields: [groupId], references: [id])
+}

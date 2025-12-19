@@ -1,0 +1,275 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { ArrowLeft, DollarSign } from 'lucide-react'
+
+interface Group {
+  id: string
+  name: string
+  monthlyContribution: number
+  region: string
+}
+
+export default function NewContributionPage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [groups, setGroups] = useState<Group[]>([])
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null)
+  const [formData, setFormData] = useState({
+    amount: '',
+    paymentMethod: '',
+    transactionRef: '',
+  })
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    fetchGroups()
+    
+    // Pre-select group if provided in URL
+    const groupId = searchParams.get('groupId')
+    if (groupId) {
+      fetchGroupDetails(groupId)
+    }
+  }, [searchParams])
+
+  const fetchGroups = async () => {
+    try {
+      const response = await fetch('/api/groups')
+      const data = await response.json()
+      if (response.ok) {
+        setGroups(data.groups.filter((g: any) => g.members[0]?.status === 'ACTIVE'))
+      }
+    } catch (error) {
+      console.error('Error fetching groups:', error)
+    }
+  }
+
+  const fetchGroupDetails = async (groupId: string) => {
+    try {
+      const response = await fetch('/api/groups')
+      const data = await response.json()
+      if (response.ok) {
+        const group = data.groups.find((g: any) => g.id === groupId)
+        if (group) {
+          setSelectedGroup(group)
+          setFormData(prev => ({
+            ...prev,
+            amount: group.monthlyContribution.toString()
+          }))
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching group details:', error)
+    }
+  }
+
+  const handleGroupChange = (groupId: string) => {
+    const group = groups.find(g => g.id === groupId)
+    setSelectedGroup(group || null)
+    if (group) {
+      setFormData(prev => ({
+        ...prev,
+        amount: group.monthlyContribution.toString()
+      }))
+    }
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }))
+  }
+
+  const validateForm = () => {
+    if (!selectedGroup) {
+      setError('Please select a group')
+      return false
+    }
+
+    if (!formData.amount || parseFloat(formData.amount) <= 0) {
+      setError('Please enter a valid amount')
+      return false
+    }
+
+    if (!formData.paymentMethod) {
+      setError('Please select a payment method')
+      return false
+    }
+
+    return true
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+
+    if (!validateForm()) {
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const response = await fetch('/api/contributions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          groupId: selectedGroup!.id,
+          amount: parseFloat(formData.amount),
+          paymentMethod: formData.paymentMethod,
+          transactionRef: formData.transactionRef,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to create contribution')
+      } else {
+        router.push('/contributions?message=Contribution created successfully')
+      }
+    } catch (error) {
+      setError('An error occurred. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-8">
+          <Link href="/contributions" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 mb-4">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Contributions
+          </Link>
+          <h1 className="text-3xl font-bold text-gray-900">Make Contribution</h1>
+          <p className="text-gray-600">Record your monthly contribution</p>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Contribution Details</CardTitle>
+            <CardDescription>
+              Fill in the information for your contribution
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              
+              <div className="space-y-2">
+                <Label htmlFor="groupId">Select Group *</Label>
+                <select
+                  id="groupId"
+                  name="groupId"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  value={selectedGroup?.id || ''}
+                  onChange={(e) => handleGroupChange(e.target.value)}
+                  required
+                >
+                  <option value="">Select a group</option>
+                  {groups.map((group) => (
+                    <option key={group.id} value={group.id}>
+                      {group.name} - {group.region} (MWK {group.monthlyContribution.toLocaleString()})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {selectedGroup && (
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <h3 className="font-medium text-blue-900 mb-2">Group Information</h3>
+                  <p className="text-sm text-blue-700 space-y-1">
+                    <p><strong>Monthly Contribution:</strong> MWK {selectedGroup?.monthlyContribution.toLocaleString()}</p>
+                    <p><strong>Region:</strong> {selectedGroup?.region}</p>
+                  </p>
+                </div>
+              )}
+              
+              <div className="space-y-2">
+                <Label htmlFor="amount">Amount (MWK) *</Label>
+                <Input
+                  id="amount"
+                  name="amount"
+                  type="number"
+                  step="0.01"
+                  placeholder="Enter amount"
+                  value={formData.amount}
+                  onChange={handleChange}
+                  required
+                />
+                {selectedGroup && (
+                  <p className="text-sm text-gray-500">
+                    Expected monthly contribution: MWK {selectedGroup.monthlyContribution.toLocaleString()}
+                  </p>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="paymentMethod">Payment Method *</Label>
+                <select
+                  id="paymentMethod"
+                  name="paymentMethod"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  value={formData.paymentMethod}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select payment method</option>
+                  <option value="AIRTEL_MONEY">Airtel Money</option>
+                  <option value="MPAMBA">Mpamba</option>
+                  <option value="BANK_CARD">Bank Card</option>
+                  <option value="CASH">Cash</option>
+                  <option value="OTHER">Other</option>
+                </select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="transactionRef">Transaction Reference</Label>
+                <Input
+                  id="transactionRef"
+                  name="transactionRef"
+                  type="text"
+                  placeholder="Enter transaction ID (optional)"
+                  value={formData.transactionRef}
+                  onChange={handleChange}
+                />
+                <p className="text-xs text-gray-500">
+                  Reference number from your payment confirmation
+                </p>
+              </div>
+              
+              <div className="flex justify-end space-x-4 pt-4">
+                <Link href="/contributions">
+                  <Button variant="outline" type="button">
+                    Cancel
+                  </Button>
+                </Link>
+                <Button type="submit" disabled={loading}>
+                  {loading ? 'Creating...' : 'Create Contribution'}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}
