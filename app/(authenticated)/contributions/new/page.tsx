@@ -34,6 +34,22 @@ function NewContributionPageContent() {
   const [success, setSuccess] = useState('')
   const [isScanning, setIsScanning] = useState(false)
   const [receiptUrl, setReceiptUrl] = useState('')
+  const [shouldScan, setShouldScan] = useState(false)
+
+  useEffect(() => {
+    // Ensure body scroll is restored when scanning is done
+    if (!isScanning) {
+      document.body.style.overflow = 'auto'
+      document.body.style.pointerEvents = 'auto'
+    }
+  }, [isScanning])
+
+  useEffect(() => {
+    if (shouldScan && receiptUrl) {
+      handleScanReceipt(receiptUrl)
+      setShouldScan(false)
+    }
+  }, [shouldScan, receiptUrl])
 
   useEffect(() => {
     fetchGroups()
@@ -147,6 +163,9 @@ function NewContributionPageContent() {
   }
 
   const handleScanReceipt = async (url: string) => {
+    // Give the Cloudinary widget a moment to close and clean up its DOM
+    await new Promise(resolve => setTimeout(resolve, 500))
+
     setIsScanning(true)
     setError('')
     try {
@@ -270,48 +289,53 @@ function NewContributionPageContent() {
 
               <div className="space-y-4 border-b pb-6">
                 <Label>Receipt (Optional)</Label>
-                <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 bg-gray-50 hover:bg-gray-100 transition-colors">
-                  {receiptUrl ? (
-                    <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
-                      <img src={receiptUrl} alt="Receipt preview" className="w-full h-full object-contain" />
-                      <div className="absolute top-2 right-2 flex space-x-2">
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => setReceiptUrl('')}
-                        >
-                          Change
-                        </Button>
+                <div className="w-full">
+                  <CldUploadWidget
+                    uploadPreset="village_banking_receipts"
+                    onSuccess={(result: any) => {
+                      const url = result.info.secure_url
+                      setReceiptUrl(url)
+                      setShouldScan(true)
+                    }}
+                  >
+                    {({ open }) => (
+                      <div className="flex flex-col items-center justify-center">
+                        {receiptUrl ? (
+                          <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
+                            <img src={receiptUrl} alt="Receipt preview" className="w-full h-full object-contain" />
+                            <div className="absolute top-2 right-2 flex space-x-2">
+                              <Button
+                                type="button"
+                                variant="secondary"
+                                size="sm"
+                                onClick={() => setReceiptUrl('')}
+                              >
+                                Change
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => open()}
+                            className="w-full flex flex-col items-center space-y-2 text-gray-500 py-10"
+                          >
+                            <Upload className="w-8 h-8" />
+                            <span className="text-sm font-medium">Upload transaction receipt</span>
+                            <span className="text-xs">Supports PNG, JPG (Max 5MB)</span>
+                          </button>
+                        )}
                       </div>
-                    </div>
-                  ) : (
-                    <CldUploadWidget
-                      uploadPreset="village_banking_receipts"
-                      onSuccess={(result: any) => {
-                        const url = result.info.secure_url
-                        setReceiptUrl(url)
-                        handleScanReceipt(url)
-                      }}
-                    >
-                      {({ open }) => (
-                        <button
-                          type="button"
-                          onClick={() => open()}
-                          className="flex flex-col items-center space-y-2 text-gray-500"
-                        >
-                          <Upload className="w-8 h-8" />
-                          <span className="text-sm font-medium">Upload transaction receipt</span>
-                          <span className="text-xs">Supports PNG, JPG (Max 5MB)</span>
-                        </button>
-                      )}
-                    </CldUploadWidget>
-                  )}
+                    )}
+                  </CldUploadWidget>
 
                   {isScanning && (
-                    <div className="mt-4 flex items-center space-x-2 text-blue-600">
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span className="text-sm font-medium">AI is scanning your receipt...</span>
+                    <div className="mt-4 flex flex-col items-center justify-center p-4 bg-blue-50 rounded-lg animate-pulse">
+                      <div className="flex items-center space-x-2 text-blue-600">
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span className="text-sm font-semibold text-blue-700">AI is analyzing your receipt...</span>
+                      </div>
+                      <p className="text-xs text-blue-500 mt-1">This will only take a few seconds</p>
                     </div>
                   )}
                 </div>

@@ -15,7 +15,7 @@ export async function POST(req: Request) {
         const response = await fetch(imageUrl);
         const buffer = await response.arrayBuffer();
 
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
         const prompt = `Analyze this transaction receipt from a mobile money service (likely Airtel Money or Mpamba in Malawi) and extract the following information in JSON format:
         {
