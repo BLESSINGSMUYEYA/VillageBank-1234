@@ -183,7 +183,9 @@ export default function GroupDetailPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">{formatCurrency(group.monthlyContribution)}</div>
+            <div className="text-lg sm:text-xl lg:text-2xl font-bold truncate" title={formatCurrency(group.monthlyContribution)}>
+              {formatCurrency(group.monthlyContribution)}
+            </div>
             <p className="text-xs text-muted-foreground">
               Per member
             </p>

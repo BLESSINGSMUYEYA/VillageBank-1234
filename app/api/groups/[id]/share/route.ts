@@ -10,6 +10,7 @@ const shareSchema = z.object({
   permissions: z.enum(['VIEW_ONLY', 'REQUEST_JOIN', 'LIMITED_ACCESS', 'FULL_PREVIEW']),
   expiresAt: z.string().datetime().optional(),
   maxUses: z.number().min(1).max(100).optional(),
+  customMessage: z.string().max(100).optional(),
 })
 
 // Generate QR Code for group sharing
@@ -26,7 +27,7 @@ export async function POST(
 
     const { id: groupId } = await params
     const body = await request.json()
-    const { permissions, expiresAt, maxUses } = shareSchema.parse(body)
+    const { permissions, expiresAt, maxUses, customMessage } = shareSchema.parse(body)
 
     // Verify user is group admin
     const membership = await prisma.groupMember.findFirst({
@@ -74,15 +75,18 @@ export async function POST(
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
     const shareUrl = `${baseUrl}/shared/${shareToken}`
     
-    // Generate QR Code as base64
-    const qrCodeDataUrl = await QRCode.toDataURL(shareUrl, {
+    // Generate simple QR code without text overlay to avoid Jimp compatibility issues
+    const qrCodeBuffer = await QRCode.toBuffer(shareUrl, {
       width: 300,
       margin: 2,
       color: {
-        dark: '#000000',
+        dark: '#1e40af', // Blue color for branding
         light: '#FFFFFF',
       },
+      errorCorrectionLevel: 'M',
     })
+    
+    const qrCodeDataUrl = `data:image/png;base64,${qrCodeBuffer.toString('base64')}`
 
     return NextResponse.json({
       shareId: groupShare.id,
@@ -93,6 +97,7 @@ export async function POST(
       expiresAt: groupShare.expiresAt,
       maxUses: groupShare.maxUses,
       currentUses: groupShare.currentUses,
+      customMessage: customMessage || null,
       group: groupShare.group,
     })
 

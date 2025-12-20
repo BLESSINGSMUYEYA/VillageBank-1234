@@ -25,28 +25,28 @@ export default clerkMiddleware(async (auth, req) => {
   if (isAdminRoute(req)) {
     const authObj = await auth()
     if (!authObj.userId) {
-      throw new Error("Authentication required: Please sign in to access this resource")
+      return new Response('Unauthorized', { status: 401 })
     }
     
     // Check if user has admin role
     const userRole = (authObj.sessionClaims as any)?.metadata?.role
     if (!userRole || (userRole !== 'REGIONAL_ADMIN' && userRole !== 'SUPER_ADMIN')) {
-      throw new Error("Insufficient permissions: You don't have the required role to access this resource")
+      return new Response('Forbidden', { status: 403 })
     }
     
     // For system admin routes, require SUPER_ADMIN role
     if (pathname.includes('/admin/system')) {
       if (userRole !== 'SUPER_ADMIN') {
-        throw new Error("Insufficient permissions: You don't have the required role to access this resource")
+        return new Response('Forbidden', { status: 403 })
       }
     }
   }
 
-  // Check regular protected routes
+  // Protect regular routes - Clerk will automatically redirect to sign-in
   if (isProtectedRoute(req)) {
     const authObj = await auth()
     if (!authObj.userId) {
-      throw new Error("Authentication required: Please sign in to access this resource")
+      return new Response('Unauthorized', { status: 401 })
     }
   }
 });

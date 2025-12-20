@@ -105,12 +105,14 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
             </DropdownMenu>
           ) : (
             <div className="flex items-center space-x-2">
-              <SignInButton />
-              <SignUpButton>
-                <button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm h-8 px-3 cursor-pointer">
+              <Link href="/login">
+                <Button variant="ghost" size="sm">Sign In</Button>
+              </Link>
+              <Link href="/register">
+                <Button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm h-8 px-3">
                   Sign Up
-                </button>
-              </SignUpButton>
+                </Button>
+              </Link>
             </div>
           )}
         </div>

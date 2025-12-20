@@ -133,12 +133,14 @@ export function DesktopNavigation() {
               </DropdownMenu>
             ) : (
               <div className="flex items-center space-x-4">
-                <SignInButton />
-                <SignUpButton>
-                  <button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
+                <Link href="/login">
+                  <Button variant="ghost">Sign In</Button>
+                </Link>
+                <Link href="/register">
+                  <Button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5">
                     Sign Up
-                  </button>
-                </SignUpButton>
+                  </Button>
+                </Link>
               </div>
             )}
           </div>

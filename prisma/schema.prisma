@@ -223,6 +223,7 @@ model GroupShare {
   expiresAt   DateTime?
   maxUses     Int?        @default(10)
   currentUses Int         @default(0)
+  customMessage String?   @db.Text
   isActive    Boolean     @default(true)
   createdAt   DateTime    @default(now())
   
