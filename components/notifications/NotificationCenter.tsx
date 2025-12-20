@@ -145,31 +145,33 @@ export function NotificationCenter() {
 
       {/* Notification Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-96 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-96 overflow-hidden">
           <Card className="border-0 shadow-none">
             <CardHeader className="pb-3">
-              <div className="flex justify-between items-center">
-                <div>
-                  <CardTitle className="text-lg">Notifications</CardTitle>
-                  <CardDescription>
+              <div className="flex justify-between items-center gap-2">
+                <div className="min-w-0 flex-1">
+                  <CardTitle className="text-base sm:text-lg truncate">Notifications</CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">
                     {unreadCount} unread notification{unreadCount !== 1 ? 's' : ''}
                   </CardDescription>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-1 sm:gap-2 shrink-0">
                   {unreadCount > 0 && (
                     <Button 
                       variant="ghost" 
                       size="sm" 
                       onClick={markAllAsRead}
-                      className="text-xs"
+                      className="text-xs h-8 px-2"
                     >
-                      Mark all read
+                      <span className="hidden sm:inline">Mark all read</span>
+                      <Check className="w-3 h-3 sm:hidden" />
                     </Button>
                   )}
                   <Button 
                     variant="ghost" 
                     size="sm" 
                     onClick={() => setIsOpen(false)}
+                    className="h-8 w-8 p-0"
                   >
                     <X className="w-4 h-4" />
                   </Button>
@@ -179,40 +181,40 @@ export function NotificationCenter() {
             
             <CardContent className="p-0 max-h-64 overflow-y-auto">
               {notifications.length === 0 ? (
-                <div className="text-center py-8">
-                  <Bell className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No notifications</h3>
-                  <p className="text-gray-500">You're all caught up!</p>
+                <div className="text-center py-8 px-4">
+                  <Bell className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">No notifications</h3>
+                  <p className="text-sm text-gray-500">You're all caught up!</p>
                 </div>
               ) : (
                 <div className="divide-y">
                   {notifications.map((notification) => (
                     <div
                       key={notification.id}
-                      className={`p-4 hover:bg-gray-50 transition-colors ${
+                      className={`p-3 sm:p-4 hover:bg-gray-50 transition-colors ${
                         !notification.read ? 'bg-blue-50' : ''
                       }`}
                     >
-                      <div className="flex items-start gap-3">
-                        <div className="mt-0.5">
+                      <div className="flex items-start gap-2 sm:gap-3">
+                        <div className="mt-0.5 shrink-0">
                           {getNotificationIcon(notification.type)}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <p className={`text-sm font-medium ${
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-sm font-medium truncate ${
                                 !notification.read ? 'text-gray-900' : 'text-gray-600'
                               }`}>
                                 {notification.title}
                               </p>
-                              <p className="text-sm text-gray-500 mt-1">
+                              <p className="text-sm text-gray-500 mt-1 wrap-break-word">
                                 {notification.message}
                               </p>
                               <p className="text-xs text-gray-400 mt-2">
                                 {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                               </p>
                             </div>
-                            <div className="flex gap-1 ml-2">
+                            <div className="flex gap-1 shrink-0">
                               {!notification.read && (
                                 <Button
                                   variant="ghost"
@@ -242,6 +244,7 @@ export function NotificationCenter() {
                                 onClick={() => {
                                   window.location.href = notification.actionUrl!
                                 }}
+                                className="text-xs h-7 px-2"
                               >
                                 {notification.actionText}
                               </Button>
