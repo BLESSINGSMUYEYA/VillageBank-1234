@@ -8,12 +8,13 @@ const createContributionSchema = z.object({
   amount: z.number().positive('Amount must be positive'),
   paymentMethod: z.enum(['AIRTEL_MONEY', 'MPAMBA', 'BANK_CARD', 'CASH', 'OTHER']),
   transactionRef: z.string().optional(),
+  receiptUrl: z.string().optional(),
 })
 
 export async function POST(request: NextRequest) {
   try {
     const { userId } = getAuth(request)
-    
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     console.log('Received contribution request:', body)
     console.log('UserId:', userId)
-    
+
     const validatedData = createContributionSchema.parse(body)
     console.log('Validated data:', validatedData)
 
@@ -79,7 +80,8 @@ export async function POST(request: NextRequest) {
         year: currentYear,
         paymentMethod: validatedData.paymentMethod,
         transactionRef: validatedData.transactionRef,
-        status: 'PENDING', // Will be approved by treasurer
+        receiptUrl: validatedData.receiptUrl,
+        status: 'PENDING', // All contributions go to PENDING for treasurer approval
       },
     })
 
@@ -107,7 +109,7 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       console.error('Validation error:', error.issues)
       return NextResponse.json(
-        { 
+        {
           error: 'Validation failed: ' + error.issues.map(issue => `${issue.path.join('.')}: ${issue.message}`).join(', ')
         },
         { status: 400 }
@@ -125,7 +127,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const { userId } = getAuth(request)
-    
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },

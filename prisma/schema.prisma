@@ -100,7 +100,11 @@ model Contribution {
   year                Int
   paymentMethod       String?
   transactionRef      String?
+  receiptUrl          String?
   status              PaymentStatus      @default(PENDING)
+  reviewedById        String?
+  reviewDate          DateTime?
+  rejectionReason     String?
   createdAt           DateTime           @default(now())
   
   group               Group   @relation(fields: [groupId], references: [id])
@@ -113,6 +117,7 @@ enum PaymentStatus {
   PENDING
   COMPLETED
   FAILED
+  REJECTED
 }
 
 model Loan {

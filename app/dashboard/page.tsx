@@ -1,5 +1,6 @@
 import { currentUser } from '@clerk/nextjs/server'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
@@ -19,7 +20,7 @@ import {
   PaymentMethodsChart,
   SummaryStats
 } from '@/components/charts/ContributionChart'
-import { getDashboardStats, getRecentActivity, getChartData } from '@/lib/dashboard-service'
+import { getDashboardStats, getRecentActivity, getChartData, getPendingApprovals } from '@/lib/dashboard-service'
 import { redirect } from 'next/navigation'
 
 export default async function DashboardPage() {
@@ -30,10 +31,11 @@ export default async function DashboardPage() {
   }
 
   // Fetch data in parallel
-  const [stats, recentActivity, chartData] = await Promise.all([
+  const [stats, recentActivity, chartData, pendingApprovals] = await Promise.all([
     getDashboardStats(),
     getRecentActivity(),
-    getChartData()
+    getChartData(),
+    getPendingApprovals()
   ])
 
   return (
@@ -45,6 +47,30 @@ export default async function DashboardPage() {
           Welcome back, {user.firstName}! Here's your village banking overview.
         </p>
       </div>
+
+      {/* Treasurer Notification Banner */}
+      {pendingApprovals.length > 0 && (
+        <Alert className="bg-blue-50 border-blue-200">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center space-x-3">
+              <div className="bg-blue-100 p-2 rounded-full">
+                <DollarSign className="h-5 w-5 text-blue-600" />
+              </div>
+              <div>
+                <CardTitle className="text-sm font-semibold text-blue-900">Pending Approvals</CardTitle>
+                <CardDescription className="text-blue-700 text-xs">
+                  There are {pendingApprovals.length} contributions waiting for your review.
+                </CardDescription>
+              </div>
+            </div>
+            <Link href="/treasurer/approvals">
+              <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white border-none">
+                Review Now
+              </Button>
+            </Link>
+          </div>
+        </Alert>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -139,8 +165,8 @@ export default async function DashboardPage() {
                 <div key={activity.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 border rounded-lg gap-3">
                   <div className="flex items-center space-x-3">
                     <div className={`w-2 h-2 rounded-full shrink-0 ${activity.type.includes('LOAN') ? 'bg-blue-500' :
-                        activity.type.includes('CONTRIBUTION') ? 'bg-green-500' :
-                          'bg-gray-500'
+                      activity.type.includes('CONTRIBUTION') ? 'bg-green-500' :
+                        'bg-gray-500'
                       }`} />
                     <div className="min-w-0 flex-1">
                       <p className="font-medium text-sm truncate">{activity.description}</p>

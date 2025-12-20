@@ -17,6 +17,7 @@ interface Contribution {
   status: string
   paymentMethod?: string
   transactionRef?: string
+  receiptUrl?: string
   createdAt: string
   user: {
     firstName: string
@@ -33,7 +34,7 @@ interface GroupContributionsProps {
 export default function GroupContributions({ contributions, groupId, currentUserRole }: GroupContributionsProps) {
   const completedContributions = contributions.filter(c => c.status === 'COMPLETED')
   const pendingContributions = contributions.filter(c => c.status === 'PENDING')
-  
+
   const totalCompleted = completedContributions.reduce((sum, c) => sum + c.amount, 0)
   const totalPending = pendingContributions.reduce((sum, c) => sum + c.amount, 0)
 
@@ -91,8 +92,8 @@ export default function GroupContributions({ contributions, groupId, currentUser
                 Make Contribution
               </Button>
             </Link>
-            {currentUserRole === 'TREASURER' && (
-              <Link href={`/groups/${groupId}/contributions/approve`}>
+            {(currentUserRole === 'TREASURER' || currentUserRole === 'ADMIN') && (
+              <Link href="/treasurer/approvals">
                 <Button variant="outline">
                   <Eye className="w-4 h-4 mr-2" />
                   Review Pending
@@ -122,6 +123,7 @@ export default function GroupContributions({ contributions, groupId, currentUser
                   <TableHead>Payment Method</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Date</TableHead>
+                  <TableHead>Receipt</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -147,10 +149,10 @@ export default function GroupContributions({ contributions, groupId, currentUser
                       {contribution.paymentMethod || '-'}
                     </TableCell>
                     <TableCell>
-                      <Badge 
+                      <Badge
                         variant={
                           contribution.status === 'COMPLETED' ? 'default' :
-                          contribution.status === 'PENDING' ? 'secondary' : 'destructive'
+                            contribution.status === 'PENDING' ? 'secondary' : 'destructive'
                         }
                       >
                         {contribution.status}
@@ -158,6 +160,17 @@ export default function GroupContributions({ contributions, groupId, currentUser
                     </TableCell>
                     <TableCell>
                       {new Date(contribution.createdAt).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      {contribution.receiptUrl && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => window.open(contribution.receiptUrl, '_blank')}
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}

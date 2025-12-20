@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { ArrowLeft, DollarSign, CheckCircle } from 'lucide-react'
+import { ArrowLeft, DollarSign, CheckCircle, Upload, ScanLine, Loader2 } from 'lucide-react'
+import { CldUploadWidget } from 'next-cloudinary'
 
 interface Group {
   id: string
@@ -31,11 +32,13 @@ function NewContributionPageContent() {
   const [loading, setLoading] = useState(false)
   const [userContributions, setUserContributions] = useState<any[]>([])
   const [success, setSuccess] = useState('')
+  const [isScanning, setIsScanning] = useState(false)
+  const [receiptUrl, setReceiptUrl] = useState('')
 
   useEffect(() => {
     fetchGroups()
     fetchUserContributions()
-    
+
     // Pre-select group if provided in URL
     const groupId = searchParams.get('groupId')
     if (groupId) {
@@ -130,9 +133,9 @@ function NewContributionPageContent() {
     const currentMonth = new Date().getMonth() + 1
     const currentYear = new Date().getFullYear()
     const existingContribution = userContributions.find(
-      c => c.groupId === selectedGroup.id && 
-           c.month === currentMonth && 
-           c.year === currentYear
+      c => c.groupId === selectedGroup.id &&
+        c.month === currentMonth &&
+        c.year === currentYear
     )
 
     if (existingContribution) {
@@ -141,6 +144,34 @@ function NewContributionPageContent() {
     }
 
     return true
+  }
+
+  const handleScanReceipt = async (url: string) => {
+    setIsScanning(true)
+    setError('')
+    try {
+      const response = await fetch('/api/ocr', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: url }),
+      })
+      const data = await response.json()
+      if (response.ok && data) {
+        setFormData(prev => ({
+          ...prev,
+          amount: data.amount?.toString() || prev.amount,
+          transactionRef: data.transactionRef || prev.transactionRef,
+          paymentMethod: data.paymentMethod || prev.paymentMethod,
+        }))
+        setSuccess('Receipt scanned successfully!')
+      } else {
+        setError(data.error || 'Failed to scan receipt')
+      }
+    } catch (err) {
+      setError('Error scanning receipt')
+    } finally {
+      setIsScanning(false)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -160,12 +191,13 @@ function NewContributionPageContent() {
         amount: parseFloat(formData.amount),
         paymentMethod: formData.paymentMethod,
         transactionRef: formData.transactionRef || undefined,
+        receiptUrl: receiptUrl || undefined,
       }
-      
+
       console.log('Sending contribution request:', requestData)
       console.log('Selected group:', selectedGroup)
       console.log('Form data:', formData)
-      
+
       const response = await fetch('/api/contributions', {
         method: 'POST',
         headers: {
@@ -228,14 +260,66 @@ function NewContributionPageContent() {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-              
+
               {success && (
                 <Alert className="border-green-200 bg-green-50">
                   <CheckCircle className="h-4 w-4 text-green-600" />
                   <AlertDescription className="text-green-800">{success}</AlertDescription>
                 </Alert>
               )}
-              
+
+              <div className="space-y-4 border-b pb-6">
+                <Label>Receipt (Optional)</Label>
+                <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 bg-gray-50 hover:bg-gray-100 transition-colors">
+                  {receiptUrl ? (
+                    <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
+                      <img src={receiptUrl} alt="Receipt preview" className="w-full h-full object-contain" />
+                      <div className="absolute top-2 right-2 flex space-x-2">
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => setReceiptUrl('')}
+                        >
+                          Change
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <CldUploadWidget
+                      uploadPreset="village_banking_receipts"
+                      onSuccess={(result: any) => {
+                        const url = result.info.secure_url
+                        setReceiptUrl(url)
+                        handleScanReceipt(url)
+                      }}
+                    >
+                      {({ open }) => (
+                        <button
+                          type="button"
+                          onClick={() => open()}
+                          className="flex flex-col items-center space-y-2 text-gray-500"
+                        >
+                          <Upload className="w-8 h-8" />
+                          <span className="text-sm font-medium">Upload transaction receipt</span>
+                          <span className="text-xs">Supports PNG, JPG (Max 5MB)</span>
+                        </button>
+                      )}
+                    </CldUploadWidget>
+                  )}
+
+                  {isScanning && (
+                    <div className="mt-4 flex items-center space-x-2 text-blue-600">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span className="text-sm font-medium">AI is scanning your receipt...</span>
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500">
+                  Scanning helps auto-fill the form and recorded as proof of payment.
+                </p>
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="groupId">Select Group *</Label>
                 <select
@@ -269,7 +353,7 @@ function NewContributionPageContent() {
                   </div>
                 </div>
               )}
-              
+
               <div className="space-y-2">
                 <Label htmlFor="amount">Amount (MWK) *</Label>
                 <Input
@@ -288,7 +372,7 @@ function NewContributionPageContent() {
                   </p>
                 )}
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="paymentMethod">Payment Method *</Label>
                 <select
@@ -307,7 +391,7 @@ function NewContributionPageContent() {
                   <option value="OTHER">Other</option>
                 </select>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="transactionRef">Transaction Reference</Label>
                 <Input
@@ -322,7 +406,7 @@ function NewContributionPageContent() {
                   Reference number from your payment confirmation
                 </p>
               </div>
-              
+
               <div className="flex justify-end space-x-4 pt-4">
                 <Link href="/contributions">
                   <Button variant="outline" type="button">
