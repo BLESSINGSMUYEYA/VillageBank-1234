@@ -94,16 +94,16 @@ export default async function LoansPage() {
   )
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Loans</h1>
-          <p className="text-gray-600">Manage your loan applications and repayments</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Loans</h1>
+          <p className="text-gray-600 text-sm sm:text-base">Manage your loan applications and repayments</p>
         </div>
         {eligibilityChecks.some(check => check.eligible) && (
           <Link href="/loans/new">
-            <Button>
+            <Button className="w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />
               Request Loan
             </Button>
@@ -112,14 +112,14 @@ export default async function LoansPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Loans</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium">Active Loans</CardTitle>
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{activeLoans.length}</div>
+            <div className="text-xl sm:text-2xl font-bold">{activeLoans.length}</div>
             <p className="text-xs text-muted-foreground">
               {formatCurrency(activeLoans.reduce((sum, l) => sum + Number(l.amountApproved || l.amountRequested), 0))}
             </p>
@@ -128,11 +128,11 @@ export default async function LoansPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Approval</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium">Pending Approval</CardTitle>
             <AlertCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{pendingLoans.length}</div>
+            <div className="text-xl sm:text-2xl font-bold">{pendingLoans.length}</div>
             <p className="text-xs text-muted-foreground">
               Awaiting review
             </p>
@@ -141,11 +141,11 @@ export default async function LoansPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Borrowed</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium">Total Borrowed</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(totalBorrowed)}</div>
+            <div className="text-xl sm:text-2xl font-bold">{formatCurrency(totalBorrowed)}</div>
             <p className="text-xs text-muted-foreground">
               {completedLoans.length} completed
             </p>
@@ -154,11 +154,11 @@ export default async function LoansPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Repaid</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium">Total Repaid</CardTitle>
             <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(totalRepaid)}</div>
+            <div className="text-xl sm:text-2xl font-bold">{formatCurrency(totalRepaid)}</div>
             <p className="text-xs text-muted-foreground">
               Successfully repaid
             </p>
@@ -169,27 +169,27 @@ export default async function LoansPage() {
       {/* Loan Eligibility */}
       <Card>
         <CardHeader>
-          <CardTitle>Loan Eligibility</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-lg sm:text-xl">Loan Eligibility</CardTitle>
+          <CardDescription className="text-sm">
             Check your eligibility for loans in each group
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {eligibilityChecks.map((check) => (
               <Card key={check.group.id} className={
                 check.eligible ? 'border-green-200 bg-green-50' : 'border-gray-200'
               }>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center">
+                  <CardTitle className="text-base sm:text-lg flex items-center">
                     {check.eligible ? (
-                      <CheckCircle2 className="w-5 h-5 mr-2 text-green-600" />
+                      <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-green-600" />
                     ) : (
-                      <AlertCircle className="w-5 h-5 mr-2 text-yellow-600" />
+                      <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-yellow-600" />
                     )}
-                    {check.group.name}
+                    <span className="truncate">{check.group.name}</span>
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-sm">
                     {check.eligible ? 'Eligible for loan' : check.reason}
                   </CardDescription>
                 </CardHeader>
@@ -201,11 +201,11 @@ export default async function LoansPage() {
                     </div>
                     <div className="flex justify-between">
                       <span>Total Contributed:</span>
-                      <span>{formatCurrency(check.totalContributions)}</span>
+                      <span className="truncate text-right">{formatCurrency(check.totalContributions)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Max Loan Amount:</span>
-                      <span className="font-semibold">
+                      <span className="font-semibold truncate text-right">
                         {formatCurrency(check.maxLoanAmount)}
                       </span>
                     </div>
@@ -228,79 +228,105 @@ export default async function LoansPage() {
       {/* Loan History */}
       <Card>
         <CardHeader>
-          <CardTitle>Loan History</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-lg sm:text-xl">Loan History</CardTitle>
+          <CardDescription className="text-sm">
             Your complete loan record
           </CardDescription>
         </CardHeader>
         <CardContent>
           {loans.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Group</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Interest Rate</TableHead>
-                  <TableHead>Period</TableHead>
-                  <TableHead>Applied</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loans.map((loan) => (
-                  <TableRow key={loan.id}>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{loan.group.name}</p>
-                        <p className="text-sm text-gray-500">{loan.group.region}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {formatCurrency(Number(loan.amountApproved || loan.amountRequested))}
-                    </TableCell>
-                    <TableCell>
-                      <Badge 
-                        variant={
-                          loan.status === 'COMPLETED' ? 'default' :
-                          loan.status === 'ACTIVE' ? 'secondary' :
-                          loan.status === 'PENDING' ? 'outline' : 'destructive'
-                        }
-                      >
-                        {loan.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{loan.interestRate}%</TableCell>
-                    <TableCell>{loan.repaymentPeriodMonths} months</TableCell>
-                    <TableCell>{formatDate(loan.createdAt)}</TableCell>
-                    <TableCell>
-                      <Link href={`/loans/${loan.id}`}>
-                        <Button variant="outline" size="sm">
-                          View Details
-                        </Button>
-                      </Link>
-                    </TableCell>
+            <div className="overflow-x-auto -mx-4 sm:mx-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="hidden sm:table-cell">Group</TableHead>
+                    <TableHead className="sm:hidden">Group/Status</TableHead>
+                    <TableHead className="hidden sm:table-cell">Amount</TableHead>
+                    <TableHead className="hidden sm:table-cell">Status</TableHead>
+                    <TableHead className="hidden sm:table-cell">Interest Rate</TableHead>
+                    <TableHead className="hidden sm:table-cell">Period</TableHead>
+                    <TableHead className="hidden sm:table-cell">Applied</TableHead>
+                    <TableHead className="hidden sm:table-cell">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {loans.map((loan) => (
+                    <TableRow key={loan.id}>
+                      <TableCell className="hidden sm:table-cell">
+                        <div>
+                          <p className="font-medium">{loan.group.name}</p>
+                          <p className="text-sm text-gray-500">{loan.group.region}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="sm:hidden">
+                        <div className="space-y-1">
+                          <div>
+                            <p className="font-medium text-sm">{loan.group.name}</p>
+                            <p className="text-xs text-gray-500">{formatCurrency(Number(loan.amountApproved || loan.amountRequested))}</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge 
+                              variant={
+                                loan.status === 'COMPLETED' ? 'default' :
+                                loan.status === 'ACTIVE' ? 'secondary' :
+                                loan.status === 'PENDING' ? 'outline' : 'destructive'
+                              }
+                              className="text-xs"
+                            >
+                              {loan.status}
+                            </Badge>
+                            <span className="text-xs text-gray-500">
+                              {loan.interestRate}% • {loan.repaymentPeriodMonths}m
+                            </span>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell">
+                        {formatCurrency(Number(loan.amountApproved || loan.amountRequested))}
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell">
+                        <Badge 
+                          variant={
+                            loan.status === 'COMPLETED' ? 'default' :
+                            loan.status === 'ACTIVE' ? 'secondary' :
+                            loan.status === 'PENDING' ? 'outline' : 'destructive'
+                          }
+                        >
+                          {loan.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell">{loan.interestRate}%</TableCell>
+                      <TableCell className="hidden sm:table-cell">{loan.repaymentPeriodMonths} months</TableCell>
+                      <TableCell className="hidden sm:table-cell">{formatDate(loan.createdAt)}</TableCell>
+                      <TableCell className="hidden sm:table-cell">
+                        <Link href={`/loans/${loan.id}`}>
+                          <Button variant="outline" size="sm">
+                            View Details
+                          </Button>
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           ) : (
-            <div className="text-center py-12">
-              <CreditCard className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Loans Yet</h3>
-              <p className="text-gray-500 mb-6">
+            <div className="text-center py-8 sm:py-12 px-4">
+              <CreditCard className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">No Loans Yet</h3>
+              <p className="text-gray-500 mb-6 text-sm sm:text-base">
                 Apply for your first loan once you have 3 months of contributions.
               </p>
               {eligibilityChecks.some(check => check.eligible) ? (
                 <Link href="/loans/new">
-                  <Button>
+                  <Button className="w-full sm:w-auto">
                     <Plus className="w-4 h-4 mr-2" />
                     Apply for First Loan
                   </Button>
                 </Link>
               ) : (
                 <Link href="/contributions">
-                  <Button variant="outline">
+                  <Button variant="outline" className="w-full sm:w-auto">
                     Make Contributions First
                   </Button>
                 </Link>

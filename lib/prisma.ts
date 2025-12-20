@@ -19,17 +19,51 @@ export const prisma = globalForPrisma.prisma ?? new PrismaClient({
 
 // Graceful shutdown handler
 process.on('beforeExit', async () => {
-  await prisma.$disconnect()
+  try {
+    await prisma.$disconnect()
+  } catch (error) {
+    console.error('Error disconnecting from database:', error)
+  }
 })
 
 process.on('SIGINT', async () => {
-  await prisma.$disconnect()
+  try {
+    await prisma.$disconnect()
+  } catch (error) {
+    console.error('Error disconnecting from database:', error)
+  }
   process.exit(0)
 })
 
 process.on('SIGTERM', async () => {
-  await prisma.$disconnect()
+  try {
+    await prisma.$disconnect()
+  } catch (error) {
+    console.error('Error disconnecting from database:', error)
+  }
   process.exit(0)
+})
+
+// Handle uncaught exceptions
+process.on('uncaughtException', async (error) => {
+  console.error('Uncaught Exception:', error)
+  try {
+    await prisma.$disconnect()
+  } catch (disconnectError) {
+    console.error('Error disconnecting from database during uncaught exception:', disconnectError)
+  }
+  process.exit(1)
+})
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', async (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason)
+  try {
+    await prisma.$disconnect()
+  } catch (disconnectError) {
+    console.error('Error disconnecting from database during unhandled rejection:', disconnectError)
+  }
+  process.exit(1)
 })
 
 if (process.env.NODE_ENV !== 'production') {

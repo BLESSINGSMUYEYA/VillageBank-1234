@@ -106,66 +106,80 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600 mt-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
+        <p className="text-gray-600 mt-2 text-sm sm:text-base">
           Welcome back, {user?.firstName}! Here's your village banking overview.
         </p>
       </div>
 
       {/* Stats Cards */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Groups</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">Total Groups</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalGroups}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-xl sm:text-2xl font-bold">{stats.totalGroups}</div>
+              <p className="text-xs text-muted-foreground hidden sm:block">
                 Active groups you're a member of
+              </p>
+              <p className="text-xs text-muted-foreground sm:hidden">
+                Active groups
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Contributions</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">Total Contributions</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(stats.totalContributions)}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-xl sm:text-2xl font-bold">{formatCurrency(stats.totalContributions)}</div>
+              <p className="text-xs text-muted-foreground hidden sm:block">
                 All-time contributions
+              </p>
+              <p className="text-xs text-muted-foreground sm:hidden">
+                All-time
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Loans</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">Active Loans</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalLoans}</div>
+              <div className="text-xl sm:text-2xl font-bold">{stats.totalLoans}</div>
               <p className="text-xs text-muted-foreground">
-                {stats.pendingLoans > 0 && `${stats.pendingLoans} pending approval`}
+                {stats.pendingLoans > 0 && (
+                  <span className="hidden sm:inline">{stats.pendingLoans} pending approval</span>
+                )}
+                {stats.pendingLoans > 0 && (
+                  <span className="sm:hidden">{stats.pendingLoans} pending</span>
+                )}
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Monthly Contribution</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">Monthly Contribution</CardTitle>
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(stats.monthlyContribution)}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-xl sm:text-2xl font-bold">{formatCurrency(stats.monthlyContribution)}</div>
+              <p className="text-xs text-muted-foreground hidden sm:block">
                 This month's contribution
+              </p>
+              <p className="text-xs text-muted-foreground sm:hidden">
+                This month
               </p>
             </CardContent>
           </Card>
@@ -175,36 +189,37 @@ export default function DashboardPage() {
       {/* Recent Activity */}
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
             <div>
-              <CardTitle>Recent Activity</CardTitle>
-              <CardDescription>Your latest village banking activities</CardDescription>
+              <CardTitle className="text-lg sm:text-xl">Recent Activity</CardTitle>
+              <CardDescription className="text-sm">Your latest village banking activities</CardDescription>
             </div>
             <Link href="/groups">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="w-full sm:w-auto">
                 <Eye className="w-4 h-4 mr-2" />
-                View All
+                <span className="hidden sm:inline">View All</span>
+                <span className="sm:hidden">All</span>
               </Button>
             </Link>
           </div>
         </CardHeader>
         <CardContent>
           {recentActivity.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {recentActivity.map((activity) => (
-                <div key={activity.id} className="flex items-center justify-between p-3 border rounded-lg">
+                <div key={activity.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 border rounded-lg gap-3">
                   <div className="flex items-center space-x-3">
-                    <div className={`w-2 h-2 rounded-full ${
+                    <div className={`w-2 h-2 rounded-full shrink-0 ${
                       activity.type.includes('LOAN') ? 'bg-blue-500' :
                       activity.type.includes('CONTRIBUTION') ? 'bg-green-500' :
                       'bg-gray-500'
                     }`} />
-                    <div>
-                      <p className="font-medium text-sm">{activity.description}</p>
-                      <p className="text-xs text-gray-500">{activity.groupName}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-sm truncate">{activity.description}</p>
+                      <p className="text-xs text-gray-500 truncate">{activity.groupName}</p>
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right sm:text-left">
                     {activity.amount && (
                       <p className="font-medium text-sm">{formatCurrency(activity.amount)}</p>
                     )}
@@ -216,14 +231,14 @@ export default function DashboardPage() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-8">
-              <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Recent Activity</h3>
-              <p className="text-gray-500 mb-4">
+            <div className="text-center py-6 sm:py-8 px-4">
+              <Calendar className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">No Recent Activity</h3>
+              <p className="text-gray-500 mb-4 text-sm sm:text-base">
                 Start by joining a group or making a contribution.
               </p>
               <Link href="/groups/new">
-                <Button>
+                <Button className="w-full sm:w-auto">
                   <Users className="w-4 h-4 mr-2" />
                   Join or Create Group
                 </Button>
@@ -235,12 +250,13 @@ export default function DashboardPage() {
 
       {/* Charts Section */}
       {chartData && (
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-gray-900">Analytics & Insights</h2>
-            <Button variant="outline" size="sm">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Analytics & Insights</h2>
+            <Button variant="outline" size="sm" className="w-full sm:w-auto">
               <BarChart3 className="w-4 h-4 mr-2" />
-              View Reports
+              <span className="hidden sm:inline">View Reports</span>
+              <span className="sm:hidden">Reports</span>
             </Button>
           </div>
 
@@ -254,11 +270,11 @@ export default function DashboardPage() {
 
           {/* Charts Grid */}
           <Tabs defaultValue="contributions" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="contributions">Contributions</TabsTrigger>
-              <TabsTrigger value="groups">Groups</TabsTrigger>
-              <TabsTrigger value="trends">Trends</TabsTrigger>
-              <TabsTrigger value="payments">Payments</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1">
+              <TabsTrigger value="contributions" className="text-xs sm:text-sm">Contributions</TabsTrigger>
+              <TabsTrigger value="groups" className="text-xs sm:text-sm">Groups</TabsTrigger>
+              <TabsTrigger value="trends" className="text-xs sm:text-sm">Trends</TabsTrigger>
+              <TabsTrigger value="payments" className="text-xs sm:text-sm">Payments</TabsTrigger>
             </TabsList>
 
             <TabsContent value="contributions" className="space-y-4">
@@ -297,12 +313,12 @@ export default function DashboardPage() {
       )}
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         <Card className="hover:shadow-lg transition-shadow cursor-pointer">
           <Link href="/contributions/new">
-            <CardHeader>
-              <CardTitle className="text-lg">Make Contribution</CardTitle>
-              <CardDescription>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-base sm:text-lg">Make Contribution</CardTitle>
+              <CardDescription className="text-sm">
                 Record your monthly contribution to any of your groups
               </CardDescription>
             </CardHeader>
@@ -311,20 +327,20 @@ export default function DashboardPage() {
 
         <Card className="hover:shadow-lg transition-shadow cursor-pointer">
           <Link href="/loans/new">
-            <CardHeader>
-              <CardTitle className="text-lg">Apply for Loan</CardTitle>
-              <CardDescription>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-base sm:text-lg">Apply for Loan</CardTitle>
+              <CardDescription className="text-sm">
                 Request a loan from any of your active groups
               </CardDescription>
             </CardHeader>
           </Link>
         </Card>
 
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer sm:col-span-2 lg:col-span-1">
           <Link href="/groups">
-            <CardHeader>
-              <CardTitle className="text-lg">Manage Groups</CardTitle>
-              <CardDescription>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-base sm:text-lg">Manage Groups</CardTitle>
+              <CardDescription className="text-sm">
                 View and manage your village banking groups
               </CardDescription>
             </CardHeader>

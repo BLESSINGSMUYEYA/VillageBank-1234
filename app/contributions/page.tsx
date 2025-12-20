@@ -52,16 +52,16 @@ export default async function ContributionsPage() {
   )
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Contributions</h1>
-          <p className="text-gray-600">Manage your monthly contributions</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Contributions</h1>
+          <p className="text-gray-600 text-sm sm:text-base">Manage your monthly contributions</p>
         </div>
         {userGroups.length > 0 && (
           <Link href="/contributions/new">
-            <Button>
+            <Button className="w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />
               Make Contribution
             </Button>
@@ -73,17 +73,17 @@ export default async function ContributionsPage() {
       {currentMonthContributions.length === 0 && userGroups.length > 0 && (
         <Card className="border-yellow-200 bg-yellow-50">
           <CardHeader className="pb-3">
-            <CardTitle className="text-yellow-800 flex items-center">
-              <Calendar className="w-5 h-5 mr-2" />
+            <CardTitle className="text-yellow-800 flex items-center text-base sm:text-lg">
+              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               Monthly Contribution Reminder
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-yellow-700 mb-3">
+            <p className="text-yellow-700 mb-3 text-sm">
               You haven't made your contribution for {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}.
             </p>
             <Link href="/contributions/new">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="w-full sm:w-auto">
                 Make Contribution Now
               </Button>
             </Link>
@@ -92,14 +92,14 @@ export default async function ContributionsPage() {
       )}
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Contributed</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium">Total Contributed</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(totalContributed)}</div>
+            <div className="text-xl sm:text-2xl font-bold">{formatCurrency(totalContributed)}</div>
             <p className="text-xs text-muted-foreground">
               {completedContributions.length} completed
             </p>
@@ -108,11 +108,11 @@ export default async function ContributionsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium">Pending</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{pendingContributions.length}</div>
+            <div className="text-xl sm:text-2xl font-bold">{pendingContributions.length}</div>
             <p className="text-xs text-muted-foreground">
               Awaiting approval
             </p>
@@ -121,11 +121,11 @@ export default async function ContributionsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Groups</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium">Active Groups</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{userGroups.length}</div>
+            <div className="text-xl sm:text-2xl font-bold">{userGroups.length}</div>
             <p className="text-xs text-muted-foreground">
               Groups you belong to
             </p>
@@ -134,11 +134,11 @@ export default async function ContributionsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">This Month</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium">This Month</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{currentMonthContributions.length}</div>
+            <div className="text-xl sm:text-2xl font-bold">{currentMonthContributions.length}</div>
             <p className="text-xs text-muted-foreground">
               Contributions made
             </p>
@@ -150,18 +150,18 @@ export default async function ContributionsPage() {
       {userGroups.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Your Groups</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-lg sm:text-xl">Your Groups</CardTitle>
+            <CardDescription className="text-sm">
               Groups where you can make contributions
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {userGroups.map((groupMember) => (
                 <Card key={groupMember.id} className="border-dashed">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg">{groupMember.group.name}</CardTitle>
-                    <CardDescription>
+                    <CardTitle className="text-base sm:text-lg truncate">{groupMember.group.name}</CardTitle>
+                    <CardDescription className="text-sm">
                       Monthly: {formatCurrency(groupMember.group.monthlyContribution)}
                     </CardDescription>
                   </CardHeader>
@@ -183,79 +183,107 @@ export default async function ContributionsPage() {
       {/* Contribution History */}
       <Card>
         <CardHeader>
-          <CardTitle>Contribution History</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-lg sm:text-xl">Contribution History</CardTitle>
+          <CardDescription className="text-sm">
             Your complete contribution record
           </CardDescription>
         </CardHeader>
         <CardContent>
           {contributions.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Group</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Period</TableHead>
-                  <TableHead>Payment Method</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Date</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {contributions.map((contribution) => (
-                  <TableRow key={contribution.id}>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{contribution.group.name}</p>
-                        <p className="text-sm text-gray-500">{contribution.group.region}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {formatCurrency(Number(contribution.amount))}
-                    </TableCell>
-                    <TableCell>
-                      {new Date(contribution.year, contribution.month - 1).toLocaleDateString('en-US', {
-                        month: 'long',
-                        year: 'numeric'
-                      })}
-                    </TableCell>
-                    <TableCell>
-                      {contribution.paymentMethod || '-'}
-                    </TableCell>
-                    <TableCell>
-                      <Badge 
-                        variant={
-                          contribution.status === 'COMPLETED' ? 'default' :
-                          contribution.status === 'PENDING' ? 'secondary' : 'destructive'
-                        }
-                      >
-                        {contribution.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {formatDate(contribution.createdAt)}
-                    </TableCell>
+            <div className="overflow-x-auto -mx-4 sm:mx-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="hidden sm:table-cell">Group</TableHead>
+                    <TableHead className="sm:hidden">Group/Period</TableHead>
+                    <TableHead className="hidden sm:table-cell">Amount</TableHead>
+                    <TableHead className="hidden sm:table-cell">Period</TableHead>
+                    <TableHead className="hidden sm:table-cell">Payment Method</TableHead>
+                    <TableHead className="hidden sm:table-cell">Status</TableHead>
+                    <TableHead className="hidden sm:table-cell">Date</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {contributions.map((contribution) => (
+                    <TableRow key={contribution.id}>
+                      <TableCell className="hidden sm:table-cell">
+                        <div>
+                          <p className="font-medium">{contribution.group.name}</p>
+                          <p className="text-sm text-gray-500">{contribution.group.region}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="sm:hidden">
+                        <div className="space-y-1">
+                          <div>
+                            <p className="font-medium text-sm">{contribution.group.name}</p>
+                            <p className="text-xs text-gray-500">{formatCurrency(Number(contribution.amount))}</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge 
+                              variant={
+                                contribution.status === 'COMPLETED' ? 'default' :
+                                contribution.status === 'PENDING' ? 'secondary' : 'destructive'
+                              }
+                              className="text-xs"
+                            >
+                              {contribution.status}
+                            </Badge>
+                            <span className="text-xs text-gray-500">
+                              {new Date(contribution.year, contribution.month - 1).toLocaleDateString('en-US', {
+                                month: 'short',
+                                year: 'numeric'
+                              })}
+                            </span>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell">
+                        {formatCurrency(Number(contribution.amount))}
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell">
+                        {new Date(contribution.year, contribution.month - 1).toLocaleDateString('en-US', {
+                          month: 'long',
+                          year: 'numeric'
+                        })}
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell">
+                        {contribution.paymentMethod || '-'}
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell">
+                        <Badge 
+                          variant={
+                            contribution.status === 'COMPLETED' ? 'default' :
+                            contribution.status === 'PENDING' ? 'secondary' : 'destructive'
+                          }
+                        >
+                          {contribution.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell">
+                        {formatDate(contribution.createdAt)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           ) : (
-            <div className="text-center py-12">
-              <DollarSign className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Contributions Yet</h3>
-              <p className="text-gray-500 mb-6">
+            <div className="text-center py-8 sm:py-12 px-4">
+              <DollarSign className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">No Contributions Yet</h3>
+              <p className="text-gray-500 mb-6 text-sm sm:text-base">
                 Start contributing to your village banking groups.
               </p>
               {userGroups.length > 0 ? (
                 <Link href="/contributions/new">
-                  <Button>
+                  <Button className="w-full sm:w-auto">
                     <Plus className="w-4 h-4 mr-2" />
                     Make First Contribution
                   </Button>
                 </Link>
               ) : (
                 <Link href="/groups">
-                  <Button variant="outline">
+                  <Button variant="outline" className="w-full sm:w-auto">
                     Join a Group First
                   </Button>
                 </Link>
