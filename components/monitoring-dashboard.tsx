@@ -97,7 +97,7 @@ export function MonitoringDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-600">
-              MWK {data.metrics.totalContributions.toLocaleString()}
+              MWK {(data.metrics.totalContributions || 0).toLocaleString()}
             </div>
           </CardContent>
         </Card>
@@ -114,14 +114,14 @@ export function MonitoringDashboard() {
                 <div>
                   <div className="font-medium">{activity.description}</div>
                   <div className="text-sm text-gray-500">
-                    {activity.user.firstName} {activity.user.lastName}
-                    {activity.group && ` • ${activity.group.name}`}
+                    {activity.user?.firstName || ''} {activity.user?.lastName || ''}
+                    {activity.group?.name && ` • ${activity.group.name}`}
                   </div>
                 </div>
                 <div className="text-right">
                   <Badge variant="outline">{activity.actionType}</Badge>
                   <div className="text-xs text-gray-500 mt-1">
-                    {new Date(activity.createdAt).toLocaleString()}
+                    {activity.createdAt ? new Date(activity.createdAt).toLocaleString() : 'Unknown date'}
                   </div>
                 </div>
               </div>

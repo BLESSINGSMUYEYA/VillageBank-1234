@@ -6,9 +6,11 @@ import { z } from 'zod'
 const updateGroupSchema = z.object({
   name: z.string().min(3).optional(),
   description: z.string().optional(),
+  region: z.enum(['NORTHERN', 'SOUTHERN', 'CENTRAL']).optional(),
   monthlyContribution: z.number().positive().optional(),
   maxLoanMultiplier: z.number().min(1).max(10).optional(),
   interestRate: z.number().min(0).max(100).optional(),
+  isActive: z.boolean().optional(),
 })
 
 export async function GET(

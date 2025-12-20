@@ -117,14 +117,14 @@ export default function GroupMembersList({ members, groupId, currentUserRole }: 
                     <div className="flex items-center space-x-3">
                       <Avatar>
                         <AvatarFallback>
-                          {member.user.firstName.charAt(0)}{member.user.lastName.charAt(0)}
+                          {(member.user?.firstName?.charAt(0) || '') + (member.user?.lastName?.charAt(0) || '')}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <p className="font-medium">
-                          {member.user.firstName} {member.user.lastName}
+                          {member.user?.firstName || ''} {member.user?.lastName || ''}
                         </p>
-                        <p className="text-sm text-gray-500">{member.user.email}</p>
+                        <p className="text-sm text-gray-500">{member.user?.email || 'No email'}</p>
                       </div>
                     </div>
                   </TableCell>
@@ -213,14 +213,14 @@ export default function GroupMembersList({ members, groupId, currentUserRole }: 
                       <div className="flex items-center space-x-3">
                         <Avatar>
                           <AvatarFallback>
-                            {member.user.firstName.charAt(0)}{member.user.lastName.charAt(0)}
+                            {(member.user?.firstName?.charAt(0) || '') + (member.user?.lastName?.charAt(0) || '')}
                           </AvatarFallback>
                         </Avatar>
                         <div>
                           <p className="font-medium">
-                            {member.user.firstName} {member.user.lastName}
+                            {member.user?.firstName || ''} {member.user?.lastName || ''}
                           </p>
-                          <p className="text-sm text-gray-500">{member.user.email}</p>
+                          <p className="text-sm text-gray-500">{member.user?.email || 'No email'}</p>
                         </div>
                       </div>
                     </TableCell>

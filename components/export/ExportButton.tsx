@@ -133,7 +133,7 @@ export function ExportButton({
                       <span className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}:</span>
                       <span className="font-medium">
                         {typeof value === 'number' && value > 1000 
-                          ? value.toLocaleString() 
+                          ? (value !== null && value !== undefined ? value.toLocaleString() : '0') 
                           : typeof value === 'string' || typeof value === 'number' 
                             ? value.toString()
                             : JSON.stringify(value)}

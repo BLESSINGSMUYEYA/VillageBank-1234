@@ -147,12 +147,12 @@ export default function ProfilePage() {
           <div className="flex items-center space-x-6">
             <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center">
               <span className="text-2xl font-bold text-blue-600">
-                {profile?.firstName?.charAt(0)}{profile?.lastName?.charAt(0)}
+                {(profile?.firstName?.charAt(0) || '') + (profile?.lastName?.charAt(0) || '')}
                 </span>
             </div>
             <div className="flex-1">
               <h2 className="text-2xl font-bold">
-                {profile?.firstName} {profile?.lastName}
+                {profile?.firstName || ''} {profile?.lastName || ''}
               </h2>
               <p className="text-gray-600">{profile?.email}</p>
               <div className="flex items-center gap-2 mt-2">
@@ -166,7 +166,7 @@ export default function ProfilePage() {
             <div className="text-right">
               <p className="text-sm text-gray-500">Member since</p>
               <p className="font-medium">
-                {new Date(profile?.joinedAt || '').toLocaleDateString()}
+                {profile?.joinedAt ? new Date(profile.joinedAt).toLocaleDateString() : 'Unknown'}
               </p>
             </div>
           </div>

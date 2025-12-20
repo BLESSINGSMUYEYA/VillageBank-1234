@@ -133,26 +133,26 @@ export default function GroupDetailPage() {
   const isTreasurer = currentUserMember?.role === 'TREASURER'
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div className="flex items-center space-x-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+        <div className="space-y-3">
           <Link href="/groups">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Groups
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{group.name}</h1>
-            <p className="text-gray-600">{group.description || 'No description'}</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{group.name}</h1>
+            <p className="text-gray-600 text-sm sm:text-base">{group.description || 'No description'}</p>
           </div>
         </div>
-        <div className="flex space-x-2">
-          <Badge variant="outline">{group.region}</Badge>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+          <Badge variant="outline" className="w-full sm:w-auto justify-center">{group.region}</Badge>
           {isAdmin && (
             <Link href={`/groups/${group.id}/settings`}>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="w-full sm:w-auto">
                 <Settings className="w-4 h-4 mr-2" />
                 Settings
               </Button>
@@ -162,14 +162,14 @@ export default function GroupDetailPage() {
       </div>
 
       {/* Group Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Members</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium">Total Members</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{group._count.members}</div>
+            <div className="text-xl sm:text-2xl font-bold">{group._count.members}</div>
             <p className="text-xs text-muted-foreground">
               {group.members.filter(m => m.status === 'ACTIVE').length} active
             </p>
@@ -178,11 +178,11 @@ export default function GroupDetailPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Monthly Contribution</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium">Monthly Contribution</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(group.monthlyContribution)}</div>
+            <div className="text-xl sm:text-2xl font-bold">{formatCurrency(group.monthlyContribution)}</div>
             <p className="text-xs text-muted-foreground">
               Per member
             </p>
@@ -191,11 +191,11 @@ export default function GroupDetailPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Interest Rate</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium">Interest Rate</CardTitle>
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{group.interestRate}%</div>
+            <div className="text-xl sm:text-2xl font-bold">{group.interestRate}%</div>
             <p className="text-xs text-muted-foreground">
               Annual rate
             </p>
@@ -204,11 +204,11 @@ export default function GroupDetailPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Loan Multiplier</CardTitle>
+            <CardTitle className="text-xs sm:text-sm font-medium">Loan Multiplier</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{group.maxLoanMultiplier}x</div>
+            <div className="text-xl sm:text-2xl font-bold">{group.maxLoanMultiplier}x</div>
             <p className="text-xs text-muted-foreground">
               Max loan calculation
             </p>
@@ -218,10 +218,10 @@ export default function GroupDetailPage() {
 
       {/* Tabs */}
       <Tabs defaultValue="members" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="members">Members</TabsTrigger>
-          <TabsTrigger value="contributions">Contributions</TabsTrigger>
-          <TabsTrigger value="loans">Loans</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 gap-1">
+          <TabsTrigger value="members" className="text-xs sm:text-sm">Members</TabsTrigger>
+          <TabsTrigger value="contributions" className="text-xs sm:text-sm">Contributions</TabsTrigger>
+          <TabsTrigger value="loans" className="text-xs sm:text-sm">Loans</TabsTrigger>
         </TabsList>
 
         <TabsContent value="members">
