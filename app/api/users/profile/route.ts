@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const user = await prisma.user.findUnique({
+    let user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
         groupMembers: {
@@ -64,7 +64,86 @@ export async function GET(request: NextRequest) {
     })
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      // Try to sync user from Clerk if not found in database
+      try {
+        const clerkUser = await fetch(`https://api.clerk.dev/v1/users/${userId}`, {
+          headers: {
+            'Authorization': `Bearer ${process.env.CLERK_SECRET_KEY}`,
+            'Content-Type': 'application/json'
+          }
+        }).then(res => res.json())
+
+        if (clerkUser.id) {
+          const primaryEmail = clerkUser.email_addresses[0]?.email_address
+          const primaryPhone = clerkUser.phone_numbers[0]?.phone_number
+
+          user = await prisma.user.create({
+            data: {
+              id: userId,
+              email: primaryEmail,
+              firstName: clerkUser.first_name || '',
+              lastName: clerkUser.last_name || '',
+              phoneNumber: primaryPhone || '',
+              role: clerkUser.public_metadata?.role || 'MEMBER',
+              region: clerkUser.public_metadata?.region || 'CENTRAL',
+            },
+            include: {
+              groupMembers: {
+                include: {
+                  group: {
+                    select: {
+                      id: true,
+                      name: true,
+                      monthlyContribution: true,
+                      _count: {
+                        select: {
+                          members: true
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              contributions: {
+                select: {
+                  amount: true,
+                  month: true,
+                  year: true,
+                  status: true,
+                  createdAt: true
+                },
+                orderBy: {
+                  createdAt: 'desc'
+                },
+                take: 12
+              },
+              loans: {
+                select: {
+                  id: true,
+                  amountRequested: true,
+                  amountApproved: true,
+                  status: true,
+                  createdAt: true,
+                  repayments: {
+                    select: {
+                      amount: true,
+                      paidAt: true
+                    }
+                  }
+                },
+                orderBy: {
+                  createdAt: 'desc'
+                }
+              }
+            }
+          })
+        } else {
+          return NextResponse.json({ error: 'User not found in Clerk' }, { status: 404 })
+        }
+      } catch (syncError) {
+        console.error('User sync error:', syncError)
+        return NextResponse.json({ error: 'User not found and sync failed' }, { status: 404 })
+      }
     }
 
     // Calculate financial summary

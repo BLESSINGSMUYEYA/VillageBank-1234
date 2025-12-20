@@ -7,12 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Users, DollarSign, CreditCard, Settings, Plus, ArrowLeft, TrendingUp } from 'lucide-react'
+import { Users, DollarSign, CreditCard, Settings, Plus, ArrowLeft, TrendingUp, Share2 } from 'lucide-react'
 import Link from 'next/link'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import GroupMembersList from '@/components/groups/GroupMembersList'
 import GroupContributions from '@/components/groups/GroupContributions'
 import GroupLoans from '@/components/groups/GroupLoans'
+import { QRCodeShare } from '@/components/sharing/QRCodeShare'
 
 interface Group {
   id: string
@@ -218,10 +219,16 @@ export default function GroupDetailPage() {
 
       {/* Tabs */}
       <Tabs defaultValue="members" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3 gap-1">
+        <TabsList className="grid w-full grid-cols-4 gap-1">
           <TabsTrigger value="members" className="text-xs sm:text-sm">Members</TabsTrigger>
           <TabsTrigger value="contributions" className="text-xs sm:text-sm">Contributions</TabsTrigger>
           <TabsTrigger value="loans" className="text-xs sm:text-sm">Loans</TabsTrigger>
+          {isAdmin && (
+            <TabsTrigger value="share" className="text-xs sm:text-sm flex items-center gap-1">
+              <Share2 className="h-3 w-3" />
+              Share
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="members">
@@ -251,6 +258,15 @@ export default function GroupDetailPage() {
             key={group.id} // Add key to force re-render when group changes
           />
         </TabsContent>
+
+        {isAdmin && (
+          <TabsContent value="share">
+            <QRCodeShare 
+              groupId={group.id}
+              groupName={group.name}
+            />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   )

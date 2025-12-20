@@ -28,6 +28,7 @@ model User {
   loanRepayments  LoanRepayment[]
   activities      Activity[]
   notifications   Notification[]
+  groupShares     GroupShare[]
 }
 
 enum UserRole {
@@ -60,6 +61,7 @@ model Group {
   loans                   Loan[]
   paymentMethods          PaymentMethod[]
   activities              Activity[]
+  groupShares             GroupShare[]
 }
 
 model GroupMember {
@@ -209,4 +211,50 @@ enum NotificationType {
   SUCCESS
   WARNING
   ERROR
+}
+
+model GroupShare {
+  id          String      @id @default(cuid())
+  groupId     String
+  sharedById  String
+  shareToken  String      @unique
+  shareType   ShareType   @default(QR_CODE)
+  permissions SharePermission @default(REQUEST_JOIN)
+  expiresAt   DateTime?
+  maxUses     Int?        @default(10)
+  currentUses Int         @default(0)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  
+  group       Group       @relation(fields: [groupId], references: [id])
+  sharedBy    User        @relation(fields: [sharedById], references: [id])
+  qrAnalytics QrAnalytics[]
+  
+  @@index([shareToken])
+  @@index([groupId])
+}
+
+model QrAnalytics {
+  id           String   @id @default(cuid())
+  groupShareId String
+  scannedAt    DateTime @default(now())
+  ipAddress    String?
+  userAgent    String?
+  location     String?
+  convertedToMember Boolean @default(false)
+  
+  groupShare   GroupShare @relation(fields: [groupShareId], references: [id], onDelete: Cascade)
+}
+
+enum ShareType {
+  QR_CODE
+  DIRECT_LINK
+  EMAIL_INVITE
+}
+
+enum SharePermission {
+  VIEW_ONLY        // Can only see group info
+  REQUEST_JOIN     // Can view and request to join
+  LIMITED_ACCESS   // Can view some features
+  FULL_PREVIEW     // Can see most features except sensitive data
 }
