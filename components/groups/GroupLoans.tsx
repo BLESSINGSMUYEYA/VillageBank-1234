@@ -74,50 +74,52 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Pending Loans</CardTitle>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm sm:text-lg">Pending</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{pendingLoans.length}</div>
-            <p className="text-sm text-gray-500">
+            <div className="text-lg sm:text-2xl font-bold truncate">{pendingLoans.length}</div>
+            <p className="text-xs text-gray-500 truncate">
               {formatCurrency(pendingLoans.reduce((sum, l) => sum + l.amountRequested, 0))}
             </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Active Loans</CardTitle>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm sm:text-lg">Active</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{activeLoans.length}</div>
-            <p className="text-sm text-gray-500">
+            <div className="text-lg sm:text-2xl font-bold truncate">{activeLoans.length}</div>
+            <p className="text-xs text-gray-500 truncate">
               {formatCurrency(activeLoans.reduce((sum, l) => sum + (l.amountApproved || 0), 0))}
             </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Completed Loans</CardTitle>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm sm:text-lg">Completed</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{completedLoans.length}</div>
-            <p className="text-sm text-gray-500">
+            <div className="text-lg sm:text-2xl font-bold truncate">{completedLoans.length}</div>
+            <p className="text-xs text-gray-500 truncate">
               {formatCurrency(completedLoans.reduce((sum, l) => sum + (l.amountApproved || 0), 0))}
             </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Total Disbursed</CardTitle>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm sm:text-lg">Total Disbursed</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(totalAmountApproved)}</div>
-            <p className="text-sm text-gray-500">
+            <div className="text-lg sm:text-2xl font-bold truncate" title={formatCurrency(totalAmountApproved)}>
+              {formatCurrency(totalAmountApproved)}
+            </div>
+            <p className="text-xs text-gray-500 truncate">
               {loans.length} total loans
             </p>
           </CardContent>
@@ -130,7 +132,7 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
           <CardTitle>Quick Actions</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex space-x-4">
+          <div className="flex flex-wrap gap-4">
             <Link href={`/loans/new?groupId=${groupId}`}>
               <Button>
                 <Plus className="w-4 h-4 mr-2" />
@@ -156,63 +158,63 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
               Loans waiting for treasurer approval
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Member</TableHead>
-                  <TableHead>Amount Requested</TableHead>
-                  <TableHead>Interest Rate</TableHead>
-                  <TableHead>Period</TableHead>
-                  <TableHead>Requested</TableHead>
-                  {currentUserRole === 'TREASURER' && <TableHead>Actions</TableHead>}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {pendingLoans.map((loan) => (
-                  <TableRow key={loan.id}>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">
-                          {loan.user.firstName} {loan.user.lastName}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {formatCurrency(loan.amountRequested)}
-                    </TableCell>
-                    <TableCell>{loan.interestRate}%</TableCell>
-                    <TableCell>{loan.repaymentPeriodMonths} months</TableCell>
-                    <TableCell>
-                      {new Date(loan.createdAt).toLocaleDateString()}
-                    </TableCell>
-                    {currentUserRole === 'TREASURER' && (
+          <CardContent className="px-0 sm:px-6">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="min-w-[150px]">Member</TableHead>
+                    <TableHead className="min-w-[120px]">Requested</TableHead>
+                    <TableHead className="min-w-[100px]">Interest</TableHead>
+                    <TableHead className="min-w-[100px]">Period</TableHead>
+                    <TableHead className="min-w-[100px]">Date</TableHead>
+                    {currentUserRole === 'TREASURER' && <TableHead>Actions</TableHead>}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {pendingLoans.map((loan) => (
+                    <TableRow key={loan.id}>
                       <TableCell>
-                        <div className="flex space-x-2">
-                          <Button
-                            size="sm"
-                            onClick={() => handleLoanApproval(loan.id, true)}
-                            disabled={loading}
-                            className="text-green-600 hover:text-green-700"
-                          >
-                            <CheckCircle className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleLoanApproval(loan.id, false)}
-                            disabled={loading}
-                            className="text-red-600 hover:text-red-700"
-                          >
-                            <XCircle className="w-4 h-4" />
-                          </Button>
+                        <div className="font-medium">
+                          {loan.user.firstName} {loan.user.lastName}
                         </div>
                       </TableCell>
-                    )}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                      <TableCell className="font-medium">
+                        {formatCurrency(loan.amountRequested)}
+                      </TableCell>
+                      <TableCell>{loan.interestRate}%</TableCell>
+                      <TableCell className="whitespace-nowrap">{loan.repaymentPeriodMonths} months</TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        {new Date(loan.createdAt).toLocaleDateString()}
+                      </TableCell>
+                      {currentUserRole === 'TREASURER' && (
+                        <TableCell>
+                          <div className="flex space-x-2">
+                            <Button
+                              size="sm"
+                              onClick={() => handleLoanApproval(loan.id, true)}
+                              disabled={loading}
+                              className="text-green-600 hover:text-green-700"
+                            >
+                              <CheckCircle className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleLoanApproval(loan.id, false)}
+                              disabled={loading}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <XCircle className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       )}
@@ -225,53 +227,53 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
             Complete loan history for the group
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-0 sm:px-6">
           {loans.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Member</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Interest Rate</TableHead>
-                  <TableHead>Period</TableHead>
-                  <TableHead>Date</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loans.map((loan) => (
-                  <TableRow key={loan.id}>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">
-                          {loan.user.firstName} {loan.user.lastName}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {formatCurrency(loan.amountApproved || loan.amountRequested)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge 
-                        variant={
-                          loan.status === 'COMPLETED' ? 'default' :
-                          loan.status === 'ACTIVE' ? 'secondary' :
-                          loan.status === 'PENDING' ? 'outline' :
-                          loan.status === 'APPROVED' ? 'secondary' : 'destructive'
-                        }
-                      >
-                        {loan.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{loan.interestRate}%</TableCell>
-                    <TableCell>{loan.repaymentPeriodMonths} months</TableCell>
-                    <TableCell>
-                      {new Date(loan.createdAt).toLocaleDateString()}
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="min-w-[150px]">Member</TableHead>
+                    <TableHead className="min-w-[120px]">Amount</TableHead>
+                    <TableHead className="min-w-[100px]">Status</TableHead>
+                    <TableHead className="min-w-[100px]">Interest</TableHead>
+                    <TableHead className="min-w-[100px]">Period</TableHead>
+                    <TableHead className="min-w-[100px]">Date</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {loans.map((loan) => (
+                    <TableRow key={loan.id}>
+                      <TableCell>
+                        <div className="font-medium">
+                          {loan.user.firstName} {loan.user.lastName}
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {formatCurrency(loan.amountApproved || loan.amountRequested)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            loan.status === 'COMPLETED' ? 'default' :
+                              loan.status === 'ACTIVE' ? 'secondary' :
+                                loan.status === 'PENDING' ? 'outline' :
+                                  loan.status === 'APPROVED' ? 'secondary' : 'destructive'
+                          }
+                        >
+                          {loan.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{loan.interestRate}%</TableCell>
+                      <TableCell className="whitespace-nowrap">{loan.repaymentPeriodMonths} months</TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        {new Date(loan.createdAt).toLocaleDateString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           ) : (
             <div className="text-center py-8">
               <p className="text-gray-500">No loans yet</p>

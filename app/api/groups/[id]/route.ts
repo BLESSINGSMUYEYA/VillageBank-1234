@@ -10,6 +10,8 @@ const updateGroupSchema = z.object({
   monthlyContribution: z.number().positive().optional(),
   maxLoanMultiplier: z.number().min(1).max(10).optional(),
   interestRate: z.number().min(0).max(100).optional(),
+  penaltyAmount: z.number().min(0).optional(),
+  contributionDueDay: z.number().min(1).max(31).optional(),
   isActive: z.boolean().optional(),
 })
 
@@ -19,7 +21,7 @@ export async function GET(
 ) {
   try {
     const { userId } = getAuth(request)
-    
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -106,6 +108,8 @@ export async function GET(
     const serializedGroup = {
       ...group,
       createdAt: group.createdAt.toISOString(),
+      penaltyAmount: Number(group.penaltyAmount),
+      contributionDueDay: group.contributionDueDay,
       members: group.members.map(member => ({
         ...member,
         joinedAt: member.joinedAt.toISOString(),
@@ -116,6 +120,8 @@ export async function GET(
       contributions: group.contributions.map(contribution => ({
         ...contribution,
         createdAt: contribution.createdAt.toISOString(),
+        penaltyApplied: Number(contribution.penaltyApplied),
+        isLate: contribution.isLate,
       })),
       loans: group.loans.map(loan => ({
         ...loan,
@@ -141,7 +147,7 @@ export async function PUT(
 ) {
   try {
     const { userId } = getAuth(request)
-    
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -171,9 +177,62 @@ export async function PUT(
     }
 
     // Update group
-    const group = await prisma.group.update({
+    const updatedGroup = await prisma.group.update({
       where: { id: groupId },
       data: validatedData,
+      include: {
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                phoneNumber: true,
+              },
+            },
+          },
+          orderBy: {
+            joinedAt: 'asc',
+          },
+        },
+        contributions: {
+          include: {
+            user: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: 10,
+        },
+        loans: {
+          include: {
+            user: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: 10,
+        },
+        _count: {
+          select: {
+            members: true,
+            contributions: true,
+            loans: true,
+          },
+        },
+      },
     })
 
     // Create activity log
@@ -187,13 +246,37 @@ export async function PUT(
       },
     })
 
-    return NextResponse.json({
-      message: 'Group updated successfully',
-      group,
-    })
+    // Serialize same way as GET handler
+    const serializedGroup = {
+      ...updatedGroup,
+      createdAt: updatedGroup.createdAt.toISOString(),
+      penaltyAmount: Number(updatedGroup.penaltyAmount),
+      contributionDueDay: updatedGroup.contributionDueDay,
+      members: updatedGroup.members.map(member => ({
+        ...member,
+        joinedAt: member.joinedAt.toISOString(),
+        user: {
+          ...member.user,
+        }
+      })),
+      contributions: updatedGroup.contributions.map(contribution => ({
+        ...contribution,
+        createdAt: contribution.createdAt.toISOString(),
+        penaltyApplied: Number(contribution.penaltyApplied),
+        isLate: contribution.isLate,
+      })),
+      loans: updatedGroup.loans.map(loan => ({
+        ...loan,
+        createdAt: loan.createdAt.toISOString(),
+        approvedAt: loan.approvedAt ? loan.approvedAt.toISOString() : null,
+      })),
+    }
+
+    return NextResponse.json(serializedGroup)
 
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.error('Validation error:', error.issues)
       return NextResponse.json(
         { error: error.issues[0].message },
         { status: 400 }
@@ -214,7 +297,7 @@ export async function DELETE(
 ) {
   try {
     const { userId } = getAuth(request)
-    
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },

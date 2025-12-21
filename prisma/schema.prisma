@@ -51,6 +51,8 @@ model Group {
   monthlyContribution     Float
   maxLoanMultiplier       Int      @default(3)
   interestRate            Float    @default(10)
+  penaltyAmount           Float    @default(0)
+  contributionDueDay      Int      @default(5)
   isActive                Boolean  @default(true)
   createdById             String
   createdAt               DateTime @default(now())
@@ -102,6 +104,8 @@ model Contribution {
   transactionRef      String?
   receiptUrl          String?
   status              PaymentStatus      @default(PENDING)
+  penaltyApplied      Float              @default(0)
+  isLate              Boolean            @default(false)
   reviewedById        String?
   reviewDate          DateTime?
   rejectionReason     String?

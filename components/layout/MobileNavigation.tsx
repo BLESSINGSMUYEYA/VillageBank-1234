@@ -1,15 +1,16 @@
 'use client'
 
 import { useUser, useAuth, SignInButton, SignUpButton, SignOutButton } from '@clerk/nextjs'
+import { useLanguage } from '@/components/providers/LanguageProvider'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
-import { 
-  Home, 
-  Users, 
-  DollarSign, 
+import {
+  Home,
+  Users,
+  DollarSign,
   CreditCard,
   Shield,
   Settings,
@@ -17,6 +18,7 @@ import {
   User
 } from 'lucide-react'
 import { NotificationCenter } from '@/components/notifications/NotificationCenter'
+import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher'
 
 interface MobileNavigationProps {
   unreadNotifications?: number
@@ -25,11 +27,13 @@ interface MobileNavigationProps {
 export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationProps) {
   const { user, isLoaded } = useUser()
 
+  const { t } = useLanguage()
+
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: Home },
-    { name: 'Groups', href: '/groups', icon: Users },
-    { name: 'Contributions', href: '/contributions', icon: DollarSign },
-    { name: 'Loans', href: '/loans', icon: CreditCard },
+    { name: t('common.dashboard'), href: '/dashboard', icon: Home },
+    { name: t('common.groups'), href: '/groups', icon: Users },
+    { name: t('common.contributions'), href: '/contributions', icon: DollarSign },
+    { name: t('common.loans'), href: '/loans', icon: CreditCard },
   ]
 
   const adminNavigation = []
@@ -51,11 +55,12 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
       {/* Mobile Header */}
       <div className="flex items-center justify-between p-4 border-b bg-white">
         <div className="flex items-center space-x-3">
-          <h1 className="text-xl font-semibold text-gray-900">Village Banking</h1>
+          <h1 className="text-xl font-semibold text-gray-900">{t('common.dashboard')}</h1>
         </div>
-        
+
         <div className="flex items-center space-x-2">
-          <NotificationCenter />
+          <LanguageSwitcher />
+          {user && <NotificationCenter />}
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

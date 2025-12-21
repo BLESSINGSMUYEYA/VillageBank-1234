@@ -18,6 +18,8 @@ export const metadata: Metadata = {
   description: 'Community banking management system for Malawi',
 }
 
+import { LanguageProvider } from '@/components/providers/LanguageProvider'
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +29,9 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          {children}
+          <LanguageProvider>
+            {children}
+          </LanguageProvider>
         </body>
       </html>
     </ClerkProvider>

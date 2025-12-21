@@ -1,128 +1,30 @@
-'use client'
-
-import { useAuth } from '@clerk/nextjs'
-import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { auth } from '@clerk/nextjs/server'
+import { notFound, redirect } from 'next/navigation'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Users, DollarSign, CreditCard, Settings, Plus, ArrowLeft, TrendingUp, Share2 } from 'lucide-react'
+import { Users, DollarSign, CreditCard, Settings, ArrowLeft, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
-import { formatCurrency, formatDate } from '@/lib/utils'
-import GroupMembersList from '@/components/groups/GroupMembersList'
-import GroupContributions from '@/components/groups/GroupContributions'
-import GroupLoans from '@/components/groups/GroupLoans'
-import { QRCodeShare } from '@/components/sharing/QRCodeShare'
+import { formatCurrency } from '@/lib/utils'
+import { getGroupDetails } from '@/lib/group-service'
+import GroupDetailsContainer from './GroupDetailsContainer'
 
-interface Group {
-  id: string
-  name: string
-  description?: string
-  region: string
-  monthlyContribution: number
-  maxLoanMultiplier: number
-  interestRate: number
-  isActive: boolean
-  createdAt: string
-  members: Array<{
-    id: string
-    userId: string
-    role: string
-    status: string
-    joinedAt: string
-    user: {
-      id: string
-      firstName: string
-      lastName: string
-      email: string
-      phoneNumber: string
-    }
-  }>
-  contributions: Array<{
-    id: string
-    amount: number
-    month: number
-    year: number
-    paymentMethod?: string
-    transactionRef?: string
-    status: string
-    createdAt: string
-    user: {
-      firstName: string
-      lastName: string
-    }
-  }>
-  loans: Array<{
-    id: string
-    amountRequested: number
-    amountApproved?: number
-    interestRate: number
-    repaymentPeriodMonths: number
-    status: string
-    approvedById?: string
-    approvedAt?: string
-    createdAt: string
-    user: {
-      firstName: string
-      lastName: string
-    }
-  }>
-  _count: {
-    members: number
-    contributions: number
-    loans: number
-  }
-}
-
-export default function GroupDetailPage() {
-  const { userId } = useAuth()
-  const params = useParams()
-  const router = useRouter()
-  const [group, setGroup] = useState<Group | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-
-  useEffect(() => {
-    if (!userId) return
-    
-    fetchGroupData()
-  }, [userId, params.id])
-
-  const fetchGroupData = async () => {
-    try {
-      const response = await fetch(`/api/groups/${params.id}`)
-      if (!response.ok) {
-        if (response.status === 404) {
-          router.push('/groups')
-          return
-        }
-        throw new Error('Failed to fetch group data')
-      }
-      
-      const data = await response.json()
-      setGroup(data)
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'An error occurred')
-    } finally {
-      setLoading(false)
-    }
-  }
+export default async function GroupDetailPage({
+  params
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { userId } = await auth()
+  const { id: groupId } = await params
 
   if (!userId) {
-    return <div>Please sign in to access this page.</div>
+    redirect('/sign-in')
   }
 
-  if (loading) {
-    return <div>Loading group details...</div>
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>
-  }
+  const group = await getGroupDetails(groupId, userId)
 
   if (!group) {
-    return <div>Group not found</div>
+    notFound()
   }
 
   // Find current user's role in this group
@@ -170,7 +72,7 @@ export default function GroupDetailPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">{group._count.members}</div>
+            <div className="text-lg sm:text-2xl font-bold truncate">{group._count.members}</div>
             <p className="text-xs text-muted-foreground">
               {group.members.filter(m => m.status === 'ACTIVE').length} active
             </p>
@@ -183,7 +85,7 @@ export default function GroupDetailPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-lg sm:text-xl lg:text-2xl font-bold truncate" title={formatCurrency(group.monthlyContribution)}>
+            <div className="text-lg sm:text-2xl font-bold truncate" title={formatCurrency(group.monthlyContribution)}>
               {formatCurrency(group.monthlyContribution)}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -198,7 +100,7 @@ export default function GroupDetailPage() {
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">{group.interestRate}%</div>
+            <div className="text-lg sm:text-2xl font-bold truncate">{group.interestRate}%</div>
             <p className="text-xs text-muted-foreground">
               Annual rate
             </p>
@@ -211,7 +113,7 @@ export default function GroupDetailPage() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">{group.maxLoanMultiplier}x</div>
+            <div className="text-lg sm:text-2xl font-bold truncate">{group.maxLoanMultiplier}x</div>
             <p className="text-xs text-muted-foreground">
               Max loan calculation
             </p>
@@ -219,57 +121,13 @@ export default function GroupDetailPage() {
         </Card>
       </div>
 
-      {/* Tabs */}
-      <Tabs defaultValue="members" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4 gap-1">
-          <TabsTrigger value="members" className="text-xs sm:text-sm">Members</TabsTrigger>
-          <TabsTrigger value="contributions" className="text-xs sm:text-sm">Contributions</TabsTrigger>
-          <TabsTrigger value="loans" className="text-xs sm:text-sm">Loans</TabsTrigger>
-          {isAdmin && (
-            <TabsTrigger value="share" className="text-xs sm:text-sm flex items-center gap-1">
-              <Share2 className="h-3 w-3" />
-              Share
-            </TabsTrigger>
-          )}
-        </TabsList>
-
-        <TabsContent value="members">
-          <GroupMembersList 
-            members={group.members.map(member => ({
-              ...member,
-              joinedAt: member.joinedAt
-            }))} 
-            groupId={group.id}
-            currentUserRole={currentUserMember?.role}
-          />
-        </TabsContent>
-
-        <TabsContent value="contributions">
-          <GroupContributions 
-            contributions={group.contributions}
-            groupId={group.id}
-            currentUserRole={currentUserMember?.role}
-          />
-        </TabsContent>
-
-        <TabsContent value="loans">
-          <GroupLoans 
-            loans={group.loans}
-            groupId={group.id}
-            currentUserRole={currentUserMember?.role}
-            key={group.id} // Add key to force re-render when group changes
-          />
-        </TabsContent>
-
-        {isAdmin && (
-          <TabsContent value="share">
-            <QRCodeShare 
-              groupId={group.id}
-              groupName={group.name}
-            />
-          </TabsContent>
-        )}
-      </Tabs>
+      <GroupDetailsContainer
+        group={group}
+        userId={userId}
+        isAdmin={isAdmin}
+        isTreasurer={isTreasurer}
+        currentUserMember={currentUserMember}
+      />
     </div>
   )
 }

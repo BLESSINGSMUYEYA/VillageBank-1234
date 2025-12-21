@@ -26,7 +26,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
   const generateQRCode = async () => {
     setLoading(true)
     try {
-      const expiresAt = expiresIn === 'never' ? null : 
+      const expiresAt = expiresIn === 'never' ? null :
         new Date(Date.now() + parseInt(expiresIn) * 24 * 60 * 60 * 1000).toISOString()
 
       const response = await fetch(`/api/groups/${groupId}/share`, {
@@ -68,15 +68,16 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
       // Convert QR code data URL to blob
       const response = await fetch(shareData.qrCode)
       const blob = await response.blob()
-      
+
       // Create file object
       const file = new File([blob], 'villagebank-qr-code.png', { type: 'image/png' })
-      
-      // Create message text
-      const message = shareData.customMessage 
-        ? `"${shareData.customMessage}" - Join our village banking group: ${shareData.shareUrl}`
-        : `Join our village banking group: ${shareData.shareUrl}`
-      
+
+      // Create message text with better formatting
+      const message = `*Village Banking Group Invitation*\n\n` +
+        (shareData.customMessage ? `_"${shareData.customMessage}"_\n\n` : '') +
+        `Join our village banking group by clicking the link below or scanning the attached QR code:\n\n` +
+        `${shareData.shareUrl}`
+
       // Check if Web Share API is supported and if WhatsApp is available
       if (navigator.share && navigator.canShare) {
         const shareData = {
@@ -84,27 +85,27 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
           text: message,
           files: [file]
         }
-        
+
         if (navigator.canShare(shareData)) {
           await navigator.share(shareData)
           toast.success('Shared via WhatsApp successfully!')
           return
         }
       }
-      
+
       // Fallback: Open WhatsApp with text only
       const encodedMessage = encodeURIComponent(message)
       const whatsappUrl = `https://wa.me/?text=${encodedMessage}`
       window.open(whatsappUrl, '_blank')
       toast.success('Opening WhatsApp with share link...')
-      
+
     } catch (error) {
       console.error('Share error:', error)
       // Fallback to text-only sharing
-      const message = shareData.customMessage 
-        ? `"${shareData.customMessage}" - Join our village banking group: ${shareData.shareUrl}`
-        : `Join our village banking group: ${shareData.shareUrl}`
-      
+      const message = `*Village Banking Group Invitation*\n\n` +
+        (shareData.customMessage ? `_"${shareData.customMessage}"_\n\n` : '') +
+        `Join our village banking group: ${shareData.shareUrl}`
+
       const encodedMessage = encodeURIComponent(message)
       const whatsappUrl = `https://wa.me/?text=${encodedMessage}`
       window.open(whatsappUrl, '_blank')
@@ -120,14 +121,14 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
       link.click()
     }
   }
-    const getPermissionBadge = (permission: string) => {
+  const getPermissionBadge = (permission: string) => {
     const colors = {
       VIEW_ONLY: 'bg-blue-100 text-blue-800',
       REQUEST_JOIN: 'bg-green-100 text-green-800',
       LIMITED_ACCESS: 'bg-yellow-100 text-yellow-800',
       FULL_PREVIEW: 'bg-purple-100 text-purple-800',
     }
-    
+
     const labels = {
       VIEW_ONLY: 'View Only',
       REQUEST_JOIN: 'Can Request to Join',
@@ -169,7 +170,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div>
                 <Label htmlFor="expires">Expires In</Label>
                 <Select value={expiresIn} onValueChange={setExpiresIn}>
@@ -184,7 +185,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div>
                 <Label htmlFor="maxUses">Max Uses</Label>
                 <Input
@@ -196,7 +197,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
                 />
               </div>
             </div>
-            
+
             <div>
               <Label htmlFor="message">Custom Message (Optional)</Label>
               <Input
@@ -210,7 +211,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
               </p>
             </div>
           </div>
-          
+
           <Button onClick={generateQRCode} disabled={loading} className="w-full">
             {loading ? 'Generating...' : 'Generate QR Code'}
           </Button>
@@ -230,14 +231,14 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
             {/* QR Code Image */}
             <div className="flex justify-center">
               <div className="p-4 bg-white rounded-lg shadow-sm">
-                <img 
-                  src={shareData.qrCode} 
+                <img
+                  src={shareData.qrCode}
                   alt="Group QR Code"
-                  className="w-80 h-90"
+                  className="w-full max-w-[320px] h-auto aspect-[400/460] object-contain"
                 />
               </div>
             </div>
-            
+
             {/* Share Info */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
               <div className="flex items-center gap-2">
@@ -247,7 +248,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-muted-foreground" />
                 <span>
-                  {shareData.expiresAt 
+                  {shareData.expiresAt
                     ? `Expires ${new Date(shareData.expiresAt).toLocaleDateString()}`
                     : 'Never expires'
                   }
@@ -258,7 +259,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
                 <span>Secure share link</span>
               </div>
             </div>
-            
+
             {/* Actions */}
             <div className="space-y-3">
               <div className="flex gap-2">
@@ -271,11 +272,11 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
                   Download QR
                 </Button>
               </div>
-              
+
               <div className="flex gap-2">
-                <Button 
-                  onClick={shareToWhatsApp} 
-                  variant="outline" 
+                <Button
+                  onClick={shareToWhatsApp}
+                  variant="outline"
                   className="w-full"
                 >
                   <MessageCircle className="h-4 w-4 mr-2" />

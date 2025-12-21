@@ -23,6 +23,8 @@ interface Group {
   monthlyContribution: number
   maxLoanMultiplier: number
   interestRate: number
+  penaltyAmount: number
+  contributionDueDay: number
   isActive: boolean
   createdAt: string
   members: Array<{
@@ -55,7 +57,7 @@ export default function GroupSettingsPage() {
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
   const [success, setSuccess] = useState(false)
-  
+
   // Form state
   const [formData, setFormData] = useState({
     name: '',
@@ -64,12 +66,14 @@ export default function GroupSettingsPage() {
     monthlyContribution: '',
     maxLoanMultiplier: '',
     interestRate: '',
+    penaltyAmount: '',
+    contributionDueDay: '',
     isActive: true
   })
 
   useEffect(() => {
     if (!userId) return
-    
+
     fetchGroupData()
   }, [userId, params.id])
 
@@ -83,10 +87,10 @@ export default function GroupSettingsPage() {
         }
         throw new Error('Failed to fetch group data')
       }
-      
+
       const data = await response.json()
       setGroup(data)
-      
+
       // Initialize form data
       setFormData({
         name: data.name,
@@ -95,6 +99,8 @@ export default function GroupSettingsPage() {
         monthlyContribution: data.monthlyContribution.toString(),
         maxLoanMultiplier: data.maxLoanMultiplier.toString(),
         interestRate: data.interestRate.toString(),
+        penaltyAmount: data.penaltyAmount.toString(),
+        contributionDueDay: data.contributionDueDay.toString(),
         isActive: data.isActive
       })
     } catch (error) {
@@ -113,7 +119,7 @@ export default function GroupSettingsPage() {
 
   const handleSave = async () => {
     if (!group) return
-    
+
     try {
       setSaving(true)
       setError('')
@@ -128,21 +134,24 @@ export default function GroupSettingsPage() {
           name: formData.name,
           description: formData.description,
           region: formData.region,
-          monthlyContribution: parseFloat(formData.monthlyContribution),
-          maxLoanMultiplier: parseFloat(formData.maxLoanMultiplier),
-          interestRate: parseFloat(formData.interestRate),
+          monthlyContribution: parseFloat(formData.monthlyContribution) || 0,
+          maxLoanMultiplier: parseFloat(formData.maxLoanMultiplier) || 1,
+          interestRate: parseFloat(formData.interestRate) || 0,
+          penaltyAmount: parseFloat(formData.penaltyAmount) || 0,
+          contributionDueDay: parseInt(formData.contributionDueDay) || 5,
           isActive: formData.isActive
         }),
       })
 
       if (!response.ok) {
-        throw new Error('Failed to update group settings')
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || 'Failed to update group settings')
       }
 
       const updatedGroup = await response.json()
       setGroup(updatedGroup)
       setSuccess(true)
-      
+
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(false), 3000)
     } catch (error) {
@@ -169,7 +178,7 @@ export default function GroupSettingsPage() {
   }
 
   // Find current user's role in this group
-  const currentUserMember = group.members.find(
+  const currentUserMember = group?.members?.find(
     member => member.userId === userId
   )
 
@@ -259,7 +268,7 @@ export default function GroupSettingsPage() {
                   placeholder="Enter group name"
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="description" className="text-sm font-medium">Description</Label>
                 <Textarea
@@ -274,13 +283,19 @@ export default function GroupSettingsPage() {
 
               <div>
                 <Label htmlFor="region" className="text-sm font-medium">Region</Label>
-                <Input
-                  id="region"
+                <Select
                   value={formData.region}
-                  onChange={(e) => handleInputChange('region', e.target.value)}
-                  className="mt-1"
-                  placeholder="Enter region"
-                />
+                  onValueChange={(value) => handleInputChange('region', value)}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select region" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="NORTHERN">Northern</SelectItem>
+                    <SelectItem value="CENTRAL">Central</SelectItem>
+                    <SelectItem value="SOUTHERN">Southern</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </CardContent>
           </Card>
@@ -342,6 +357,41 @@ export default function GroupSettingsPage() {
                   Maximum loan amount = (Total contributions × Multiplier)
                 </p>
               </div>
+
+              <div className="pt-4 border-t">
+                <h4 className="text-sm font-semibold mb-3">Penalty Settings</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="penaltyAmount" className="text-sm font-medium">Late Penalty Amount</Label>
+                    <Input
+                      id="penaltyAmount"
+                      type="number"
+                      value={formData.penaltyAmount}
+                      onChange={(e) => handleInputChange('penaltyAmount', e.target.value)}
+                      className="mt-1"
+                      placeholder="0.00"
+                      min="0"
+                      step="0.01"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Charged for late contributions</p>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="contributionDueDay" className="text-sm font-medium">Due Day of Month (1-31)</Label>
+                    <Input
+                      id="contributionDueDay"
+                      type="number"
+                      value={formData.contributionDueDay}
+                      onChange={(e) => handleInputChange('contributionDueDay', e.target.value)}
+                      className="mt-1"
+                      placeholder="5"
+                      min="1"
+                      max="31"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Deadline for contributions</p>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -399,6 +449,29 @@ export default function GroupSettingsPage() {
                 <span className="text-sm text-gray-500">Total Loans</span>
                 <span className="font-medium">{group._count.loans}</span>
               </div>
+              <div className="pt-4 border-t">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-xs"
+                  onClick={async () => {
+                    try {
+                      const res = await fetch(`/api/groups/${group.id}/penalties`, { method: 'POST' })
+                      if (res.ok) {
+                        const data = await res.json()
+                        alert(`Penalty check completed. Applied ${data.penaltiesApplied} penalties.`)
+                      } else {
+                        alert('Failed to run penalty check.')
+                      }
+                    } catch (e) {
+                      alert('An error occurred.')
+                    }
+                  }}
+                >
+                  <AlertCircle className="w-3 h-3 mr-2" />
+                  Run Penalty Check Now
+                </Button>
+              </div>
             </CardContent>
           </Card>
 
@@ -408,8 +481,8 @@ export default function GroupSettingsPage() {
               <CardTitle className="text-base sm:text-lg">Save Changes</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button 
-                onClick={handleSave} 
+              <Button
+                onClick={handleSave}
                 disabled={saving}
                 className="w-full"
               >

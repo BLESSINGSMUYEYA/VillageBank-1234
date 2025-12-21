@@ -1,0 +1,50 @@
+{
+  "common": {
+    "dashboard": "Dashboard",
+    "groups": "Groups",
+    "contributions": "Contributions",
+    "loans": "Loans",
+    "settings": "Settings",
+    "back": "Back",
+    "view_all": "View All",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "create": "Create",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "dashboard": {
+    "welcome": "Welcome back",
+    "overview": "Here's your village banking overview",
+    "total_groups": "Total Groups",
+    "total_contributions": "Total Contributions",
+    "active_loans": "Active Loans",
+    "monthly_contribution": "Monthly Contribution",
+    "recent_activity": "Recent Activity",
+    "analytics": "Analytics & Insights",
+    "view_reports": "View Reports",
+    "quick_actions": "Quick Actions",
+    "make_contribution": "Make Contribution",
+    "apply_loan": "Apply for Loan",
+    "manage_groups": "Manage Groups",
+    "all_time": "All-time contributions",
+    "active_groups_desc": "Active groups you're a member of",
+    "this_month": "This month's contribution"
+  },
+  "groups": {
+    "my_groups": "My Groups",
+    "manage_desc": "Manage your village banking groups",
+    "create_group": "Create Group",
+    "your_role": "Your Role",
+    "members": "Members",
+    "interest_rate": "Interest Rate",
+    "multiplier": "Loan Multiplier",
+    "region": "Region",
+    "view": "View",
+    "no_groups": "No Groups Yet",
+    "no_groups_desc": "You haven't joined any village banking groups yet."
+  }
+}

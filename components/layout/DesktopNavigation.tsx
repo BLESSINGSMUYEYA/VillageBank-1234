@@ -1,31 +1,36 @@
 'use client'
 
 import { useUser, useAuth, SignInButton, SignUpButton, SignOutButton } from '@clerk/nextjs'
+import { useLanguage } from '@/components/providers/LanguageProvider'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { 
-  Home, 
-  Users, 
-  DollarSign, 
-  CreditCard, 
-  Settings, 
+import {
+  Home,
+  Users,
+  DollarSign,
+  CreditCard,
+  Settings,
   LogOut,
   Shield,
   User
 } from 'lucide-react'
+import { NotificationCenter } from '@/components/notifications/NotificationCenter'
+import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher'
 
 export function DesktopNavigation() {
   const { user, isLoaded } = useUser()
   const pathname = usePathname()
 
+  const { t } = useLanguage()
+
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: Home },
-    { name: 'Groups', href: '/groups', icon: Users },
-    { name: 'Contributions', href: '/contributions', icon: DollarSign },
-    { name: 'Loans', href: '/loans', icon: CreditCard },
+    { name: t('common.dashboard'), href: '/dashboard', icon: Home },
+    { name: t('common.groups'), href: '/groups', icon: Users },
+    { name: t('common.contributions'), href: '/contributions', icon: DollarSign },
+    { name: t('common.loans'), href: '/loans', icon: CreditCard },
   ]
 
   const adminNavigation = []
@@ -49,7 +54,7 @@ export function DesktopNavigation() {
           <div className="flex">
             <div className="shrink-0 flex items-center">
               <h1 className="text-xl font-semibold text-gray-900">
-                Village Banking
+                {t('common.dashboard')}
               </h1>
             </div>
             <nav className="hidden md:ml-6 md:flex md:space-x-8">
@@ -57,11 +62,10 @@ export function DesktopNavigation() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                    isActive(item.href)
-                      ? 'border-blue-500 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                  }`}
+                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive(item.href)
+                    ? 'border-blue-500 text-gray-900'
+                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                    }`}
                 >
                   <item.icon className="w-4 h-4 mr-2" />
                   {item.name}
@@ -71,11 +75,10 @@ export function DesktopNavigation() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                    isActive(item.href)
-                      ? 'border-blue-500 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                  }`}
+                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive(item.href)
+                    ? 'border-blue-500 text-gray-900'
+                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                    }`}
                 >
                   <item.icon className="w-4 h-4 mr-2" />
                   {item.name}
@@ -83,7 +86,9 @@ export function DesktopNavigation() {
               ))}
             </nav>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center space-x-2">
+            <LanguageSwitcher />
+            {user && <NotificationCenter />}
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

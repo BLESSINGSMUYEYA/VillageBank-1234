@@ -15,7 +15,7 @@ export async function POST(
 ) {
   try {
     const { userId } = getAuth(request)
-    
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -30,12 +30,12 @@ export async function POST(
     // Get loan details
     const loan = await prisma.loan.findUnique({
       where: { id: loanId },
-      include: { 
-        group: { 
-          include: { 
-            members: true 
-          } 
-        } 
+      include: {
+        group: {
+          include: {
+            members: true
+          }
+        }
       }
     })
 
@@ -77,7 +77,7 @@ export async function POST(
         userId: userId,
         groupId: loan.groupId,
         actionType: approved ? 'LOAN_APPROVED' : 'LOAN_REJECTED',
-        description: approved 
+        description: approved
           ? `Approved loan of MWK ${(amountApproved || loan.amountRequested).toLocaleString()}`
           : `Rejected loan of MWK ${loan.amountRequested.toLocaleString()}`,
         metadata: {
@@ -85,6 +85,20 @@ export async function POST(
           userId: loan.userId,
           amount: amountApproved || loan.amountRequested,
         },
+      },
+    })
+
+    // Create notification for the user
+    await prisma.notification.create({
+      data: {
+        userId: loan.userId,
+        type: approved ? 'SUCCESS' : 'WARNING',
+        title: approved ? 'Loan Approved' : 'Loan Rejected',
+        message: approved
+          ? `Your loan request for MWK ${(amountApproved || loan.amountRequested).toLocaleString()} has been approved.`
+          : `Your loan request for MWK ${loan.amountRequested.toLocaleString()} was rejected.`,
+        actionUrl: `/loans`,
+        actionText: 'View Loans',
       },
     })
 

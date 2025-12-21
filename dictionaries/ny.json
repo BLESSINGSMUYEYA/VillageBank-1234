@@ -1,0 +1,50 @@
+{
+    "common": {
+        "dashboard": "Dashboard",
+        "groups": "Magulu",
+        "contributions": "Zopereka",
+        "loans": "Ngongole",
+        "settings": "Zokonzekera",
+        "back": "Bwererani",
+        "view_all": "Onani Onse",
+        "loading": "Ikukweza...",
+        "error": "Cholakwika",
+        "success": "Zathekera",
+        "cancel": "Masiyeni",
+        "save": "Sungani",
+        "create": "Pangani",
+        "edit": "Sinthani",
+        "delete": "Chotsani"
+    },
+    "dashboard": {
+        "welcome": "Takulandirani kachiwiri",
+        "overview": "Uwu ndiye mwachidule wa gulu lanu",
+        "total_groups": "Magulu Onse",
+        "total_contributions": "Zopereka Zonse",
+        "active_loans": "Ngongole Zomwe Zilipo",
+        "monthly_contribution": "Chopereka cha Mwezi",
+        "recent_activity": "Zochitika Zaposachedwa",
+        "analytics": "Kusanthula ndi Kudziwa",
+        "view_reports": "Onani Lipoti",
+        "quick_actions": "Zochita Mwamsanga",
+        "make_contribution": "Perekani Chopereka",
+        "apply_loan": "Pemphani Ngongole",
+        "manage_groups": "Sumululani Magulu",
+        "all_time": "Zopereka za nthawi yonse",
+        "active_groups_desc": "Magulu omwe muli membala",
+        "this_month": "Chopereka cha mwezi uno"
+    },
+    "groups": {
+        "my_groups": "Magulu Anga",
+        "manage_desc": "Samalirani magulu anu a village banking",
+        "create_group": "Pangani Gulu",
+        "your_role": "Udindo Wanu",
+        "members": "Mamembala",
+        "interest_rate": "Chiwongoladzanja",
+        "multiplier": "Ngongole Yopitilira",
+        "region": "Chigawo",
+        "view": "Onani",
+        "no_groups": "Simunakhale mu Gulu Lililonse",
+        "no_groups_desc": "Simunajoyine gulu lirilonse la village banking."
+    }
+}

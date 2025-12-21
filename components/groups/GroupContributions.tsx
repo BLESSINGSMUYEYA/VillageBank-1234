@@ -18,6 +18,8 @@ interface Contribution {
   paymentMethod?: string
   transactionRef?: string
   receiptUrl?: string
+  penaltyApplied: number
+  isLate: boolean
   createdAt: string
   user: {
     firstName: string
@@ -41,39 +43,45 @@ export default function GroupContributions({ contributions, groupId, currentUser
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Completed Contributions</CardTitle>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm sm:text-lg">Completed</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(totalCompleted)}</div>
-            <p className="text-sm text-gray-500">
+            <div className="text-lg sm:text-2xl font-bold truncate" title={formatCurrency(totalCompleted)}>
+              {formatCurrency(totalCompleted)}
+            </div>
+            <p className="text-xs text-gray-500">
               {completedContributions.length} contributions
             </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Pending Contributions</CardTitle>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm sm:text-lg">Pending</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(totalPending)}</div>
-            <p className="text-sm text-gray-500">
+            <div className="text-lg sm:text-2xl font-bold truncate" title={formatCurrency(totalPending)}>
+              {formatCurrency(totalPending)}
+            </div>
+            <p className="text-xs text-gray-500">
               {pendingContributions.length} contributions
             </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Total Contributions</CardTitle>
+        <Card className="col-span-2 md:col-span-1">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm sm:text-lg">Total</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(totalCompleted + totalPending)}</div>
-            <p className="text-sm text-gray-500">
-              All time contributions
+            <div className="text-lg sm:text-2xl font-bold truncate" title={formatCurrency(totalCompleted + totalPending)}>
+              {formatCurrency(totalCompleted + totalPending)}
+            </div>
+            <p className="text-xs text-gray-500">
+              All time
             </p>
           </CardContent>
         </Card>
@@ -85,7 +93,7 @@ export default function GroupContributions({ contributions, groupId, currentUser
           <CardTitle>Quick Actions</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex space-x-4">
+          <div className="flex flex-wrap gap-4">
             <Link href="/contributions/new">
               <Button>
                 <Plus className="w-4 h-4 mr-2" />
@@ -112,70 +120,85 @@ export default function GroupContributions({ contributions, groupId, currentUser
             Latest contributions from group members
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-0 sm:px-6">
           {contributions.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Member</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Period</TableHead>
-                  <TableHead>Payment Method</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Receipt</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {contributions.map((contribution) => (
-                  <TableRow key={contribution.id}>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">
-                          {contribution.user.firstName} {contribution.user.lastName}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {formatCurrency(contribution.amount)}
-                    </TableCell>
-                    <TableCell>
-                      {new Date(contribution.year, contribution.month - 1).toLocaleDateString('en-US', {
-                        month: 'long',
-                        year: 'numeric'
-                      })}
-                    </TableCell>
-                    <TableCell>
-                      {contribution.paymentMethod || '-'}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          contribution.status === 'COMPLETED' ? 'default' :
-                            contribution.status === 'PENDING' ? 'secondary' : 'destructive'
-                        }
-                      >
-                        {contribution.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {new Date(contribution.createdAt).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>
-                      {contribution.receiptUrl && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => window.open(contribution.receiptUrl, '_blank')}
-                        >
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                      )}
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="min-w-[150px]">Member</TableHead>
+                    <TableHead className="min-w-[120px]">Amount</TableHead>
+                    <TableHead className="min-w-[120px]">Period</TableHead>
+                    <TableHead className="min-w-[120px]">Payment</TableHead>
+                    <TableHead className="min-w-[100px]">Status</TableHead>
+                    <TableHead className="min-w-[100px]">Date</TableHead>
+                    <TableHead>Receipt</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {contributions.map((contribution) => (
+                    <TableRow key={contribution.id}>
+                      <TableCell>
+                        <div className="font-medium">
+                          {contribution.user.firstName} {contribution.user.lastName}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">{formatCurrency(contribution.amount)}</div>
+                          {contribution.isLate && (
+                            <div className="text-xs text-red-600">
+                              +{formatCurrency(contribution.penaltyApplied)} Penalty
+                            </div>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        {new Date(contribution.year, contribution.month - 1).toLocaleDateString('en-US', {
+                          month: 'long',
+                          year: 'numeric'
+                        })}
+                      </TableCell>
+                      <TableCell>
+                        {contribution.paymentMethod || '-'}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-col gap-1">
+                          <Badge
+                            variant={
+                              contribution.status === 'COMPLETED' ? 'default' :
+                                contribution.status === 'PENDING' ? 'secondary' : 'destructive'
+                            }
+                            className="w-fit"
+                          >
+                            {contribution.status}
+                          </Badge>
+                          {contribution.isLate && (
+                            <Badge variant="outline" className="w-fit border-red-200 text-red-700 bg-red-50 text-[10px] py-0">
+                              LATE
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        {new Date(contribution.createdAt).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        {contribution.receiptUrl && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => window.open(contribution.receiptUrl, '_blank')}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           ) : (
             <div className="text-center py-8">
               <p className="text-gray-500">No contributions yet</p>
