@@ -1,13 +1,7 @@
-import { PrismaClient } from '@prisma/client'
-
-// Import MemberStatus from Prisma for type consistency
-import { MemberStatus as PrismaMemberStatus } from '@prisma/client'
-
-// Re-export for backward compatibility
-export type MemberStatus = PrismaMemberStatus
+import { PrismaClient, MemberStatus } from '@prisma/client'
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: typeof PrismaClient | undefined
+  prisma: PrismaClient | undefined
 }
 
 // Enhanced DATABASE_URL with connection pooling
@@ -80,4 +74,4 @@ if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma
 }
 
-export type { MemberStatus }
+export type { MemberStatus } from '@prisma/client'
