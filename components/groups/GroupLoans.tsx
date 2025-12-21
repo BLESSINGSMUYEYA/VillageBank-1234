@@ -175,12 +175,12 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="min-w-[150px]">Member</TableHead>
-                    <TableHead className="min-w-[120px]">Requested</TableHead>
-                    <TableHead className="min-w-[100px]">Interest</TableHead>
-                    <TableHead className="min-w-[100px]">Period</TableHead>
-                    <TableHead className="min-w-[100px]">Date</TableHead>
-                    {currentUserRole === 'TREASURER' && <TableHead>Actions</TableHead>}
+                    <TableHead className="min-w-[9.375rem]">Member</TableHead>
+                    <TableHead className="min-w-[7.5rem]">Requested</TableHead>
+                    <TableHead className="min-w-[6.25rem]">Interest</TableHead>
+                    <TableHead className="min-w-[6.25rem]">Period</TableHead>
+                    <TableHead className="min-w-[6.25rem]">Date</TableHead>
+                    {currentUserRole === 'TREASURER' && <TableHead className="min-w-[7.5rem]">Actions</TableHead>}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
