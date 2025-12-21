@@ -324,7 +324,6 @@ function NewContributionPageContent() {
                       clientAllowedFormats: ['png', 'jpg', 'jpeg'],
                       maxFileSize: 5000000, // 5MB
                       folder: 'village-banking/receipts',
-                      unsigned: true,
                     }}
                     onSuccess={(result: any) => {
                       if (result?.info?.secure_url) {
