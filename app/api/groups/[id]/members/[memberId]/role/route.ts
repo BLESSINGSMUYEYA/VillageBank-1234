@@ -78,10 +78,17 @@ export async function PATCH(
       )
     }
 
-    // Update the member's role
+    // Update the member's role and status
+    const updateData: { role: 'ADMIN' | 'TREASURER' | 'SECRETARY' | 'MEMBER'; status?: 'ACTIVE' } = { role: validatedData.role }
+    
+    // If the member was pending, activate them when approving
+    if (targetMember.status === 'PENDING') {
+      updateData.status = 'ACTIVE'
+    }
+    
     const updatedMember = await prisma.groupMember.update({
       where: { id: memberId },
-      data: { role: validatedData.role },
+      data: updateData,
       include: {
         user: {
           select: {
