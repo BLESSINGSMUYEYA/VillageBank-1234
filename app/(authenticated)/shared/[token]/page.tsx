@@ -19,6 +19,7 @@ interface SharedGroupData {
     currentUses: number
   }
   group: {
+    id: string
     name: string
     description?: string
     _count: {
@@ -39,6 +40,8 @@ export default function SharedGroupPage() {
   const params = useParams()
   const [groupData, setGroupData] = useState<SharedGroupData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [joining, setJoining] = useState(false)
+  const [hasRequested, setHasRequested] = useState(false)
 
   useEffect(() => {
     const fetchSharedGroup = async () => {
@@ -65,9 +68,36 @@ export default function SharedGroupPage() {
   }, [params.token])
 
   const requestToJoin = async () => {
-    // Implementation for joining request
-    toast.success('Join request sent successfully!')
-  }
+    if (joining || hasRequested) return
+    
+    setJoining(true)
+    try {
+      const response = await fetch('/api/groups/request-join', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          groupId: group.id,
+          shareToken: params.token,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to send join request');
+      }
+
+      toast.success('Join request sent successfully!');
+      setHasRequested(true)
+    } catch (error) {
+      console.error('Error requesting to join:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to send join request');
+    } finally {
+      setJoining(false)
+    }
+  };
 
   if (loading) {
     return <div className="flex justify-center items-center min-h-screen text-sm sm:text-base">Loading...</div>
@@ -131,11 +161,34 @@ export default function SharedGroupPage() {
                 </div>
               </div>
               
-              {share.permissions !== 'VIEW_ONLY' && (
-                <Button onClick={requestToJoin} className="flex items-center gap-2 w-full sm:w-auto">
-                  <UserPlus className="h-4 w-4" />
-                  Request to Join
+              {share.permissions !== 'VIEW_ONLY' && !hasRequested && (
+                <Button 
+                  onClick={requestToJoin} 
+                  disabled={joining}
+                  className="flex items-center gap-2 w-full sm:w-auto"
+                >
+                  {joining ? (
+                    <>
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      Sending Request...
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="h-4 w-4" />
+                      Request to Join
+                    </>
+                  )}
                 </Button>
+              )}
+              {hasRequested && (
+                <div className="flex items-center gap-2 text-sm text-green-600 font-medium w-full sm:w-auto justify-center sm:justify-start">
+                  <div className="h-4 w-4 rounded-full bg-green-100 flex items-center justify-center">
+                    <svg className="h-2 w-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  Request Sent
+                </div>
               )}
             </div>
           </CardContent>
