@@ -171,11 +171,11 @@ export async function GET(request: NextRequest) {
       whereClause.year = parseInt(year)
     }
 
-    // Get user's contributions with filters
+    // Get user's contributions with filters - always include group for consistency
     const contributions = await prisma.contribution.findMany({
       where: whereClause,
       include: {
-        group: search ? true : undefined, // Only include group if searching
+        group: true,
       },
       orderBy: {
         createdAt: 'desc',
@@ -190,16 +190,6 @@ export async function GET(request: NextRequest) {
         contribution.group.name.toLowerCase().includes(searchTerm) ||
         contribution.group.region.toLowerCase().includes(searchTerm)
       )
-    }
-
-    // If no group include was needed, remove it from results
-    if (!search) {
-      filteredContributions = await prisma.contribution.findMany({
-        where: whereClause,
-        orderBy: {
-          createdAt: 'desc',
-        },
-      })
     }
 
     return NextResponse.json({ contributions: filteredContributions })

@@ -13,9 +13,10 @@ import { formatCurrency, formatDate } from '@/lib/utils'
 export default async function ContributionsPage({
   searchParams,
 }: {
-  searchParams: { status?: string; groupId?: string; month?: string; year?: string; search?: string }
+  searchParams: Promise<{ status?: string; groupId?: string; month?: string; year?: string; search?: string }>
 }) {
   const { userId } = await auth()
+  const params = await searchParams
   
   if (!userId) {
     return <div>Please sign in to access contributions.</div>
@@ -23,13 +24,13 @@ export default async function ContributionsPage({
 
   // Build query parameters for API call
   const queryParams = new URLSearchParams()
-  if (searchParams.status) queryParams.set('status', searchParams.status)
-  if (searchParams.groupId) queryParams.set('groupId', searchParams.groupId)
-  if (searchParams.month && searchParams.year) {
-    queryParams.set('month', searchParams.month)
-    queryParams.set('year', searchParams.year)
+  if (params.status) queryParams.set('status', params.status)
+  if (params.groupId) queryParams.set('groupId', params.groupId)
+  if (params.month && params.year) {
+    queryParams.set('month', params.month)
+    queryParams.set('year', params.year)
   }
-  if (searchParams.search) queryParams.set('search', searchParams.search)
+  if (params.search) queryParams.set('search', params.search)
 
   // Get user's contributions with filters
   const contributionsResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/contributions?${queryParams.toString()}`, {
@@ -95,12 +96,12 @@ export default async function ContributionsPage({
               <Input
                 placeholder="Search groups..."
                 className="pl-10"
-                defaultValue={searchParams.search || ''}
+                defaultValue={params.search || ''}
               />
             </div>
 
             {/* Status Filter */}
-            <Select defaultValue={searchParams.status || ''}>
+            <Select defaultValue={params.status || ''}>
               <SelectTrigger>
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
@@ -114,7 +115,7 @@ export default async function ContributionsPage({
             </Select>
 
             {/* Group Filter */}
-            <Select defaultValue={searchParams.groupId || ''}>
+            <Select defaultValue={params.groupId || ''}>
               <SelectTrigger>
                 <SelectValue placeholder="All Groups" />
               </SelectTrigger>
@@ -129,7 +130,7 @@ export default async function ContributionsPage({
             </Select>
 
             {/* Month/Year Filter */}
-            <Select defaultValue={searchParams.month && searchParams.year ? `${searchParams.month}-${searchParams.year}` : ''}>
+            <Select defaultValue={params.month && params.year ? `${params.month}-${params.year}` : ''}>
               <SelectTrigger>
                 <SelectValue placeholder="All Time" />
               </SelectTrigger>
