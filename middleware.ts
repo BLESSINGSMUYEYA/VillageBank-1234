@@ -42,11 +42,12 @@ export default clerkMiddleware(async (auth, req) => {
     }
   }
 
-  // Protect regular routes - Clerk will automatically redirect to sign-in
+  // Protect regular routes - let Clerk handle the redirect automatically
   if (isProtectedRoute(req)) {
     const authObj = await auth()
     if (!authObj.userId) {
-      return new Response('Unauthorized', { status: 401 })
+      // Let Clerk handle the redirect to sign-in
+      return
     }
   }
 });

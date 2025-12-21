@@ -37,17 +37,21 @@ export default async function ContributionsPage({
     userId: userId,
   }
 
-  if (params.status) {
+  if (params.status && params.status !== 'all') {
     whereClause.status = params.status
   }
 
-  if (params.groupId) {
+  if (params.groupId && params.groupId !== 'all') {
     whereClause.groupId = params.groupId
   }
 
-  if (params.month && params.year) {
-    whereClause.month = parseInt(params.month)
-    whereClause.year = parseInt(params.year)
+  if (params.month && params.year && params.month !== 'all') {
+    // Extract month and year from the combined string (format: "MM-YYYY")
+    const monthYearParts = params.month.split('-')
+    if (monthYearParts.length === 2) {
+      whereClause.month = parseInt(monthYearParts[0])
+      whereClause.year = parseInt(monthYearParts[1])
+    }
   }
 
   const contributions = await prisma.contribution.findMany({
@@ -132,12 +136,12 @@ export default async function ContributionsPage({
             </div>
 
             {/* Status Filter */}
-            <Select defaultValue={params.status || ''}>
+            <Select defaultValue={params.status || 'all'}>
               <SelectTrigger>
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Statuses</SelectItem>
+                <SelectItem value="all">All Statuses</SelectItem>
                 <SelectItem value="PENDING">Pending</SelectItem>
                 <SelectItem value="COMPLETED">Completed</SelectItem>
                 <SelectItem value="REJECTED">Rejected</SelectItem>
@@ -146,12 +150,12 @@ export default async function ContributionsPage({
             </Select>
 
             {/* Group Filter */}
-            <Select defaultValue={params.groupId || ''}>
+            <Select defaultValue={params.groupId || 'all'}>
               <SelectTrigger>
                 <SelectValue placeholder="All Groups" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Groups</SelectItem>
+                <SelectItem value="all">All Groups</SelectItem>
                 {userGroups.map((groupMember) => (
                   <SelectItem key={groupMember.groupId} value={groupMember.groupId}>
                     {groupMember.group.name}
@@ -161,12 +165,12 @@ export default async function ContributionsPage({
             </Select>
 
             {/* Month/Year Filter */}
-            <Select defaultValue={params.month && params.year ? `${params.month}-${params.year}` : ''}>
+            <Select defaultValue={params.month && params.year ? `${params.month}-${params.year}` : 'all'}>
               <SelectTrigger>
                 <SelectValue placeholder="All Time" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Time</SelectItem>
+                <SelectItem value="all">All Time</SelectItem>
                 {/* Generate last 12 months */}
                 {Array.from({ length: 12 }, (_, i) => {
                   const date = new Date()

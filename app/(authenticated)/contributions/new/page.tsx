@@ -13,6 +13,7 @@ import { CldUploadWidget } from 'next-cloudinary'
 
 const cloudinaryConfig = {
   cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  apiKey: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
   uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'village_banking_receipts',
 }
 
@@ -317,13 +318,13 @@ function NewContributionPageContent() {
                   {cloudinaryConfig.cloudName ? (
                   <CldUploadWidget
                     uploadPreset={cloudinaryConfig.uploadPreset}
-                    signatureEndpoint={process.env.NODE_ENV === 'development' ? '/api/sign-cloudinary' : undefined}
                     options={{
                       maxFiles: 1,
                       resourceType: 'image',
                       clientAllowedFormats: ['png', 'jpg', 'jpeg'],
                       maxFileSize: 5000000, // 5MB
                       folder: 'village-banking/receipts',
+                      unsigned: true,
                     }}
                     onSuccess={(result: any) => {
                       if (result?.info?.secure_url) {
