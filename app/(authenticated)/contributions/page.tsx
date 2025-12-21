@@ -32,12 +32,43 @@ export default async function ContributionsPage({
   }
   if (params.search) queryParams.set('search', params.search)
 
-  // Get user's contributions with filters
-  const contributionsResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/contributions?${queryParams.toString()}`, {
-    cache: 'no-store'
+  // Get user's contributions with filters using direct Prisma call
+  const whereClause: any = {
+    userId: userId,
+  }
+
+  if (params.status) {
+    whereClause.status = params.status
+  }
+
+  if (params.groupId) {
+    whereClause.groupId = params.groupId
+  }
+
+  if (params.month && params.year) {
+    whereClause.month = parseInt(params.month)
+    whereClause.year = parseInt(params.year)
+  }
+
+  const contributions = await prisma.contribution.findMany({
+    where: whereClause,
+    include: {
+      group: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
   })
-  const contributionsData = await contributionsResponse.json()
-  const contributions = contributionsData.contributions || []
+
+  // If search term provided, filter by group name
+  let filteredContributions = contributions
+  if (params.search) {
+    const searchTerm = params.search.toLowerCase()
+    filteredContributions = contributions.filter(contribution =>
+      contribution.group.name.toLowerCase().includes(searchTerm) ||
+      contribution.group.region.toLowerCase().includes(searchTerm)
+    )
+  }
 
   // Get user's groups for making new contributions and filter dropdown
   const userGroups = await prisma.groupMember.findMany({
@@ -51,14 +82,14 @@ export default async function ContributionsPage({
   })
 
   // Calculate stats
-  const completedContributions = contributions.filter(c => c.status === 'COMPLETED')
-  const pendingContributions = contributions.filter(c => c.status === 'PENDING')
+  const completedContributions = filteredContributions.filter(c => c.status === 'COMPLETED')
+  const pendingContributions = filteredContributions.filter(c => c.status === 'PENDING')
   const totalContributed = completedContributions.reduce((sum, c) => sum + Number(c.amount), 0)
   
   // Check for current month contributions
   const currentMonth = new Date().getMonth() + 1
   const currentYear = new Date().getFullYear()
-  const currentMonthContributions = contributions.filter(
+  const currentMonthContributions = filteredContributions.filter(
     c => c.month === currentMonth && c.year === currentYear
   )
 
@@ -290,7 +321,7 @@ export default async function ContributionsPage({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {contributions.length > 0 ? (
+          {filteredContributions.length > 0 ? (
             <div className="overflow-x-auto -mx-4 sm:mx-0">
               <Table>
                 <TableHeader>
@@ -305,7 +336,7 @@ export default async function ContributionsPage({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {contributions.map((contribution) => (
+                  {filteredContributions.map((contribution) => (
                     <TableRow key={contribution.id}>
                       <TableCell className="hidden sm:table-cell">
                         <div>
