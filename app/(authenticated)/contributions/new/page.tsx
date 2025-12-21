@@ -11,6 +11,11 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ArrowLeft, DollarSign, CheckCircle, Upload, ScanLine, Loader2 } from 'lucide-react'
 import { CldUploadWidget } from 'next-cloudinary'
 
+const cloudinaryConfig = {
+  cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'village_banking_receipts',
+}
+
 interface Group {
   id: string
   name: string
@@ -309,12 +314,30 @@ function NewContributionPageContent() {
               <div className="space-y-4 border-b pb-6">
                 <Label>Receipt (Optional)</Label>
                 <div className="w-full">
+                  {cloudinaryConfig.cloudName ? (
                   <CldUploadWidget
-                    uploadPreset="village_banking_receipts"
+                    uploadPreset={cloudinaryConfig.uploadPreset}
+                    signatureEndpoint={process.env.NODE_ENV === 'development' ? '/api/sign-cloudinary' : undefined}
+                    options={{
+                      maxFiles: 1,
+                      resourceType: 'image',
+                      clientAllowedFormats: ['png', 'jpg', 'jpeg'],
+                      maxFileSize: 5000000, // 5MB
+                      folder: 'village-banking/receipts',
+                    }}
                     onSuccess={(result: any) => {
-                      const url = result.info.secure_url
-                      setReceiptUrl(url)
-                      setShouldScan(true)
+                      if (result?.info?.secure_url) {
+                        const url = result.info.secure_url
+                        setReceiptUrl(url)
+                        setShouldScan(true)
+                      } else {
+                        console.error('Upload result is invalid:', result)
+                        setError('Upload failed. Please try again.')
+                      }
+                    }}
+                    onError={(error: any) => {
+                      console.error('Cloudinary upload error:', error)
+                      setError('Failed to upload receipt. Please try again or fill the form manually.')
                     }}
                   >
                     {({ open }) => (
@@ -347,6 +370,13 @@ function NewContributionPageContent() {
                       </div>
                     )}
                   </CldUploadWidget>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-10 text-gray-500">
+                    <Upload className="w-8 h-8 mb-2" />
+                    <p className="text-sm font-medium">Upload temporarily unavailable</p>
+                    <p className="text-xs">Please fill the form manually</p>
+                  </div>
+                )}
 
                   {isScanning && (
                     <div className="mt-4 flex flex-col items-center justify-center p-4 bg-blue-50 rounded-lg animate-pulse">
