@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
-import { PaymentStatus } from '@prisma/client'
+import { PaymentStatus, NotificationType } from '@prisma/client'
 import { z } from 'zod'
 
 const bulkReviewSchema = z.object({
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
       message: status === 'COMPLETED'
         ? `Your contribution of MWK ${contribution.amount.toLocaleString()} has been approved.`
         : `Your contribution of MWK ${contribution.amount.toLocaleString()} was rejected: ${rejectionReason || 'No reason provided'}`,
-      type: status === 'COMPLETED' ? 'SUCCESS' : 'ERROR',
+      type: status === 'COMPLETED' ? NotificationType.SUCCESS : NotificationType.ERROR,
     }))
 
     // Create activity logs
