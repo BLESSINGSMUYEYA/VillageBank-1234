@@ -187,15 +187,15 @@ export default function GroupSettingsPage() {
   if (!isAdmin) {
     return (
       <div className="space-y-4 sm:space-y-6">
-        <Card>
+        <Card className="border-none shadow-lg bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
           <CardContent className="text-center py-8 sm:py-12 px-4">
             <AlertCircle className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">Access Denied</h3>
+            <h3 className="text-base sm:text-lg font-black text-gray-900 mb-2">Access Denied</h3>
             <p className="text-gray-500 mb-6 text-sm sm:text-base">
               Only group administrators can access settings.
             </p>
             <Link href={`/groups/${group.id}`}>
-              <Button variant="outline" className="w-full sm:w-auto">
+              <Button variant="outline" className="w-full sm:w-auto rounded-2xl font-bold bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:border-[#6c47ff] hover:text-[#6c47ff] transition-colors">
                 Back to Group
               </Button>
             </Link>
@@ -206,41 +206,41 @@ export default function GroupSettingsPage() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
         <div className="space-y-3">
           <Link href={`/groups/${group.id}`}>
-            <Button variant="outline" size="sm" className="w-full sm:w-auto">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto rounded-2xl font-bold bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:border-[#6c47ff] hover:text-[#6c47ff] transition-colors">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Group
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Group Settings</h1>
+            <h1 className="text-2xl sm:text-3xl font-black text-gray-900">Group Settings</h1>
             <p className="text-gray-600 text-sm sm:text-base">Manage your group configuration</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant={group.isActive ? 'default' : 'secondary'}>
+          <Badge variant={group.isActive ? 'default' : 'secondary'} className="font-bold uppercase tracking-wider text-xs">
             {group.isActive ? 'Active' : 'Inactive'}
           </Badge>
         </div>
       </div>
 
       {success && (
-        <Alert className="bg-green-50 border-green-200">
+        <Alert className="bg-green-50/80 border-green-200/50 backdrop-blur-md border-none shadow-xl">
           <AlertCircle className="h-4 w-4 text-green-600" />
-          <AlertDescription className="text-green-800">
+          <AlertDescription className="text-green-800 font-medium">
             Settings saved successfully!
           </AlertDescription>
         </Alert>
       )}
 
       {error && (
-        <Alert className="bg-red-50 border-red-200">
+        <Alert className="bg-red-50/80 border-red-200/50 backdrop-blur-md border-none shadow-xl">
           <AlertCircle className="h-4 w-4 text-red-600" />
-          <AlertDescription className="text-red-800">
+          <AlertDescription className="text-red-800 font-medium">
             {error}
           </AlertDescription>
         </Alert>
@@ -250,16 +250,16 @@ export default function GroupSettingsPage() {
         {/* Main Settings */}
         <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           {/* Basic Information */}
-          <Card>
+          <Card className="border-none shadow-lg bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
             <CardHeader>
-              <CardTitle className="text-lg sm:text-xl">Basic Information</CardTitle>
+              <CardTitle className="text-lg sm:text-xl font-black">Basic Information</CardTitle>
               <CardDescription className="text-sm">
                 Update your group's basic details
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="name" className="text-sm font-medium">Group Name</Label>
+                <Label htmlFor="name" className="text-sm font-bold text-gray-700">Group Name</Label>
                 <Input
                   id="name"
                   value={formData.name}
@@ -270,7 +270,7 @@ export default function GroupSettingsPage() {
               </div>
 
               <div>
-                <Label htmlFor="description" className="text-sm font-medium">Description</Label>
+                <Label htmlFor="description" className="text-sm font-bold text-gray-700">Description</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
@@ -282,7 +282,7 @@ export default function GroupSettingsPage() {
               </div>
 
               <div>
-                <Label htmlFor="region" className="text-sm font-medium">Region</Label>
+                <Label htmlFor="region" className="text-sm font-bold text-gray-700">Region</Label>
                 <Select
                   value={formData.region}
                   onValueChange={(value) => handleInputChange('region', value)}
@@ -301,9 +301,9 @@ export default function GroupSettingsPage() {
           </Card>
 
           {/* Financial Settings */}
-          <Card>
+          <Card className="border-none shadow-lg bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
             <CardHeader>
-              <CardTitle className="text-lg sm:text-xl">Financial Settings</CardTitle>
+              <CardTitle className="text-lg sm:text-xl font-black">Financial Settings</CardTitle>
               <CardDescription className="text-sm">
                 Configure contribution and loan parameters
               </CardDescription>
@@ -311,7 +311,7 @@ export default function GroupSettingsPage() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="monthlyContribution" className="text-sm font-medium">Monthly Contribution</Label>
+                  <Label htmlFor="monthlyContribution" className="text-sm font-bold text-gray-700">Monthly Contribution</Label>
                   <Input
                     id="monthlyContribution"
                     type="number"
@@ -325,7 +325,7 @@ export default function GroupSettingsPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="interestRate" className="text-sm font-medium">Interest Rate (%)</Label>
+                  <Label htmlFor="interestRate" className="text-sm font-bold text-gray-700">Interest Rate (%)</Label>
                   <Input
                     id="interestRate"
                     type="number"
@@ -341,7 +341,7 @@ export default function GroupSettingsPage() {
               </div>
 
               <div>
-                <Label htmlFor="maxLoanMultiplier" className="text-sm font-medium">Loan Multiplier</Label>
+                <Label htmlFor="maxLoanMultiplier" className="text-sm font-bold text-gray-700">Loan Multiplier</Label>
                 <Input
                   id="maxLoanMultiplier"
                   type="number"
@@ -359,10 +359,10 @@ export default function GroupSettingsPage() {
               </div>
 
               <div className="pt-4 border-t">
-                <h4 className="text-sm font-semibold mb-3">Penalty Settings</h4>
+                <h4 className="text-sm font-black mb-3">Penalty Settings</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="penaltyAmount" className="text-sm font-medium">Late Penalty Amount</Label>
+                    <Label htmlFor="penaltyAmount" className="text-sm font-bold text-gray-700">Late Penalty Amount</Label>
                     <Input
                       id="penaltyAmount"
                       type="number"
@@ -377,7 +377,7 @@ export default function GroupSettingsPage() {
                   </div>
 
                   <div>
-                    <Label htmlFor="contributionDueDay" className="text-sm font-medium">Due Day of Month (1-31)</Label>
+                    <Label htmlFor="contributionDueDay" className="text-sm font-bold text-gray-700">Due Day of Month (1-31)</Label>
                     <Input
                       id="contributionDueDay"
                       type="number"
@@ -396,9 +396,9 @@ export default function GroupSettingsPage() {
           </Card>
 
           {/* Status Settings */}
-          <Card>
+          <Card className="border-none shadow-lg bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
             <CardHeader>
-              <CardTitle className="text-lg sm:text-xl">Group Status</CardTitle>
+              <CardTitle className="text-lg sm:text-xl font-black">Group Status</CardTitle>
               <CardDescription className="text-sm">
                 Control group activity and membership
               </CardDescription>
@@ -412,7 +412,7 @@ export default function GroupSettingsPage() {
                   onChange={(e) => handleInputChange('isActive', e.target.checked)}
                   className="rounded"
                 />
-                <Label htmlFor="isActive" className="text-sm font-medium">
+                <Label htmlFor="isActive" className="text-sm font-bold text-gray-700">
                   Group is active
                 </Label>
               </div>
@@ -426,34 +426,34 @@ export default function GroupSettingsPage() {
         {/* Sidebar */}
         <div className="space-y-4 sm:space-y-6">
           {/* Quick Stats */}
-          <Card>
+          <Card className="border-none shadow-lg bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
             <CardHeader>
-              <CardTitle className="text-base sm:text-lg">Group Stats</CardTitle>
+              <CardTitle className="text-base sm:text-lg font-black">Group Stats</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Total Members</span>
-                <span className="font-medium">{group._count.members}</span>
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Members</span>
+                <span className="font-black">{group._count.members}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Active Members</span>
-                <span className="font-medium">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Active Members</span>
+                <span className="font-black">
                   {group.members.filter(m => m.status === 'ACTIVE').length}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Total Contributions</span>
-                <span className="font-medium">{group._count.contributions}</span>
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Contributions</span>
+                <span className="font-black">{group._count.contributions}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Total Loans</span>
-                <span className="font-medium">{group._count.loans}</span>
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Loans</span>
+                <span className="font-black">{group._count.loans}</span>
               </div>
               <div className="pt-4 border-t">
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full text-xs"
+                  className="w-full text-xs rounded-2xl font-bold bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:border-orange-500 hover:text-orange-600 transition-colors"
                   onClick={async () => {
                     try {
                       const res = await fetch(`/api/groups/${group.id}/penalties`, { method: 'POST' })
@@ -476,21 +476,21 @@ export default function GroupSettingsPage() {
           </Card>
 
           {/* Save Actions */}
-          <Card>
+          <Card className="border-none shadow-lg bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
             <CardHeader>
-              <CardTitle className="text-base sm:text-lg">Save Changes</CardTitle>
+              <CardTitle className="text-base sm:text-lg font-black">Save Changes</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <Button
                 onClick={handleSave}
                 disabled={saving}
-                className="w-full"
+                className="w-full rounded-2xl font-bold"
               >
                 <Save className="w-4 h-4 mr-2" />
                 {saving ? 'Saving...' : 'Save Settings'}
               </Button>
               <Link href={`/groups/${group.id}`}>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full rounded-2xl font-bold bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:border-red-500 hover:text-red-600 transition-colors">
                   Cancel
                 </Button>
               </Link>

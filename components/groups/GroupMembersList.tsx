@@ -93,10 +93,10 @@ export default function GroupMembersList({ members, groupId, currentUserRole }: 
   return (
     <div className="space-y-6">
       {/* Active Members */}
-      <Card>
+      <Card className="border-none shadow-lg bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
         <CardHeader>
-          <CardTitle>Active Members ({activeMembers.length})</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-lg sm:text-xl font-black">Active Members ({activeMembers.length})</CardTitle>
+          <CardDescription className="text-sm">
             Members who can participate in group activities
           </CardDescription>
         </CardHeader>
@@ -115,16 +115,19 @@ export default function GroupMembersList({ members, groupId, currentUserRole }: 
                 <TableRow key={member.id}>
                   <TableCell>
                     <div className="flex items-center space-x-3">
-                      <Avatar>
-                        <AvatarFallback>
-                          {(member.user?.firstName?.charAt(0) || '') + (member.user?.lastName?.charAt(0) || '')}
-                        </AvatarFallback>
-                      </Avatar>
+                      <div className="relative group">
+                        <div className="absolute -inset-1 bg-gradient-to-r from-[#6c47ff] to-[#9d81ff] rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                        <Avatar className="relative w-10 h-10 sm:w-12 sm:h-12 bg-white dark:bg-gray-800 rounded-full border-2 border-white dark:border-gray-950 shadow-xl overflow-hidden">
+                          <AvatarFallback className="font-black bg-gradient-to-br from-[#6c47ff] to-[#9d81ff] bg-clip-text text-transparent">
+                            {(member.user?.firstName?.charAt(0) || '') + (member.user?.lastName?.charAt(0) || '')}
+                          </AvatarFallback>
+                        </Avatar>
+                      </div>
                       <div>
-                        <p className="font-medium">
+                        <p className="font-black text-sm">
                           {member.user?.firstName || ''} {member.user?.lastName || ''}
                         </p>
-                        <p className="text-sm text-gray-500">{member.user?.email || 'No email'}</p>
+                        <p className="text-xs text-gray-500">{member.user?.email || 'No email'}</p>
                       </div>
                     </div>
                   </TableCell>
@@ -135,6 +138,7 @@ export default function GroupMembersList({ members, groupId, currentUserRole }: 
                         member.role === 'TREASURER' ? 'secondary' :
                         member.role === 'SECRETARY' ? 'outline' : 'outline'
                       }
+                      className="font-bold uppercase tracking-wider text-xs"
                     >
                       {member.role}
                     </Badge>
@@ -190,10 +194,10 @@ export default function GroupMembersList({ members, groupId, currentUserRole }: 
 
       {/* Pending Members */}
       {pendingMembers.length > 0 && (
-        <Card>
+        <Card className="border-none shadow-lg bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
           <CardHeader>
-            <CardTitle>Pending Members ({pendingMembers.length})</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-lg sm:text-xl font-black">Pending Members ({pendingMembers.length})</CardTitle>
+            <CardDescription className="text-sm">
               Members waiting to be approved
             </CardDescription>
           </CardHeader>
@@ -211,16 +215,19 @@ export default function GroupMembersList({ members, groupId, currentUserRole }: 
                   <TableRow key={member.id}>
                     <TableCell>
                       <div className="flex items-center space-x-3">
-                        <Avatar>
-                          <AvatarFallback>
-                            {(member.user?.firstName?.charAt(0) || '') + (member.user?.lastName?.charAt(0) || '')}
-                          </AvatarFallback>
-                        </Avatar>
+                        <div className="relative group">
+                          <div className="absolute -inset-1 bg-gradient-to-r from-orange-400 to-yellow-400 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                          <Avatar className="relative w-10 h-10 sm:w-12 sm:h-12 bg-white dark:bg-gray-800 rounded-full border-2 border-white dark:border-gray-950 shadow-xl overflow-hidden">
+                            <AvatarFallback className="font-black bg-gradient-to-br from-orange-400 to-yellow-400 bg-clip-text text-transparent">
+                              {(member.user?.firstName?.charAt(0) || '') + (member.user?.lastName?.charAt(0) || '')}
+                            </AvatarFallback>
+                          </Avatar>
+                        </div>
                         <div>
-                          <p className="font-medium">
+                          <p className="font-black text-sm">
                             {member.user?.firstName || ''} {member.user?.lastName || ''}
                           </p>
-                          <p className="text-sm text-gray-500">{member.user?.email || 'No email'}</p>
+                          <p className="text-xs text-gray-500">{member.user?.email || 'No email'}</p>
                         </div>
                       </div>
                     </TableCell>
@@ -234,6 +241,7 @@ export default function GroupMembersList({ members, groupId, currentUserRole }: 
                             size="sm"
                             onClick={() => handleRoleChange(member.id, 'MEMBER')}
                             disabled={loading}
+                            className="rounded-2xl font-bold"
                           >
                             Approve
                           </Button>
@@ -242,6 +250,7 @@ export default function GroupMembersList({ members, groupId, currentUserRole }: 
                             variant="outline"
                             onClick={() => handleRemoveMember(member.id)}
                             disabled={loading}
+                            className="rounded-2xl font-bold bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:border-red-500 hover:text-red-600 transition-colors"
                           >
                             Reject
                           </Button>

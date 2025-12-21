@@ -94,16 +94,16 @@ export default async function LoansPage() {
   )
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Loans</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-gray-900">Loans</h1>
           <p className="text-gray-600 text-sm sm:text-base">Manage your loan applications and repayments</p>
         </div>
         {eligibilityChecks.some(check => check.eligible) && (
           <Link href="/loans/new">
-            <Button className="w-full sm:w-auto">
+            <Button className="w-full sm:w-auto rounded-2xl font-bold">
               <Plus className="w-4 h-4 mr-2" />
               Request Loan
             </Button>
@@ -113,53 +113,61 @@ export default async function LoansPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">Active Loans</CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Active Loans</CardTitle>
+            <div className="p-2 bg-blue-50 dark:bg-blue-500/10 rounded-xl">
+              <CreditCard className="h-4 w-4 text-blue-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">{activeLoans.length}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-lg sm:text-2xl font-black">{activeLoans.length}</div>
+            <p className="text-[10px] text-gray-500 mt-1">
               {formatCurrency(activeLoans.reduce((sum, l) => sum + Number(l.amountApproved || l.amountRequested), 0))}
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">Pending Approval</CardTitle>
-            <AlertCircle className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pending Approval</CardTitle>
+            <div className="p-2 bg-orange-50 dark:bg-orange-500/10 rounded-xl">
+              <AlertCircle className="h-4 w-4 text-orange-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">{pendingLoans.length}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-lg sm:text-2xl font-black">{pendingLoans.length}</div>
+            <p className="text-[10px] text-gray-500 mt-1">
               Awaiting review
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">Total Borrowed</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Borrowed</CardTitle>
+            <div className="p-2 bg-purple-50 dark:bg-purple-500/10 rounded-xl">
+              <TrendingUp className="h-4 w-4 text-purple-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">{formatCurrency(totalBorrowed)}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-lg sm:text-2xl font-black">{formatCurrency(totalBorrowed)}</div>
+            <p className="text-[10px] text-gray-500 mt-1">
               {completedLoans.length} completed
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">Total Repaid</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Repaid</CardTitle>
+            <div className="p-2 bg-green-50 dark:bg-green-500/10 rounded-xl">
+              <CheckCircle2 className="h-4 w-4 text-green-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">{formatCurrency(totalRepaid)}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-lg sm:text-2xl font-black">{formatCurrency(totalRepaid)}</div>
+            <p className="text-[10px] text-gray-500 mt-1">
               Successfully repaid
             </p>
           </CardContent>
@@ -167,9 +175,9 @@ export default async function LoansPage() {
       </div>
 
       {/* Loan Eligibility */}
-      <Card>
+      <Card className="border-none shadow-lg bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
         <CardHeader>
-          <CardTitle className="text-lg sm:text-xl">Loan Eligibility</CardTitle>
+          <CardTitle className="text-lg sm:text-xl font-black">Loan Eligibility</CardTitle>
           <CardDescription className="text-sm">
             Check your eligibility for loans in each group
           </CardDescription>
@@ -177,11 +185,15 @@ export default async function LoansPage() {
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {eligibilityChecks.map((check) => (
-              <Card key={check.group.id} className={
-                check.eligible ? 'border-green-200 bg-green-50' : 'border-gray-200'
-              }>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base sm:text-lg flex items-center">
+              <Card key={check.group.id} className={`
+                group relative hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border-none backdrop-blur-md ${
+                check.eligible 
+                  ? 'bg-green-50/60 dark:bg-green-900/60 border-green-200/50' 
+                  : 'bg-white/60 dark:bg-gray-900/60 border-gray-200/50'
+              }`}>
+                <div className="absolute inset-0 bg-blue-400 opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity"></div>
+                <CardHeader className="pb-3 relative z-10">
+                  <CardTitle className="text-base sm:text-lg flex items-center font-black">
                     {check.eligible ? (
                       <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-green-600" />
                     ) : (
@@ -193,26 +205,26 @@ export default async function LoansPage() {
                     {check.eligible ? 'Eligible for loan' : check.reason}
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="relative z-10">
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span>Contributions:</span>
-                      <span>{check.contributionsCount} months</span>
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Contributions:</span>
+                      <span className="font-black">{check.contributionsCount} months</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Total Contributed:</span>
-                      <span className="truncate text-right">{formatCurrency(check.totalContributions)}</span>
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Contributed:</span>
+                      <span className="font-black truncate text-right">{formatCurrency(check.totalContributions)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Max Loan Amount:</span>
-                      <span className="font-semibold truncate text-right">
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Max Loan Amount:</span>
+                      <span className="font-black text-[#6c47ff] truncate text-right">
                         {formatCurrency(check.maxLoanAmount)}
                       </span>
                     </div>
                   </div>
                   {check.eligible && (
                     <Link href={`/loans/new?groupId=${check.group.id}`} className="mt-3 block">
-                      <Button size="sm" className="w-full">
+                      <Button size="sm" className="w-full rounded-2xl font-bold bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:border-[#6c47ff] hover:text-[#6c47ff] transition-colors">
                         <Plus className="w-4 h-4 mr-2" />
                         Apply for Loan
                       </Button>
@@ -226,9 +238,9 @@ export default async function LoansPage() {
       </Card>
 
       {/* Loan History */}
-      <Card>
+      <Card className="border-none shadow-lg bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
         <CardHeader>
-          <CardTitle className="text-lg sm:text-xl">Loan History</CardTitle>
+          <CardTitle className="text-lg sm:text-xl font-black">Loan History</CardTitle>
           <CardDescription className="text-sm">
             Your complete loan record
           </CardDescription>
@@ -313,20 +325,20 @@ export default async function LoansPage() {
           ) : (
             <div className="text-center py-8 sm:py-12 px-4">
               <CreditCard className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">No Loans Yet</h3>
+              <h3 className="text-base sm:text-lg font-black text-gray-900 mb-2">No Loans Yet</h3>
               <p className="text-gray-500 mb-6 text-sm sm:text-base">
                 Apply for your first loan once you have 3 months of contributions.
               </p>
               {eligibilityChecks.some(check => check.eligible) ? (
                 <Link href="/loans/new">
-                  <Button className="w-full sm:w-auto">
+                  <Button className="w-full sm:w-auto rounded-2xl font-bold">
                     <Plus className="w-4 h-4 mr-2" />
                     Apply for First Loan
                   </Button>
                 </Link>
               ) : (
                 <Link href="/contributions">
-                  <Button variant="outline" className="w-full sm:w-auto">
+                  <Button variant="outline" className="w-full sm:w-auto rounded-2xl font-bold bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:border-[#6c47ff] hover:text-[#6c47ff] transition-colors">
                     Make Contributions First
                   </Button>
                 </Link>

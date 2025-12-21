@@ -75,51 +75,63 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
     <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm sm:text-lg">Pending</CardTitle>
+        <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pending</CardTitle>
+            <div className="p-2 bg-orange-50 dark:bg-orange-500/10 rounded-xl">
+              <div className="w-4 h-4 bg-orange-600 rounded-full"></div>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-lg sm:text-2xl font-bold truncate">{pendingLoans.length}</div>
-            <p className="text-xs text-gray-500 truncate">
+            <div className="text-lg sm:text-2xl font-black truncate">{pendingLoans.length}</div>
+            <p className="text-[10px] text-gray-500 truncate">
               {formatCurrency(pendingLoans.reduce((sum, l) => sum + l.amountRequested, 0))}
             </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm sm:text-lg">Active</CardTitle>
+        <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Active</CardTitle>
+            <div className="p-2 bg-blue-50 dark:bg-blue-500/10 rounded-xl">
+              <div className="w-4 h-4 bg-blue-600 rounded-full"></div>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-lg sm:text-2xl font-bold truncate">{activeLoans.length}</div>
-            <p className="text-xs text-gray-500 truncate">
+            <div className="text-lg sm:text-2xl font-black truncate">{activeLoans.length}</div>
+            <p className="text-[10px] text-gray-500 truncate">
               {formatCurrency(activeLoans.reduce((sum, l) => sum + (l.amountApproved || 0), 0))}
             </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm sm:text-lg">Completed</CardTitle>
+        <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Completed</CardTitle>
+            <div className="p-2 bg-green-50 dark:bg-green-500/10 rounded-xl">
+              <div className="w-4 h-4 bg-green-600 rounded-full"></div>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-lg sm:text-2xl font-bold truncate">{completedLoans.length}</div>
-            <p className="text-xs text-gray-500 truncate">
+            <div className="text-lg sm:text-2xl font-black truncate">{completedLoans.length}</div>
+            <p className="text-[10px] text-gray-500 truncate">
               {formatCurrency(completedLoans.reduce((sum, l) => sum + (l.amountApproved || 0), 0))}
             </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm sm:text-lg">Total Disbursed</CardTitle>
+        <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Disbursed</CardTitle>
+            <div className="p-2 bg-purple-50 dark:bg-purple-500/10 rounded-xl">
+              <div className="w-4 h-4 bg-purple-600 rounded-full"></div>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-lg sm:text-2xl font-bold truncate" title={formatCurrency(totalAmountApproved)}>
+            <div className="text-lg sm:text-2xl font-black truncate" title={formatCurrency(totalAmountApproved)}>
               {formatCurrency(totalAmountApproved)}
             </div>
-            <p className="text-xs text-gray-500 truncate">
+            <p className="text-[10px] text-gray-500 truncate">
               {loans.length} total loans
             </p>
           </CardContent>
@@ -127,20 +139,20 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
       </div>
 
       {/* Quick Actions */}
-      <Card>
+      <Card className="border-none shadow-lg bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
         <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
+          <CardTitle className="text-lg sm:text-xl font-black">Quick Actions</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-4">
             <Link href={`/loans/new?groupId=${groupId}`}>
-              <Button>
+              <Button className="rounded-2xl font-bold">
                 <Plus className="w-4 h-4 mr-2" />
                 Request Loan
               </Button>
             </Link>
             {currentUserRole === 'TREASURER' && pendingLoans.length > 0 && (
-              <Button variant="outline">
+              <Button variant="outline" className="rounded-2xl font-bold bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:border-[#6c47ff] hover:text-[#6c47ff] transition-colors">
                 <Eye className="w-4 h-4 mr-2" />
                 Review Pending ({pendingLoans.length})
               </Button>
@@ -151,10 +163,10 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
 
       {/* Pending Loans */}
       {pendingLoans.length > 0 && (
-        <Card>
+        <Card className="border-none shadow-lg bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
           <CardHeader>
-            <CardTitle className="text-lg">Pending Approval</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-lg sm:text-xl font-black">Pending Approval</CardTitle>
+            <CardDescription className="text-sm">
               Loans waiting for treasurer approval
             </CardDescription>
           </CardHeader>
@@ -175,11 +187,11 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
                   {pendingLoans.map((loan) => (
                     <TableRow key={loan.id}>
                       <TableCell>
-                        <div className="font-medium">
+                        <div className="font-black text-sm">
                           {loan.user.firstName} {loan.user.lastName}
                         </div>
                       </TableCell>
-                      <TableCell className="font-medium">
+                      <TableCell className="font-black">
                         {formatCurrency(loan.amountRequested)}
                       </TableCell>
                       <TableCell>{loan.interestRate}%</TableCell>
@@ -194,7 +206,7 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
                               size="sm"
                               onClick={() => handleLoanApproval(loan.id, true)}
                               disabled={loading}
-                              className="text-green-600 hover:text-green-700"
+                              className="text-green-600 hover:text-green-700 hover:bg-green-50 rounded-2xl font-bold transition-colors"
                             >
                               <CheckCircle className="w-4 h-4" />
                             </Button>
@@ -203,7 +215,7 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
                               variant="outline"
                               onClick={() => handleLoanApproval(loan.id, false)}
                               disabled={loading}
-                              className="text-red-600 hover:text-red-700"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50 rounded-2xl font-bold border-red-200 transition-colors"
                             >
                               <XCircle className="w-4 h-4" />
                             </Button>
@@ -220,10 +232,10 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
       )}
 
       {/* All Loans Table */}
-      <Card>
+      <Card className="border-none shadow-lg bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
         <CardHeader>
-          <CardTitle>All Loans</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-lg sm:text-xl font-black">All Loans</CardTitle>
+          <CardDescription className="text-sm">
             Complete loan history for the group
           </CardDescription>
         </CardHeader>
@@ -245,11 +257,11 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
                   {loans.map((loan) => (
                     <TableRow key={loan.id}>
                       <TableCell>
-                        <div className="font-medium">
+                        <div className="font-black text-sm">
                           {loan.user.firstName} {loan.user.lastName}
                         </div>
                       </TableCell>
-                      <TableCell className="font-medium">
+                      <TableCell className="font-black">
                         {formatCurrency(loan.amountApproved || loan.amountRequested)}
                       </TableCell>
                       <TableCell>
@@ -260,6 +272,7 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
                                 loan.status === 'PENDING' ? 'outline' :
                                   loan.status === 'APPROVED' ? 'secondary' : 'destructive'
                           }
+                          className="font-bold uppercase tracking-wider text-xs"
                         >
                           {loan.status}
                         </Badge>
@@ -276,9 +289,9 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
             </div>
           ) : (
             <div className="text-center py-8">
-              <p className="text-gray-500">No loans yet</p>
+              <p className="text-gray-500 mb-4">No loans yet</p>
               <Link href="/loans/new" className="mt-4 inline-block">
-                <Button size="sm">
+                <Button size="sm" className="rounded-2xl font-bold">
                   <Plus className="w-4 h-4 mr-2" />
                   Request First Loan
                 </Button>

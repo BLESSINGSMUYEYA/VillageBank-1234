@@ -52,16 +52,16 @@ export default async function ContributionsPage() {
   )
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Contributions</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-gray-900">Contributions</h1>
           <p className="text-gray-600 text-sm sm:text-base">Manage your monthly contributions</p>
         </div>
         {userGroups.length > 0 && (
           <Link href="/contributions/new">
-            <Button className="w-full sm:w-auto">
+            <Button className="w-full sm:w-auto rounded-2xl font-bold">
               <Plus className="w-4 h-4 mr-2" />
               Make Contribution
             </Button>
@@ -71,9 +71,9 @@ export default async function ContributionsPage() {
 
       {/* Current Month Alert */}
       {currentMonthContributions.length === 0 && userGroups.length > 0 && (
-        <Card className="border-yellow-200 bg-yellow-50">
+        <Card className="border-yellow-200/50 bg-yellow-50/80 backdrop-blur-md border-none shadow-xl">
           <CardHeader className="pb-3">
-            <CardTitle className="text-yellow-800 flex items-center text-base sm:text-lg">
+            <CardTitle className="text-yellow-800 flex items-center text-base sm:text-lg font-black">
               <Calendar className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               Monthly Contribution Reminder
             </CardTitle>
@@ -83,7 +83,7 @@ export default async function ContributionsPage() {
               You haven't made your contribution for {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}.
             </p>
             <Link href="/contributions/new">
-              <Button variant="outline" size="sm" className="w-full sm:w-auto">
+              <Button variant="outline" size="sm" className="w-full sm:w-auto rounded-2xl font-bold bg-white dark:bg-gray-900 border-yellow-300 dark:border-yellow-800 hover:border-yellow-500 hover:text-yellow-600 transition-colors">
                 Make Contribution Now
               </Button>
             </Link>
@@ -93,53 +93,61 @@ export default async function ContributionsPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">Total Contributed</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Contributed</CardTitle>
+            <div className="p-2 bg-green-50 dark:bg-green-500/10 rounded-xl">
+              <DollarSign className="h-4 w-4 text-green-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">{formatCurrency(totalContributed)}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-lg sm:text-2xl font-black">{formatCurrency(totalContributed)}</div>
+            <p className="text-[10px] text-gray-500 mt-1">
               {completedContributions.length} completed
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">Pending</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pending</CardTitle>
+            <div className="p-2 bg-orange-50 dark:bg-orange-500/10 rounded-xl">
+              <Calendar className="h-4 w-4 text-orange-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">{pendingContributions.length}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-lg sm:text-2xl font-black">{pendingContributions.length}</div>
+            <p className="text-[10px] text-gray-500 mt-1">
               Awaiting approval
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">Active Groups</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Active Groups</CardTitle>
+            <div className="p-2 bg-blue-50 dark:bg-blue-500/10 rounded-xl">
+              <TrendingUp className="h-4 w-4 text-blue-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">{userGroups.length}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-lg sm:text-2xl font-black">{userGroups.length}</div>
+            <p className="text-[10px] text-gray-500 mt-1">
               Groups you belong to
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">This Month</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">This Month</CardTitle>
+            <div className="p-2 bg-purple-50 dark:bg-purple-500/10 rounded-xl">
+              <Calendar className="h-4 w-4 text-purple-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-xl sm:text-2xl font-bold">{currentMonthContributions.length}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-lg sm:text-2xl font-black">{currentMonthContributions.length}</div>
+            <p className="text-[10px] text-gray-500 mt-1">
               Contributions made
             </p>
           </CardContent>
@@ -148,9 +156,9 @@ export default async function ContributionsPage() {
 
       {/* Groups for Contribution */}
       {userGroups.length > 0 && (
-        <Card>
+        <Card className="border-none shadow-lg bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
           <CardHeader>
-            <CardTitle className="text-lg sm:text-xl">Your Groups</CardTitle>
+            <CardTitle className="text-lg sm:text-xl font-black">Your Groups</CardTitle>
             <CardDescription className="text-sm">
               Groups where you can make contributions
             </CardDescription>
@@ -158,16 +166,17 @@ export default async function ContributionsPage() {
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {userGroups.map((groupMember) => (
-                <Card key={groupMember.id} className="border-dashed">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base sm:text-lg truncate">{groupMember.group.name}</CardTitle>
+                <Card key={groupMember.id} className="group relative hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border-dashed border-gray-300 dark:border-gray-600 bg-white/60 dark:bg-gray-800/60 backdrop-blur-md">
+                  <div className="absolute inset-0 bg-green-400 opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity"></div>
+                  <CardHeader className="pb-3 relative z-10">
+                    <CardTitle className="text-base sm:text-lg font-black truncate">{groupMember.group.name}</CardTitle>
                     <CardDescription className="text-sm">
                       Monthly: {formatCurrency(groupMember.group.monthlyContribution)}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="relative z-10">
                     <Link href={`/contributions/new?groupId=${groupMember.groupId}`}>
-                      <Button size="sm" className="w-full">
+                      <Button size="sm" className="w-full rounded-2xl font-bold bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:border-green-500 hover:text-green-600 transition-colors">
                         <Plus className="w-4 h-4 mr-2" />
                         Contribute
                       </Button>
@@ -181,9 +190,9 @@ export default async function ContributionsPage() {
       )}
 
       {/* Contribution History */}
-      <Card>
+      <Card className="border-none shadow-lg bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
         <CardHeader>
-          <CardTitle className="text-lg sm:text-xl">Contribution History</CardTitle>
+          <CardTitle className="text-lg sm:text-xl font-black">Contribution History</CardTitle>
           <CardDescription className="text-sm">
             Your complete contribution record
           </CardDescription>
@@ -270,20 +279,20 @@ export default async function ContributionsPage() {
           ) : (
             <div className="text-center py-8 sm:py-12 px-4">
               <DollarSign className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">No Contributions Yet</h3>
+              <h3 className="text-base sm:text-lg font-black text-gray-900 mb-2">No Contributions Yet</h3>
               <p className="text-gray-500 mb-6 text-sm sm:text-base">
                 Start contributing to your village banking groups.
               </p>
               {userGroups.length > 0 ? (
                 <Link href="/contributions/new">
-                  <Button className="w-full sm:w-auto">
+                  <Button className="w-full sm:w-auto rounded-2xl font-bold">
                     <Plus className="w-4 h-4 mr-2" />
                     Make First Contribution
                   </Button>
                 </Link>
               ) : (
                 <Link href="/groups">
-                  <Button variant="outline" className="w-full sm:w-auto">
+                  <Button variant="outline" className="w-full sm:w-auto rounded-2xl font-bold bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:border-[#6c47ff] hover:text-[#6c47ff] transition-colors">
                     Join a Group First
                   </Button>
                 </Link>

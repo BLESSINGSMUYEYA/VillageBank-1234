@@ -55,9 +55,9 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
   return (
     <div className="lg:hidden">
       {/* Mobile Header */}
-      <div className="flex items-center justify-between p-4 border-b bg-white">
+      <div className="flex items-center justify-between p-4 border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md shadow-lg">
         <div className="flex items-center space-x-3">
-          <h1 className="text-xl font-semibold text-gray-900">{t('common.dashboard')}</h1>
+          <h1 className="text-xl sm:text-2xl font-black text-gray-900">{t('common.dashboard')}</h1>
         </div>
 
         <div className="flex items-center space-x-2">
@@ -66,35 +66,38 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback>
-                      {user?.fullName?.charAt(0).toUpperCase() || user?.username?.charAt(0).toUpperCase() || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                  <div className="relative group">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-[#6c47ff] to-[#9d81ff] rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                    <Avatar className="relative h-8 w-8 bg-white dark:bg-gray-800 rounded-full border-2 border-white dark:border-gray-950 shadow-xl overflow-hidden">
+                      <AvatarFallback className="font-black bg-gradient-to-br from-[#6c47ff] to-[#9d81ff] bg-clip-text text-transparent">
+                        {user?.fullName?.charAt(0).toUpperCase() || user?.username?.charAt(0).toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuContent className="w-56 border-none shadow-xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-md" align="end" forceMount>
                 <div className="flex items-center justify-start gap-2 p-2">
                   <div className="flex flex-col space-y-1 leading-none">
-                    <p className="font-medium">{user?.fullName || user?.username || 'User'}</p>
-                    <p className="w-50 truncate text-sm text-muted-foreground">
+                    <p className="font-black text-sm">{user?.fullName || user?.username || 'User'}</p>
+                    <p className="w-50 truncate text-xs text-gray-500">
                       {user?.primaryEmailAddress?.emailAddress}
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
                       {user?.publicMetadata?.role as string || 'User'}
                     </p>
                   </div>
                 </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/profile" className="w-full cursor-pointer">
+                  <Link href="/profile" className="w-full cursor-pointer rounded-xl font-bold">
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/settings" className="w-full cursor-pointer">
+                  <Link href="/settings" className="w-full cursor-pointer rounded-xl font-bold">
                     <Settings className="mr-2 h-4 w-4" />
                     Settings
                   </Link>
@@ -111,12 +114,12 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
               <Link href="/login">
-                <Button variant="ghost" size="sm">Sign In</Button>
+                <Button variant="outline" size="sm" className="rounded-2xl font-bold bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:border-[#6c47ff] hover:text-[#6c47ff] transition-colors">Sign In</Button>
               </Link>
               <Link href="/register">
-                <Button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm h-8 px-3">
+                <Button className="bg-gradient-to-r from-[#6c47ff] to-[#9d81ff] text-white rounded-2xl font-bold text-sm h-8 px-3 shadow-lg hover:shadow-xl transition-all duration-300">
                   Sign Up
                 </Button>
               </Link>
