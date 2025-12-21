@@ -1,15 +1,10 @@
-// Temporarily disable Prisma client until it can be properly generated
-// import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 
-// Import MemberStatus with fallback to prevent build errors
-type MemberStatus = 'ACTIVE' | 'PENDING' | 'INACTIVE'
+// Import MemberStatus from Prisma for type consistency
+import { MemberStatus as PrismaMemberStatus } from '@prisma/client'
 
-// Mock PrismaClient for now to prevent build errors
-class MockPrismaClient {
-  // Add mock methods as needed for build
-}
-
-const PrismaClient = MockPrismaClient as any
+// Re-export for backward compatibility
+export type MemberStatus = PrismaMemberStatus
 
 const globalForPrisma = globalThis as unknown as {
   prisma: typeof PrismaClient | undefined
