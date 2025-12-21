@@ -3,6 +3,7 @@
 import { useUser, useAuth, SignInButton, SignUpButton, SignOutButton } from '@clerk/nextjs'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -26,6 +27,7 @@ interface MobileNavigationProps {
 
 export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationProps) {
   const { user, isLoaded } = useUser()
+  const pathname = usePathname()
 
   const { t } = useLanguage()
 
@@ -124,21 +126,43 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t lg:hidden">
-        <div className="grid grid-cols-5 gap-1">
-          {allNavigation.slice(0, 5).map((item) => {
-            const Icon = item.icon
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="flex flex-col items-center justify-center py-2 px-1 text-xs text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                <Icon className="w-5 h-5 mb-1" />
-                <span className="truncate max-w-full">{item.name}</span>
-              </Link>
-            )
-          })}
+      <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden px-4 pb-6">
+        <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-white/20 dark:border-gray-800 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] rounded-[2rem] px-2 py-2">
+          <div className="flex items-center justify-around gap-1">
+            {allNavigation.slice(0, 5).map((item) => {
+              const Icon = item.icon
+              const isActive = pathname === item.href
+
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`relative flex flex-col items-center justify-center py-2 px-3 rounded-2xl transition-all duration-300 group ${isActive
+                    ? 'text-[#6c47ff]'
+                    : 'text-gray-500 hover:text-gray-900'
+                    }`}
+                >
+                  {/* Background Glow for Active State */}
+                  {isActive && (
+                    <div className="absolute inset-0 bg-[#6c47ff]/10 rounded-2xl animate-in fade-in zoom-in duration-300" />
+                  )}
+
+                  <Icon className={`w-5 h-5 mb-1 transition-transform duration-300 group-active:scale-90 ${isActive ? 'stroke-[2.5px]' : 'stroke-[1.5px]'
+                    }`} />
+
+                  <span className={`text-[10px] font-medium tracking-wide truncate max-w-[64px] transition-all duration-300 ${isActive ? 'opacity-100' : 'opacity-70 group-hover:opacity-100'
+                    }`}>
+                    {item.name}
+                  </span>
+
+                  {/* Dot indicator */}
+                  {isActive && (
+                    <div className="absolute -bottom-1 w-1 h-1 bg-[#6c47ff] rounded-full shadow-[0_0_8px_rgba(108,71,255,0.8)]" />
+                  )}
+                </Link>
+              )
+            })}
+          </div>
         </div>
       </div>
     </div>
