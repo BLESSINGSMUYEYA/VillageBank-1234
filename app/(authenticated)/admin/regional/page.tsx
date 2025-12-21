@@ -34,7 +34,7 @@ interface GroupData {
   members: number
   monthlyContribution: number
   totalContributions: number
-  status: 'ACTIVE' | 'INACTIVE'
+  status: 'ACTIVE' | 'SUSPENDED'
   createdAt: string
 }
 
@@ -285,7 +285,7 @@ export default function RegionalAdminPage() {
                     <SelectContent>
                       <SelectItem value="all">All Users</SelectItem>
                       <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
+                      <SelectItem value="suspended">Suspended</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

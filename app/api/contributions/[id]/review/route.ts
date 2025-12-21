@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
-// Temporarily disable Prisma imports until client is properly generated
-// import { PaymentStatus } from '@prisma/client'
-type PaymentStatus = 'PENDING' | 'APPROVED' | 'REJECTED'
+import { PaymentStatus } from '@prisma/client'
 import { z } from 'zod'
 
 const reviewSchema = z.object({

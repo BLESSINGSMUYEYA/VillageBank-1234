@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
         activeMembers: group.members.filter(m => m.status === 'ACTIVE').length,
         monthlyContribution: group.monthlyContribution,
         totalContributions: group.contributions.reduce((sum, c) => sum + c.amount, 0),
-        status: group.isActive ? 'ACTIVE' : 'INACTIVE',
+        status: group.isActive ? 'ACTIVE' : 'SUSPENDED',
         createdAt: group.createdAt,
         interestRate: group.interestRate,
         maxLoanMultiplier: group.maxLoanMultiplier

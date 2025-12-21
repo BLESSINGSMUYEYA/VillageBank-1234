@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
-// Temporarily disable Prisma imports until client is properly generated
-// import { MemberStatus } from '@prisma/client'
-type MemberStatus = 'ACTIVE' | 'PENDING' | 'INACTIVE'
+import { MemberStatus } from '@prisma/client'
 import { z } from 'zod'
 import { formatCurrency } from '@/lib/utils'
 
