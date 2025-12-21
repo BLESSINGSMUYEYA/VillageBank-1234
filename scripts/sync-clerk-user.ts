@@ -1,10 +1,12 @@
 import { config } from 'dotenv'
-import { PrismaClient } from '@prisma/client'
+// Temporarily disable Prisma imports until client is properly generated
+// import { PrismaClient } from '@prisma/client'
+import { prisma } from '../lib/prisma';
 
 // Load environment variables
 config({ path: '.env' })
 
-const prisma = new PrismaClient()
+// const prisma = new PrismaClient()
 
 async function syncClerkUser(clerkId: string, email: string, firstName: string, lastName: string) {
   try {

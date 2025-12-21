@@ -1,6 +1,9 @@
 import { prisma } from '../lib/prisma';
 import bcrypt from 'bcryptjs';
-import { UserRole, Region } from '@prisma/client';
+// Temporarily disable Prisma imports until client is properly generated
+// import { UserRole, Region } from '@prisma/client';
+type UserRole = 'MEMBER' | 'REGIONAL_ADMIN' | 'SUPER_ADMIN'
+type Region = 'CENTRAL' | 'NORTHERN' | 'SOUTHERN' | 'EASTERN' | 'WESTERN'
 
 async function createSuperUser() {
   try {
@@ -10,8 +13,8 @@ async function createSuperUser() {
       firstName: 'Super',
       lastName: 'Admin',
       phoneNumber: '+260123456789',
-      role: UserRole.SUPER_ADMIN,
-      region: Region.CENTRAL,
+      role: 'SUPER_ADMIN' as UserRole,
+      region: 'CENTRAL' as Region,
       isActive: true,
     };
 

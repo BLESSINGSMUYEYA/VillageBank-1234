@@ -1,10 +1,12 @@
-import { PrismaClient } from '@prisma/client'
+// Temporarily disable Prisma imports until client is properly generated
+// import { PrismaClient } from '@prisma/client'
+import { prisma } from '../lib/prisma';
 
-const prisma = new PrismaClient()
+const prismaClient = prisma
 
 async function makeSuperAdmin(email: string) {
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prismaClient.user.findUnique({
       where: { email }
     })
 
