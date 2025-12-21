@@ -140,7 +140,7 @@ export default function TreasurerApprovalsPage() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
+            <div className="flex items-center justify-center min-h-100">
                 <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
             </div>
         )
@@ -211,7 +211,7 @@ export default function TreasurerApprovalsPage() {
                                             <div>
                                                 <label className="text-sm font-medium mb-1 block">Reason for rejection</label>
                                                 <textarea
-                                                    className="w-full min-h-[100px] p-3 border rounded-md text-sm"
+                                                    className="w-full min-h-25 p-3 border rounded-md text-sm"
                                                     placeholder="e.g. Reference number doesn't match receipt"
                                                     value={rejectionReason}
                                                     onChange={(e) => setRejectionReason(e.target.value)}
