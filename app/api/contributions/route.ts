@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
+import { PenaltyService } from '@/lib/penalty-service'
 import { z } from 'zod'
 
 const createContributionSchema = z.object({
@@ -51,6 +52,7 @@ export async function POST(request: NextRequest) {
     // Check if contribution for this month already exists
     const currentMonth = new Date().getMonth() + 1
     const currentYear = new Date().getFullYear()
+    const currentDay = new Date().getDate()
 
     const existingContribution = await prisma.contribution.findUnique({
       where: {
@@ -70,6 +72,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Check if contribution is late and calculate penalty
+    const isLate = currentDay > groupMember.group.contributionDueDay
+    const penaltyApplied = isLate ? groupMember.group.penaltyAmount : 0
+
     // Create contribution
     const contribution = await prisma.contribution.create({
       data: {
@@ -82,6 +88,8 @@ export async function POST(request: NextRequest) {
         transactionRef: validatedData.transactionRef,
         receiptUrl: validatedData.receiptUrl,
         status: 'PENDING', // All contributions go to PENDING for treasurer approval
+        isLate: isLate,
+        penaltyApplied: penaltyApplied,
       },
     })
 
@@ -90,12 +98,14 @@ export async function POST(request: NextRequest) {
       data: {
         userId: userId,
         groupId: validatedData.groupId,
-        actionType: 'CONTRIBUTION_MADE',
-        description: `Made contribution of MWK ${validatedData.amount.toLocaleString()}`,
+        actionType: isLate ? 'CONTRIBUTION_MADE_LATE' : 'CONTRIBUTION_MADE',
+        description: `Made contribution of MWK ${validatedData.amount.toLocaleString()}${isLate ? ` (late - penalty MWK ${penaltyApplied.toLocaleString()})` : ''}`,
         metadata: {
           contributionId: contribution.id,
           amount: validatedData.amount,
           paymentMethod: validatedData.paymentMethod,
+          isLate: isLate,
+          penaltyApplied: penaltyApplied,
         },
       },
     })
@@ -135,20 +145,64 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Get user's contributions
+    // Parse query parameters for filtering
+    const { searchParams } = new URL(request.url)
+    const status = searchParams.get('status')
+    const groupId = searchParams.get('groupId')
+    const month = searchParams.get('month')
+    const year = searchParams.get('year')
+    const search = searchParams.get('search')
+
+    // Build where clause for filtering
+    const whereClause: any = {
+      userId: userId,
+    }
+
+    if (status) {
+      whereClause.status = status
+    }
+
+    if (groupId) {
+      whereClause.groupId = groupId
+    }
+
+    if (month && year) {
+      whereClause.month = parseInt(month)
+      whereClause.year = parseInt(year)
+    }
+
+    // Get user's contributions with filters
     const contributions = await prisma.contribution.findMany({
-      where: {
-        userId: userId,
-      },
+      where: whereClause,
       include: {
-        group: true,
+        group: search ? true : undefined, // Only include group if searching
       },
       orderBy: {
         createdAt: 'desc',
       },
     })
 
-    return NextResponse.json({ contributions })
+    // If search term provided, filter by group name
+    let filteredContributions = contributions
+    if (search) {
+      const searchTerm = search.toLowerCase()
+      filteredContributions = contributions.filter(contribution =>
+        contribution.group.name.toLowerCase().includes(searchTerm) ||
+        contribution.group.region.toLowerCase().includes(searchTerm)
+      )
+    }
+
+    // If no group include was needed, remove it from results
+    if (!search) {
+      filteredContributions = await prisma.contribution.findMany({
+        where: whereClause,
+        orderBy: {
+          createdAt: 'desc',
+        },
+      })
+    }
+
+    return NextResponse.json({ contributions: filteredContributions })
 
   } catch (error) {
     console.error('Get contributions error:', error)

@@ -168,26 +168,45 @@ function NewContributionPageContent() {
 
     setIsScanning(true)
     setError('')
+    setSuccess('')
+    
     try {
       const response = await fetch('/api/ocr', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ imageUrl: url }),
       })
+      
       const data = await response.json()
-      if (response.ok && data) {
-        setFormData(prev => ({
-          ...prev,
-          amount: data.amount?.toString() || prev.amount,
-          transactionRef: data.transactionRef || prev.transactionRef,
-          paymentMethod: data.paymentMethod || prev.paymentMethod,
-        }))
-        setSuccess('Receipt scanned successfully!')
+      
+      if (response.ok && data && (data.amount || data.transactionRef || data.paymentMethod)) {
+        // Successfully extracted some data
+        const updatedFields = []
+        if (data.amount) {
+          setFormData(prev => ({ ...prev, amount: data.amount.toString() }))
+          updatedFields.push('amount')
+        }
+        if (data.transactionRef) {
+          setFormData(prev => ({ ...prev, transactionRef: data.transactionRef }))
+          updatedFields.push('transaction reference')
+        }
+        if (data.paymentMethod) {
+          setFormData(prev => ({ ...prev, paymentMethod: data.paymentMethod }))
+          updatedFields.push('payment method')
+        }
+        
+        setSuccess(`Receipt scanned successfully! Auto-filled: ${updatedFields.join(', ')}`)
+      } else if (response.ok && (!data.amount && !data.transactionRef && !data.paymentMethod)) {
+        // OCR succeeded but couldn't extract readable data
+        setError('Receipt uploaded but couldn\'t extract readable information. Please fill the form manually.')
       } else {
-        setError(data.error || 'Failed to scan receipt')
+        // OCR failed
+        const errorMessage = data.error || 'Failed to scan receipt'
+        setError(`${errorMessage}. Please fill the form manually or try uploading a clearer receipt.`)
       }
     } catch (err) {
-      setError('Error scanning receipt')
+      console.error('OCR scanning error:', err)
+      setError('Network error while scanning receipt. Please fill the form manually.')
     } finally {
       setIsScanning(false)
     }

@@ -3,32 +3,42 @@ import { prisma } from '@/lib/prisma'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Plus, Calendar, DollarSign, TrendingUp } from 'lucide-react'
+import { Plus, Calendar, DollarSign, TrendingUp, Search, Filter } from 'lucide-react'
 import Link from 'next/link'
 import { formatCurrency, formatDate } from '@/lib/utils'
 
-export default async function ContributionsPage() {
+export default async function ContributionsPage({
+  searchParams,
+}: {
+  searchParams: { status?: string; groupId?: string; month?: string; year?: string; search?: string }
+}) {
   const { userId } = await auth()
   
   if (!userId) {
     return <div>Please sign in to access contributions.</div>
   }
 
-  // Get user's contributions
-  const contributions = await prisma.contribution.findMany({
-    where: {
-      userId: userId,
-    },
-    include: {
-      group: true,
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  })
+  // Build query parameters for API call
+  const queryParams = new URLSearchParams()
+  if (searchParams.status) queryParams.set('status', searchParams.status)
+  if (searchParams.groupId) queryParams.set('groupId', searchParams.groupId)
+  if (searchParams.month && searchParams.year) {
+    queryParams.set('month', searchParams.month)
+    queryParams.set('year', searchParams.year)
+  }
+  if (searchParams.search) queryParams.set('search', searchParams.search)
 
-  // Get user's groups for making new contributions
+  // Get user's contributions with filters
+  const contributionsResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/contributions?${queryParams.toString()}`, {
+    cache: 'no-store'
+  })
+  const contributionsData = await contributionsResponse.json()
+  const contributions = contributionsData.contributions || []
+
+  // Get user's groups for making new contributions and filter dropdown
   const userGroups = await prisma.groupMember.findMany({
     where: {
       userId: userId,
@@ -68,6 +78,87 @@ export default async function ContributionsPage() {
           </Link>
         )}
       </div>
+
+      {/* Filters */}
+      <Card className="border-none shadow-lg bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
+        <CardHeader>
+          <CardTitle className="text-lg sm:text-xl font-black flex items-center">
+            <Filter className="w-5 h-5 mr-2" />
+            Filters
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Search groups..."
+                className="pl-10"
+                defaultValue={searchParams.search || ''}
+              />
+            </div>
+
+            {/* Status Filter */}
+            <Select defaultValue={searchParams.status || ''}>
+              <SelectTrigger>
+                <SelectValue placeholder="All Statuses" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All Statuses</SelectItem>
+                <SelectItem value="PENDING">Pending</SelectItem>
+                <SelectItem value="COMPLETED">Completed</SelectItem>
+                <SelectItem value="REJECTED">Rejected</SelectItem>
+                <SelectItem value="FAILED">Failed</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Group Filter */}
+            <Select defaultValue={searchParams.groupId || ''}>
+              <SelectTrigger>
+                <SelectValue placeholder="All Groups" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All Groups</SelectItem>
+                {userGroups.map((groupMember) => (
+                  <SelectItem key={groupMember.groupId} value={groupMember.groupId}>
+                    {groupMember.group.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* Month/Year Filter */}
+            <Select defaultValue={searchParams.month && searchParams.year ? `${searchParams.month}-${searchParams.year}` : ''}>
+              <SelectTrigger>
+                <SelectValue placeholder="All Time" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All Time</SelectItem>
+                {/* Generate last 12 months */}
+                {Array.from({ length: 12 }, (_, i) => {
+                  const date = new Date()
+                  date.setMonth(date.getMonth() - i)
+                  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+                  const year = date.getFullYear().toString()
+                  const label = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+                  return (
+                    <SelectItem key={`${month}-${year}`} value={`${month}-${year}`}>
+                      {label}
+                    </SelectItem>
+                  )
+                })}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="mt-4 flex justify-end">
+            <Button variant="outline" size="sm" className="rounded-2xl font-bold">
+              Clear Filters
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Current Month Alert */}
       {currentMonthContributions.length === 0 && userGroups.length > 0 && (

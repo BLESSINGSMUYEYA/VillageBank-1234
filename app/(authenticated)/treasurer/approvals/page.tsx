@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Check, X, Eye, ArrowLeft, Loader2, Image as ImageIcon } from 'lucide-react'
 import Link from 'next/link'
 import { formatCurrency } from '@/lib/utils'
@@ -17,6 +18,9 @@ export default function TreasurerApprovalsPage() {
     const [rejectionReason, setRejectionReason] = useState('')
     const [showRejectForm, setShowRejectForm] = useState<string | null>(null)
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [selectedContributions, setSelectedContributions] = useState<string[]>([])
+    const [bulkAction, setBulkAction] = useState<'approve' | 'reject' | null>(null)
+    const [bulkRejectionReason, setBulkRejectionReason] = useState('')
 
     useEffect(() => {
         fetchPending()
@@ -35,13 +39,70 @@ export default function TreasurerApprovalsPage() {
         }
     }
 
-    const handleReview = async (id: string, status: 'COMPLETED' | 'REJECTED') => {
-        if (status === 'REJECTED' && !rejectionReason) {
+    const handleBulkReview = async () => {
+        if (selectedContributions.length === 0) {
+            toast.error('Please select at least one contribution')
+            return
+        }
+
+        if (bulkAction === 'reject' && !bulkRejectionReason) {
             toast.error('Please provide a reason for rejection')
             return
         }
 
         setIsSubmitting(true)
+        try {
+            const response = await fetch('/api/contributions/bulk-review', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    contributionIds: selectedContributions,
+                    status: bulkAction === 'approve' ? 'COMPLETED' : 'REJECTED',
+                    rejectionReason: bulkRejectionReason 
+                }),
+            })
+
+            if (response.ok) {
+                const data = await response.json()
+                toast.success(data.message)
+                fetchPending()
+                setSelectedContributions([])
+                setBulkAction(null)
+                setBulkRejectionReason('')
+            } else {
+                const error = await response.json()
+                toast.error(error.error || 'Failed to process bulk action')
+            }
+        } catch (error) {
+            toast.error('Error processing bulk action')
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
+    const handleSelectAll = (checked: boolean) => {
+        if (checked) {
+            setSelectedContributions(pending.map(c => c.id))
+        } else {
+            setSelectedContributions([])
+        }
+    }
+
+    const handleSelectContribution = (id: string, checked: boolean) => {
+        if (checked) {
+            setSelectedContributions(prev => [...prev, id])
+        } else {
+            setSelectedContributions(prev => prev.filter(cId => cId !== id))
+        }
+    }
+
+            const handleReview = async (id: string, status: 'COMPLETED' | 'REJECTED') => {
+        if (status === 'REJECTED' && !rejectionReason) {
+            toast.error('Please provide a reason for rejection')
+            return
+        }
+
+        setReviewingId(id)
         try {
             const response = await fetch(`/api/contributions/${id}/review`, {
                 method: 'POST',
@@ -61,7 +122,19 @@ export default function TreasurerApprovalsPage() {
         } catch (error) {
             toast.error('An error occurred during review')
         } finally {
-            setIsSubmitting(false)
+            setReviewingId(null)
+        }
+    }
+
+    const handleBulkApproval = async () => {
+        if (bulkAction === 'approve') {
+            handleBulkReview()
+        } else if (bulkAction === 'reject') {
+            if (!bulkRejectionReason) {
+                toast.error('Please provide a reason for rejection')
+                return
+            }
+            handleBulkReview()
         }
     }
 
