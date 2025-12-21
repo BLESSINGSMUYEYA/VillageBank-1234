@@ -6,15 +6,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  User, 
-  DollarSign, 
-  CreditCard, 
+import Link from 'next/link'
+import {
+  User,
+  DollarSign,
+  CreditCard,
   Calendar,
   TrendingUp,
   Award,
   Users,
-  Target
+  Target,
+  Eye,
+  Settings
 } from 'lucide-react'
 
 interface UserProfile {
@@ -69,17 +72,17 @@ export default function ProfilePage() {
     setError(null)
     try {
       const response = await fetch('/api/users/profile')
-      
+
       if (response.status === 401) {
         // User is not authenticated, redirect to sign-in
         window.location.href = '/sign-in'
         return
       }
-      
+
       if (!response.ok) {
         throw new Error(`Failed to fetch profile data: ${response.statusText}`)
       }
-      
+
       const data = await response.json()
       setProfile({
         id: data.id,
@@ -123,7 +126,7 @@ export default function ProfilePage() {
         <div className="text-center">
           <div className="text-lg text-red-600 mb-4">Error loading profile</div>
           <p className="text-gray-600 mb-4">{error}</p>
-          <button 
+          <button
             onClick={() => fetchProfileData()}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
@@ -142,80 +145,102 @@ export default function ProfilePage() {
       </div>
 
       {/* Profile Header */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center space-x-6">
-            <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center">
-              <span className="text-2xl font-bold text-blue-600">
-                {(profile?.firstName?.charAt(0) || '') + (profile?.lastName?.charAt(0) || '')}
+      <Card className="overflow-hidden border-none shadow-xl bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl">
+        <CardContent className="p-0">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-8 p-6 sm:p-8">
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#6c47ff] to-[#9d81ff] rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+              <div className="relative w-24 h-24 sm:w-28 sm:h-28 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center border-4 border-white dark:border-gray-950 shadow-2xl overflow-hidden">
+                <span className="text-3xl font-black bg-gradient-to-br from-[#6c47ff] to-[#9d81ff] bg-clip-text text-transparent">
+                  {(profile?.firstName?.charAt(0) || '') + (profile?.lastName?.charAt(0) || '')}
                 </span>
+              </div>
             </div>
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold">
-                {profile?.firstName || ''} {profile?.lastName || ''}
-              </h2>
-              <p className="text-gray-600">{profile?.email}</p>
-              <div className="flex items-center gap-2 mt-2">
-                <Badge variant="outline">{profile?.role}</Badge>
-                <Badge variant="outline">{profile?.region} Region</Badge>
-                <Badge variant={profile?.isActive ? 'default' : 'secondary'}>
+
+            <div className="flex-1 text-center sm:text-left space-y-2">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 dark:text-white">
+                    {profile?.firstName || ''} {profile?.lastName || ''}
+                  </h2>
+                  <p className="text-gray-500 font-medium">{profile?.email}</p>
+                </div>
+
+                <div className="flex flex-col items-center sm:items-end bg-gray-50 dark:bg-gray-800/50 p-3 rounded-2xl border border-gray-100 dark:border-gray-800">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Member since</p>
+                  <p className="font-bold text-gray-900 dark:text-gray-100">
+                    {profile?.joinedAt ? new Date(profile.joinedAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '---'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap justify-center sm:justify-start gap-2 pt-2">
+                <Badge variant="secondary" className="bg-[#6c47ff]/10 text-[#6c47ff] border-[#6c47ff]/20 hover:bg-[#6c47ff]/20 px-3 py-1 rounded-full font-bold text-[10px] uppercase tracking-wider">
+                  {profile?.role}
+                </Badge>
+                <Badge variant="secondary" className="bg-blue-500/10 text-blue-600 border-blue-500/20 hover:bg-blue-500/20 px-3 py-1 rounded-full font-bold text-[10px] uppercase tracking-wider">
+                  {profile?.region} Region
+                </Badge>
+                <Badge variant={profile?.isActive ? 'default' : 'secondary'} className={`${profile?.isActive ? 'bg-green-500 text-white' : ''} px-3 py-1 rounded-full font-bold text-[10px] uppercase tracking-wider`}>
                   {profile?.isActive ? 'Active' : 'Inactive'}
                 </Badge>
               </div>
-            </div>
-            <div className="text-right">
-              <p className="text-sm text-gray-500">Member since</p>
-              <p className="font-medium">
-                {profile?.joinedAt ? new Date(profile.joinedAt).toLocaleDateString() : 'Unknown'}
-              </p>
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Financial Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Contributions</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Contributions</CardTitle>
+            <div className="p-2 bg-green-50 dark:bg-green-500/10 rounded-xl">
+              <DollarSign className="h-4 w-4 text-green-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">MWK {financials?.totalContributions.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">Lifetime total</p>
+            <div className="text-lg sm:text-2xl font-black truncate">MWK {financials?.totalContributions.toLocaleString()}</div>
+            <p className="text-[10px] text-gray-500 mt-1">Lifetime total</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Loans</CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Borrowed</CardTitle>
+            <div className="p-2 bg-blue-50 dark:bg-blue-500/10 rounded-xl">
+              <CreditCard className="h-4 w-4 text-blue-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">MWK {financials?.totalLoans.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">Amount borrowed</p>
+            <div className="text-lg sm:text-2xl font-black truncate">MWK {financials?.totalLoans.toLocaleString()}</div>
+            <p className="text-[10px] text-gray-500 mt-1">Total loans</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Outstanding Balance</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Debt</CardTitle>
+            <div className="p-2 bg-orange-50 dark:bg-orange-500/10 rounded-xl">
+              <TrendingUp className="h-4 w-4 text-orange-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">MWK {financials?.outstandingLoanBalance.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">Current debt</p>
+            <div className="text-lg sm:text-2xl font-black truncate text-orange-600">MWK {financials?.outstandingLoanBalance.toLocaleString()}</div>
+            <p className="text-[10px] text-gray-500 mt-1">Active balance</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Contribution Streak</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Streak</CardTitle>
+            <div className="p-2 bg-purple-50 dark:bg-purple-500/10 rounded-xl">
+              <Calendar className="h-4 w-4 text-purple-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{financials?.contributionStreak}</div>
-            <p className="text-xs text-muted-foreground">Months in a row</p>
+            <div className="text-lg sm:text-2xl font-black text-purple-600">{financials?.contributionStreak}</div>
+            <p className="text-[10px] text-gray-500 mt-1">Consecutive months</p>
           </CardContent>
         </Card>
       </div>
@@ -244,8 +269,8 @@ export default function ProfilePage() {
                     <span>{financials?.eligibilityScore}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-blue-600 h-2 rounded-full" 
+                    <div
+                      className="bg-blue-600 h-2 rounded-full"
                       style={{ width: `${financials?.eligibilityScore}%` }}
                     ></div>
                   </div>
@@ -268,34 +293,41 @@ export default function ProfilePage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-none shadow-lg bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
               <CardHeader>
-                <CardTitle>Achievements</CardTitle>
+                <CardTitle className="text-xl font-bold">Achievements</CardTitle>
                 <CardDescription>
-                  Your accomplishments and milestones
+                  Your milestones and badges
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-4 border rounded-lg">
-                    <Award className="w-8 h-8 mx-auto mb-2 text-yellow-500" />
-                    <p className="font-medium">Early Bird</p>
-                    <p className="text-sm text-gray-500">First month member</p>
+                  <div className="group relative text-center p-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                    <div className="absolute inset-0 bg-yellow-400 opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity"></div>
+                    <Award className="w-10 h-10 mx-auto mb-3 text-yellow-500 transform group-hover:scale-110 transition-transform" />
+                    <p className="font-black text-xs uppercase tracking-wider mb-1">Early Bird</p>
+                    <p className="text-[10px] text-gray-500 font-medium">Foundation Member</p>
                   </div>
-                  <div className="text-center p-4 border rounded-lg">
-                    <Target className="w-8 h-8 mx-auto mb-2 text-blue-500" />
-                    <p className="font-medium">Consistent</p>
-                    <p className="text-sm text-gray-500">12 month streak</p>
+
+                  <div className="group relative text-center p-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                    <div className="absolute inset-0 bg-blue-400 opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity"></div>
+                    <Target className="w-10 h-10 mx-auto mb-3 text-blue-500 transform group-hover:scale-110 transition-transform" />
+                    <p className="font-black text-xs uppercase tracking-wider mb-1">Consistent</p>
+                    <p className="text-[10px] text-gray-500 font-medium">6 Month Streak</p>
                   </div>
-                  <div className="text-center p-4 border rounded-lg">
-                    <Users className="w-8 h-8 mx-auto mb-2 text-green-500" />
-                    <p className="font-medium">Team Player</p>
-                    <p className="text-sm text-gray-500">Group treasurer</p>
+
+                  <div className="group relative text-center p-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                    <div className="absolute inset-0 bg-green-400 opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity"></div>
+                    <Users className="w-10 h-10 mx-auto mb-3 text-green-500 transform group-hover:scale-110 transition-transform" />
+                    <p className="font-black text-xs uppercase tracking-wider mb-1">Contributor</p>
+                    <p className="text-[10px] text-gray-500 font-medium">Active Member</p>
                   </div>
-                  <div className="text-center p-4 border rounded-lg">
-                    <TrendingUp className="w-8 h-8 mx-auto mb-2 text-purple-500" />
-                    <p className="font-medium">Rising Star</p>
-                    <p className="text-sm text-gray-500">Top contributor</p>
+
+                  <div className="group relative text-center p-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                    <div className="absolute inset-0 bg-purple-400 opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity"></div>
+                    <TrendingUp className="w-10 h-10 mx-auto mb-3 text-purple-500 transform group-hover:scale-110 transition-transform" />
+                    <p className="font-black text-xs uppercase tracking-wider mb-1">Rising Star</p>
+                    <p className="text-[10px] text-gray-500 font-medium">Growth Leader</p>
                   </div>
                 </div>
               </CardContent>
@@ -314,24 +346,57 @@ export default function ProfilePage() {
             <CardContent>
               <div className="space-y-4">
                 {memberships.map((membership) => (
-                  <div key={membership.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="font-medium">{membership.name}</h3>
-                        <Badge variant="outline">{membership.role}</Badge>
-                        <Badge variant={membership.status === 'ACTIVE' ? 'default' : 'secondary'}>
-                          {membership.status}
-                        </Badge>
+                  <div key={membership.id} className="relative group p-4 sm:p-6 bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#6c47ff]/5 to-transparent rounded-bl-[5rem] -mr-8 -mt-8"></div>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative z-10">
+                      <div className="flex-1 space-y-4 sm:space-y-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="text-lg font-black text-gray-900 dark:text-white">{membership.name}</h3>
+                          <div className="flex gap-2">
+                            <Badge variant="secondary" className="bg-[#6c47ff]/10 text-[#6c47ff] border-none font-bold text-[9px] uppercase tracking-wider">{membership.role}</Badge>
+                            <Badge variant={membership.status === 'ACTIVE' ? 'default' : 'secondary'} className="font-bold text-[9px] uppercase tracking-wider">
+                              {membership.status}
+                            </Badge>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-4">
+                          <div className="space-y-1">
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1">
+                              <Users className="w-3 h-3 text-[#6c47ff]" /> Members
+                            </p>
+                            <p className="font-bold text-gray-900 dark:text-gray-100">{membership.memberCount}</p>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1">
+                              <DollarSign className="w-3 h-3 text-green-500" /> Monthly
+                            </p>
+                            <p className="font-bold text-gray-900 dark:text-gray-100">MWK {membership.monthlyContribution.toLocaleString()}</p>
+                          </div>
+                          <div className="space-y-1 col-span-2 sm:col-span-1">
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1">
+                              <Calendar className="w-3 h-3 text-orange-500" /> Joined
+                            </p>
+                            <p className="font-bold text-gray-900 dark:text-gray-100">{new Date(membership.joinedAt).toLocaleDateString()}</p>
+                          </div>
+                        </div>
                       </div>
-                      <div className="grid grid-cols-3 gap-4 text-sm text-gray-600">
-                        <div>Members: {membership.memberCount}</div>
-                        <div>Monthly: MWK {membership.monthlyContribution.toLocaleString()}</div>
-                        <div>Joined: {new Date(membership.joinedAt).toLocaleDateString()}</div>
+
+                      <div className="flex sm:flex-col gap-2 shrink-0">
+                        <Link href={`/groups/${membership.id}`} className="flex-1">
+                          <Button variant="outline" size="sm" className="w-full rounded-2xl font-bold bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:border-[#6c47ff] hover:text-[#6c47ff] transition-colors">
+                            <Eye className="w-4 h-4 mr-2" /> View
+                          </Button>
+                        </Link>
+                        {membership.role === 'ADMIN' && (
+                          <Link href={`/groups/${membership.id}/settings`} className="flex-1">
+                            <Button variant="outline" size="sm" className="w-full rounded-2xl font-bold bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:border-blue-500 hover:text-blue-500 transition-colors">
+                              <Settings className="w-4 h-4 mr-2" /> Manage
+                            </Button>
+                          </Link>
+                        )}
                       </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">View Group</Button>
-                      <Button variant="outline" size="sm">Manage</Button>
                     </div>
                   </div>
                 ))}
