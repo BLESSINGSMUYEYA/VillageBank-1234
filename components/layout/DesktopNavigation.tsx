@@ -54,7 +54,7 @@ export function DesktopNavigation() {
           <div className="flex">
             <div className="shrink-0 flex items-center">
               <h1 className="text-xl sm:text-2xl font-black text-gray-900">
-                {t('common.dashboard')}
+                Village Bank
               </h1>
             </div>
             <nav className="hidden md:ml-6 md:flex md:space-x-1">
@@ -94,9 +94,9 @@ export function DesktopNavigation() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                     <div className="relative group">
-                      <div className="absolute -inset-1 bg-gradient-to-r from-[#6c47ff] to-[#9d81ff] rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                      <div className="absolute -inset-1 bg-linear-to-r from-[#6c47ff] to-[#9d81ff] rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
                       <Avatar className="relative h-8 w-8 bg-white dark:bg-gray-800 rounded-full border-2 border-white dark:border-gray-950 shadow-xl overflow-hidden">
-                        <AvatarFallback className="font-black bg-gradient-to-br from-[#6c47ff] to-[#9d81ff] bg-clip-text text-transparent">
+                        <AvatarFallback className="font-black bg-linear-to-br from-[#6c47ff] to-[#9d81ff] bg-clip-text text-transparent">
                           {user?.fullName?.charAt(0).toUpperCase() || user?.username?.charAt(0).toUpperCase() || 'U'}
                         </AvatarFallback>
                       </Avatar>
@@ -145,7 +145,7 @@ export function DesktopNavigation() {
                   <Button variant="outline" className="rounded-2xl font-bold bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:border-[#6c47ff] hover:text-[#6c47ff] transition-colors">Sign In</Button>
                 </Link>
                 <Link href="/register">
-                  <Button className="bg-gradient-to-r from-[#6c47ff] to-[#9d81ff] text-white rounded-2xl font-bold text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <Button className="bg-linear-to-r from-[#6c47ff] to-[#9d81ff] text-white rounded-2xl font-bold text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 shadow-lg hover:shadow-xl transition-all duration-300">
                     Sign Up
                   </Button>
                 </Link>

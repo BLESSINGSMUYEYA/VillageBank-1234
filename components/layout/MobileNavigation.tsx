@@ -57,7 +57,7 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
       {/* Mobile Header */}
       <div className="flex items-center justify-between p-4 border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md shadow-lg">
         <div className="flex items-center space-x-3">
-          <h1 className="text-xl sm:text-2xl font-black text-gray-900">{t('common.dashboard')}</h1>
+          <h1 className="text-xl sm:text-2xl font-black text-gray-900">Village Bank</h1>
         </div>
 
         <div className="flex items-center space-x-2">
