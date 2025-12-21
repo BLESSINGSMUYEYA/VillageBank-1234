@@ -5,7 +5,11 @@ const globalForPrisma = globalThis as unknown as {
 }
 
 // Enhanced DATABASE_URL with connection pooling
-const databaseUrl = process.env.DATABASE_URL || ""
+const databaseUrl = process.env.DATABASE_URL
+
+if (!databaseUrl) {
+  throw new Error('DATABASE_URL is not set in environment variables')
+}
 
 export const prisma = globalForPrisma.prisma ?? new PrismaClient({
   log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
