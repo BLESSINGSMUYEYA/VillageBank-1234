@@ -1,4 +1,5 @@
 import { prisma } from './prisma'
+import { NotificationService } from './notification-service'
 
 export interface PenaltyResult {
     groupId: string
@@ -86,7 +87,15 @@ export class PenaltyService {
                         }
                     })
 
-                    // TODO: Create notification for the user
+                    // Create notification for the user
+                    await NotificationService.send({
+                        userId: member.userId,
+                        title: 'Penalty Applied',
+                        message: `A late contribution penalty of MWK ${group.penaltyAmount.toLocaleString()} has been applied for ${currentMonth}/${currentYear}.`,
+                        type: 'WARNING',
+                        actionUrl: `/contributions/new?groupId=${groupId}`,
+                        actionText: 'Pay Now'
+                    })
 
                     result.penaltiesApplied++
                     result.totalAmount += group.penaltyAmount

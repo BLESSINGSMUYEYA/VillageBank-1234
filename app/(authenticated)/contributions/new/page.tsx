@@ -175,22 +175,25 @@ function NewContributionPageContent() {
     setIsScanning(true)
     setError('')
     setSuccess('')
-    
+
     try {
       const response = await fetch('/api/ocr', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ imageUrl: url }),
       })
-      
+
       const data = await response.json()
-      
+
       if (response.ok && data && (data.amount || data.transactionRef || data.paymentMethod)) {
         // Successfully extracted some data
         const updatedFields = []
         if (data.amount) {
-          setFormData(prev => ({ ...prev, amount: data.amount.toString() }))
-          updatedFields.push('amount')
+          const parsedAmount = parseFloat(data.amount)
+          if (!isNaN(parsedAmount) && parsedAmount > 0) {
+            setFormData(prev => ({ ...prev, amount: parsedAmount.toString() }))
+            updatedFields.push('amount')
+          }
         }
         if (data.transactionRef) {
           setFormData(prev => ({ ...prev, transactionRef: data.transactionRef }))
@@ -200,11 +203,12 @@ function NewContributionPageContent() {
           setFormData(prev => ({ ...prev, paymentMethod: data.paymentMethod }))
           updatedFields.push('payment method')
         }
-        
-        setSuccess(`Receipt scanned successfully! Auto-filled: ${updatedFields.join(', ')}`)
-      } else if (response.ok && (!data.amount && !data.transactionRef && !data.paymentMethod)) {
-        // OCR succeeded but couldn't extract readable data
-        setError('Receipt uploaded but couldn\'t extract readable information. Please fill the form manually.')
+
+        if (updatedFields.length > 0) {
+          setSuccess(`Receipt scanned successfully! Auto-filled: ${updatedFields.join(', ')}`)
+        } else {
+          setError('Receipt uploaded but couldn\'t extract specific details. Please fill the form manually.')
+        }
       } else {
         // OCR failed
         const errorMessage = data.error || 'Failed to scan receipt'
@@ -316,75 +320,94 @@ function NewContributionPageContent() {
                 <Label>Receipt (Optional)</Label>
                 <div className="w-full">
                   {cloudinaryConfig.cloudName ? (
-                  <CldUploadWidget
-                    uploadPreset={cloudinaryConfig.uploadPreset}
-                    options={{
-                      maxFiles: 1,
-                      resourceType: 'image',
-                      clientAllowedFormats: ['png', 'jpg', 'jpeg'],
-                      maxFileSize: 5000000, // 5MB
-                      folder: 'village-banking/receipts',
-                    }}
-                    onSuccess={(result: any) => {
-                      if (result?.info?.secure_url) {
-                        const url = result.info.secure_url
-                        setReceiptUrl(url)
-                        setShouldScan(true)
-                      } else {
-                        console.error('Upload result is invalid:', result)
-                        setError('Upload failed. Please try again.')
-                      }
-                    }}
-                    onError={(error: any) => {
-                      console.error('Cloudinary upload error:', error)
-                      setError('Failed to upload receipt. Please try again or fill the form manually.')
-                    }}
-                  >
-                    {({ open }) => (
-                      <div className="flex flex-col items-center justify-center">
-                        {receiptUrl ? (
-                          <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
-                            <img src={receiptUrl} alt="Receipt preview" className="w-full h-full object-contain" />
-                            <div className="absolute top-2 right-2 flex space-x-2">
-                              <Button
-                                type="button"
-                                variant="secondary"
-                                size="sm"
-                                onClick={() => setReceiptUrl('')}
-                              >
-                                Change
-                              </Button>
+                    <CldUploadWidget
+                      uploadPreset={cloudinaryConfig.uploadPreset}
+                      options={{
+                        maxFiles: 1,
+                        resourceType: 'image',
+                        clientAllowedFormats: ['png', 'jpg', 'jpeg'],
+                        maxFileSize: 5000000, // 5MB
+                        folder: 'village-banking/receipts',
+                      }}
+                      onSuccess={(result: any) => {
+                        if (result?.info?.secure_url) {
+                          const url = result.info.secure_url
+                          setReceiptUrl(url)
+                          setShouldScan(true)
+                        } else {
+                          console.error('Upload result is invalid:', result)
+                          setError('Upload failed. Please try again.')
+                        }
+                      }}
+                      onError={(error: any) => {
+                        console.error('Cloudinary upload error:', error)
+                        setError('Failed to upload receipt. Please try again or fill the form manually.')
+                      }}
+                    >
+                      {({ open }) => (
+                        <div className="flex flex-col items-center justify-center">
+                          {receiptUrl ? (
+                            <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
+                              <img src={receiptUrl} alt="Receipt preview" className="w-full h-full object-contain" />
+                              <div className="absolute top-2 right-2 flex space-x-2">
+                                <Button
+                                  type="button"
+                                  variant="secondary"
+                                  size="sm"
+                                  onClick={() => setReceiptUrl('')}
+                                >
+                                  Change
+                                </Button>
+                              </div>
                             </div>
-                          </div>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => open()}
-                            className="w-full flex flex-col items-center space-y-2 text-gray-500 py-10"
-                          >
-                            <Upload className="w-8 h-8" />
-                            <span className="text-sm font-medium">Upload transaction receipt</span>
-                            <span className="text-xs">Supports PNG, JPG (Max 5MB)</span>
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </CldUploadWidget>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-10 text-gray-500">
-                    <Upload className="w-8 h-8 mb-2" />
-                    <p className="text-sm font-medium">Upload temporarily unavailable</p>
-                    <p className="text-xs">Please fill the form manually</p>
-                  </div>
-                )}
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => open()}
+                              className="w-full flex flex-col items-center space-y-2 text-gray-500 py-10"
+                            >
+                              <Upload className="w-8 h-8" />
+                              <span className="text-sm font-medium">Upload transaction receipt</span>
+                              <span className="text-xs">Supports PNG, JPG (Max 5MB)</span>
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </CldUploadWidget>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-10 text-gray-500">
+                      <Upload className="w-8 h-8 mb-2" />
+                      <p className="text-sm font-medium">Upload temporarily unavailable</p>
+                      <p className="text-xs">Please fill the form manually</p>
+                    </div>
+                  )}
 
                   {isScanning && (
-                    <div className="mt-4 flex flex-col items-center justify-center p-4 bg-blue-50 rounded-lg animate-pulse">
-                      <div className="flex items-center space-x-2 text-blue-600">
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        <span className="text-sm font-semibold text-blue-700">AI is analyzing your receipt...</span>
+                    <div className="mt-4 overflow-hidden relative p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100 shadow-inner">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center space-x-3">
+                          <div className="p-2 bg-blue-600 rounded-lg">
+                            <ScanLine className="w-5 h-5 text-white animate-pulse" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-blue-900 leading-none">Scanning Receipt</p>
+                            <p className="text-[10px] text-blue-600 font-medium uppercase tracking-wider mt-1">AI analyzing details</p>
+                          </div>
+                        </div>
+                        <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
                       </div>
-                      <p className="text-xs text-blue-500 mt-1">This will only take a few seconds</p>
+
+                      <div className="h-1.5 w-full bg-blue-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-blue-600 rounded-full animate-[progress_2s_ease-in-out_infinite]" style={{ width: '40%' }}></div>
+                      </div>
+
+                      <style jsx>{`
+                        @keyframes progress {
+                          0% { transform: translateX(-100%); width: 30%; }
+                          50% { width: 60%; }
+                          100% { transform: translateX(400%); width: 30%; }
+                        }
+                      `}</style>
                     </div>
                   )}
                 </div>

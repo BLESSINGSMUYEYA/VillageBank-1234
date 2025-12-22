@@ -14,7 +14,13 @@
     "save": "Save",
     "create": "Create",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "profile": "Profile",
+    "logout": "Log Out"
+  },
+  "admin": {
+    "regional": "Regional Admin",
+    "system": "System Admin"
   },
   "dashboard": {
     "welcome": "Welcome back",

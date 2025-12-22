@@ -41,12 +41,12 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
   const adminNavigation = []
   if (user?.publicMetadata?.role === 'REGIONAL_ADMIN' || user?.publicMetadata?.role === 'SUPER_ADMIN') {
     adminNavigation.push(
-      { name: 'Regional Admin', href: '/admin/regional', icon: Shield }
+      { name: t('admin.regional'), href: '/admin/regional', icon: Shield }
     )
   }
   if (user?.publicMetadata?.role === 'SUPER_ADMIN') {
     adminNavigation.push(
-      { name: 'System Admin', href: '/admin/system', icon: Settings }
+      { name: t('admin.system'), href: '/admin/system', icon: Settings }
     )
   }
 
@@ -93,13 +93,13 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
                 <DropdownMenuItem asChild>
                   <Link href="/profile" className="w-full cursor-pointer rounded-xl font-bold">
                     <User className="mr-2 h-4 w-4" />
-                    Profile
+                    {t('common.profile')}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/settings" className="w-full cursor-pointer rounded-xl font-bold">
                     <Settings className="mr-2 h-4 w-4" />
-                    Settings
+                    {t('common.settings')}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -107,7 +107,7 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
                   <SignOutButton>
                     <button className="w-full text-left">
                       <LogOut className="mr-2 h-4 w-4" />
-                      Log out
+                      {t('common.logout')}
                     </button>
                   </SignOutButton>
                 </DropdownMenuItem>

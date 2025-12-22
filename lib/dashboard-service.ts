@@ -90,7 +90,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
         totalLoans: activeLoans,
         pendingLoans,
         monthlyContribution: monthlyContribution?.amount || 0,
-        loanRepaymentProgress: 0, // TODO: Calculate actual repayment progress
+        loanRepaymentProgress: await calculateRepaymentProgress(userId),
     }
 }
 
@@ -345,3 +345,34 @@ export async function getPendingApprovals() {
     return pendingContributions
 }
 
+
+async function calculateRepaymentProgress(userId: string): Promise<number> {
+    const loans = await prisma.loan.findMany({
+        where: {
+            userId,
+            status: { in: ['APPROVED', 'ACTIVE', 'COMPLETED'] }
+        },
+        include: {
+            repayments: true
+        }
+    })
+
+    if (loans.length === 0) return 0
+
+    let totalToRepay = 0
+    let totalRepaid = 0
+
+    loans.forEach(loan => {
+        // Simple logic: total due = principal + (principal * interest / 100)
+        const principal = loan.amountApproved || loan.amountRequested
+        const interest = (principal * loan.interestRate) / 100
+        totalToRepay += principal + interest
+
+        const repaid = loan.repayments.reduce((sum, r) => sum + Number(r.amount), 0)
+        totalRepaid += repaid
+    })
+
+    if (totalToRepay === 0) return 0
+
+    return Math.min(100, Math.round((totalRepaid / totalToRepay) * 100))
+}
