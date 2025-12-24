@@ -61,55 +61,151 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
     }
   }
 
-  const shareToWhatsApp = async () => {
-    if (!shareData?.shareUrl || !shareData?.qrCode) return
-
-    try {
-      // Convert QR code data URL to blob
-      const response = await fetch(shareData.qrCode)
-      const blob = await response.blob()
-
-      // Create file object
-      const file = new File([blob], 'villagebank-qr-code.png', { type: 'image/png' })
-
-      // Create message text with better formatting
-      const message = `*Village Banking Group Invitation*\n\n` +
-        (shareData.customMessage ? `_"${shareData.customMessage}"_\n\n` : '') +
-        `Join our village banking group by clicking the link below or scanning the attached QR code:\n\n` +
-        `${shareData.shareUrl}`
-
-      // Check if Web Share API is supported and if WhatsApp is available
-      if (navigator.share && navigator.canShare) {
-        const shareData = {
-          title: 'Join VillageBank Group',
-          text: message,
-          files: [file]
+  const createCombinedImage = async (qrDataUrl: string, groupName: string, shareUrl: string, customMsg?: string): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      img.crossOrigin = 'anonymous'
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        const ctx = canvas.getContext('2d')
+        if (!ctx) {
+          reject(new Error('Could not get canvas context'))
+          return
         }
 
-        if (navigator.canShare(shareData)) {
-          await navigator.share(shareData)
-          toast.success('Shared via WhatsApp successfully!')
+        // Setup dimensions (Premium square/tall format)
+        const width = 1080
+        const padding = 80
+        const qrSize = width - (padding * 2)
+        const headerHeight = 120
+        const footerHeight = 400
+        const height = qrSize + headerHeight + footerHeight
+
+        canvas.width = width
+        canvas.height = height
+
+        // Background with subtle gradient
+        const gradient = ctx.createLinearGradient(0, 0, 0, height)
+        gradient.addColorStop(0, '#ffffff')
+        gradient.addColorStop(1, '#f8fafc')
+        ctx.fillStyle = gradient
+        ctx.fillRect(0, 0, width, height)
+
+        // Draw Header
+        ctx.fillStyle = '#1e293b'
+        ctx.font = 'bold 52px Inter, system-ui, sans-serif'
+        ctx.textAlign = 'center'
+        ctx.fillText('Village Banking Group', width / 2, padding + 20)
+
+        // Draw QR Code Background (Glassmorphism look)
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.1)'
+        ctx.shadowBlur = 40
+        ctx.shadowOffsetY = 10
+        ctx.fillStyle = '#ffffff'
+        const radius = 40
+        ctx.beginPath()
+        ctx.roundRect(padding - 20, headerHeight + padding - 20, qrSize + 40, qrSize + 40, radius)
+        ctx.fill()
+        ctx.shadowBlur = 0 // Reset shadow
+
+        // Draw QR Code
+        ctx.drawImage(img, padding, headerHeight + padding, qrSize, qrSize)
+
+        // Draw Footer Section
+        const footerY = headerHeight + qrSize + padding + 60
+
+        // Group Name
+        ctx.fillStyle = '#2563eb'
+        ctx.font = 'bold 48px Inter, system-ui, sans-serif'
+        ctx.fillText(groupName, width / 2, footerY)
+
+        // Custom Message
+        if (customMsg) {
+          ctx.fillStyle = '#64748b'
+          ctx.font = 'italic 36px Inter, system-ui, sans-serif'
+          ctx.fillText(`"${customMsg}"`, width / 2, footerY + 70)
+        }
+
+        // Link with background
+        const linkY = footerY + (customMsg ? 160 : 100)
+        const linkText = shareUrl.replace(/^https?:\/\//, '')
+        ctx.font = '500 32px monospace'
+        const metrics = ctx.measureText(linkText)
+        const linkWidth = metrics.width + 60
+
+        ctx.fillStyle = '#f1f5f9'
+        ctx.beginPath()
+        ctx.roundRect((width - linkWidth) / 2, linkY - 40, linkWidth, 70, 15)
+        ctx.fill()
+
+        ctx.fillStyle = '#334155'
+        ctx.fillText(linkText, width / 2, linkY + 8)
+
+        // Call to action
+        ctx.fillStyle = '#94a3b8'
+        ctx.font = 'bold 28px Inter, system-ui, sans-serif'
+        ctx.fillText('SCAN OR CLICK TO JOIN', width / 2, height - 60)
+
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(new File([blob], 'village-banking-invite.png', { type: 'image/png' }))
+          } else {
+            reject(new Error('Canvas to Blob failed'))
+          }
+        }, 'image/png', 1.0)
+      }
+      img.onerror = () => reject(new Error('Failed to load QR image'))
+      img.src = qrDataUrl
+    })
+  }
+
+  const handleShare = async () => {
+    if (!shareData?.shareUrl || !shareData?.qrCode) return
+
+    setLoading(true)
+    try {
+      // 1. Copy link to clipboard first as a proactive safeguard
+      await navigator.clipboard.writeText(shareData.shareUrl)
+
+      // 2. Create the combined high-fidelity image
+      const combinedFile = await createCombinedImage(
+        shareData.qrCode,
+        groupName,
+        shareData.shareUrl,
+        shareData.customMessage
+      )
+
+      const message = `*Village Banking Group Invitation*\n\n` +
+        `Group: ${groupName}\n` +
+        (shareData.customMessage ? `_"${shareData.customMessage}"_\n\n` : '') +
+        `Scan the QR code or click the link to join:\n${shareData.shareUrl}`
+
+      // 3. Use Web Share API
+      if (navigator.share && navigator.canShare) {
+        const shareObj = {
+          title: `Join ${groupName}`,
+          text: message,
+          files: [combinedFile]
+        }
+
+        if (navigator.canShare(shareObj)) {
+          await navigator.share(shareObj)
+          toast.success('Shared successfully!')
           return
         }
       }
 
-      // Fallback: Open WhatsApp with text only
+      // 4. Fallback (e.g. if Desktop or Unsupported)
       const encodedMessage = encodeURIComponent(message)
       const whatsappUrl = `https://wa.me/?text=${encodedMessage}`
       window.open(whatsappUrl, '_blank')
-      toast.success('Opening WhatsApp with share link...')
+      toast.success('Link copied & opening WhatsApp...')
 
     } catch (error) {
       console.error('Share error:', error)
-      // Fallback to text-only sharing
-      const message = `*Village Banking Group Invitation*\n\n` +
-        (shareData.customMessage ? `_"${shareData.customMessage}"_\n\n` : '') +
-        `Join our village banking group: ${shareData.shareUrl}`
-
-      const encodedMessage = encodeURIComponent(message)
-      const whatsappUrl = `https://wa.me/?text=${encodedMessage}`
-      window.open(whatsappUrl, '_blank')
-      toast.success('Opening WhatsApp with share link...')
+      toast.error('Share failed, but link was copied to clipboard')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -275,12 +371,13 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
 
               <div className="flex gap-2">
                 <Button
-                  onClick={shareToWhatsApp}
+                  onClick={handleShare}
                   variant="outline"
                   className="w-full"
+                  disabled={loading}
                 >
                   <MessageCircle className="h-4 w-4 mr-2" />
-                  Share QR Code on WhatsApp
+                  {loading ? 'Preparing...' : 'Share Invitation'}
                 </Button>
               </div>
             </div>
