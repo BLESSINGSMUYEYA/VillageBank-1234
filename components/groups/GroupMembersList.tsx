@@ -28,9 +28,10 @@ interface GroupMembersListProps {
   members: Member[]
   groupId: string
   currentUserRole?: string
+  currentUserId: string
 }
 
-export default function GroupMembersList({ members, groupId, currentUserRole }: GroupMembersListProps) {
+export default function GroupMembersList({ members, groupId, currentUserRole, currentUserId }: GroupMembersListProps) {
   const [loading, setLoading] = useState(false)
 
   const handleRoleChange = async (memberId: string, newRole: string) => {
@@ -132,11 +133,11 @@ export default function GroupMembersList({ members, groupId, currentUserRole }: 
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge 
+                    <Badge
                       variant={
                         member.role === 'ADMIN' ? 'default' :
-                        member.role === 'TREASURER' ? 'secondary' :
-                        member.role === 'SECRETARY' ? 'outline' : 'outline'
+                          member.role === 'TREASURER' ? 'secondary' :
+                            member.role === 'SECRETARY' ? 'outline' : 'outline'
                       }
                       className="font-bold uppercase tracking-wider text-xs"
                     >
@@ -147,7 +148,7 @@ export default function GroupMembersList({ members, groupId, currentUserRole }: 
                     {new Date(member.joinedAt).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="text-right">
-                    {currentUserRole === 'ADMIN' && member.userId !== member.user.id && (
+                    {currentUserRole === 'ADMIN' && member.userId !== currentUserId && (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="h-8 w-8 p-0">

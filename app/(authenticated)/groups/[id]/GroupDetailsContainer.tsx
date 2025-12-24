@@ -41,6 +41,7 @@ export default function GroupDetailsContainer({
                     members={group.members}
                     groupId={group.id}
                     currentUserRole={currentUserMember?.role}
+                    currentUserId={userId}
                 />
             </TabsContent>
 
