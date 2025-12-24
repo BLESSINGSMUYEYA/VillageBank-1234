@@ -48,7 +48,7 @@ export default function SharedGroupPage() {
       try {
         const response = await fetch(`/api/shared/${params.token}`)
         const data = await response.json()
-        
+
         if (response.ok) {
           setGroupData(data)
         } else {
@@ -69,7 +69,7 @@ export default function SharedGroupPage() {
 
   const requestToJoin = async () => {
     if (joining || hasRequested) return
-    
+
     setJoining(true)
     try {
       const response = await fetch('/api/groups/request-join', {
@@ -100,11 +100,11 @@ export default function SharedGroupPage() {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center min-h-screen text-sm sm:text-base">Loading...</div>
+    return <div className="flex justify-center items-center min-h-screen text-body">Loading...</div>
   }
 
   if (!groupData) {
-    return <div className="flex justify-center items-center min-h-screen text-sm sm:text-base">Group not found</div>
+    return <div className="flex justify-center items-center min-h-screen text-body">Group not found</div>
   }
 
   const { share, group } = groupData
@@ -117,13 +117,13 @@ export default function SharedGroupPage() {
           <CardHeader>
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
               <div className="flex-1">
-                <CardTitle className="text-xl sm:text-2xl">{group.name}</CardTitle>
+                <CardTitle className="text-display sm:text-h1">{group.name}</CardTitle>
                 {group.description && (
-                  <p className="text-muted-foreground mt-2 text-sm sm:text-base">{group.description}</p>
+                  <p className="text-muted-foreground mt-2 text-body">{group.description}</p>
                 )}
               </div>
               <div className="self-start">
-                <Badge variant="secondary" className="text-xs sm:text-sm">
+                <Badge variant="secondary" className="text-sm">
                   Shared by {share.sharedBy.firstName} {share.sharedBy.lastName}
                 </Badge>
               </div>
@@ -138,7 +138,7 @@ export default function SharedGroupPage() {
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <Shield className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <span className="text-sm font-medium">Access Level</span>
+                  <span className="text-body font-medium">Access Level</span>
                   <Badge variant="outline" className="text-xs">
                     {share.permissions === 'VIEW_ONLY' && 'View Only'}
                     {share.permissions === 'REQUEST_JOIN' && 'Can Request to Join'}
@@ -149,7 +149,7 @@ export default function SharedGroupPage() {
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
                   <span className="text-xs sm:text-sm">
-                    {share.expiresAt 
+                    {share.expiresAt
                       ? `Expires ${new Date(share.expiresAt).toLocaleDateString()}`
                       : 'Never expires'
                     }
@@ -160,10 +160,10 @@ export default function SharedGroupPage() {
                   <span className="text-xs sm:text-sm">{share.currentUses} views</span>
                 </div>
               </div>
-              
+
               {share.permissions !== 'VIEW_ONLY' && !hasRequested && (
-                <Button 
-                  onClick={requestToJoin} 
+                <Button
+                  onClick={requestToJoin}
                   disabled={joining}
                   className="flex items-center gap-2 w-full sm:w-auto"
                 >
@@ -181,7 +181,7 @@ export default function SharedGroupPage() {
                 </Button>
               )}
               {hasRequested && (
-                <div className="flex items-center gap-2 text-sm text-green-600 font-medium w-full sm:w-auto justify-center sm:justify-start">
+                <div className="flex items-center gap-2 text-body text-green-600 font-medium w-full sm:w-auto justify-center sm:justify-start">
                   <div className="h-4 w-4 rounded-full bg-green-100 flex items-center justify-center">
                     <svg className="h-2 w-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -201,13 +201,13 @@ export default function SharedGroupPage() {
               <div className="flex items-center gap-3">
                 <Users className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600 shrink-0" />
                 <div>
-                  <p className="text-xl sm:text-2xl font-bold">{group._count.members}</p>
+                  <p className="text-h2 sm:text-h1 font-bold">{group._count.members}</p>
                   <p className="text-xs sm:text-sm text-muted-foreground">Members</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center gap-3">
@@ -215,7 +215,7 @@ export default function SharedGroupPage() {
                 <div>
                   {group.monthlyContribution ? (
                     <>
-                      <p className="text-xl sm:text-2xl font-bold">${group.monthlyContribution}</p>
+                      <p className="text-h2 sm:text-h1 font-bold">${group.monthlyContribution}</p>
                       <p className="text-xs sm:text-sm text-muted-foreground">Monthly Contribution</p>
                     </>
                   ) : (
@@ -225,13 +225,13 @@ export default function SharedGroupPage() {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center gap-3">
                 <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600 shrink-0" />
                 <div>
-                  <p className="text-xl sm:text-2xl font-bold">{group._count.contributions}</p>
+                  <p className="text-h2 sm:text-h1 font-bold">{group._count.contributions}</p>
                   <p className="text-xs sm:text-sm text-muted-foreground">Total Contributions</p>
                 </div>
               </div>
@@ -243,7 +243,7 @@ export default function SharedGroupPage() {
         {group.members && group.members.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle>Members ({group._count.members})</CardTitle>
+              <CardTitle className="text-h3">Members ({group._count.members})</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
@@ -253,7 +253,7 @@ export default function SharedGroupPage() {
                       {member.user.firstName?.[0]}{member.user.lastName?.[0]}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm sm:text-base truncate">
+                      <p className="font-medium text-body truncate">
                         {member.user.firstName} {member.user.lastName}
                       </p>
                       <p className="text-xs sm:text-sm text-muted-foreground">Member</p>
@@ -277,7 +277,7 @@ export default function SharedGroupPage() {
           <CardContent className="p-4 sm:p-6">
             <div className="text-center space-y-2">
               <Shield className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground mx-auto" />
-              <h3 className="font-medium text-sm sm:text-base">What you can see</h3>
+              <h3 className="font-medium text-h3">What you can see</h3>
               <p className="text-xs sm:text-sm text-muted-foreground">
                 {share.permissions === 'VIEW_ONLY' && 'You can view basic group information'}
                 {share.permissions === 'REQUEST_JOIN' && 'You can view group info and request to join'}

@@ -70,14 +70,14 @@ export function DashboardContent({
             {/* Stats Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('dashboard.total_groups')}</CardTitle>
-                        <div className="p-2 bg-green-50 dark:bg-green-500/10 rounded-xl">
+                    <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+                        <CardTitle className="text-xs font-black text-gray-400 uppercase leading-snug">{t('dashboard.total_groups')}</CardTitle>
+                        <div className="p-2 bg-green-50 dark:bg-green-500/10 rounded-xl shrink-0 ml-2">
                             <Users className="h-4 w-4 text-green-600" />
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-h3 sm:text-h2 font-black truncate">{stats.totalGroups}</div>
+                        <div className="text-h2 font-black truncate">{stats.totalGroups}</div>
                         <p className="text-xs text-gray-500 mt-1 hidden sm:block">
                             {t('dashboard.active_groups_desc')}
                         </p>
@@ -88,14 +88,14 @@ export function DashboardContent({
                 </Card>
 
                 <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('dashboard.total_contributions')}</CardTitle>
-                        <div className="p-2 bg-blue-50 dark:bg-blue-500/10 rounded-xl">
+                    <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+                        <CardTitle className="text-xs font-black text-gray-400 uppercase leading-snug">{t('dashboard.total_contributions')}</CardTitle>
+                        <div className="p-2 bg-blue-50 dark:bg-blue-500/10 rounded-xl shrink-0 ml-2">
                             <DollarSign className="h-4 w-4 text-blue-600" />
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-h3 sm:text-h2 font-black truncate" title={formatCurrency(stats.totalContributions)}>
+                        <div className="text-h2 font-black truncate" title={formatCurrency(stats.totalContributions)}>
                             {formatCurrency(stats.totalContributions)}
                         </div>
                         <p className="text-xs text-gray-500 mt-1">
@@ -105,15 +105,15 @@ export function DashboardContent({
                 </Card>
 
                 <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('dashboard.active_loans')}</CardTitle>
-                        <div className="p-2 bg-orange-50 dark:bg-orange-500/10 rounded-xl">
+                    <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+                        <CardTitle className="text-xs font-black text-gray-400 uppercase leading-snug">{t('dashboard.active_loans')}</CardTitle>
+                        <div className="p-2 bg-orange-50 dark:bg-orange-500/10 rounded-xl shrink-0 ml-2">
                             <TrendingUp className="h-4 w-4 text-orange-600" />
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-h3 sm:text-h2 font-black truncate">{stats.totalLoans}</div>
-                        <p className="text-xs text-gray-500 mt-1 text-nowrap">
+                        <div className="text-h2 font-black truncate">{stats.totalLoans}</div>
+                        <p className="text-xs text-gray-500 mt-1 break-words">
                             {stats.pendingLoans > 0 && (
                                 <span>{stats.pendingLoans} {t('contributions.pending').toLowerCase()}</span>
                             )}
@@ -122,14 +122,14 @@ export function DashboardContent({
                 </Card>
 
                 <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('dashboard.monthly_contribution')}</CardTitle>
-                        <div className="p-2 bg-purple-50 dark:bg-purple-500/10 rounded-xl">
+                    <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+                        <CardTitle className="text-xs font-black text-gray-400 uppercase leading-snug">{t('dashboard.monthly_contribution')}</CardTitle>
+                        <div className="p-2 bg-purple-50 dark:bg-purple-500/10 rounded-xl shrink-0 ml-2">
                             <Calendar className="h-4 w-4 text-purple-600" />
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-h3 sm:text-h2 font-black truncate" title={formatCurrency(stats.monthlyContribution)}>
+                        <div className="text-h2 font-black truncate" title={formatCurrency(stats.monthlyContribution)}>
                             {formatCurrency(stats.monthlyContribution)}
                         </div>
                         <p className="text-xs text-gray-500 mt-1">

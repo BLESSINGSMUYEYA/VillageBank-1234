@@ -59,13 +59,13 @@
   }
 
   /* Unified Typography Utilities */
-  --text-display: 900 3.0rem/1 Tight Geist Sans;
-  --text-h1: 900 2.25rem/2.0rem Geist Sans;
-  --text-h2: 800 1.5rem/2rem Geist Sans;
-  --text-h3: 700 1.25rem/1.5rem Geist Sans;
-  --text-body: 500 1rem/1.25rem Geist Sans;
-  --text-sm: 400 0.75rem/0.75rem Geist Sans;
-  --text-xs: 500 0.625rem/0.5rem Geist Sans;
+  --text-display: 900 2.25rem/1 Tight Geist Sans;
+  --text-h1: 900 1.75rem/2rem Geist Sans;
+  --text-h2: 800 1.35rem/1.75rem Geist Sans;
+  --text-h3: 700 1.125rem/1.5rem Geist Sans;
+  --text-body: 500 0.875rem/1.25rem Geist Sans;
+  --text-sm: 400 0.75rem/1rem Geist Sans;
+  --text-xs: 500 0.625rem/0.75rem Geist Sans;
 }
 
 :root {

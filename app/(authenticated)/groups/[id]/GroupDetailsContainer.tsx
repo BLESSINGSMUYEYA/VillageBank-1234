@@ -25,11 +25,11 @@ export default function GroupDetailsContainer({
     return (
         <Tabs defaultValue="members" className="space-y-6">
             <TabsList className="grid w-full grid-cols-4 gap-1 bg-white/60 dark:bg-gray-900/60 backdrop-blur-md border-none shadow-lg p-1 rounded-2xl">
-                <TabsTrigger value="members" className="text-xs sm:text-sm font-bold rounded-xl data-[state=active]:bg-[#6c47ff] data-[state=active]:text-white transition-all duration-300">Members</TabsTrigger>
-                <TabsTrigger value="contributions" className="text-xs sm:text-sm font-bold rounded-xl data-[state=active]:bg-[#6c47ff] data-[state=active]:text-white transition-all duration-300">Contributions</TabsTrigger>
-                <TabsTrigger value="loans" className="text-xs sm:text-sm font-bold rounded-xl data-[state=active]:bg-[#6c47ff] data-[state=active]:text-white transition-all duration-300">Loans</TabsTrigger>
+                <TabsTrigger value="members" className="text-body font-bold rounded-xl data-[state=active]:bg-[#6c47ff] data-[state=active]:text-white transition-all duration-300">Members</TabsTrigger>
+                <TabsTrigger value="contributions" className="text-body font-bold rounded-xl data-[state=active]:bg-[#6c47ff] data-[state=active]:text-white transition-all duration-300">Contributions</TabsTrigger>
+                <TabsTrigger value="loans" className="text-body font-bold rounded-xl data-[state=active]:bg-[#6c47ff] data-[state=active]:text-white transition-all duration-300">Loans</TabsTrigger>
                 {isAdmin && (
-                    <TabsTrigger value="share" className="text-xs sm:text-sm font-bold rounded-xl data-[state=active]:bg-[#6c47ff] data-[state=active]:text-white transition-all duration-300 flex items-center gap-1">
+                    <TabsTrigger value="share" className="text-body font-bold rounded-xl data-[state=active]:bg-[#6c47ff] data-[state=active]:text-white transition-all duration-300 flex items-center gap-1">
                         <Share2 className="h-3 w-3" />
                         Share
                     </TabsTrigger>

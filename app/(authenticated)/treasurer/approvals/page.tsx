@@ -55,10 +55,10 @@ export default function TreasurerApprovalsPage() {
             const response = await fetch('/api/contributions/bulk-review', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     contributionIds: selectedContributions,
                     status: bulkAction === 'approve' ? 'COMPLETED' : 'REJECTED',
-                    rejectionReason: bulkRejectionReason 
+                    rejectionReason: bulkRejectionReason
                 }),
             })
 
@@ -96,7 +96,7 @@ export default function TreasurerApprovalsPage() {
         }
     }
 
-            const handleReview = async (id: string, status: 'COMPLETED' | 'REJECTED') => {
+    const handleReview = async (id: string, status: 'COMPLETED' | 'REJECTED') => {
         if (status === 'REJECTED' && !rejectionReason) {
             toast.error('Please provide a reason for rejection')
             return
@@ -150,14 +150,14 @@ export default function TreasurerApprovalsPage() {
         <div className="space-y-6 max-w-5xl mx-auto px-4 py-8">
             <div className="flex items-center justify-between">
                 <div>
-                    <Link href="/dashboard" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 mb-2">
+                    <Link href="/dashboard" className="inline-flex items-center text-body text-gray-500 hover:text-gray-700 mb-2">
                         <ArrowLeft className="w-4 h-4 mr-2" />
                         Back to Dashboard
                     </Link>
-                    <h1 className="text-3xl font-bold text-gray-900">Pending Approvals</h1>
-                    <p className="text-gray-600">Review and approve member contributions</p>
+                    <h1 className="text-display font-bold text-gray-900">Pending Approvals</h1>
+                    <p className="text-gray-600 text-body">Review and approve member contributions</p>
                 </div>
-                <Badge variant="outline" className="text-base px-3 py-1">
+                <Badge variant="outline" className="text-body px-3 py-1">
                     {pending.length} Pending
                 </Badge>
             </div>
@@ -168,8 +168,8 @@ export default function TreasurerApprovalsPage() {
                         <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
                             <Check className="w-6 h-6 text-green-600" />
                         </div>
-                        <h3 className="text-lg font-medium text-gray-900">All caught up!</h3>
-                        <p className="text-gray-500">There are no contributions waiting for approval.</p>
+                        <h3 className="text-h3 font-medium text-gray-900">All caught up!</h3>
+                        <p className="text-gray-500 text-body">There are no contributions waiting for approval.</p>
                     </CardContent>
                 </Card>
             ) : (
@@ -180,13 +180,13 @@ export default function TreasurerApprovalsPage() {
                                 <CardContent className="p-6">
                                     <div className="flex justify-between items-start mb-4">
                                         <div>
-                                            <h3 className="text-lg font-semibold text-gray-900">
+                                            <h3 className="text-h3 font-semibold text-gray-900">
                                                 {item.user.firstName} {item.user.lastName}
                                             </h3>
-                                            <p className="text-sm text-gray-500">{item.group.name}</p>
+                                            <p className="text-body text-gray-500">{item.group.name}</p>
                                         </div>
                                         <div className="text-right">
-                                            <div className="text-xl font-bold text-blue-600">
+                                            <div className="text-h3 font-bold text-blue-600">
                                                 {formatCurrency(item.amount)}
                                             </div>
                                             <p className="text-xs text-gray-500">
@@ -195,7 +195,7 @@ export default function TreasurerApprovalsPage() {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4 text-sm mb-6">
+                                    <div className="grid grid-cols-2 gap-4 text-body mb-6">
                                         <div className="p-3 bg-gray-50 rounded-lg">
                                             <p className="text-gray-500 text-xs mb-1 uppercase font-semibold">Payment Method</p>
                                             <p className="font-medium">{item.paymentMethod.replace('_', ' ')}</p>
@@ -209,9 +209,9 @@ export default function TreasurerApprovalsPage() {
                                     {showRejectForm === item.id ? (
                                         <div className="space-y-4 pt-4 border-t">
                                             <div>
-                                                <label className="text-sm font-medium mb-1 block">Reason for rejection</label>
+                                                <label className="text-body font-medium mb-1 block">Reason for rejection</label>
                                                 <textarea
-                                                    className="w-full min-h-25 p-3 border rounded-md text-sm"
+                                                    className="w-full min-h-25 p-3 border rounded-md text-body"
                                                     placeholder="e.g. Reference number doesn't match receipt"
                                                     value={rejectionReason}
                                                     onChange={(e) => setRejectionReason(e.target.value)}
