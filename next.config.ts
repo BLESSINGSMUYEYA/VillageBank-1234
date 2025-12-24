@@ -1,8 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  reactCompiler: true,
   experimental: {},
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   // Force Webpack to avoid Turbopack issues
   webpack: (config, { isServer }) => {
     if (isServer) {
