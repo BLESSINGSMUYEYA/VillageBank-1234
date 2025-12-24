@@ -19,6 +19,292 @@ import {
   Eye,
   Settings
 } from 'lucide-react'
+import { useLanguage } from '@/components/providers/LanguageProvider'
+
+// ... interfaces remain same ...
+
+export default function ProfilePage() {
+  const { user } = useUser()
+  const { t } = useLanguage()
+  const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [memberships, setMemberships] = useState<GroupMembership[]>([])
+  const [financials, setFinancials] = useState<FinancialSummary | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (user) {
+      fetchProfileData()
+    } else {
+      window.location.href = '/sign-in'
+    }
+  }, [user])
+
+  const fetchProfileData = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const response = await fetch('/api/users/profile')
+      if (response.status === 401) {
+        window.location.href = '/sign-in'
+        return
+      }
+      if (!response.ok) throw new Error(`Failed: ${response.statusText}`)
+      const data = await response.json()
+      setProfile(data)
+      setMemberships(data.memberships || [])
+      setFinancials(data.financialSummary || {
+        totalContributions: 0,
+        totalLoans: 0,
+        outstandingLoanBalance: 0,
+        contributionStreak: 0,
+        eligibilityScore: 0
+      })
+    } catch (error) {
+      console.error(error)
+      setError('Failed to load profile.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center text-h3">{t('common.loading')}</div>
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-display text-gray-900">{t('profile.title')}</h1>
+        <p className="text-body text-gray-600">{t('profile.subtitle')}</p>
+      </div>
+
+      {/* Profile Header */}
+      <Card className="overflow-hidden border-none shadow-xl bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl">
+        <CardContent className="p-0">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-8 p-6 sm:p-8">
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+              <div className="relative w-24 h-24 sm:w-28 sm:h-28 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center border-4 border-white dark:border-gray-950 shadow-2xl overflow-hidden">
+                <span className="text-h1 bg-gradient-to-br from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                  {(profile?.firstName?.charAt(0) || '') + (profile?.lastName?.charAt(0) || '')}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex-1 text-center sm:text-left space-y-2">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h2 className="text-h2 tracking-tight text-gray-900 dark:text-white">
+                    {profile?.firstName || ''} {profile?.lastName || ''}
+                  </h2>
+                  <p className="text-body text-gray-500 font-medium">{profile?.email}</p>
+                </div>
+
+                <div className="flex flex-col items-center sm:items-end bg-gray-50 dark:bg-gray-800/50 p-3 rounded-2xl border border-gray-100 dark:border-gray-800">
+                  <p className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('profile.member_since')}</p>
+                  <p className="text-body font-bold text-gray-900 dark:text-gray-100">
+                    {profile?.joinedAt ? new Date(profile.joinedAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) : '---'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap justify-center sm:justify-start gap-2 pt-2">
+                <Badge variant="secondary" className="px-3 py-1 rounded-full font-black text-xs uppercase tracking-wider">
+                  {profile?.role}
+                </Badge>
+                <Badge variant="secondary" className="px-3 py-1 rounded-full font-black text-xs uppercase tracking-wider">
+                  {profile?.region} {t('profile.region')}
+                </Badge>
+                <Badge variant={profile?.isActive ? 'default' : 'secondary'} className="px-3 py-1 rounded-full font-black text-xs uppercase tracking-wider">
+                  {profile?.isActive ? t('profile.active') : t('profile.inactive')}
+                </Badge>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Financial Overview */}
+      <h2 className="text-h3 font-black text-gray-400 uppercase tracking-widest pt-4">{t('profile.financial_overview')}</h2>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <Card className="border-none shadow-md bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('common.contributions')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-h3 sm:text-h2 truncate text-green-600">MWK {financials?.totalContributions.toLocaleString()}</div>
+            <p className="text-xs text-gray-500 mt-1">{t('profile.lifetime_total')}</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-none shadow-md bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('common.loans')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-h3 sm:text-h2 truncate text-blue-600">MWK {financials?.totalLoans.toLocaleString()}</div>
+            <p className="text-xs text-gray-500 mt-1">{t('profile.total_loans')}</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-none shadow-md bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('profile.active_balance')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-h3 sm:text-h2 truncate text-orange-600">MWK {financials?.outstandingLoanBalance.toLocaleString()}</div>
+            <p className="text-xs text-gray-500 mt-1">{t('profile.active_balance')}</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-none shadow-md bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs font-black text-gray-400 uppercase tracking-widest">Streak</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-h3 sm:text-h2 text-purple-600">{financials?.contributionStreak}</div>
+            <p className="text-xs text-gray-500 mt-1">{t('profile.streak_desc')}</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList className="bg-white/50 dark:bg-gray-800/50 p-1 rounded-2xl">
+          <TabsTrigger value="overview" className="rounded-xl font-bold">{t('profile.tabs.overview')}</TabsTrigger>
+          <TabsTrigger value="groups" className="rounded-xl font-bold">{t('profile.tabs.groups')}</TabsTrigger>
+          <TabsTrigger value="contributions" className="rounded-xl font-bold">{t('profile.tabs.contributions')}</TabsTrigger>
+          <TabsTrigger value="loans" className="rounded-xl font-bold">{t('profile.tabs.loans')}</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card className="border-none shadow-xl bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
+              <CardHeader>
+                <CardTitle className="text-h3">{t('loans.eligibility_title')}</CardTitle>
+                <CardDescription className="text-body">{t('loans.eligibility_desc')}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <div className="flex justify-between text-body mb-2">
+                    <span>Eligibility Score</span>
+                    <span className="font-black">{financials?.eligibilityScore}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                    <div
+                      className="bg-blue-600 h-3 rounded-full transition-all duration-1000"
+                      style={{ width: `${financials?.eligibilityScore}%` }}
+                    ></div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center p-2 bg-white/50 dark:bg-gray-800/50 rounded-xl">
+                    <span className="text-body">Contribution History</span>
+                    <Badge variant="outline" className="font-bold">Excellent</Badge>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-white/50 dark:bg-gray-800/50 rounded-xl">
+                    <span className="text-body">Loan Repayment</span>
+                    <Badge variant="outline" className="font-bold">Good</Badge>
+                  </div>
+                </div>
+                <Link href="/loans">
+                  <Button className="w-full rounded-xl font-black">{t('loans.view_details')}</Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            <Card className="border-none shadow-xl bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
+              <CardHeader>
+                <CardTitle className="text-h3">{t('profile.achievements.title')}</CardTitle>
+                <CardDescription className="text-body">{t('profile.achievements.subtitle')}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="group relative text-center p-4 bg-white/80 dark:bg-gray-800/80 rounded-2xl border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                    <div className="absolute inset-0 bg-yellow-400 opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity"></div>
+                    <Award className="w-8 h-8 mx-auto mb-2 text-yellow-500 transform group-hover:scale-110 transition-transform" />
+                    <p className="font-black text-xs uppercase tracking-wider">{t('profile.achievements.early_bird')}</p>
+                    <p className="text-[10px] text-gray-500 font-medium">{t('profile.achievements.early_bird_desc')}</p>
+                  </div>
+
+                  <div className="group relative text-center p-4 bg-white/80 dark:bg-gray-800/80 rounded-2xl border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                    <div className="absolute inset-0 bg-blue-400 opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity"></div>
+                    <Target className="w-8 h-8 mx-auto mb-2 text-blue-500 transform group-hover:scale-110 transition-transform" />
+                    <p className="font-black text-xs uppercase tracking-wider">{t('profile.achievements.consistent')}</p>
+                    <p className="text-[10px] text-gray-500 font-medium">{t('profile.achievements.consistent_desc')}</p>
+                  </div>
+
+                  <div className="group relative text-center p-4 bg-white/80 dark:bg-gray-800/80 rounded-2xl border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                    <div className="absolute inset-0 bg-green-400 opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity"></div>
+                    <Users className="w-8 h-8 mx-auto mb-2 text-green-500 transform group-hover:scale-110 transition-transform" />
+                    <p className="font-black text-xs uppercase tracking-wider">{t('profile.achievements.contributor')}</p>
+                    <p className="text-[10px] text-gray-500 font-medium">{t('profile.achievements.contributor_desc')}</p>
+                  </div>
+
+                  <div className="group relative text-center p-4 bg-white/80 dark:bg-gray-800/80 rounded-2xl border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                    <div className="absolute inset-0 bg-purple-400 opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity"></div>
+                    <TrendingUp className="w-8 h-8 mx-auto mb-2 text-purple-500 transform group-hover:scale-110 transition-transform" />
+                    <p className="font-black text-xs uppercase tracking-wider">{t('profile.achievements.rising_star')}</p>
+                    <p className="text-[10px] text-gray-500 font-medium">{t('profile.achievements.rising_star_desc')}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="groups">
+          <Card className="border-none shadow-xl bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
+            <CardHeader>
+              <CardTitle className="text-h3">{t('profile.tabs.groups')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {memberships.map((membership) => (
+                  <div key={membership.id} className="relative group p-6 bg-white/60 dark:bg-gray-800/60 rounded-3xl border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 overflow-hidden">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative z-10">
+                      <div className="flex-1 space-y-2">
+                        <div className="flex items-center gap-3">
+                          <h3 className="text-h3 text-gray-900 dark:text-white">{membership.name}</h3>
+                          <Badge variant="secondary" className="font-black text-[9px] uppercase tracking-wider">{membership.role}</Badge>
+                        </div>
+                        <div className="flex gap-4 text-xs font-bold text-gray-500">
+                          <span>{membership.memberCount} {t('groups.members').toLowerCase()}</span>
+                          <span>MWK {membership.monthlyContribution.toLocaleString()} / mo</span>
+                        </div>
+                      </div>
+                      <Link href={`/groups/${membership.id}`}>
+                        <Button variant="outline" className="rounded-xl font-black group-hover:border-blue-500 transition-colors">
+                          {t('groups.view')}
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="contributions">
+          <Card className="border-none shadow-xl bg-white/40 dark:bg-gray-900/40 backdrop-blur-md p-8 text-center">
+            <p className="text-body text-gray-500 mb-4">View your complete records in the dedicated section</p>
+            <Link href="/contributions">
+              <Button className="rounded-xl font-black">{t('common.view_all')}</Button>
+            </Link>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="loans">
+          <Card className="border-none shadow-xl bg-white/40 dark:bg-gray-900/40 backdrop-blur-md p-8 text-center">
+            <p className="text-body text-gray-500 mb-4">Manage your applications in the dedicated section</p>
+            <Link href="/loans">
+              <Button className="rounded-xl font-black">{t('common.view_all')}</Button>
+            </Link>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  )
+}
 
 interface UserProfile {
   id: string
@@ -48,395 +334,4 @@ interface FinancialSummary {
   outstandingLoanBalance: number
   contributionStreak: number
   eligibilityScore: number
-}
-
-export default function ProfilePage() {
-  const { user } = useUser()
-  const [profile, setProfile] = useState<UserProfile | null>(null)
-  const [memberships, setMemberships] = useState<GroupMembership[]>([])
-  const [financials, setFinancials] = useState<FinancialSummary | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (user) {
-      fetchProfileData()
-    } else {
-      // If no user, redirect to sign-in
-      window.location.href = '/sign-in'
-    }
-  }, [user])
-
-  const fetchProfileData = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const response = await fetch('/api/users/profile')
-
-      if (response.status === 401) {
-        // User is not authenticated, redirect to sign-in
-        window.location.href = '/sign-in'
-        return
-      }
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch profile data: ${response.statusText}`)
-      }
-
-      const data = await response.json()
-      setProfile({
-        id: data.id,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        phoneNumber: data.phoneNumber,
-        role: data.role,
-        region: data.region,
-        joinedAt: data.joinedAt,
-        isActive: data.isActive
-      })
-
-      setMemberships(data.memberships || [])
-      setFinancials(data.financialSummary || {
-        totalContributions: 0,
-        totalLoans: 0,
-        outstandingLoanBalance: 0,
-        contributionStreak: 0,
-        eligibilityScore: 0
-      })
-    } catch (error) {
-      console.error('Failed to fetch profile data:', error)
-      setError('Failed to load profile data. Please try again later.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading profile...</div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-lg text-red-600 mb-4">Error loading profile</div>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <button
-            onClick={() => fetchProfileData()}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
-        <p className="text-gray-600">View your personal information and activity</p>
-      </div>
-
-      {/* Profile Header */}
-      <Card className="overflow-hidden border-none shadow-xl bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl">
-        <CardContent className="p-0">
-          <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-8 p-6 sm:p-8">
-            <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#6c47ff] to-[#9d81ff] rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-              <div className="relative w-24 h-24 sm:w-28 sm:h-28 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center border-4 border-white dark:border-gray-950 shadow-2xl overflow-hidden">
-                <span className="text-3xl font-black bg-gradient-to-br from-[#6c47ff] to-[#9d81ff] bg-clip-text text-transparent">
-                  {(profile?.firstName?.charAt(0) || '') + (profile?.lastName?.charAt(0) || '')}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex-1 text-center sm:text-left space-y-2">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                  <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 dark:text-white">
-                    {profile?.firstName || ''} {profile?.lastName || ''}
-                  </h2>
-                  <p className="text-gray-500 font-medium">{profile?.email}</p>
-                </div>
-
-                <div className="flex flex-col items-center sm:items-end bg-gray-50 dark:bg-gray-800/50 p-3 rounded-2xl border border-gray-100 dark:border-gray-800">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Member since</p>
-                  <p className="font-bold text-gray-900 dark:text-gray-100">
-                    {profile?.joinedAt ? new Date(profile.joinedAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '---'}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap justify-center sm:justify-start gap-2 pt-2">
-                <Badge variant="secondary" className="bg-[#6c47ff]/10 text-[#6c47ff] border-[#6c47ff]/20 hover:bg-[#6c47ff]/20 px-3 py-1 rounded-full font-bold text-[10px] uppercase tracking-wider">
-                  {profile?.role}
-                </Badge>
-                <Badge variant="secondary" className="bg-blue-500/10 text-blue-600 border-blue-500/20 hover:bg-blue-500/20 px-3 py-1 rounded-full font-bold text-[10px] uppercase tracking-wider">
-                  {profile?.region} Region
-                </Badge>
-                <Badge variant={profile?.isActive ? 'default' : 'secondary'} className={`${profile?.isActive ? 'bg-green-500 text-white' : ''} px-3 py-1 rounded-full font-bold text-[10px] uppercase tracking-wider`}>
-                  {profile?.isActive ? 'Active' : 'Inactive'}
-                </Badge>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Financial Overview */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Contributions</CardTitle>
-            <div className="p-2 bg-green-50 dark:bg-green-500/10 rounded-xl">
-              <DollarSign className="h-4 w-4 text-green-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg sm:text-2xl font-black truncate">MWK {financials?.totalContributions.toLocaleString()}</div>
-            <p className="text-[10px] text-gray-500 mt-1">Lifetime total</p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Borrowed</CardTitle>
-            <div className="p-2 bg-blue-50 dark:bg-blue-500/10 rounded-xl">
-              <CreditCard className="h-4 w-4 text-blue-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg sm:text-2xl font-black truncate">MWK {financials?.totalLoans.toLocaleString()}</div>
-            <p className="text-[10px] text-gray-500 mt-1">Total loans</p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Debt</CardTitle>
-            <div className="p-2 bg-orange-50 dark:bg-orange-500/10 rounded-xl">
-              <TrendingUp className="h-4 w-4 text-orange-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg sm:text-2xl font-black truncate text-orange-600">MWK {financials?.outstandingLoanBalance.toLocaleString()}</div>
-            <p className="text-[10px] text-gray-500 mt-1">Active balance</p>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-lg transition-shadow border-none bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Streak</CardTitle>
-            <div className="p-2 bg-purple-50 dark:bg-purple-500/10 rounded-xl">
-              <Calendar className="h-4 w-4 text-purple-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg sm:text-2xl font-black text-purple-600">{financials?.contributionStreak}</div>
-            <p className="text-[10px] text-gray-500 mt-1">Consecutive months</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="groups">Group Memberships</TabsTrigger>
-          <TabsTrigger value="contributions">Contributions</TabsTrigger>
-          <TabsTrigger value="loans">Loan History</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Loan Eligibility</CardTitle>
-                <CardDescription>
-                  Your current eligibility for new loans
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <div className="flex justify-between text-sm mb-2">
-                    <span>Eligibility Score</span>
-                    <span>{financials?.eligibilityScore}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-blue-600 h-2 rounded-full"
-                      style={{ width: `${financials?.eligibilityScore}%` }}
-                    ></div>
-                  </div>
-                </div>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Contribution History</span>
-                    <Badge variant="outline">Excellent</Badge>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Loan Repayment</span>
-                    <Badge variant="outline">Good</Badge>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Group Standing</span>
-                    <Badge variant="outline">Active</Badge>
-                  </div>
-                </div>
-                <Button className="w-full">Check Loan Eligibility</Button>
-              </CardContent>
-            </Card>
-
-            <Card className="border-none shadow-lg bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
-              <CardHeader>
-                <CardTitle className="text-xl font-bold">Achievements</CardTitle>
-                <CardDescription>
-                  Your milestones and badges
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="group relative text-center p-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
-                    <div className="absolute inset-0 bg-yellow-400 opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity"></div>
-                    <Award className="w-10 h-10 mx-auto mb-3 text-yellow-500 transform group-hover:scale-110 transition-transform" />
-                    <p className="font-black text-xs uppercase tracking-wider mb-1">Early Bird</p>
-                    <p className="text-[10px] text-gray-500 font-medium">Foundation Member</p>
-                  </div>
-
-                  <div className="group relative text-center p-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
-                    <div className="absolute inset-0 bg-blue-400 opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity"></div>
-                    <Target className="w-10 h-10 mx-auto mb-3 text-blue-500 transform group-hover:scale-110 transition-transform" />
-                    <p className="font-black text-xs uppercase tracking-wider mb-1">Consistent</p>
-                    <p className="text-[10px] text-gray-500 font-medium">6 Month Streak</p>
-                  </div>
-
-                  <div className="group relative text-center p-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
-                    <div className="absolute inset-0 bg-green-400 opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity"></div>
-                    <Users className="w-10 h-10 mx-auto mb-3 text-green-500 transform group-hover:scale-110 transition-transform" />
-                    <p className="font-black text-xs uppercase tracking-wider mb-1">Contributor</p>
-                    <p className="text-[10px] text-gray-500 font-medium">Active Member</p>
-                  </div>
-
-                  <div className="group relative text-center p-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
-                    <div className="absolute inset-0 bg-purple-400 opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity"></div>
-                    <TrendingUp className="w-10 h-10 mx-auto mb-3 text-purple-500 transform group-hover:scale-110 transition-transform" />
-                    <p className="font-black text-xs uppercase tracking-wider mb-1">Rising Star</p>
-                    <p className="text-[10px] text-gray-500 font-medium">Growth Leader</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="groups">
-          <Card>
-            <CardHeader>
-              <CardTitle>Group Memberships</CardTitle>
-              <CardDescription>
-                Groups you belong to and your roles
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {memberships.map((membership) => (
-                  <div key={membership.id} className="relative group p-4 sm:p-6 bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#6c47ff]/5 to-transparent rounded-bl-[5rem] -mr-8 -mt-8"></div>
-
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative z-10">
-                      <div className="flex-1 space-y-4 sm:space-y-2">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="text-lg font-black text-gray-900 dark:text-white">{membership.name}</h3>
-                          <div className="flex gap-2">
-                            <Badge variant="secondary" className="bg-[#6c47ff]/10 text-[#6c47ff] border-none font-bold text-[9px] uppercase tracking-wider">{membership.role}</Badge>
-                            <Badge variant={membership.status === 'ACTIVE' ? 'default' : 'secondary'} className="font-bold text-[9px] uppercase tracking-wider">
-                              {membership.status}
-                            </Badge>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-4">
-                          <div className="space-y-1">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1">
-                              <Users className="w-3 h-3 text-[#6c47ff]" /> Members
-                            </p>
-                            <p className="font-bold text-gray-900 dark:text-gray-100">{membership.memberCount}</p>
-                          </div>
-                          <div className="space-y-1">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1">
-                              <DollarSign className="w-3 h-3 text-green-500" /> Monthly
-                            </p>
-                            <p className="font-bold text-gray-900 dark:text-gray-100">MWK {membership.monthlyContribution.toLocaleString()}</p>
-                          </div>
-                          <div className="space-y-1 col-span-2 sm:col-span-1">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1">
-                              <Calendar className="w-3 h-3 text-orange-500" /> Joined
-                            </p>
-                            <p className="font-bold text-gray-900 dark:text-gray-100">{new Date(membership.joinedAt).toLocaleDateString()}</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex sm:flex-col gap-2 shrink-0">
-                        <Link href={`/groups/${membership.id}`} className="flex-1">
-                          <Button variant="outline" size="sm" className="w-full rounded-2xl font-bold bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:border-[#6c47ff] hover:text-[#6c47ff] transition-colors">
-                            <Eye className="w-4 h-4 mr-2" /> View
-                          </Button>
-                        </Link>
-                        {membership.role === 'ADMIN' && (
-                          <Link href={`/groups/${membership.id}/settings`} className="flex-1">
-                            <Button variant="outline" size="sm" className="w-full rounded-2xl font-bold bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:border-blue-500 hover:text-blue-500 transition-colors">
-                              <Settings className="w-4 h-4 mr-2" /> Manage
-                            </Button>
-                          </Link>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="contributions">
-          <Card>
-            <CardHeader>
-              <CardTitle>Contribution History</CardTitle>
-              <CardDescription>
-                Your monthly contribution records
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-gray-500">
-                Contribution history interface coming soon...
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="loans">
-          <Card>
-            <CardHeader>
-              <CardTitle>Loan History</CardTitle>
-              <CardDescription>
-                Your loan applications and repayment history
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-gray-500">
-                Loan history interface coming soon...
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
-  )
 }
