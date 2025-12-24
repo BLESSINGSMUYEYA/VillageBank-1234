@@ -49,34 +49,54 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if contribution for this month already exists
-    const currentMonth = new Date().getMonth() + 1
-    const currentYear = new Date().getFullYear()
-    const currentDay = new Date().getDate()
+    const now = new Date()
+    const currentMonth = now.getMonth() + 1
+    const currentYear = now.getFullYear()
+    const currentDay = now.getDate()
 
-    const existingContribution = await prisma.contribution.findUnique({
+    // We allow multiple contributions per month now, so we remove the check for existingContribution
+
+    // Check if contribution is late and calculate penalty ONLY if no contribution exists for this month yet
+    const existingContributionMonth = await prisma.contribution.findFirst({
       where: {
-        groupId_userId_month_year: {
-          groupId: validatedData.groupId,
-          userId: userId,
-          month: currentMonth,
-          year: currentYear,
-        },
-      },
+        groupId: validatedData.groupId,
+        userId: userId,
+        month: currentMonth,
+        year: currentYear,
+        status: { in: ['COMPLETED', 'PENDING'] }
+      }
     })
 
-    if (existingContribution) {
-      return NextResponse.json(
-        { error: 'You have already made a contribution for this month' },
-        { status: 400 }
-      )
-    }
-
-    // Check if contribution is late and calculate penalty
-    const isLate = currentDay > groupMember.group.contributionDueDay
+    const isLate = !existingContributionMonth && currentDay > groupMember.group.contributionDueDay
     const penaltyApplied = isLate ? groupMember.group.penaltyAmount : 0
 
-    // Create contribution
+    // Apply Monthly Debt: If no contribution record exists for this month, subtract the monthlyContribution
+    let balanceAdjustment = 0
+    if (!existingContributionMonth) {
+      balanceAdjustment -= groupMember.group.monthlyContribution
+    }
+
+    let remainingAmount = validatedData.amount
+    let penaltyPaid = 0
+    let contributionApplied = 0
+
+    // 1. Pay off unpaid penalties first
+    if (groupMember.unpaidPenalties > 0) {
+      penaltyPaid = Math.min(remainingAmount, groupMember.unpaidPenalties)
+      remainingAmount -= penaltyPaid
+    }
+
+    // 2. Increment balance with the remaining amount (minus any initial debt adjustment)
+    // Update GroupMember balance and penalties
+    const updatedMember = await prisma.groupMember.update({
+      where: { id: groupMember.id },
+      data: {
+        unpaidPenalties: { decrement: penaltyPaid },
+        balance: { increment: balanceAdjustment + remainingAmount }
+      }
+    })
+
+    // Create contribution record
     const contribution = await prisma.contribution.create({
       data: {
         groupId: validatedData.groupId,
@@ -87,7 +107,7 @@ export async function POST(request: NextRequest) {
         paymentMethod: validatedData.paymentMethod,
         transactionRef: validatedData.transactionRef,
         receiptUrl: validatedData.receiptUrl,
-        status: 'PENDING', // All contributions go to PENDING for treasurer approval
+        status: 'PENDING',
         isLate: isLate,
         penaltyApplied: penaltyApplied,
       },
@@ -99,20 +119,26 @@ export async function POST(request: NextRequest) {
         userId: userId,
         groupId: validatedData.groupId,
         actionType: isLate ? 'CONTRIBUTION_MADE_LATE' : 'CONTRIBUTION_MADE',
-        description: `Made contribution of MWK ${validatedData.amount.toLocaleString()}${isLate ? ` (late - penalty MWK ${penaltyApplied.toLocaleString()})` : ''}`,
+        description: `Made payment of MWK ${validatedData.amount.toLocaleString()}. Applied: MWK ${penaltyPaid.toLocaleString()} to penalties, MWK ${remainingAmount.toLocaleString()} to balance.`,
         metadata: {
           contributionId: contribution.id,
           amount: validatedData.amount,
-          paymentMethod: validatedData.paymentMethod,
-          isLate: isLate,
-          penaltyApplied: penaltyApplied,
+          penaltyPaid,
+          balanceIncrement: remainingAmount,
+          isLate,
         },
       },
     })
 
     return NextResponse.json({
-      message: 'Contribution created successfully',
+      message: 'Contribution recorded successfully',
       contribution,
+      summary: {
+        penaltyPaid,
+        balanceIncrement: remainingAmount,
+        newBalance: updatedMember.balance,
+        remainingPenalties: updatedMember.unpaidPenalties
+      }
     })
 
   } catch (error) {

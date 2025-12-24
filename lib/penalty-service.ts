@@ -46,29 +46,37 @@ export class PenaltyService {
 
             for (const member of group.members) {
                 // Check if contribution exists for this month
-                const existingContribution = await prisma.contribution.findUnique({
+                const existingContribution = await prisma.contribution.findFirst({
                     where: {
-                        groupId_userId_month_year: {
-                            groupId,
-                            userId: member.userId,
-                            month: currentMonth,
-                            year: currentYear
-                        }
+                        groupId,
+                        userId: member.userId,
+                        month: currentMonth,
+                        year: currentYear,
+                        status: { not: 'FAILED' } // Don't count placeholder/failed payments as a contribution
                     }
                 })
 
                 if (!existingContribution) {
-                    // Create a pending late contribution with the penalty
+                    // Update GroupMember to reflect debt and penalty
+                    await prisma.groupMember.update({
+                        where: { id: member.id },
+                        data: {
+                            unpaidPenalties: { increment: group.penaltyAmount },
+                            balance: { decrement: group.monthlyContribution } // Debt increases
+                        }
+                    })
+
+                    // Create a placeholder contribution for the month to avoid duplicate penalty triggers
                     await prisma.contribution.create({
                         data: {
                             groupId,
                             userId: member.userId,
                             month: currentMonth,
                             year: currentYear,
-                            amount: group.monthlyContribution, // Amount still due
+                            amount: 0, // No payment made yet
                             penaltyApplied: group.penaltyAmount,
                             isLate: true,
-                            status: 'PENDING',
+                            status: 'FAILED', // Placeholder for missed payment
                         }
                     })
 
@@ -103,6 +111,13 @@ export class PenaltyService {
                     existingContribution.status === 'PENDING' &&
                     new Date(existingContribution.createdAt).getDate() > group.contributionDueDay) {
                     // If contribution exists but was created after due date and hasn't been marked late yet
+                    await prisma.groupMember.update({
+                        where: { id: member.id },
+                        data: {
+                            unpaidPenalties: { increment: group.penaltyAmount }
+                        }
+                    })
+
                     await prisma.contribution.update({
                         where: { id: existingContribution.id },
                         data: {

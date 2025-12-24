@@ -17,6 +17,12 @@ const cloudinaryConfig = {
   uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'village_banking_receipts',
 }
 
+console.log('Cloudinary Config Check:', {
+  hasCloudName: !!cloudinaryConfig.cloudName,
+  hasPreset: !!cloudinaryConfig.uploadPreset,
+  isUnsigned: !cloudinaryConfig.apiKey
+})
+
 interface Group {
   id: string
   name: string
@@ -41,6 +47,7 @@ function NewContributionPageContent() {
   const [isScanning, setIsScanning] = useState(false)
   const [receiptUrl, setReceiptUrl] = useState('')
   const [shouldScan, setShouldScan] = useState(false)
+  const [memberDetails, setMemberDetails] = useState<{ balance: number; unpaidPenalties: number } | null>(null)
 
   useEffect(() => {
     // Ensure body scroll is restored when scanning is done
@@ -104,6 +111,13 @@ function NewContributionPageContent() {
             ...prev,
             amount: group.monthlyContribution.toString()
           }))
+          const member = group.members.find((m: any) => m.userId === 'user_current' || true) // The API should ideally filter this or we find the active one
+          if (member) {
+            setMemberDetails({
+              balance: member.balance || 0,
+              unpaidPenalties: member.unpaidPenalties || 0
+            })
+          }
         }
       }
     } catch (error) {
@@ -112,13 +126,22 @@ function NewContributionPageContent() {
   }
 
   const handleGroupChange = (groupId: string) => {
-    const group = groups.find(g => g.id === groupId)
+    const group: any = groups.find(g => g.id === groupId)
     setSelectedGroup(group || null)
     if (group) {
       setFormData(prev => ({
         ...prev,
         amount: group.monthlyContribution.toString()
       }))
+      const member = group.members?.find((m: any) => m.status === 'ACTIVE')
+      if (member) {
+        setMemberDetails({
+          balance: member.balance || 0,
+          unpaidPenalties: member.unpaidPenalties || 0
+        })
+      }
+    } else {
+      setMemberDetails(null)
     }
   }
 
@@ -145,25 +168,8 @@ function NewContributionPageContent() {
       return false
     }
 
-    // Check if amount matches expected monthly contribution
-    if (selectedGroup && parseFloat(formData.amount) !== selectedGroup.monthlyContribution) {
-      setError(`Amount must be exactly MWK ${selectedGroup.monthlyContribution.toLocaleString()} for this group`)
-      return false
-    }
-
-    // Check for duplicate contribution for current month
-    const currentMonth = new Date().getMonth() + 1
-    const currentYear = new Date().getFullYear()
-    const existingContribution = userContributions.find(
-      c => c.groupId === selectedGroup.id &&
-        c.month === currentMonth &&
-        c.year === currentYear
-    )
-
-    if (existingContribution) {
-      setError(`You have already made a contribution for ${new Date(currentYear, currentMonth - 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`)
-      return false
-    }
+    // We no longer check for duplicate monthly contributions as we allow multiple payments
+    // We also remove strict amount comparison
 
     return true
   }
@@ -192,7 +198,7 @@ function NewContributionPageContent() {
           const parsedAmount = parseFloat(data.amount)
           if (!isNaN(parsedAmount) && parsedAmount > 0) {
             setFormData(prev => ({ ...prev, amount: parsedAmount.toString() }))
-            updatedFields.push('amount')
+            updatedFields.push(`amount (MWK ${parsedAmount.toLocaleString()})`)
           }
         }
         if (data.transactionRef) {
@@ -269,10 +275,23 @@ function NewContributionPageContent() {
         })
         setError(data.error || 'Failed to create contribution')
       } else {
-        setSuccess('Contribution created successfully! Redirecting...')
+        const remainingPenalties = data.summary?.remainingPenalties ?? 0
+        const newBalance = data.summary?.newBalance ?? 0
+
+        setSuccess(`Contribution recorded successfully! ${data.summary?.penaltyPaid > 0 ? `MWK ${data.summary.penaltyPaid.toLocaleString()} paid towards penalties.` : ''} New Balance: MWK ${newBalance.toLocaleString()}`)
+
+        // Update local state immediately
+        setMemberDetails({
+          balance: newBalance,
+          unpaidPenalties: remainingPenalties
+        })
+
+        // Also refresh the groups list in the background
+        fetchGroups()
+
         setTimeout(() => {
-          router.push('/contributions?message=Contribution created successfully')
-        }, 2000)
+          router.push('/contributions?message=Contribution recorded successfully')
+        }, 5000) // Longer delay to let them see the new balance
       }
     } catch (error) {
       setError('An error occurred. Please try again.')
@@ -280,6 +299,23 @@ function NewContributionPageContent() {
       setLoading(false)
     }
   }
+
+  // Calculate dynamic balance
+  const currentMonthDate = new Date().getMonth() + 1
+  const currentYearDate = new Date().getFullYear()
+  const hasPaidThisMonth = userContributions.some(
+    c => c.groupId === selectedGroup?.id &&
+      c.month === currentMonthDate &&
+      c.year === currentYearDate &&
+      c.amount > 0 &&
+      c.status !== 'FAILED'
+  )
+
+  const monthlyDue = (selectedGroup && !hasPaidThisMonth) ? selectedGroup.monthlyContribution : 0
+  const totalDue = (memberDetails ? (monthlyDue + memberDetails.unpaidPenalties - (memberDetails.balance || 0)) : monthlyDue)
+  const amountToPay = parseFloat(formData.amount) || 0
+  const remainingAfterPayment = Math.max(0, totalDue - amountToPay)
+  const isOverpaying = amountToPay > totalDue && totalDue > 0
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -340,8 +376,11 @@ function NewContributionPageContent() {
                         }
                       }}
                       onError={(error: any) => {
-                        console.error('Cloudinary upload error:', error)
-                        setError('Failed to upload receipt. Please try again or fill the form manually.')
+                        console.error('Cloudinary upload error detailed:', {
+                          error,
+                          message: error?.statusText || error?.message || 'Unknown error'
+                        })
+                        setError(`Upload failed: ${error?.statusText || 'Check console for details'}. Please ensure your upload preset is "Unsigned".`)
                       }}
                     >
                       {({ open }) => (
@@ -363,12 +402,19 @@ function NewContributionPageContent() {
                           ) : (
                             <button
                               type="button"
-                              onClick={() => open()}
+                              onClick={() => {
+                                if (open) {
+                                  open();
+                                } else {
+                                  console.error('Cloudinary upload widget is not ready');
+                                  setError('Upload widget is still loading. Please try again in a moment.');
+                                }
+                              }}
                               className="w-full flex flex-col items-center space-y-2 text-gray-500 py-10"
                             >
                               <Upload className="w-8 h-8" />
-                              <span className="text-sm font-medium">Upload transaction receipt</span>
-                              <span className="text-xs">Supports PNG, JPG (Max 5MB)</span>
+                              <span className="text-sm font-medium">Upload receipt or screenshot</span>
+                              <span className="text-xs">Supports PNG, JPG, screenshots & photos of other screens</span>
                             </button>
                           )}
                         </div>
@@ -412,7 +458,7 @@ function NewContributionPageContent() {
                   )}
                 </div>
                 <p className="text-xs text-gray-500">
-                  Scanning helps auto-fill the form and recorded as proof of payment.
+                  Flexible scanning: screenshots and photos of other screens are supported.
                 </p>
               </div>
 
@@ -441,10 +487,31 @@ function NewContributionPageContent() {
                   <div className="text-sm text-blue-700 space-y-1">
                     <p><strong>Monthly Contribution:</strong> MWK {selectedGroup?.monthlyContribution.toLocaleString()}</p>
                     <p><strong>Region:</strong> {selectedGroup?.region}</p>
+                    {memberDetails && (
+                      <div className="mt-2 pt-2 border-t border-blue-200">
+                        <p className="flex justify-between">
+                          <span>Outstanding Penalties:</span>
+                          <span className={memberDetails.unpaidPenalties > 0 ? "font-bold text-red-600" : "text-green-600"}>
+                            MWK {memberDetails.unpaidPenalties.toLocaleString()}
+                          </span>
+                        </p>
+                        <p className="flex justify-between">
+                          <span>Current Balance:</span>
+                          <span className={memberDetails.balance < 0 ? "font-bold text-red-600" : "text-green-600"}>
+                            MWK {memberDetails.balance.toLocaleString()}
+                            {memberDetails.balance < 0 ? " (Owed)" : " (Credit)"}
+                          </span>
+                        </p>
+                        <p className="flex justify-between pt-1 border-t border-blue-100 mt-1 font-semibold text-blue-900">
+                          <span>Total Due Now:</span>
+                          <span>MWK {totalDue.toLocaleString()}</span>
+                        </p>
+                      </div>
+                    )}
                   </div>
                   <div className="mt-3 p-2 bg-blue-100 rounded">
                     <p className="text-xs text-blue-800">
-                      <strong>Note:</strong> You must contribute exactly MWK {selectedGroup.monthlyContribution.toLocaleString()} for this group
+                      <strong>Note:</strong> You can pay any amount. Contributions first pay off penalties, then the monthly amount. Remaining funds are added as credit.
                     </p>
                   </div>
                 </div>
@@ -463,9 +530,23 @@ function NewContributionPageContent() {
                   required
                 />
                 {selectedGroup && (
-                  <p className="text-sm text-gray-500">
-                    Expected monthly contribution: MWK {selectedGroup.monthlyContribution.toLocaleString()}
-                  </p>
+                  <div className="space-y-1 mt-2">
+                    <p className="text-sm text-gray-500 flex justify-between">
+                      <span>Expected montly:</span>
+                      <span>MWK {selectedGroup.monthlyContribution.toLocaleString()}</span>
+                    </p>
+                    <p className="text-sm font-medium flex justify-between">
+                      <span>Remaining after this payment:</span>
+                      <span className={remainingAfterPayment > 0 ? "text-orange-600" : "text-green-600"}>
+                        MWK {remainingAfterPayment.toLocaleString()}
+                      </span>
+                    </p>
+                    {isOverpaying && (
+                      <p className="text-xs text-green-600 font-medium">
+                        You are overpaying! MWK {(amountToPay - totalDue).toLocaleString()} will be added as credit.
+                      </p>
+                    )}
+                  </div>
                 )}
               </div>
 

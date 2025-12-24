@@ -77,6 +77,9 @@ model GroupMember {
   group     Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   
+  balance          Float @default(0) // (+) for overpayment/credit, (-) for debt/owed
+  unpaidPenalties  Float @default(0) // Total accumulated penalties not yet paid
+  
   @@unique([groupId, userId])
 }
 
@@ -114,7 +117,7 @@ model Contribution {
   group               Group   @relation(fields: [groupId], references: [id])
   user                User    @relation(fields: [userId], references: [id])
   
-  @@unique([groupId, userId, month, year])
+  @@index([groupId, userId, month, year])
 }
 
 enum PaymentStatus {
