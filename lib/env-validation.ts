@@ -13,15 +13,24 @@ export function validateEnvironment() {
   ]
 
   const missing = requiredEnvVars.filter(envVar => !process.env[envVar])
-  
+
   if (missing.length > 0) {
-    throw new Error(`Missing required environment variables: ${missing.join(', ')}`)
+    const errorMsg = `❌ Missing required environment variables: ${missing.join(', ')}. Please check your environment configuration.`
+
+    // During build process, we might want to just warn to allow static analysis to finish
+    // However, for actual production runtime, we should throw
+    if (process.env.NEXT_PHASE === 'phase-production-build') {
+      console.warn(errorMsg)
+      return false
+    }
+
+    throw new Error(errorMsg)
   }
 
   // Log warnings for optional variables
   optionalEnvVars.forEach(envVar => {
     if (!process.env[envVar]) {
-      console.warn(`Optional environment variable not set: ${envVar}`)
+      console.warn(`⚠️ Optional environment variable not set: ${envVar}`)
     }
   })
 
