@@ -150,68 +150,68 @@ export default function TreasurerApprovalsPage() {
         <div className="space-y-6 max-w-5xl mx-auto px-4 py-8">
             <div className="flex items-center justify-between">
                 <div>
-                    <Link href="/dashboard" className="inline-flex items-center text-body text-gray-500 hover:text-gray-700 mb-2">
+                    <Link href="/dashboard" className="inline-flex items-center text-body text-muted-foreground hover:text-foreground mb-2">
                         <ArrowLeft className="w-4 h-4 mr-2" />
                         Back to Dashboard
                     </Link>
-                    <h1 className="text-display font-bold text-gray-900">Pending Approvals</h1>
-                    <p className="text-gray-600 text-body">Review and approve member contributions</p>
+                    <h1 className="text-display font-black text-foreground">Pending Approvals</h1>
+                    <p className="text-muted-foreground text-body">Review and approve member contributions</p>
                 </div>
-                <Badge variant="outline" className="text-body px-3 py-1">
+                <Badge variant="outline" className="text-body px-3 py-1 text-foreground border-border">
                     {pending.length} Pending
                 </Badge>
             </div>
 
             {pending.length === 0 ? (
-                <Card>
+                <Card className="bg-card border-border shadow-sm">
                     <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                        <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                            <Check className="w-6 h-6 text-green-600" />
+                        <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4">
+                            <Check className="w-6 h-6 text-green-600 dark:text-green-400" />
                         </div>
-                        <h3 className="text-h3 font-medium text-gray-900">All caught up!</h3>
-                        <p className="text-gray-500 text-body">There are no contributions waiting for approval.</p>
+                        <h3 className="text-h3 font-black text-foreground">All caught up!</h3>
+                        <p className="text-muted-foreground text-body">There are no contributions waiting for approval.</p>
                     </CardContent>
                 </Card>
             ) : (
                 <div className="grid gap-6">
                     {pending.map((item) => (
-                        <Card key={item.id} className="overflow-hidden">
+                        <Card key={item.id} className="overflow-hidden bg-card border-border shadow-sm">
                             <div className="grid md:grid-cols-[1fr,250px] gap-0">
                                 <CardContent className="p-6">
                                     <div className="flex justify-between items-start mb-4">
                                         <div>
-                                            <h3 className="text-h3 font-semibold text-gray-900">
+                                            <h3 className="text-h3 font-black text-foreground">
                                                 {item.user.firstName} {item.user.lastName}
                                             </h3>
-                                            <p className="text-body text-gray-500">{item.group.name}</p>
+                                            <p className="text-body text-muted-foreground">{item.group.name}</p>
                                         </div>
                                         <div className="text-right">
-                                            <div className="text-h3 font-bold text-blue-600">
+                                            <div className="text-h3 font-black text-blue-600 dark:text-blue-400">
                                                 {formatCurrency(item.amount)}
                                             </div>
-                                            <p className="text-xs text-gray-500">
+                                            <p className="text-xs text-muted-foreground">
                                                 {new Date(item.createdAt).toLocaleDateString()}
                                             </p>
                                         </div>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4 text-body mb-6">
-                                        <div className="p-3 bg-gray-50 rounded-lg">
-                                            <p className="text-gray-500 text-xs mb-1 uppercase font-semibold">Payment Method</p>
-                                            <p className="font-medium">{item.paymentMethod.replace('_', ' ')}</p>
+                                        <div className="p-3 bg-muted/50 rounded-lg">
+                                            <p className="text-muted-foreground text-xs mb-1 uppercase font-black">Payment Method</p>
+                                            <p className="font-medium text-foreground">{item.paymentMethod.replace('_', ' ')}</p>
                                         </div>
-                                        <div className="p-3 bg-gray-50 rounded-lg">
-                                            <p className="text-gray-500 text-xs mb-1 uppercase font-semibold">Reference</p>
-                                            <p className="font-medium truncate">{item.transactionRef || 'N/A'}</p>
+                                        <div className="p-3 bg-muted/50 rounded-lg">
+                                            <p className="text-muted-foreground text-xs mb-1 uppercase font-black">Reference</p>
+                                            <p className="font-medium truncate text-foreground">{item.transactionRef || 'N/A'}</p>
                                         </div>
                                     </div>
 
                                     {showRejectForm === item.id ? (
-                                        <div className="space-y-4 pt-4 border-t">
+                                        <div className="space-y-4 pt-4 border-t border-border">
                                             <div>
-                                                <label className="text-body font-medium mb-1 block">Reason for rejection</label>
+                                                <label className="text-body font-medium mb-1 block text-foreground">Reason for rejection</label>
                                                 <textarea
-                                                    className="w-full min-h-25 p-3 border rounded-md text-body"
+                                                    className="w-full min-h-25 p-3 border border-input rounded-md text-body bg-background text-foreground placeholder:text-muted-foreground"
                                                     placeholder="e.g. Reference number doesn't match receipt"
                                                     value={rejectionReason}
                                                     onChange={(e) => setRejectionReason(e.target.value)}
@@ -222,6 +222,7 @@ export default function TreasurerApprovalsPage() {
                                                     variant="ghost"
                                                     size="sm"
                                                     onClick={() => setShowRejectForm(null)}
+                                                    className="text-muted-foreground hover:text-foreground"
                                                 >
                                                     Cancel
                                                 </Button>
@@ -236,11 +237,11 @@ export default function TreasurerApprovalsPage() {
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="flex justify-end space-x-3 pt-4 border-t">
+                                        <div className="flex justify-end space-x-3 pt-4 border-t border-border">
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                className="border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                                                 onClick={() => setShowRejectForm(item.id)}
                                             >
                                                 <X className="w-4 h-4 mr-2" />
@@ -249,7 +250,7 @@ export default function TreasurerApprovalsPage() {
                                             <Button
                                                 variant="default"
                                                 size="sm"
-                                                className="bg-green-600 hover:bg-green-700"
+                                                className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600 text-white"
                                                 disabled={isSubmitting}
                                                 onClick={() => handleReview(item.id, 'COMPLETED')}
                                             >
@@ -261,7 +262,7 @@ export default function TreasurerApprovalsPage() {
                                     )}
                                 </CardContent>
 
-                                <div className="bg-gray-100 border-l relative overflow-hidden group/receipt">
+                                <div className="bg-muted/30 border-l border-border relative overflow-hidden group/receipt">
                                     {item.receiptUrl ? (
                                         <div className="h-full w-full flex items-center justify-center p-4">
                                             <img
@@ -275,7 +276,7 @@ export default function TreasurerApprovalsPage() {
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="h-full w-full flex flex-col items-center justify-center text-gray-400 p-8 text-center">
+                                        <div className="h-full w-full flex flex-col items-center justify-center text-muted-foreground p-8 text-center">
                                             <ImageIcon className="w-12 h-12 mb-2 opacity-50" />
                                             <p className="text-xs">No receipt uploaded</p>
                                         </div>

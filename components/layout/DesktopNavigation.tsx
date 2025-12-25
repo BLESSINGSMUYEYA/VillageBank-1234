@@ -48,12 +48,12 @@ export function DesktopNavigation() {
   const isActive = (href: string) => pathname === href
 
   return (
-    <header className="hidden lg:flex bg-white/60 dark:bg-gray-900/60 backdrop-blur-md shadow-lg border-none">
+    <header className="hidden lg:flex bg-card shadow-sm border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="shrink-0 flex items-center">
-              <h1 className="text-xl sm:text-2xl font-black text-gray-900">
+              <h1 className="text-xl sm:text-2xl font-black text-blue-900 dark:text-blue-100">
                 Village Bank
               </h1>
             </div>
@@ -62,9 +62,9 @@ export function DesktopNavigation() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`inline-flex items-center px-4 py-2 rounded-2xl text-sm font-bold transition-all duration-300 ${isActive(item.href)
-                    ? 'bg-[#6c47ff] text-white shadow-lg'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 ${isActive(item.href)
+                    ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                    : 'text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10'
                     }`}
                 >
                   <item.icon className="w-4 h-4 mr-2" />
@@ -75,9 +75,9 @@ export function DesktopNavigation() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`inline-flex items-center px-4 py-2 rounded-2xl text-sm font-bold transition-all duration-300 ${isActive(item.href)
-                    ? 'bg-[#6c47ff] text-white shadow-lg'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  className={`inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 ${isActive(item.href)
+                    ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                    : 'text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10'
                     }`}
                 >
                   <item.icon className="w-4 h-4 mr-2" />
@@ -92,25 +92,24 @@ export function DesktopNavigation() {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-muted/50 transition-colors">
                     <div className="relative group">
-                      <div className="absolute -inset-1 bg-linear-to-r from-[#6c47ff] to-[#9d81ff] rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                      <Avatar className="relative h-8 w-8 bg-white dark:bg-gray-800 rounded-full border-2 border-white dark:border-gray-950 shadow-xl overflow-hidden">
-                        <AvatarFallback className="font-black bg-linear-to-br from-[#6c47ff] to-[#9d81ff] bg-clip-text text-transparent">
+                      <Avatar className="relative h-8 w-8 bg-card border border-border">
+                        <AvatarFallback className="font-black text-blue-700 dark:text-blue-300 dark:bg-blue-900">
                           {user?.fullName?.charAt(0).toUpperCase() || user?.username?.charAt(0).toUpperCase() || 'U'}
                         </AvatarFallback>
                       </Avatar>
                     </div>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 border-none shadow-xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-md" align="end" forceMount>
+                <DropdownMenuContent className="w-56 border border-border shadow-xl bg-card" align="end" forceMount>
                   <div className="flex items-center justify-start gap-2 p-2">
                     <div className="flex flex-col space-y-1 leading-none">
-                      <p className="font-black text-sm">{user?.fullName || user?.username || 'User'}</p>
-                      <p className="w-50 truncate text-xs text-gray-500">
+                      <p className="font-black text-sm text-foreground">{user?.fullName || user?.username || 'User'}</p>
+                      <p className="w-50 truncate text-xs text-muted-foreground">
                         {user?.primaryEmailAddress?.emailAddress}
                       </p>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                         {user?.publicMetadata?.role as string || 'User'}
                       </p>
                     </div>
@@ -131,7 +130,7 @@ export function DesktopNavigation() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     <SignOutButton>
-                      <button className="w-full text-left">
+                      <button className="w-full text-left flex items-center">
                         <LogOut className="mr-2 h-4 w-4" />
                         Log out
                       </button>
@@ -142,10 +141,10 @@ export function DesktopNavigation() {
             ) : (
               <div className="flex items-center space-x-3">
                 <Link href="/login">
-                  <Button variant="outline" className="rounded-2xl font-bold bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:border-[#6c47ff] hover:text-[#6c47ff] transition-colors">Sign In</Button>
+                  <Button variant="outline" className="rounded-xl font-bold bg-card border-border hover:border-blue-700 hover:text-blue-700 dark:hover:text-blue-400 dark:hover:border-blue-400 transition-colors">Sign In</Button>
                 </Link>
                 <Link href="/register">
-                  <Button className="bg-linear-to-r from-[#6c47ff] to-[#9d81ff] text-white rounded-2xl font-bold text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 shadow-lg hover:shadow-xl transition-all duration-300">
+                  <Button className="bg-blue-900 text-white dark:bg-blue-700 dark:hover:bg-blue-600 rounded-xl font-bold text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 hover:bg-blue-800 transition-all duration-200 shadow-sm">
                     Sign Up
                   </Button>
                 </Link>

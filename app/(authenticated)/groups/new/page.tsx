@@ -30,14 +30,14 @@ export default function CreateGroupPage() {
       ...prev,
       [name]: value
     }))
-    
+
     // Real-time validation
     validateField(name, value)
   }
 
   const validateField = (name: string, value: string) => {
     const errors: Record<string, string> = {}
-    
+
     switch (name) {
       case 'name':
         if (value && value.length < 3) {
@@ -67,7 +67,7 @@ export default function CreateGroupPage() {
         }
         break
     }
-    
+
     setFieldErrors(prev => ({
       ...prev,
       [name]: errors[name] || ''
@@ -132,7 +132,7 @@ export default function CreateGroupPage() {
         }),
       })
 
-     const data = await response.json()
+      const data = await response.json()
 
       if (!response.ok) {
         setError(data.error || 'Failed to create group')
@@ -160,7 +160,7 @@ export default function CreateGroupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-muted/30 py-8">
       {/* Loading overlay */}
       {loading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -170,22 +170,22 @@ export default function CreateGroupPage() {
           </div>
         </div>
       )}
-      
+
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <Link href="/groups" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 mb-4">
+          <Link href="/groups" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Groups
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Create New Group</h1>
-          <p className="text-gray-600">Set up a new village banking group</p>
+          <h1 className="text-3xl font-bold text-foreground">Create New Group</h1>
+          <p className="text-muted-foreground">Set up a new village banking group</p>
         </div>
 
-        <Card>
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle>Group Details</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-foreground">Group Details</CardTitle>
+            <CardDescription className="text-muted-foreground">
               Fill in the information for your new village banking group
             </CardDescription>
           </CardHeader>
@@ -196,7 +196,7 @@ export default function CreateGroupPage() {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-              
+
               <div className="space-y-2">
                 <Label htmlFor="name">Group Name *</Label>
                 <Input
@@ -225,24 +225,24 @@ export default function CreateGroupPage() {
                   onChange={handleChange}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="region">Region *</Label>
                 <select
                   id="region"
                   name="region"
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-foreground"
                   value={formData.region}
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Select region</option>
-                  <option value="NORTHERN">Northern</option>
-                  <option value="SOUTHERN">Southern</option>
-                  <option value="CENTRAL">Central</option>
+                  <option value="" className="bg-background text-foreground">Select region</option>
+                  <option value="NORTHERN" className="bg-background text-foreground">Northern</option>
+                  <option value="SOUTHERN" className="bg-background text-foreground">Southern</option>
+                  <option value="CENTRAL" className="bg-background text-foreground">Central</option>
                 </select>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="monthlyContribution">Monthly Contribution (MWK) *</Label>
                 <Input
@@ -260,7 +260,7 @@ export default function CreateGroupPage() {
                   <p className="text-sm text-red-500">{fieldErrors.monthlyContribution}</p>
                 )}
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="maxLoanMultiplier">Loan Multiplier</Label>
@@ -275,14 +275,14 @@ export default function CreateGroupPage() {
                     onChange={handleChange}
                     className={fieldErrors.maxLoanMultiplier ? 'border-red-500' : ''}
                   />
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     Maximum loan = contributions × multiplier
                   </p>
                   {fieldErrors.maxLoanMultiplier && (
                     <p className="text-sm text-red-500">{fieldErrors.maxLoanMultiplier}</p>
                   )}
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="interestRate">Interest Rate (%)</Label>
                   <Input
@@ -297,7 +297,7 @@ export default function CreateGroupPage() {
                     onChange={handleChange}
                     className={fieldErrors.interestRate ? 'border-red-500' : ''}
                   />
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     Annual interest rate on loans
                   </p>
                   {fieldErrors.interestRate && (
@@ -305,14 +305,14 @@ export default function CreateGroupPage() {
                   )}
                 </div>
               </div>
-              
+
               <div className="flex justify-end space-x-4 pt-4">
                 <Link href="/groups">
-                  <Button variant="outline" type="button">
+                  <Button variant="outline" type="button" className="border-border text-foreground hover:bg-muted">
                     Cancel
                   </Button>
                 </Link>
-                <Button type="submit" disabled={loading} className="min-w-30">
+                <Button type="submit" disabled={loading} className="min-w-30 bg-blue-900 hover:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 text-white">
                   {loading ? (
                     <div className="flex items-center">
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>

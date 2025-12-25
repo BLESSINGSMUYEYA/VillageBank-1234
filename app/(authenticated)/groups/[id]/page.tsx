@@ -41,21 +41,21 @@ export default async function GroupDetailPage({
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
         <div className="space-y-3">
           <Link href="/groups">
-            <Button variant="outline" size="sm" className="w-full sm:w-auto">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto rounded-xl border-border hover:border-blue-700 hover:text-blue-700 transition-colors font-bold">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Groups
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{group.name}</h1>
-            <p className="text-gray-600 text-sm sm:text-base">{group.description || 'No description'}</p>
+            <h1 className="text-2xl sm:text-3xl font-black text-foreground">{group.name}</h1>
+            <p className="text-muted-foreground text-sm sm:text-base font-medium">{group.description || 'No description'}</p>
           </div>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-          <Badge variant="outline" className="w-full sm:w-auto justify-center">{group.region}</Badge>
+          <Badge variant="outline" className="w-full sm:w-auto justify-center rounded-lg border-blue-200 text-blue-700 bg-blue-50 font-bold px-4 py-1.5">{group.region}</Badge>
           {isAdmin && (
             <Link href={`/groups/${group.id}/settings`}>
-              <Button variant="outline" size="sm" className="w-full sm:w-auto">
+              <Button variant="outline" size="sm" className="w-full sm:w-auto rounded-xl border-border hover:border-blue-700 hover:text-blue-700 transition-colors font-bold">
                 <Settings className="w-4 h-4 mr-2" />
                 Settings
               </Button>
@@ -66,55 +66,55 @@ export default async function GroupDetailPage({
 
       {/* Group Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <Card>
+        <Card className="bg-card border border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">Total Members</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-xs sm:text-sm font-black text-muted-foreground uppercase tracking-widest">Total Members</CardTitle>
+            <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-lg sm:text-2xl font-bold truncate">{group._count.members}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-lg sm:text-2xl font-black text-foreground truncate">{group._count.members}</div>
+            <p className="text-xs text-muted-foreground mt-1 font-medium">
               {group.members.filter(m => m.status === 'ACTIVE').length} active
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card border border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">Monthly Contribution</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-xs sm:text-sm font-black text-muted-foreground uppercase tracking-widest">Monthly Contribution</CardTitle>
+            <DollarSign className="h-4 w-4 text-green-600 dark:text-green-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-lg sm:text-2xl font-bold truncate" title={formatCurrency(group.monthlyContribution)}>
+            <div className="text-lg sm:text-2xl font-black text-foreground truncate" title={formatCurrency(group.monthlyContribution)}>
               {formatCurrency(group.monthlyContribution)}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground mt-1 font-medium">
               Per member
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card border border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">Interest Rate</CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-xs sm:text-sm font-black text-muted-foreground uppercase tracking-widest">Interest Rate</CardTitle>
+            <CreditCard className="h-4 w-4 text-purple-600 dark:text-purple-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-lg sm:text-2xl font-bold truncate">{group.interestRate}%</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-lg sm:text-2xl font-black text-foreground truncate">{group.interestRate}%</div>
+            <p className="text-xs text-muted-foreground mt-1 font-medium">
               Annual rate
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card border border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium">Loan Multiplier</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-xs sm:text-sm font-black text-muted-foreground uppercase tracking-widest">Loan Multiplier</CardTitle>
+            <TrendingUp className="h-4 w-4 text-orange-600 dark:text-orange-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-lg sm:text-2xl font-bold truncate">{group.maxLoanMultiplier}x</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-lg sm:text-2xl font-black text-foreground truncate">{group.maxLoanMultiplier}x</div>
+            <p className="text-xs text-muted-foreground mt-1 font-medium">
               Max loan calculation
             </p>
           </CardContent>

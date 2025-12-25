@@ -94,10 +94,10 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
   return (
     <div className="space-y-6">
       {/* Active Members */}
-      <Card className="border-none shadow-lg bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
+      <Card className="bg-card border border-border shadow-sm">
         <CardHeader>
-          <CardTitle className="text-lg sm:text-xl font-black">Active Members ({activeMembers.length})</CardTitle>
-          <CardDescription className="text-sm">
+          <CardTitle className="text-lg sm:text-xl font-black text-foreground">Active Members ({activeMembers.length})</CardTitle>
+          <CardDescription className="text-sm font-medium text-muted-foreground">
             Members who can participate in group activities
           </CardDescription>
         </CardHeader>
@@ -117,9 +117,8 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
                   <TableCell>
                     <div className="flex items-center space-x-3">
                       <div className="relative group">
-                        <div className="absolute -inset-1 bg-gradient-to-r from-[#6c47ff] to-[#9d81ff] rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                        <Avatar className="relative w-10 h-10 sm:w-12 sm:h-12 bg-white dark:bg-gray-800 rounded-full border-2 border-white dark:border-gray-950 shadow-xl overflow-hidden">
-                          <AvatarFallback className="font-black bg-gradient-to-br from-[#6c47ff] to-[#9d81ff] bg-clip-text text-transparent">
+                        <Avatar className="relative w-10 h-10 sm:w-12 sm:h-12 bg-card rounded-full border border-border shadow-sm overflow-hidden">
+                          <AvatarFallback className="font-black text-blue-900 bg-blue-50 dark:text-blue-100 dark:bg-blue-900">
                             {(member.user?.firstName?.charAt(0) || '') + (member.user?.lastName?.charAt(0) || '')}
                           </AvatarFallback>
                         </Avatar>
@@ -195,10 +194,10 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
 
       {/* Pending Members */}
       {pendingMembers.length > 0 && (
-        <Card className="border-none shadow-lg bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
+        <Card className="bg-card border border-border shadow-sm">
           <CardHeader>
-            <CardTitle className="text-lg sm:text-xl font-black">Pending Members ({pendingMembers.length})</CardTitle>
-            <CardDescription className="text-sm">
+            <CardTitle className="text-lg sm:text-xl font-black text-orange-700 dark:text-orange-400">Pending Members ({pendingMembers.length})</CardTitle>
+            <CardDescription className="text-sm font-medium text-muted-foreground">
               Members waiting to be approved
             </CardDescription>
           </CardHeader>
@@ -217,9 +216,8 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
                     <TableCell>
                       <div className="flex items-center space-x-3">
                         <div className="relative group">
-                          <div className="absolute -inset-1 bg-gradient-to-r from-orange-400 to-yellow-400 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                          <Avatar className="relative w-10 h-10 sm:w-12 sm:h-12 bg-white dark:bg-gray-800 rounded-full border-2 border-white dark:border-gray-950 shadow-xl overflow-hidden">
-                            <AvatarFallback className="font-black bg-gradient-to-br from-orange-400 to-yellow-400 bg-clip-text text-transparent">
+                          <Avatar className="relative w-10 h-10 sm:w-12 sm:h-12 bg-card rounded-full border border-border shadow-sm overflow-hidden">
+                            <AvatarFallback className="font-black text-orange-700 bg-orange-50 dark:text-orange-100 dark:bg-orange-900">
                               {(member.user?.firstName?.charAt(0) || '') + (member.user?.lastName?.charAt(0) || '')}
                             </AvatarFallback>
                           </Avatar>
@@ -242,7 +240,7 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
                             size="sm"
                             onClick={() => handleRoleChange(member.id, 'MEMBER')}
                             disabled={loading}
-                            className="rounded-2xl font-bold"
+                            className="rounded-xl font-bold bg-blue-900 hover:bg-blue-800 text-white"
                           >
                             Approve
                           </Button>
@@ -251,7 +249,7 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
                             variant="outline"
                             onClick={() => handleRemoveMember(member.id)}
                             disabled={loading}
-                            className="rounded-2xl font-bold bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:border-red-500 hover:text-red-600 transition-colors"
+                            className="rounded-xl font-bold border-border hover:border-red-500 hover:text-red-600 transition-colors"
                           >
                             Reject
                           </Button>

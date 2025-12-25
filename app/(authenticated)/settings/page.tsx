@@ -88,8 +88,8 @@ export default function SettingsPage() {
   return (
     <div className="max-w-4xl mx-auto py-6">
       <div className="mb-6">
-        <h1 className="text-display font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-600 text-body">Manage your account settings and preferences</p>
+        <h1 className="text-display font-black text-blue-900 dark:text-blue-100">Settings</h1>
+        <p className="text-muted-foreground text-body">Manage your account settings and preferences</p>
       </div>
 
       <Tabs defaultValue="profile" className="space-y-6">
@@ -113,7 +113,7 @@ export default function SettingsPage() {
         </TabsList>
 
         <TabsContent value="profile">
-          <Card>
+          <Card className="bg-card border border-border shadow-sm">
             <CardHeader>
               <CardTitle className="text-h3">Profile Information</CardTitle>
               <CardDescription className="text-body">
@@ -151,7 +151,7 @@ export default function SettingsPage() {
                     value={profile?.email || user?.primaryEmailAddress?.emailAddress || ''}
                     disabled
                   />
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-muted-foreground mt-1">
                     Email cannot be changed. Contact admin if needed.
                   </p>
                 </div>
@@ -185,10 +185,10 @@ export default function SettingsPage() {
                   <Badge variant="outline">
                     {profile?.role || user?.publicMetadata?.role as string || 'MEMBER'}
                   </Badge>
-                  <span className="text-body text-gray-500">Account Role</span>
+                  <span className="text-body text-muted-foreground">Account Role</span>
                 </div>
 
-                <Button type="submit" disabled={isLoading}>
+                <Button type="submit" disabled={isLoading} className="bg-blue-900 hover:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 text-white font-bold rounded-xl">
                   {isLoading ? 'Saving...' : 'Save Changes'}
                 </Button>
               </form>
@@ -197,7 +197,7 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="notifications">
-          <Card>
+          <Card className="bg-card border border-border shadow-sm">
             <CardHeader>
               <CardTitle className="text-h3">Notification Preferences</CardTitle>
               <CardDescription className="text-body">
@@ -209,38 +209,38 @@ export default function SettingsPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="font-medium text-body">Email Notifications</h4>
-                      <p className="text-sm text-gray-500">Receive updates via email</p>
+                      <h4 className="font-black text-body">Email Notifications</h4>
+                      <p className="text-sm text-muted-foreground">Receive updates via email</p>
                     </div>
                     <input type="checkbox" defaultChecked className="h-4 w-4" />
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="font-medium text-body">Contribution Reminders</h4>
-                      <p className="text-sm text-gray-500">Get reminded about monthly contributions</p>
+                      <h4 className="font-black text-body">Contribution Reminders</h4>
+                      <p className="text-sm text-muted-foreground">Get reminded about monthly contributions</p>
                     </div>
                     <input type="checkbox" defaultChecked className="h-4 w-4" />
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="font-medium text-body">Loan Updates</h4>
-                      <p className="text-sm text-gray-500">Notifications about loan status changes</p>
+                      <h4 className="font-black text-body">Loan Updates</h4>
+                      <p className="text-sm text-muted-foreground">Notifications about loan status changes</p>
                     </div>
                     <input type="checkbox" defaultChecked className="h-4 w-4" />
                   </div>
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="font-medium text-body">Group Activities</h4>
-                      <p className="text-sm text-gray-500">Updates about group activities</p>
+                      <h4 className="font-black text-body">Group Activities</h4>
+                      <p className="text-sm text-muted-foreground">Updates about group activities</p>
                     </div>
                     <input type="checkbox" className="h-4 w-4" />
                   </div>
                 </div>
 
-                <Button type="submit" disabled={isLoading}>
+                <Button type="submit" disabled={isLoading} className="bg-blue-900 hover:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 text-white font-bold rounded-xl">
                   {isLoading ? 'Saving...' : 'Save Preferences'}
                 </Button>
               </form>
@@ -249,7 +249,7 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="security">
-          <Card>
+          <Card className="bg-card border border-border shadow-sm">
             <CardHeader>
               <CardTitle className="text-h3">Security Settings</CardTitle>
               <CardDescription className="text-body">
@@ -259,7 +259,7 @@ export default function SettingsPage() {
             <CardContent className="space-y-6">
               <div>
                 <h4 className="font-medium text-body mb-2">Password</h4>
-                <p className="text-sm text-gray-500 mb-3">
+                <p className="text-sm text-muted-foreground mb-3">
                   Change your password to keep your account secure
                 </p>
                 <Button variant="outline">Change Password</Button>
@@ -267,7 +267,7 @@ export default function SettingsPage() {
 
               <div>
                 <h4 className="font-medium text-body mb-2">Two-Factor Authentication</h4>
-                <p className="text-sm text-gray-500 mb-3">
+                <p className="text-sm text-muted-foreground mb-3">
                   Add an extra layer of security to your account
                 </p>
                 <Button variant="outline">Enable 2FA</Button>
@@ -275,14 +275,14 @@ export default function SettingsPage() {
 
               <div>
                 <h4 className="font-medium text-body mb-2">Active Sessions</h4>
-                <p className="text-sm text-gray-500 mb-3">
+                <p className="text-sm text-muted-foreground mb-3">
                   Manage your active sessions across devices
                 </p>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between p-3 border rounded">
                     <div>
                       <p className="font-medium text-body">Current Session</p>
-                      <p className="text-sm text-gray-500">Chrome on Windows • Active now</p>
+                      <p className="text-sm text-muted-foreground">Chrome on Windows • Active now</p>
                     </div>
                     <Badge variant="outline">Current</Badge>
                   </div>
@@ -293,7 +293,7 @@ export default function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="payment">
-          <Card>
+          <Card className="bg-card border border-border shadow-sm">
             <CardHeader>
               <CardTitle className="text-h3">Payment Methods</CardTitle>
               <CardDescription className="text-body">
@@ -309,7 +309,7 @@ export default function SettingsPage() {
                     </div>
                     <div>
                       <p className="font-medium text-body">Airtel Money</p>
-                      <p className="text-sm text-gray-500">+265 99 123 456</p>
+                      <p className="text-sm text-muted-foreground">+265 99 123 456</p>
                     </div>
                   </div>
                   <Badge variant="outline">Default</Badge>
@@ -322,14 +322,14 @@ export default function SettingsPage() {
                     </div>
                     <div>
                       <p className="font-medium text-body">Mpamba</p>
-                      <p className="text-sm text-gray-500">+265 88 987 654</p>
+                      <p className="text-sm text-muted-foreground">+265 88 987 654</p>
                     </div>
                   </div>
                   <Button variant="ghost" size="sm">Remove</Button>
                 </div>
               </div>
 
-              <Button className="w-full">Add Payment Method</Button>
+              <Button className="w-full bg-blue-900 hover:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 text-white font-bold rounded-xl">Add Payment Method</Button>
             </CardContent>
           </Card>
         </TabsContent>

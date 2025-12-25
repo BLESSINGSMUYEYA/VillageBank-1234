@@ -37,12 +37,12 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
                 <div>
-                    <h1 className="text-display text-gray-900">{t('contributions.title')}</h1>
-                    <p className="text-body text-gray-600">{t('contributions.subtitle')}</p>
+                    <h1 className="text-display font-black text-blue-900 dark:text-blue-100">{t('contributions.title')}</h1>
+                    <p className="text-body text-muted-foreground">{t('contributions.subtitle')}</p>
                 </div>
                 {userGroups.length > 0 && (
                     <Link href="/contributions/new">
-                        <Button className="w-full sm:w-auto rounded-2xl font-black shadow-lg hover:shadow-xl transition-all h-12">
+                        <Button className="w-full sm:w-auto rounded-xl font-black bg-blue-900 hover:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 shadow-sm hover:shadow-md transition-all h-12">
                             <Plus className="w-5 h-5 mr-1" />
                             {t('contributions.make_contribution')}
                         </Button>
@@ -51,9 +51,9 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
             </div>
 
             {/* Filters */}
-            <Card className="border-none shadow-xl bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
+            <Card className="bg-card border border-border shadow-sm">
                 <CardHeader>
-                    <CardTitle className="text-h3 flex items-center">
+                    <CardTitle className="text-h3 flex items-center text-foreground">
                         <Filter className="w-5 h-5 mr-2" />
                         {t('contributions.filters')}
                     </CardTitle>
@@ -128,19 +128,19 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
 
             {/* Current Month Alert */}
             {currentMonthContributions.length === 0 && userGroups.length > 0 && (
-                <Card className="border-none shadow-2xl bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20">
+                <Card className="bg-orange-50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-900/30 shadow-sm">
                     <CardHeader className="pb-3">
-                        <CardTitle className="text-yellow-800 flex items-center text-h3">
+                        <CardTitle className="text-orange-800 dark:text-orange-300 flex items-center text-h3">
                             <Calendar className="w-5 h-5 mr-2" />
                             {t('contributions.reminder_title')}
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-yellow-700 mb-3 text-body">
+                        <p className="text-orange-700 dark:text-orange-400 mb-3 text-body">
                             {t('contributions.reminder_desc').replace('{month}', currentMonthName)}
                         </p>
                         <Link href="/contributions/new">
-                            <Button className="w-full sm:w-auto rounded-xl font-bold bg-yellow-600 hover:bg-yellow-700 text-white">
+                            <Button className="w-full sm:w-auto rounded-xl font-bold bg-orange-600 hover:bg-orange-700 text-white shadow-none border-none">
                                 {t('contributions.make_now')}
                             </Button>
                         </Link>
@@ -150,52 +150,52 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
 
             {/* Stats Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                <Card className="border-none shadow-md bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
+                <Card className="bg-card border border-border shadow-sm">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('contributions.total_contributed')}</CardTitle>
+                        <CardTitle className="text-xs font-black text-muted-foreground uppercase tracking-widest">{t('contributions.total_contributed')}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-h2 text-green-600">{formatCurrency(totalContributed)}</div>
-                        <p className="text-xs text-gray-500 mt-1">{completedContributions.length} completed</p>
+                        <div className="text-h2 font-black text-foreground">{formatCurrency(totalContributed)}</div>
+                        <p className="text-xs text-muted-foreground mt-1">{completedContributions.length} completed</p>
                     </CardContent>
                 </Card>
 
-                <Card className="border-none shadow-md bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
+                <Card className="bg-card border border-border shadow-sm">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('contributions.pending')}</CardTitle>
+                        <CardTitle className="text-xs font-black text-muted-foreground uppercase tracking-widest">{t('contributions.pending')}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-h2 text-orange-600">{pendingContributions.length}</div>
-                        <p className="text-xs text-gray-500 mt-1">{t('contributions.awaiting_approval')}</p>
+                        <div className="text-h2 font-black text-foreground">{pendingContributions.length}</div>
+                        <p className="text-xs text-muted-foreground mt-1">{t('contributions.awaiting_approval')}</p>
                     </CardContent>
                 </Card>
 
-                <Card className="border-none shadow-md bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
+                <Card className="bg-card border border-border shadow-sm">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('contributions.active_groups')}</CardTitle>
+                        <CardTitle className="text-xs font-black text-muted-foreground uppercase tracking-widest">{t('contributions.active_groups')}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-h2 text-blue-600">{userGroups.length}</div>
-                        <p className="text-xs text-gray-500 mt-1">Belonging to</p>
+                        <div className="text-h2 font-black text-foreground">{userGroups.length}</div>
+                        <p className="text-xs text-muted-foreground mt-1">Belonging to</p>
                     </CardContent>
                 </Card>
 
-                <Card className="border-none shadow-md bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
+                <Card className="bg-card border border-border shadow-sm">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('contributions.this_month')}</CardTitle>
+                        <CardTitle className="text-xs font-black text-muted-foreground uppercase tracking-widest">{t('contributions.this_month')}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-h2 text-purple-600">{currentMonthContributions.length}</div>
-                        <p className="text-xs text-gray-500 mt-1">Made</p>
+                        <div className="text-h2 font-black text-foreground">{currentMonthContributions.length}</div>
+                        <p className="text-xs text-muted-foreground mt-1">Made</p>
                     </CardContent>
                 </Card>
             </div>
 
             {/* Contribution History */}
-            <Card className="border-none shadow-xl bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
+            <Card className="bg-card border border-border shadow-sm">
                 <CardHeader>
-                    <CardTitle className="text-h2">{t('contributions.contribution_history')}</CardTitle>
-                    <CardDescription className="text-body">{t('contributions.history_desc')}</CardDescription>
+                    <CardTitle className="text-h2 text-blue-900 dark:text-blue-100">{t('contributions.contribution_history')}</CardTitle>
+                    <CardDescription className="text-body text-muted-foreground">{t('contributions.history_desc')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     {contributions.length > 0 ? (
@@ -203,18 +203,18 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className="font-black">Group</TableHead>
-                                        <TableHead className="font-black">Amount</TableHead>
-                                        <TableHead className="font-black">Period</TableHead>
-                                        <TableHead className="font-black">Status</TableHead>
+                                        <TableHead className="font-black text-blue-900 dark:text-blue-100">Group</TableHead>
+                                        <TableHead className="font-black text-blue-900 dark:text-blue-100">Amount</TableHead>
+                                        <TableHead className="font-black text-blue-900 dark:text-blue-100">Period</TableHead>
+                                        <TableHead className="font-black text-blue-900 dark:text-blue-100">Status</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {contributions.map((contribution) => (
                                         <TableRow key={contribution.id}>
-                                            <TableCell className="font-medium text-body">{contribution.group.name}</TableCell>
-                                            <TableCell className="font-black text-body text-green-700">{formatCurrency(Number(contribution.amount))}</TableCell>
-                                            <TableCell className="text-body">
+                                            <TableCell className="font-medium text-body text-foreground">{contribution.group.name}</TableCell>
+                                            <TableCell className="font-black text-body text-green-600 dark:text-green-400">{formatCurrency(Number(contribution.amount))}</TableCell>
+                                            <TableCell className="text-body text-muted-foreground">
                                                 {new Date(contribution.year, contribution.month - 1).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
                                             </TableCell>
                                             <TableCell>
@@ -229,15 +229,15 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                         </div>
                     ) : (
                         <div className="text-center py-12">
-                            <h3 className="text-h3">{t('contributions.no_contributions')}</h3>
-                            <p className="text-body mb-6">{t('contributions.no_contributions_desc')}</p>
+                            <h3 className="text-h3 text-foreground">{t('contributions.no_contributions')}</h3>
+                            <p className="text-body mb-6 text-muted-foreground">{t('contributions.no_contributions_desc')}</p>
                             {userGroups.length > 0 ? (
                                 <Link href="/contributions/new">
-                                    <Button className="rounded-xl font-black">{t('contributions.first_contribution')}</Button>
+                                    <Button className="rounded-xl font-black bg-blue-900 hover:bg-blue-800 text-white dark:bg-blue-700 dark:hover:bg-blue-600">{t('contributions.first_contribution')}</Button>
                                 </Link>
                             ) : (
                                 <Link href="/groups">
-                                    <Button variant="outline" className="rounded-xl font-black">{t('contributions.join_first')}</Button>
+                                    <Button variant="outline" className="rounded-xl font-black border-border hover:border-blue-700 hover:text-blue-700">{t('contributions.join_first')}</Button>
                                 </Link>
                             )}
                         </div>

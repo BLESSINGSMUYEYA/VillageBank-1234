@@ -23,7 +23,24 @@ interface PaymentMethodData {
   [key: string]: any
 }
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8']
+const COLORS = [
+  '#1e3a8a', // Navy Blue
+  '#3b82f6', // Royal Blue
+  '#60a5fa', // Light Blue
+  '#2563eb', // Bright Blue
+  '#9333ea', // Purple
+  '#16a34a', // Green
+  '#ea580c', // Orange
+]
+
+const THEME_COLORS = {
+  primary: '#1e3a8a',
+  secondary: '#3b82f6',
+  accent: '#60a5fa',
+  success: '#16a34a',
+  warning: '#ea580c',
+  info: '#2563eb'
+}
 
 interface ContributionChartProps {
   data: ContributionData[]
@@ -33,22 +50,25 @@ interface ContributionChartProps {
 
 export function ContributionChart({ data, title = "Monthly Contributions", description = "Your contribution history over time" }: ContributionChartProps) {
   return (
-    <Card>
+    <Card className="bg-card border border-border shadow-sm">
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+        <CardTitle className="text-xl font-black text-blue-900 dark:text-blue-100">{title}</CardTitle>
+        <CardDescription className="text-muted-foreground font-medium">{description}</CardDescription>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis tickFormatter={(value) => formatCurrency(value)} />
-            <Tooltip 
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" strokeOpacity={0.2} />
+            <XAxis dataKey="month" stroke="#6B7280" fontSize={12} tickLine={false} axisLine={false} />
+            <YAxis tickFormatter={(value) => formatCurrency(value)} stroke="#6B7280" fontSize={12} tickLine={false} axisLine={false} />
+            <Tooltip
+              cursor={{ fill: 'var(--muted)' }}
+              contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: 'var(--card)', color: 'var(--foreground)' }}
+              itemStyle={{ color: 'var(--foreground)' }}
               formatter={(value: number | undefined) => [formatCurrency(value || 0), 'Amount']}
               labelFormatter={(label) => `Month: ${label}`}
             />
-            <Bar dataKey="amount" fill="#8884d8" />
+            <Bar dataKey="amount" fill={THEME_COLORS.primary} radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
@@ -64,23 +84,26 @@ interface GroupComparisonChartProps {
 
 export function GroupComparisonChart({ data, title = "Group Performance", description = "Compare contributions and loans across groups" }: GroupComparisonChartProps) {
   return (
-    <Card>
+    <Card className="bg-card border border-border shadow-sm">
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+        <CardTitle className="text-xl font-black text-blue-900 dark:text-blue-100">{title}</CardTitle>
+        <CardDescription className="text-muted-foreground font-medium">{description}</CardDescription>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis tickFormatter={(value) => formatCurrency(value)} />
-            <Tooltip 
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" strokeOpacity={0.2} />
+            <XAxis dataKey="name" stroke="#6B7280" fontSize={12} tickLine={false} axisLine={false} />
+            <YAxis tickFormatter={(value) => formatCurrency(value)} stroke="#6B7280" fontSize={12} tickLine={false} axisLine={false} />
+            <Tooltip
+              cursor={{ fill: 'var(--muted)' }}
+              contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: 'var(--card)', color: 'var(--foreground)' }}
+              itemStyle={{ color: 'var(--foreground)' }}
               formatter={(value: number | undefined) => [formatCurrency(value || 0), 'Amount']}
               labelFormatter={(label) => `Group: ${label}`}
             />
-            <Bar dataKey="contributions" fill="#82ca9d" name="Contributions" />
-            <Bar dataKey="loans" fill="#ffc658" name="Loans" />
+            <Bar dataKey="contributions" fill={THEME_COLORS.primary} name="Contributions" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="loans" fill={THEME_COLORS.warning} name="Loans" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
@@ -96,22 +119,24 @@ interface TrendChartProps {
 
 export function TrendChart({ data, title = "Contribution Trend", description = "Track your contribution patterns over time" }: TrendChartProps) {
   return (
-    <Card>
+    <Card className="bg-card border border-border shadow-sm">
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+        <CardTitle className="text-xl font-black text-blue-900 dark:text-blue-100">{title}</CardTitle>
+        <CardDescription className="text-muted-foreground font-medium">{description}</CardDescription>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis tickFormatter={(value) => formatCurrency(value)} />
-            <Tooltip 
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" strokeOpacity={0.2} />
+            <XAxis dataKey="month" stroke="#6B7280" fontSize={12} tickLine={false} axisLine={false} />
+            <YAxis tickFormatter={(value) => formatCurrency(value)} stroke="#6B7280" fontSize={12} tickLine={false} axisLine={false} />
+            <Tooltip
+              contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: 'var(--card)', color: 'var(--foreground)' }}
+              itemStyle={{ color: 'var(--foreground)' }}
               formatter={(value: number | undefined) => [formatCurrency(value || 0), 'Amount']}
               labelFormatter={(label) => `Month: ${label}`}
             />
-            <Line type="monotone" dataKey="amount" stroke="#8884d8" strokeWidth={2} />
+            <Line type="monotone" dataKey="amount" stroke={THEME_COLORS.secondary} strokeWidth={3} dot={{ fill: THEME_COLORS.secondary, r: 4 }} activeDot={{ r: 6 }} />
           </LineChart>
         </ResponsiveContainer>
       </CardContent>
@@ -127,10 +152,10 @@ interface PaymentMethodsChartProps {
 
 export function PaymentMethodsChart({ data, title = "Payment Methods", description = "Distribution of payment methods used" }: PaymentMethodsChartProps) {
   return (
-    <Card>
+    <Card className="bg-card border border-border shadow-sm">
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+        <CardTitle className="text-xl font-black text-blue-900 dark:text-blue-100">{title}</CardTitle>
+        <CardDescription className="text-muted-foreground font-medium">{description}</CardDescription>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
@@ -140,16 +165,21 @@ export function PaymentMethodsChart({ data, title = "Payment Methods", descripti
               cx="50%"
               cy="50%"
               labelLine={false}
-              label={(entry) => `${entry.name}: ${entry.percent}%`}
-              outerRadius={80}
-              fill="#8884d8"
+              label={(entry) => `${entry.name}`}
+              outerRadius={100}
+              innerRadius={60}
+              paddingAngle={5}
               dataKey="value"
             >
               {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />
               ))}
             </Pie>
-            <Tooltip formatter={(value: number | undefined) => [formatCurrency(value || 0), 'Amount']} />
+            <Tooltip
+              contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: 'var(--card)', color: 'var(--foreground)' }}
+              itemStyle={{ color: 'var(--foreground)' }}
+              formatter={(value: number | undefined) => [formatCurrency(value || 0), 'Amount']}
+            />
           </PieChart>
         </ResponsiveContainer>
       </CardContent>
@@ -166,29 +196,35 @@ interface SummaryStatsProps {
 
 export function SummaryStats({ totalContributions, averageMonthly, highestMonth, currentStreak }: SummaryStatsProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <Card>
+    <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+      <Card className="bg-card border border-border shadow-sm">
         <CardContent className="p-6">
-          <div className="text-2xl font-bold">{formatCurrency(totalContributions)}</div>
-          <p className="text-xs text-muted-foreground">Total Contributions</p>
+          <div className="text-h2 font-black text-foreground truncate" title={formatCurrency(totalContributions)}>
+            {formatCurrency(totalContributions)}
+          </div>
+          <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1 truncate">Total Contributions</p>
         </CardContent>
       </Card>
-      <Card>
+      <Card className="bg-card border border-border shadow-sm">
         <CardContent className="p-6">
-          <div className="text-2xl font-bold">{formatCurrency(averageMonthly)}</div>
-          <p className="text-xs text-muted-foreground">Average Monthly</p>
+          <div className="text-h2 font-black text-foreground truncate" title={formatCurrency(averageMonthly)}>
+            {formatCurrency(averageMonthly)}
+          </div>
+          <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1 truncate">Average Monthly</p>
         </CardContent>
       </Card>
-      <Card>
+      <Card className="bg-card border border-border shadow-sm">
         <CardContent className="p-6">
-          <div className="text-2xl font-bold">{formatCurrency(highestMonth)}</div>
-          <p className="text-xs text-muted-foreground">Highest Month</p>
+          <div className="text-h2 font-black text-foreground truncate" title={formatCurrency(highestMonth)}>
+            {formatCurrency(highestMonth)}
+          </div>
+          <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1 truncate">Highest Month</p>
         </CardContent>
       </Card>
-      <Card>
+      <Card className="bg-card border border-border shadow-sm">
         <CardContent className="p-6">
-          <div className="text-2xl font-bold">{currentStreak}</div>
-          <p className="text-xs text-muted-foreground">Current Streak</p>
+          <div className="text-h2 font-black text-foreground truncate">{currentStreak}</div>
+          <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1 truncate">Current Streak</p>
         </CardContent>
       </Card>
     </div>

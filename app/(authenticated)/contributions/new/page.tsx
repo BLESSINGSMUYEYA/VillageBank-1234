@@ -318,22 +318,22 @@ function NewContributionPageContent() {
   const isOverpaying = amountToPay > totalDue && totalDue > 0
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-muted/30 py-8">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <Link href="/contributions" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 mb-4">
+          <Link href="/contributions" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Contributions
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Make Contribution</h1>
-          <p className="text-gray-600">Record your monthly contribution</p>
+          <h1 className="text-3xl font-bold text-foreground">Make Contribution</h1>
+          <p className="text-muted-foreground">Record your monthly contribution</p>
         </div>
 
-        <Card>
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle>Contribution Details</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-foreground">Contribution Details</CardTitle>
+            <CardDescription className="text-muted-foreground">
               Fill in the information for your contribution
             </CardDescription>
           </CardHeader>
@@ -346,9 +346,9 @@ function NewContributionPageContent() {
               )}
 
               {success && (
-                <Alert className="border-green-200 bg-green-50">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  <AlertDescription className="text-green-800">{success}</AlertDescription>
+                <Alert className="border-green-200 bg-green-50 dark:bg-green-900/20 dark:border-green-800/30">
+                  <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+                  <AlertDescription className="text-green-800 dark:text-green-300">{success}</AlertDescription>
                 </Alert>
               )}
 
@@ -421,7 +421,7 @@ function NewContributionPageContent() {
                       )}
                     </CldUploadWidget>
                   ) : (
-                    <div className="flex flex-col items-center justify-center py-10 text-gray-500">
+                    <div className="flex flex-col items-center justify-center py-10 text-muted-foreground">
                       <Upload className="w-8 h-8 mb-2" />
                       <p className="text-sm font-medium">Upload temporarily unavailable</p>
                       <p className="text-xs">Please fill the form manually</p>
@@ -429,22 +429,22 @@ function NewContributionPageContent() {
                   )}
 
                   {isScanning && (
-                    <div className="mt-4 overflow-hidden relative p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100 shadow-inner">
+                    <div className="mt-4 overflow-hidden relative p-6 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-900/30 shadow-inner">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center space-x-3">
                           <div className="p-2 bg-blue-600 rounded-lg">
                             <ScanLine className="w-5 h-5 text-white animate-pulse" />
                           </div>
                           <div>
-                            <p className="text-sm font-bold text-blue-900 leading-none">Scanning Receipt</p>
-                            <p className="text-[10px] text-blue-600 font-medium uppercase tracking-wider mt-1">AI analyzing details</p>
+                            <p className="text-sm font-bold text-blue-900 dark:text-blue-100 leading-none">Scanning Receipt</p>
+                            <p className="text-[10px] text-blue-600 dark:text-blue-400 font-medium uppercase tracking-wider mt-1">AI analyzing details</p>
                           </div>
                         </div>
-                        <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
+                        <Loader2 className="w-5 h-5 text-blue-600 dark:text-blue-400 animate-spin" />
                       </div>
 
-                      <div className="h-1.5 w-full bg-blue-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-blue-600 rounded-full animate-[progress_2s_ease-in-out_infinite]" style={{ width: '40%' }}></div>
+                      <div className="h-1.5 w-full bg-blue-100 dark:bg-blue-900 rounded-full overflow-hidden">
+                        <div className="h-full bg-blue-600 dark:bg-blue-400 rounded-full animate-[progress_2s_ease-in-out_infinite]" style={{ width: '40%' }}></div>
                       </div>
 
                       <style jsx>{`
@@ -457,7 +457,7 @@ function NewContributionPageContent() {
                     </div>
                   )}
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Flexible scanning: screenshots and photos of other screens are supported.
                 </p>
               </div>
@@ -472,9 +472,9 @@ function NewContributionPageContent() {
                   onChange={(e) => handleGroupChange(e.target.value)}
                   required
                 >
-                  <option value="">Select a group</option>
+                  <option value="" className="bg-background text-foreground">Select a group</option>
                   {groups.map((group) => (
-                    <option key={group.id} value={group.id}>
+                    <option key={group.id} value={group.id} className="bg-background text-foreground">
                       {group.name} - {group.region} (MWK {group.monthlyContribution.toLocaleString()})
                     </option>
                   ))}
@@ -482,35 +482,35 @@ function NewContributionPageContent() {
               </div>
 
               {selectedGroup && (
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <h3 className="font-medium text-blue-900 mb-2">Group Information</h3>
-                  <div className="text-sm text-blue-700 space-y-1">
+                <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-lg border border-blue-100 dark:border-blue-900/30">
+                  <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-2">Group Information</h3>
+                  <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
                     <p><strong>Monthly Contribution:</strong> MWK {selectedGroup?.monthlyContribution.toLocaleString()}</p>
                     <p><strong>Region:</strong> {selectedGroup?.region}</p>
                     {memberDetails && (
-                      <div className="mt-2 pt-2 border-t border-blue-200">
+                      <div className="mt-2 pt-2 border-t border-blue-200 dark:border-blue-800/30">
                         <p className="flex justify-between">
                           <span>Outstanding Penalties:</span>
-                          <span className={memberDetails.unpaidPenalties > 0 ? "font-bold text-red-600" : "text-green-600"}>
+                          <span className={memberDetails.unpaidPenalties > 0 ? "font-bold text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"}>
                             MWK {memberDetails.unpaidPenalties.toLocaleString()}
                           </span>
                         </p>
                         <p className="flex justify-between">
                           <span>Current Balance:</span>
-                          <span className={memberDetails.balance < 0 ? "font-bold text-red-600" : "text-green-600"}>
+                          <span className={memberDetails.balance < 0 ? "font-bold text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"}>
                             MWK {memberDetails.balance.toLocaleString()}
                             {memberDetails.balance < 0 ? " (Owed)" : " (Credit)"}
                           </span>
                         </p>
-                        <p className="flex justify-between pt-1 border-t border-blue-100 mt-1 font-semibold text-blue-900">
+                        <p className="flex justify-between pt-1 border-t border-blue-100 dark:border-blue-800/30 mt-1 font-semibold text-blue-900 dark:text-blue-100">
                           <span>Total Due Now:</span>
                           <span>MWK {totalDue.toLocaleString()}</span>
                         </p>
                       </div>
                     )}
                   </div>
-                  <div className="mt-3 p-2 bg-blue-100 rounded">
-                    <p className="text-xs text-blue-800">
+                  <div className="mt-3 p-2 bg-blue-100 dark:bg-blue-900/30 rounded">
+                    <p className="text-xs text-blue-800 dark:text-blue-200">
                       <strong>Note:</strong> You can pay any amount. Contributions first pay off penalties, then the monthly amount. Remaining funds are added as credit.
                     </p>
                   </div>
@@ -531,18 +531,18 @@ function NewContributionPageContent() {
                 />
                 {selectedGroup && (
                   <div className="space-y-1 mt-2">
-                    <p className="text-sm text-gray-500 flex justify-between">
+                    <p className="text-sm text-muted-foreground flex justify-between">
                       <span>Expected montly:</span>
                       <span>MWK {selectedGroup.monthlyContribution.toLocaleString()}</span>
                     </p>
                     <p className="text-sm font-medium flex justify-between">
                       <span>Remaining after this payment:</span>
-                      <span className={remainingAfterPayment > 0 ? "text-orange-600" : "text-green-600"}>
+                      <span className={remainingAfterPayment > 0 ? "text-orange-600 dark:text-orange-400" : "text-green-600 dark:text-green-400"}>
                         MWK {remainingAfterPayment.toLocaleString()}
                       </span>
                     </p>
                     {isOverpaying && (
-                      <p className="text-xs text-green-600 font-medium">
+                      <p className="text-xs text-green-600 dark:text-green-400 font-medium">
                         You are overpaying! MWK {(amountToPay - totalDue).toLocaleString()} will be added as credit.
                       </p>
                     )}
@@ -560,12 +560,12 @@ function NewContributionPageContent() {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Select payment method</option>
-                  <option value="AIRTEL_MONEY">Airtel Money</option>
-                  <option value="MPAMBA">Mpamba</option>
-                  <option value="BANK_CARD">Bank Card</option>
-                  <option value="CASH">Cash</option>
-                  <option value="OTHER">Other</option>
+                  <option value="" className="bg-background text-foreground">Select payment method</option>
+                  <option value="AIRTEL_MONEY" className="bg-background text-foreground">Airtel Money</option>
+                  <option value="MPAMBA" className="bg-background text-foreground">Mpamba</option>
+                  <option value="BANK_CARD" className="bg-background text-foreground">Bank Card</option>
+                  <option value="CASH" className="bg-background text-foreground">Cash</option>
+                  <option value="OTHER" className="bg-background text-foreground">Other</option>
                 </select>
               </div>
 
@@ -579,18 +579,18 @@ function NewContributionPageContent() {
                   value={formData.transactionRef}
                   onChange={handleChange}
                 />
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Reference number from your payment confirmation
                 </p>
               </div>
 
               <div className="flex justify-end space-x-4 pt-4">
                 <Link href="/contributions">
-                  <Button variant="outline" type="button">
+                  <Button variant="outline" type="button" className="border-border text-foreground hover:bg-muted">
                     Cancel
                   </Button>
                 </Link>
-                <Button type="submit" disabled={loading}>
+                <Button type="submit" disabled={loading} className="bg-blue-900 hover:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 text-white">
                   {loading ? 'Creating...' : 'Create Contribution'}
                 </Button>
               </div>

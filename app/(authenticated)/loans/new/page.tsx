@@ -45,7 +45,7 @@ function NewLoanPageContent() {
   useEffect(() => {
     const fetchData = async () => {
       await fetchGroups()
-      
+
       // Pre-select group if provided in URL
       const groupId = searchParams.get('groupId')
       if (groupId) {
@@ -54,7 +54,7 @@ function NewLoanPageContent() {
         checkEligibility(groupId)
       }
     }
-    
+
     fetchData()
   }, [searchParams])
 
@@ -64,13 +64,13 @@ function NewLoanPageContent() {
       const data = await response.json()
       if (response.ok) {
         setGroups(data.groups.filter((g: any) => g.members?.some((m: any) => m.status === 'ACTIVE')).map((g: any) => ({
-  id: g.id,
-  name: g.name,
-  monthlyContribution: g.monthlyContribution,
-  maxLoanMultiplier: g.maxLoanMultiplier,
-  interestRate: g.interestRate,
-  region: g.region
-})))
+          id: g.id,
+          name: g.name,
+          monthlyContribution: g.monthlyContribution,
+          maxLoanMultiplier: g.maxLoanMultiplier,
+          interestRate: g.interestRate,
+          region: g.region
+        })))
       }
     } catch (error) {
       console.error('Error fetching groups:', error)
@@ -198,10 +198,10 @@ function NewLoanPageContent() {
       <div>
         <Label htmlFor="group">Group</Label>
         {selectedGroup ? (
-          <div className="mt-1 p-3 border rounded-md bg-gray-50">
-            <p className="font-medium">{selectedGroup.name}</p>
-            <p className="text-sm text-gray-600">{selectedGroup.region}</p>
-            <p className="text-sm text-gray-600">
+          <div className="mt-1 p-3 border rounded-md bg-muted/50 border-border">
+            <p className="font-medium text-foreground">{selectedGroup.name}</p>
+            <p className="text-sm text-muted-foreground">{selectedGroup.region}</p>
+            <p className="text-sm text-muted-foreground">
               Monthly Contribution: {formatCurrency(selectedGroup.monthlyContribution)}
             </p>
           </div>
@@ -209,13 +209,13 @@ function NewLoanPageContent() {
           <select
             id="group"
             name="group"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2"
+            className="mt-1 block w-full rounded-md border-input bg-background text-foreground shadow-sm focus:border-ring focus:ring-ring p-2"
             value={(selectedGroup as Group | null)?.id || ''}
             onChange={(e) => handleGroupChange(e.target.value)}
           >
-            <option value="">Select a group</option>
+            <option value="" className="bg-background text-foreground">Select a group</option>
             {groups.map((group) => (
-              <option key={group.id} value={group.id}>
+              <option key={group.id} value={group.id} className="bg-background text-foreground">
                 {group.name} ({group.region}) - {formatCurrency(group.monthlyContribution)}/month
               </option>
             ))}
@@ -227,15 +227,15 @@ function NewLoanPageContent() {
 
   const renderEligibilityInfo = () => {
     if (!eligibility) return null;
-    
+
     return (
-      <Card className="mt-4">
+      <Card className="mt-4 bg-card border-border">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center">
+          <CardTitle className="text-lg flex items-center text-foreground">
             {eligibility.eligible ? (
-              <CheckCircle2 className="w-5 h-5 mr-2 text-green-600" />
+              <CheckCircle2 className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
             ) : (
-              <AlertCircle className="w-5 h-5 mr-2 text-yellow-600" />
+              <AlertCircle className="w-5 h-5 mr-2 text-yellow-600 dark:text-yellow-400" />
             )}
             Loan Eligibility
           </CardTitle>
@@ -244,8 +244,8 @@ function NewLoanPageContent() {
           {eligibility.eligible ? (
             <>
               <div className="space-y-2 text-sm">
-                <p className="text-green-700 font-medium">You are eligible for a loan!</p>
-                <div className="grid grid-cols-2 gap-4 text-green-600">
+                <p className="text-green-700 dark:text-green-400 font-medium">You are eligible for a loan!</p>
+                <div className="grid grid-cols-2 gap-4 text-green-600 dark:text-green-500">
                   <div>
                     <strong>Contributions:</strong> {eligibility.contributionsCount} months
                   </div>
@@ -260,7 +260,7 @@ function NewLoanPageContent() {
             </>
           ) : (
             <>
-              <div className="text-sm text-yellow-700">
+              <div className="text-sm text-yellow-700 dark:text-yellow-400">
                 <p className="font-medium">{eligibility.reason || 'You are not eligible for a loan at this time.'}</p>
               </div>
             </>
@@ -275,15 +275,15 @@ function NewLoanPageContent() {
 
     return (
       <div className="space-y-4 mt-6">
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <h3 className="font-medium text-blue-900 mb-2">Group Information</h3>
-          <div className="text-sm text-blue-700 space-y-1">
+        <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-lg border border-blue-100 dark:border-blue-800/30">
+          <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-2">Group Information</h3>
+          <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
             <p><strong>Interest Rate:</strong> {selectedGroup.interestRate}% per year</p>
             <p><strong>Loan Multiplier:</strong> {selectedGroup.maxLoanMultiplier}x contributions</p>
             <p><strong>Monthly Contribution:</strong> {formatCurrency(selectedGroup.monthlyContribution)}</p>
           </div>
         </div>
-        
+
         <div className="space-y-2">
           <Label htmlFor="amountRequested">Loan Amount (MWK) *</Label>
           <Input
@@ -295,30 +295,31 @@ function NewLoanPageContent() {
             value={formData.amountRequested}
             onChange={handleChange}
             required
+            className="bg-background text-foreground"
           />
           {eligibility?.maxAmount && (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               Maximum amount: {formatCurrency(eligibility.maxAmount)}
             </p>
           )}
         </div>
-        
+
         <div className="space-y-2">
           <Label htmlFor="repaymentPeriodMonths">Repayment Period (months) *</Label>
           <select
             id="repaymentPeriodMonths"
             name="repaymentPeriodMonths"
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-foreground"
             value={formData.repaymentPeriodMonths}
             onChange={handleChange}
             required
           >
-            <option value="3">3 months</option>
-            <option value="6">6 months</option>
-            <option value="9">9 months</option>
-            <option value="12">12 months</option>
-            <option value="18">18 months</option>
-            <option value="24">24 months</option>
+            <option value="3" className="bg-background text-foreground">3 months</option>
+            <option value="6" className="bg-background text-foreground">6 months</option>
+            <option value="9" className="bg-background text-foreground">9 months</option>
+            <option value="12" className="bg-background text-foreground">12 months</option>
+            <option value="18" className="bg-background text-foreground">18 months</option>
+            <option value="24" className="bg-background text-foreground">24 months</option>
           </select>
         </div>
 
@@ -335,9 +336,9 @@ function NewLoanPageContent() {
         </div>
 
         {formData.amountRequested && formData.repaymentPeriodMonths && (
-          <Card className="border-gray-200 mt-4">
+          <Card className="border-border mt-4 bg-muted/30">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Loan Summary</CardTitle>
+              <CardTitle className="text-lg text-foreground">Loan Summary</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2 text-sm">
@@ -359,7 +360,7 @@ function NewLoanPageContent() {
                   <span>Estimated Monthly Payment:</span>
                   <span>
                     {formatCurrency(
-                      (parseFloat(formData.amountRequested) * (1 + (selectedGroup.interestRate / 100) * (parseInt(formData.repaymentPeriodMonths) / 12))) / 
+                      (parseFloat(formData.amountRequested) * (1 + (selectedGroup.interestRate / 100) * (parseInt(formData.repaymentPeriodMonths) / 12))) /
                       parseInt(formData.repaymentPeriodMonths)
                     )}
                   </span>
@@ -375,12 +376,12 @@ function NewLoanPageContent() {
   const renderFormActions = () => (
     <div className="flex justify-end space-x-4 pt-4">
       <Link href="/loans">
-        <Button variant="outline" type="button">
+        <Button variant="outline" type="button" className="border-border text-foreground hover:bg-muted">
           Cancel
         </Button>
       </Link>
       {eligibility?.eligible && (
-        <Button type="submit" disabled={loading}>
+        <Button type="submit" disabled={loading} className="bg-blue-900 hover:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 text-white">
           {loading ? 'Submitting...' : 'Submit Application'}
         </Button>
       )}
@@ -388,21 +389,21 @@ function NewLoanPageContent() {
   )
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-muted/30 py-8">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <Link href="/loans" className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 mb-4">
+          <Link href="/loans" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Loans
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Request Loan</h1>
-          <p className="text-gray-600">Apply for a loan from your village banking group</p>
+          <h1 className="text-3xl font-bold text-foreground">Request Loan</h1>
+          <p className="text-muted-foreground">Apply for a loan from your village banking group</p>
         </div>
 
-        <Card>
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle>Loan Application</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-foreground">Loan Application</CardTitle>
+            <CardDescription className="text-muted-foreground">
               Fill in the details for your loan request
             </CardDescription>
           </CardHeader>
@@ -413,7 +414,7 @@ function NewLoanPageContent() {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-              
+
               {renderGroupSelection()}
               {renderEligibilityInfo()}
               {renderLoanForm()}
