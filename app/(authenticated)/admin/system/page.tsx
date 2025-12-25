@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -142,12 +144,12 @@ export default function SystemAdminPage() {
 
       {/* System Status Alert */}
       <Alert className={`mb-6 ${data?.systemHealth === 'HEALTHY' ? 'border-green-200 bg-green-50' :
-          data?.systemHealth === 'WARNING' ? 'border-yellow-200 bg-yellow-50' :
-            'border-red-200 bg-red-50'
+        data?.systemHealth === 'WARNING' ? 'border-yellow-200 bg-yellow-50' :
+          'border-red-200 bg-red-50'
         }`}>
         <AlertTriangle className={`h-4 w-4 ${data?.systemHealth === 'HEALTHY' ? 'text-green-600' :
-            data?.systemHealth === 'WARNING' ? 'text-yellow-600' :
-              'text-red-600'
+          data?.systemHealth === 'WARNING' ? 'text-yellow-600' :
+            'text-red-600'
           }`} />
         <AlertDescription className={
           data?.systemHealth === 'HEALTHY' ? 'text-green-800' :
