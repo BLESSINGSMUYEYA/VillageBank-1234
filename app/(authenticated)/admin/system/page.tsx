@@ -9,11 +9,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { 
-  Users, 
-  Building2, 
-  DollarSign, 
-  CreditCard, 
+import {
+  Users,
+  Building2,
+  DollarSign,
+  CreditCard,
   TrendingUp,
   AlertTriangle,
   CheckCircle,
@@ -117,7 +117,7 @@ export default function SystemAdminPage() {
           <CardHeader>
             <CardTitle className="text-red-600">Access Denied</CardTitle>
             <CardDescription>
-              You don't have permission to access this page.
+              You don&apos;t have permission to access this page.
             </CardDescription>
           </CardHeader>
         </Card>
@@ -141,20 +141,18 @@ export default function SystemAdminPage() {
       </div>
 
       {/* System Status Alert */}
-      <Alert className={`mb-6 ${
-        data?.systemHealth === 'HEALTHY' ? 'border-green-200 bg-green-50' :
-        data?.systemHealth === 'WARNING' ? 'border-yellow-200 bg-yellow-50' :
-        'border-red-200 bg-red-50'
-      }`}>
-        <AlertTriangle className={`h-4 w-4 ${
-          data?.systemHealth === 'HEALTHY' ? 'text-green-600' :
-          data?.systemHealth === 'WARNING' ? 'text-yellow-600' :
-          'text-red-600'
-        }`} />
+      <Alert className={`mb-6 ${data?.systemHealth === 'HEALTHY' ? 'border-green-200 bg-green-50' :
+          data?.systemHealth === 'WARNING' ? 'border-yellow-200 bg-yellow-50' :
+            'border-red-200 bg-red-50'
+        }`}>
+        <AlertTriangle className={`h-4 w-4 ${data?.systemHealth === 'HEALTHY' ? 'text-green-600' :
+            data?.systemHealth === 'WARNING' ? 'text-yellow-600' :
+              'text-red-600'
+          }`} />
         <AlertDescription className={
           data?.systemHealth === 'HEALTHY' ? 'text-green-800' :
-          data?.systemHealth === 'WARNING' ? 'text-yellow-800' :
-          'text-red-800'
+            data?.systemHealth === 'WARNING' ? 'text-yellow-800' :
+              'text-red-800'
         }>
           System Status: {data?.systemHealth} • Database: {data?.databaseStatus}
         </AlertDescription>

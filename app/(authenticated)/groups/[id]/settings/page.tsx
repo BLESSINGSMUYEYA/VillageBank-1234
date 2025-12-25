@@ -254,7 +254,7 @@ export default function GroupSettingsPage() {
             <CardHeader>
               <CardTitle className="text-lg sm:text-xl font-black text-blue-900 dark:text-blue-100">Basic Information</CardTitle>
               <CardDescription className="text-sm font-medium text-muted-foreground">
-                Update your group's basic details
+                Update your group&apos;s basic details
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">

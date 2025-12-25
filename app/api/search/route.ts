@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 export async function GET(request: NextRequest) {
   try {
     const { userId } = getAuth(request)
-    
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
 
     // Calculate date filter
     const now = new Date()
-    let dateFilter = new Date()
+    const dateFilter = new Date()
     switch (dateRange) {
       case 'week':
         dateFilter.setDate(now.getDate() - 7)
@@ -264,7 +264,7 @@ export async function GET(request: NextRequest) {
         if (aExact && !bExact) return -1
         if (!aExact && bExact) return 1
       }
-      
+
       // Then sort by date (newest first)
       return new Date(b.date).getTime() - new Date(a.date).getTime()
     })

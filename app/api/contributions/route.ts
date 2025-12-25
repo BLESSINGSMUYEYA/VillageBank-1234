@@ -78,7 +78,6 @@ export async function POST(request: NextRequest) {
 
     let remainingAmount = validatedData.amount
     let penaltyPaid = 0
-    let contributionApplied = 0
 
     // 1. Pay off unpaid penalties first
     if (groupMember.unpaidPenalties > 0) {

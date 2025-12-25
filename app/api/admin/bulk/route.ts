@@ -19,7 +19,7 @@ const bulkOperationSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const { userId } = getAuth(request)
-    
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     const { operation, targetIds, params } = bulkOperationSchema.parse(body)
 
     let results: any[] = []
-    let errors: any[] = []
+    const errors: any[] = []
 
     switch (operation) {
       case 'approve_loans':
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Bulk operation error:', error)
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.issues[0].message },
@@ -156,9 +156,9 @@ async function approveLoansBulk(loanIds: string[], adminId: string, reason?: str
         }
       })
 
-      results.push({ 
-        id: loanId, 
-        success: true, 
+      results.push({
+        id: loanId,
+        success: true,
         loan: updatedLoan,
         message: `Loan for ${loan.user.firstName} ${loan.user.lastName} approved`
       })
@@ -231,9 +231,9 @@ async function rejectLoansBulk(loanIds: string[], adminId: string, reason?: stri
         }
       })
 
-      results.push({ 
-        id: loanId, 
-        success: true, 
+      results.push({
+        id: loanId,
+        success: true,
         loan: updatedLoan,
         message: `Loan for ${loan.user.firstName} ${loan.user.lastName} rejected`
       })
@@ -297,9 +297,9 @@ async function deleteMembersBulk(memberIds: string[], adminId: string) {
         }
       })
 
-      results.push({ 
-        id: memberId, 
-        success: true, 
+      results.push({
+        id: memberId,
+        success: true,
         member: updatedMember,
         message: `Member ${member.user.firstName} ${member.user.lastName} removed from ${member.group.name}`
       })
@@ -350,9 +350,9 @@ async function updateMemberStatusBulk(memberIds: string[], adminId: string, newS
         }
       })
 
-      results.push({ 
-        id: memberId, 
-        success: true, 
+      results.push({
+        id: memberId,
+        success: true,
         member: updatedMember,
         message: `Member ${member.user.firstName} ${member.user.lastName} status updated to ${newStatus || 'ACTIVE'}`
       })
@@ -391,9 +391,9 @@ async function sendNotificationsBulk(userIds: string[], adminId: string, message
         }
       })
 
-      results.push({ 
-        id: userId, 
-        success: true, 
+      results.push({
+        id: userId,
+        success: true,
         notification,
         message: `Notification sent to ${user.firstName} ${user.lastName}`
       })

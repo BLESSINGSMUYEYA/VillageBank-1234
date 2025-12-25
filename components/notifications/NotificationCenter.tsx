@@ -50,8 +50,8 @@ export function NotificationCenter() {
       await fetch(`/api/notifications/${notificationId}/read`, {
         method: 'PUT'
       })
-      
-      setNotifications(prev => 
+
+      setNotifications(prev =>
         prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
       )
     } catch (error) {
@@ -64,8 +64,8 @@ export function NotificationCenter() {
       await fetch('/api/notifications/mark-all-read', {
         method: 'PUT'
       })
-      
-      setNotifications(prev => 
+
+      setNotifications(prev =>
         prev.map(n => ({ ...n, read: true }))
       )
     } catch (error) {
@@ -78,8 +78,8 @@ export function NotificationCenter() {
       await fetch(`/api/notifications/${notificationId}`, {
         method: 'DELETE'
       })
-      
-      setNotifications(prev => 
+
+      setNotifications(prev =>
         prev.filter(n => n.id !== notificationId)
       )
     } catch (error) {
@@ -129,9 +129,9 @@ export function NotificationCenter() {
   return (
     <div className="relative">
       {/* Notification Bell */}
-      <Button 
-        variant="ghost" 
-        size="sm" 
+      <Button
+        variant="ghost"
+        size="sm"
         onClick={() => setIsOpen(!isOpen)}
         className="relative"
       >
@@ -157,9 +157,9 @@ export function NotificationCenter() {
                 </div>
                 <div className="flex gap-1 sm:gap-2 shrink-0">
                   {unreadCount > 0 && (
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={markAllAsRead}
                       className="text-xs h-8 px-2"
                     >
@@ -167,9 +167,9 @@ export function NotificationCenter() {
                       <Check className="w-3 h-3 sm:hidden" />
                     </Button>
                   )}
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setIsOpen(false)}
                     className="h-8 w-8 p-0"
                   >
@@ -178,22 +178,21 @@ export function NotificationCenter() {
                 </div>
               </div>
             </CardHeader>
-            
+
             <CardContent className="p-0 max-h-64 overflow-y-auto">
               {notifications.length === 0 ? (
                 <div className="text-center py-8 px-4">
                   <Bell className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">No notifications</h3>
-                  <p className="text-sm text-gray-500">You're all caught up!</p>
+                  <p className="text-sm text-gray-500">You&apos;re all caught up!</p>
                 </div>
               ) : (
                 <div className="divide-y">
                   {notifications.map((notification) => (
                     <div
                       key={notification.id}
-                      className={`p-3 sm:p-4 hover:bg-gray-50 transition-colors ${
-                        !notification.read ? 'bg-blue-50' : ''
-                      }`}
+                      className={`p-3 sm:p-4 hover:bg-gray-50 transition-colors ${!notification.read ? 'bg-blue-50' : ''
+                        }`}
                     >
                       <div className="flex items-start gap-2 sm:gap-3">
                         <div className="mt-0.5 shrink-0">
@@ -202,9 +201,8 @@ export function NotificationCenter() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
-                              <p className={`text-sm font-medium truncate ${
-                                !notification.read ? 'text-gray-900' : 'text-gray-600'
-                              }`}>
+                              <p className={`text-sm font-medium truncate ${!notification.read ? 'text-gray-900' : 'text-gray-600'
+                                }`}>
                                 {notification.title}
                               </p>
                               <p className="text-sm text-gray-500 mt-1 wrap-break-word">
@@ -235,7 +233,7 @@ export function NotificationCenter() {
                               </Button>
                             </div>
                           </div>
-                          
+
                           {notification.actionUrl && notification.actionText && (
                             <div className="mt-2">
                               <Button

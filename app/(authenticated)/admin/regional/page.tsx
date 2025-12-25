@@ -8,11 +8,11 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { 
-  Users, 
-  Building2, 
-  DollarSign, 
-  CreditCard, 
+import {
+  Users,
+  Building2,
+  DollarSign,
+  CreditCard,
   TrendingUp,
   AlertTriangle,
   CheckCircle,
@@ -54,7 +54,7 @@ export default function RegionalAdminPage() {
     try {
       const response = await fetch(`/api/admin/regional?region=${selectedRegion}`)
       if (!response.ok) throw new Error('Failed to fetch regional data')
-      
+
       const data = await response.json()
       setData({
         users: data.users,
@@ -81,7 +81,7 @@ export default function RegionalAdminPage() {
         body: JSON.stringify({ groupId, action: 'activate' })
       })
       if (!response.ok) throw new Error('Failed to approve group')
-      
+
       fetchRegionalData() // Refresh data
     } catch (error) {
       console.error('Failed to approve group:', error)
@@ -96,7 +96,7 @@ export default function RegionalAdminPage() {
         body: JSON.stringify({ groupId, action: 'suspend' })
       })
       if (!response.ok) throw new Error('Failed to suspend group')
-      
+
       fetchRegionalData() // Refresh data
     } catch (error) {
       console.error('Failed to suspend group:', error)
@@ -110,7 +110,7 @@ export default function RegionalAdminPage() {
           <CardHeader>
             <CardTitle className="text-red-600">Access Denied</CardTitle>
             <CardDescription>
-              You don't have permission to access this page.
+              You don&apos;t have permission to access this page.
             </CardDescription>
           </CardHeader>
         </Card>
@@ -240,15 +240,15 @@ export default function RegionalAdminPage() {
                     </div>
                     <div className="flex gap-2">
                       {group.status === 'ACTIVE' ? (
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={() => handleSuspendGroup(group.id)}
                         >
                           Suspend
                         </Button>
                       ) : (
-                        <Button 
+                        <Button
                           size="sm"
                           onClick={() => handleApproveGroup(group.id)}
                         >
