@@ -19,7 +19,10 @@ export function validateEnvironment() {
 
     // During build process, we might want to just warn to allow static analysis to finish
     // However, for actual production runtime, we should throw
-    if (process.env.NEXT_PHASE === 'phase-production-build') {
+    // Check for build-time environment
+    const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build' || process.env.CI === 'true' || process.env.VERCEL === '1';
+
+    if (isBuildTime) {
       console.warn(errorMsg)
       return false
     }
