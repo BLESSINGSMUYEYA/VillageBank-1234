@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAuth } from '@clerk/nextjs/server'
+import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = getAuth(request)
-    
+    const session = await getSession()
+    const userId = session?.userId
+
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     let user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: userId as string },
       include: {
         groupMembers: {
           include: {
@@ -64,86 +65,7 @@ export async function GET(request: NextRequest) {
     })
 
     if (!user) {
-      // Try to sync user from Clerk if not found in database
-      try {
-        const clerkUser = await fetch(`https://api.clerk.dev/v1/users/${userId}`, {
-          headers: {
-            'Authorization': `Bearer ${process.env.CLERK_SECRET_KEY}`,
-            'Content-Type': 'application/json'
-          }
-        }).then(res => res.json())
-
-        if (clerkUser.id) {
-          const primaryEmail = clerkUser.email_addresses[0]?.email_address
-          const primaryPhone = clerkUser.phone_numbers[0]?.phone_number
-
-          user = await prisma.user.create({
-            data: {
-              id: userId,
-              email: primaryEmail,
-              firstName: clerkUser.first_name || '',
-              lastName: clerkUser.last_name || '',
-              phoneNumber: primaryPhone || '',
-              role: clerkUser.public_metadata?.role || 'MEMBER',
-              region: clerkUser.public_metadata?.region || 'CENTRAL',
-            },
-            include: {
-              groupMembers: {
-                include: {
-                  group: {
-                    select: {
-                      id: true,
-                      name: true,
-                      monthlyContribution: true,
-                      _count: {
-                        select: {
-                          members: true
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              contributions: {
-                select: {
-                  amount: true,
-                  month: true,
-                  year: true,
-                  status: true,
-                  createdAt: true
-                },
-                orderBy: {
-                  createdAt: 'desc'
-                },
-                take: 12
-              },
-              loans: {
-                select: {
-                  id: true,
-                  amountRequested: true,
-                  amountApproved: true,
-                  status: true,
-                  createdAt: true,
-                  repayments: {
-                    select: {
-                      amount: true,
-                      paidAt: true
-                    }
-                  }
-                },
-                orderBy: {
-                  createdAt: 'desc'
-                }
-              }
-            }
-          })
-        } else {
-          return NextResponse.json({ error: 'User not found in Clerk' }, { status: 404 })
-        }
-      } catch (syncError) {
-        console.error('User sync error:', syncError)
-        return NextResponse.json({ error: 'User not found and sync failed' }, { status: 404 })
-      }
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     // Calculate financial summary
@@ -206,8 +128,9 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const { userId } = getAuth(request)
-    
+    const session = await getSession()
+    const userId = session?.userId
+
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -216,7 +139,7 @@ export async function PUT(request: NextRequest) {
     const { firstName, lastName, phoneNumber, region } = body
 
     const updatedUser = await prisma.user.update({
-      where: { id: userId },
+      where: { id: userId as string },
       data: {
         firstName,
         lastName,
@@ -253,8 +176,8 @@ function calculateContributionStreak(contributions: any[]): number {
 
   for (const contribution of completedContributions) {
     const contribDate = new Date(contribution.year, contribution.month - 1)
-    const monthsDiff = (currentDate.getFullYear() - contribDate.getFullYear()) * 12 + 
-                      (currentDate.getMonth() - contribDate.getMonth())
+    const monthsDiff = (currentDate.getFullYear() - contribDate.getFullYear()) * 12 +
+      (currentDate.getMonth() - contribDate.getMonth())
 
     if (monthsDiff === streak) {
       streak++

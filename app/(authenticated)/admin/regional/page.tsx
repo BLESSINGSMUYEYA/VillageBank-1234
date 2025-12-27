@@ -3,7 +3,7 @@
 export const dynamic = 'force-dynamic'
 
 import { useState, useEffect } from 'react'
-import { useUser } from '@clerk/nextjs'
+import { useAuth } from '@/components/providers/AuthProvider'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -41,7 +41,7 @@ interface GroupData {
 }
 
 export default function RegionalAdminPage() {
-  const { user } = useUser()
+  const { user } = useAuth()
   const [data, setData] = useState<RegionalData | null>(null)
   const [groups, setGroups] = useState<GroupData[]>([])
   const [loading, setLoading] = useState(true)
@@ -105,7 +105,7 @@ export default function RegionalAdminPage() {
     }
   }
 
-  if (user?.publicMetadata?.role !== 'REGIONAL_ADMIN' && user?.publicMetadata?.role !== 'SUPER_ADMIN') {
+  if (user?.role !== 'REGIONAL_ADMIN' && user?.role !== 'SUPER_ADMIN') {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-96">

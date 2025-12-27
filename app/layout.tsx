@@ -1,5 +1,5 @@
 import { type Metadata } from 'next'
-import { ClerkProvider } from '@clerk/nextjs'
+
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import '@/lib/env-validation'
@@ -19,6 +19,7 @@ export const metadata: Metadata = {
   description: 'Community banking management system for Malawi',
 }
 
+import { AuthProvider } from '@/components/providers/AuthProvider'
 import { LanguageProvider } from '@/components/providers/LanguageProvider'
 
 export default function RootLayout({
@@ -27,14 +28,14 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
-      <html lang="en">
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="en">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <AuthProvider>
           <LanguageProvider>
             {children}
           </LanguageProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+        </AuthProvider>
+      </body>
+    </html>
   )
 }

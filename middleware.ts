@@ -1,62 +1,56 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { verifyToken } from '@/lib/auth';
 
-const isProtectedRoute = createRouteMatcher([
-  '/dashboard/:path*',
-  '/groups/:path*',
-  '/contributions/:path*',
-  '/loans/:path*',
-  '/profile/:path*',
-  '/settings/:path*'
-])
+const protectedRoutes = [
+  '/dashboard',
+  '/groups',
+  '/contributions',
+  '/loans',
+  '/profile',
+  '/settings'
+];
 
-const isAdminRoute = createRouteMatcher([
-  '/admin/:path*'
-])
+const adminRoutes = [
+  '/admin'
+];
 
-export default clerkMiddleware(async (auth, req) => {
-  const { pathname } = req.nextUrl
-  
-  // Don't protect auth routes
-  if (pathname.startsWith('/login') || pathname.startsWith('/register')) {
-    return
+export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
+  // Public routes
+  if (pathname.startsWith('/login') || pathname.startsWith('/register') || pathname === '/' || pathname.startsWith('/api/auth')) {
+    return NextResponse.next();
   }
 
-  // Check admin routes for proper role
-  if (isAdminRoute(req)) {
-    const authObj = await auth()
-    if (!authObj.userId) {
-      return new Response('Unauthorized', { status: 401 })
-    }
-    
-    // Check if user has admin role
-    const userRole = (authObj.sessionClaims as any)?.metadata?.role
-    if (!userRole || (userRole !== 'REGIONAL_ADMIN' && userRole !== 'SUPER_ADMIN')) {
-      return new Response('Forbidden', { status: 403 })
-    }
-    
-    // For system admin routes, require SUPER_ADMIN role
-    if (pathname.includes('/admin/system')) {
-      if (userRole !== 'SUPER_ADMIN') {
-        return new Response('Forbidden', { status: 403 })
-      }
+  // Check for auth token
+  const token = req.cookies.get('auth_token')?.value;
+  const payload = token ? await verifyToken(token) : null;
+
+  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
+  const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route));
+
+  if (isProtectedRoute || isAdminRoute) {
+    if (!payload) {
+      const url = new URL('/login', req.url);
+      url.searchParams.set('callbackUrl', pathname);
+      return NextResponse.redirect(url);
     }
   }
 
-  // Protect regular routes - let Clerk handle the redirect automatically
-  if (isProtectedRoute(req)) {
-    const authObj = await auth()
-    if (!authObj.userId) {
-      // Let Clerk handle the redirect to sign-in
-      return
+  if (isAdminRoute) {
+    const role = (payload as any)?.role;
+    if (role !== 'REGIONAL_ADMIN' && role !== 'SUPER_ADMIN') {
+      return NextResponse.rewrite(new URL('/403', req.url)); // Or just redirect to dashboard
     }
   }
-});
+
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
     '/(api|trpc)(.*)',
   ],
 };

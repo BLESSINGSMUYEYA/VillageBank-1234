@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
-import { currentUser } from '@clerk/nextjs/server'
+import { getSession } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 import { getDashboardStats, getRecentActivity, getPendingApprovals } from '@/lib/dashboard-service'
 import { redirect } from 'next/navigation'
 import DashboardCharts from './DashboardCharts'
@@ -7,10 +8,18 @@ import ChartsSkeleton from './ChartsSkeleton'
 import { DashboardContent } from './DashboardContent'
 
 export default async function DashboardPage() {
-  const user = await currentUser()
+  const session = await getSession()
+
+  if (!session || !session.userId) {
+    redirect('/login')
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.userId as string }
+  })
 
   if (!user) {
-    redirect('/sign-in')
+    redirect('/login')
   }
 
   // Fetch critical data in parallel

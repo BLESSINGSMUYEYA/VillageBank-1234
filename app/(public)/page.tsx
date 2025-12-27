@@ -1,6 +1,6 @@
 'use client'
 
-import { useUser } from '@clerk/nextjs'
+import { useAuth } from '@/components/providers/AuthProvider'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import Link from 'next/link'
@@ -9,16 +9,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Users, DollarSign, TrendingUp, Shield, Clock, Award } from 'lucide-react'
 
 export default function Home() {
-    const { isSignedIn, isLoaded } = useUser()
+    const { isAuthenticated, loading } = useAuth()
     const router = useRouter()
 
     useEffect(() => {
-        if (isSignedIn) {
+        if (!loading && isAuthenticated) {
             router.push('/dashboard')
         }
-    }, [isSignedIn, router])
+    }, [isAuthenticated, loading, router])
 
-    if (!isLoaded) {
+    if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-100">
                 <div className="text-lg">Loading...</div>
@@ -26,7 +26,7 @@ export default function Home() {
         )
     }
 
-    if (isSignedIn) {
+    if (isAuthenticated) {
         return null // Will redirect to dashboard
     }
 

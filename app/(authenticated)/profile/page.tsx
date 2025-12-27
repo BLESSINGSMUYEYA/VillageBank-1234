@@ -1,6 +1,6 @@
 'use client'
 
-import { useUser } from '@clerk/nextjs'
+import { useAuth } from '@/components/providers/AuthProvider'
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -24,7 +24,7 @@ import { useLanguage } from '@/components/providers/LanguageProvider'
 // ... interfaces remain same ...
 
 export default function ProfilePage() {
-  const { user } = useUser()
+  const { user } = useAuth()
   const { t } = useLanguage()
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [memberships, setMemberships] = useState<GroupMembership[]>([])
@@ -36,7 +36,7 @@ export default function ProfilePage() {
     if (user) {
       fetchProfileData()
     } else {
-      window.location.href = '/sign-in'
+      window.location.href = '/login'
     }
   }, [user])
 
@@ -46,7 +46,7 @@ export default function ProfilePage() {
     try {
       const response = await fetch('/api/users/profile')
       if (response.status === 401) {
-        window.location.href = '/sign-in'
+        window.location.href = '/login'
         return
       }
       if (!response.ok) throw new Error(`Failed: ${response.statusText}`)

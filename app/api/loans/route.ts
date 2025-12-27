@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAuth } from '@clerk/nextjs/server'
+import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { checkLoanEligibility } from '@/lib/permissions'
 import { z } from 'zod'
@@ -13,8 +13,9 @@ const createLoanSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = getAuth(request)
-    
+    const session = await getSession()
+    const userId = session?.userId
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
     const groupMember = await prisma.groupMember.findFirst({
       where: {
         groupId: validatedData.groupId,
-        userId: userId,
+        userId: userId as string,
         status: 'ACTIVE',
       },
       include: {
@@ -45,8 +46,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check loan eligibility
-    const eligibility = await checkLoanEligibility(userId, validatedData.groupId)
-    
+    const eligibility = await checkLoanEligibility(userId as string, validatedData.groupId)
+
     if (!eligibility.eligible) {
       return NextResponse.json(
         { error: eligibility.reason || 'Not eligible for loan' },
@@ -65,7 +66,7 @@ export async function POST(request: NextRequest) {
     const loan = await prisma.loan.create({
       data: {
         groupId: validatedData.groupId,
-        userId: userId,
+        userId: userId as string,
         amountRequested: validatedData.amountRequested,
         repaymentPeriodMonths: validatedData.repaymentPeriodMonths,
         interestRate: groupMember.group.interestRate,
@@ -76,7 +77,7 @@ export async function POST(request: NextRequest) {
     // Create activity log
     await prisma.activity.create({
       data: {
-        userId: userId,
+        userId: userId as string,
         groupId: validatedData.groupId,
         actionType: 'LOAN_REQUESTED',
         description: `Requested loan of MWK ${validatedData.amountRequested.toLocaleString()}`,
@@ -111,8 +112,9 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = getAuth(request)
-    
+    const session = await getSession()
+    const userId = session?.userId
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -123,7 +125,7 @@ export async function GET(request: NextRequest) {
     // Get user's loans
     const loans = await prisma.loan.findMany({
       where: {
-        userId: userId,
+        userId: userId as string,
       },
       include: {
         group: true,

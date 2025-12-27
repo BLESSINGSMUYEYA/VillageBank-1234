@@ -21,6 +21,7 @@ model User {
   emailVerified DateTime? @default(now())
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  password      String?
   
   groupMembers    GroupMember[]
   contributions    Contribution[]

@@ -1,4 +1,4 @@
-import { auth } from '@clerk/nextjs/server'
+import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { ContributionsClient } from '@/components/contributions/ContributionsClient'
 
@@ -7,7 +7,8 @@ export default async function ContributionsPage({
 }: {
   searchParams: Promise<{ status?: string; groupId?: string; month?: string; year?: string; search?: string }>
 }) {
-  const { userId } = await auth()
+  const session = await getSession()
+  const userId = session?.userId
   const params = await searchParams
 
   if (!userId) {
@@ -16,7 +17,7 @@ export default async function ContributionsPage({
 
   // Build prisma query
   const whereClause: any = {
-    userId: userId,
+    userId: userId as string,
   }
 
   if (params.status && params.status !== 'all') {
@@ -48,7 +49,7 @@ export default async function ContributionsPage({
   // Get user's active groups
   const userGroups = await prisma.groupMember.findMany({
     where: {
-      userId: userId,
+      userId: userId as string,
       status: 'ACTIVE',
     },
     include: {

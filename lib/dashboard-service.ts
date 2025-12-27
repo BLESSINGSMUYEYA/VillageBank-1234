@@ -1,4 +1,4 @@
-import { auth } from '@clerk/nextjs/server'
+import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 export interface DashboardStats {
@@ -32,7 +32,8 @@ export interface ChartData {
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {
-    const { userId } = await auth()
+    const session = await getSession()
+    const userId = session?.userId
 
     if (!userId) {
         throw new Error('Unauthorized')
@@ -90,12 +91,13 @@ export async function getDashboardStats(): Promise<DashboardStats> {
         totalLoans: activeLoans,
         pendingLoans,
         monthlyContribution: monthlyContribution?.amount || 0,
-        loanRepaymentProgress: await calculateRepaymentProgress(userId),
+        loanRepaymentProgress: await calculateRepaymentProgress(userId as string),
     }
 }
 
 export async function getRecentActivity(): Promise<RecentActivity[]> {
-    const { userId } = await auth()
+    const session = await getSession()
+    const userId = session?.userId
 
     if (!userId) {
         throw new Error('Unauthorized')
@@ -104,7 +106,7 @@ export async function getRecentActivity(): Promise<RecentActivity[]> {
     // Get user's recent activities
     const activities = await prisma.activity.findMany({
         where: {
-            userId: userId,
+            userId: userId as string,
         },
         include: {
             group: {
@@ -131,7 +133,8 @@ export async function getRecentActivity(): Promise<RecentActivity[]> {
 }
 
 export async function getChartData(): Promise<ChartData> {
-    const { userId } = await auth()
+    const session = await getSession()
+    const userId = session?.userId
 
     if (!userId) {
         throw new Error('Unauthorized')
@@ -293,7 +296,8 @@ export async function getChartData(): Promise<ChartData> {
 }
 
 export async function getPendingApprovals() {
-    const { userId } = await auth()
+    const session = await getSession()
+    const userId = session?.userId as string
 
     if (!userId) {
         throw new Error('Unauthorized')

@@ -1,6 +1,6 @@
 'use client'
 
-import { useUser, useAuth, SignInButton, SignUpButton, SignOutButton } from '@clerk/nextjs'
+import { useAuth } from '@/components/providers/AuthProvider'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -26,7 +26,7 @@ interface MobileNavigationProps {
 }
 
 export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationProps) {
-  const { user, isLoaded } = useUser()
+  const { user, isAuthenticated, logout } = useAuth()
   const pathname = usePathname()
 
   const { t } = useLanguage()
@@ -39,12 +39,12 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
   ]
 
   const adminNavigation = []
-  if (user?.publicMetadata?.role === 'REGIONAL_ADMIN' || user?.publicMetadata?.role === 'SUPER_ADMIN') {
+  if (user?.role === 'REGIONAL_ADMIN' || user?.role === 'SUPER_ADMIN') {
     adminNavigation.push(
       { name: t('admin.regional'), href: '/admin/regional', icon: Shield }
     )
   }
-  if (user?.publicMetadata?.role === 'SUPER_ADMIN') {
+  if (user?.role === 'SUPER_ADMIN') {
     adminNavigation.push(
       { name: t('admin.system'), href: '/admin/system', icon: Settings }
     )
@@ -70,7 +70,7 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
                   <div className="relative group">
                     <Avatar className="relative h-8 w-8 bg-card border border-border">
                       <AvatarFallback className="font-black text-blue-700 dark:text-blue-300 dark:bg-blue-900">
-                        {user?.fullName?.charAt(0).toUpperCase() || user?.username?.charAt(0).toUpperCase() || 'U'}
+                        {user?.firstName?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
                   </div>
@@ -79,12 +79,12 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
               <DropdownMenuContent className="w-56 border border-border shadow-xl bg-card" align="end" forceMount>
                 <div className="flex items-center justify-start gap-2 p-2">
                   <div className="flex flex-col space-y-1 leading-none">
-                    <p className="font-black text-sm text-foreground">{user?.fullName || user?.username || 'User'}</p>
+                    <p className="font-black text-sm text-foreground">{user?.firstName} {user?.lastName}</p>
                     <p className="w-50 truncate text-xs text-muted-foreground">
-                      {user?.primaryEmailAddress?.emailAddress}
+                      {user?.email}
                     </p>
                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                      {user?.publicMetadata?.role as string || 'User'}
+                      {user?.role}
                     </p>
                   </div>
                 </div>
@@ -103,12 +103,10 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
-                  <SignOutButton>
-                    <button className="w-full text-left flex items-center">
-                      <LogOut className="mr-2 h-4 w-4" />
-                      {t('common.logout')}
-                    </button>
-                  </SignOutButton>
+                  <button className="w-full text-left flex items-center" onClick={() => logout()}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    {t('common.logout')}
+                  </button>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -130,6 +128,7 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
       {/* Mobile Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden px-4 pb-6">
         <div className="bg-card border border-border shadow-xl rounded-[2rem] px-2 py-2">
+
           <div className="flex items-center justify-around gap-1">
             {allNavigation.slice(0, 5).map((item) => {
               const Icon = item.icon

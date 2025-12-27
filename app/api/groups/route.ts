@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { clerkClient, getAuth } from '@clerk/nextjs/server'
+import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
@@ -14,47 +14,34 @@ const createGroupSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = getAuth(request)
-    
-    if (!userId) {
+    const session = await getSession()
+
+    if (!session || !session.userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
     }
 
-    // Get user details from Clerk
-    const clerk = await clerkClient()
-    const user = await clerk.users.getUser(userId)
-    const userRole = user.publicMetadata?.role as string
+    const userId = session.userId as string;
 
     const body = await request.json()
     const validatedData = createGroupSchema.parse(body)
 
+    // Ensure user exists (should exist if logged in)
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId }
+    })
+
+    if (!existingUser) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      )
+    }
+
     // Create group and add creator as admin in a single transaction
     const group = await prisma.$transaction(async (tx) => {
-      // Ensure user exists in this transaction
-      const existingUser = await tx.user.findUnique({
-        where: { id: userId }
-      })
-
-      if (!existingUser) {
-        // Get user details from Clerk (we already have them from earlier)
-        const primaryEmail = user.emailAddresses?.[0]?.emailAddress || ''
-        const primaryPhone = user.phoneNumbers?.[0]?.phoneNumber || ''
-        
-        await tx.user.create({
-          data: {
-            id: userId,
-            email: primaryEmail,
-            firstName: user.firstName || '',
-            lastName: user.lastName || '',
-            phoneNumber: primaryPhone,
-            role: (user.publicMetadata?.role as 'MEMBER' | 'REGIONAL_ADMIN' | 'SUPER_ADMIN') || 'MEMBER',
-            region: (user.publicMetadata?.region as string) || 'CENTRAL',
-          },
-        })
-      }
 
       const newGroup = await tx.group.create({
         data: {
@@ -85,15 +72,15 @@ export async function POST(request: NextRequest) {
     await prisma.activity.create({
       data: {
         userId: userId,
-        groupId: group.id,
+        groupId: group.id || '', // defensive
         actionType: 'GROUP_CREATED',
-        description: `Created group "${group.name}"`,
+        description: `Created group "${(group as any).name}"`,
       },
     })
 
     return NextResponse.json({
       message: 'Group created successfully',
-      groupId: group.id,
+      groupId: (group as any).id,
     })
 
   } catch (error) {
@@ -105,29 +92,16 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('Create group error:', error)
-    
-    // Provide more specific error messages based on common issues
+
     if (error instanceof Error) {
-      if (error.message.includes('User') && error.message.includes('does not exist')) {
-        return NextResponse.json(
-          { error: 'User account issue. Please try signing out and back in.' },
-          { status: 400 }
-        )
-      }
       if (error.message.includes('Unique constraint')) {
         return NextResponse.json(
           { error: 'A group with this name already exists. Please choose a different name.' },
           { status: 409 }
         )
       }
-      if (error.message.includes('permission') || error.message.includes('unauthorized')) {
-        return NextResponse.json(
-          { error: 'You do not have permission to create groups.' },
-          { status: 403 }
-        )
-      }
     }
-    
+
     return NextResponse.json(
       { error: 'Failed to create group. Please check your connection and try again.' },
       { status: 500 }
@@ -137,14 +111,16 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = getAuth(request)
-    
-    if (!userId) {
+    const session = await getSession()
+
+    if (!session || !session.userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
     }
+
+    const userId = session.userId as string;
 
     // Get user's groups
     const groups = await prisma.group.findMany({
@@ -158,7 +134,7 @@ export async function GET(request: NextRequest) {
       },
       include: {
         _count: {
-          select: { 
+          select: {
             members: true,
             contributions: true,
             loans: true

@@ -1,13 +1,16 @@
-import { auth } from '@clerk/nextjs/server'
+import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { LoansClient } from '@/components/loans/LoansClient'
+import { redirect } from 'next/navigation'
 
 export default async function LoansPage() {
-  const { userId } = await auth()
+  const session = await getSession()
 
-  if (!userId) {
-    return <div className="p-8 text-center text-h3">Please sign in to access loans.</div>
+  if (!session || !session.userId) {
+    redirect('/login')
   }
+
+  const userId = session.userId as string
 
   // Get user's loans
   const loans = await prisma.loan.findMany({

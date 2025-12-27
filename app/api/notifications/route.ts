@@ -1,17 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAuth } from '@clerk/nextjs/server'
+import { getSessionFromRequest } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = getAuth(request)
-    
-    if (!userId) {
+    const session = await getSessionFromRequest(request)
+
+    if (!session?.userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
     }
+
+    const userId = session.userId
 
     // Get notifications for the user
     const notifications = await prisma.notification.findMany({
@@ -48,14 +50,16 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = getAuth(request)
-    
-    if (!userId) {
+    const session = await getSessionFromRequest(request)
+
+    if (!session?.userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
     }
+
+    const userId = session.userId
 
     const body = await request.json()
     const { type, title, message, actionUrl, actionText } = body

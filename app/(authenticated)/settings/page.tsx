@@ -1,6 +1,6 @@
 'use client'
 
-import { useUser } from '@clerk/nextjs'
+import { useAuth } from '@/components/providers/AuthProvider'
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
-import { User, Bell, Shield, CreditCard } from 'lucide-react'
+import { User as UserIcon, Bell, Shield, CreditCard } from 'lucide-react'
 
 interface UserProfile {
   firstName: string
@@ -21,7 +21,7 @@ interface UserProfile {
 }
 
 export default function SettingsPage() {
-  const { user } = useUser()
+  const { user } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [formData, setFormData] = useState({
@@ -95,7 +95,7 @@ export default function SettingsPage() {
       <Tabs defaultValue="profile" className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="profile" className="flex items-center gap-2">
-            <User className="w-4 h-4" />
+            <UserIcon className="w-4 h-4" />
             Profile
           </TabsTrigger>
           <TabsTrigger value="notifications" className="flex items-center gap-2">
@@ -148,7 +148,7 @@ export default function SettingsPage() {
                   <Input
                     id="email"
                     type="email"
-                    value={profile?.email || user?.primaryEmailAddress?.emailAddress || ''}
+                    value={profile?.email || user?.email || ''}
                     disabled
                   />
                   <p className="text-sm text-muted-foreground mt-1">
@@ -183,7 +183,7 @@ export default function SettingsPage() {
 
                 <div className="flex items-center gap-2">
                   <Badge variant="outline">
-                    {profile?.role || user?.publicMetadata?.role as string || 'MEMBER'}
+                    {profile?.role || user?.role || 'MEMBER'}
                   </Badge>
                   <span className="text-body text-muted-foreground">Account Role</span>
                 </div>

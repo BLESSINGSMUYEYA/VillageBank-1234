@@ -3,7 +3,7 @@
 export const dynamic = 'force-dynamic'
 
 import { useState, useEffect } from 'react'
-import { useUser } from '@clerk/nextjs'
+import { useAuth } from '@/components/providers/AuthProvider'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -46,7 +46,7 @@ interface RegionalSummary {
 }
 
 export default function SystemAdminPage() {
-  const { user } = useUser()
+  const { user } = useAuth()
   const [data, setData] = useState<SystemData | null>(null)
   const [regionalData, setRegionalData] = useState<RegionalSummary[]>([])
   const [loading, setLoading] = useState(true)
@@ -112,7 +112,7 @@ export default function SystemAdminPage() {
     console.log('Initiating system maintenance...')
   }
 
-  if (user?.publicMetadata?.role !== 'SUPER_ADMIN') {
+  if (user?.role !== 'SUPER_ADMIN') {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-96">

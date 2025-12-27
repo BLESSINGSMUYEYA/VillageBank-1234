@@ -2,8 +2,7 @@
 export function validateEnvironment() {
   const requiredEnvVars = [
     'DATABASE_URL',
-    'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY',
-    'CLERK_SECRET_KEY',
+    'JWT_SECRET',
   ]
 
   const optionalEnvVars = [
