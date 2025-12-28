@@ -171,7 +171,7 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
             </CardDescription>
           </CardHeader>
           <CardContent className="px-0 sm:px-6">
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto no-scrollbar">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -241,7 +241,7 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
         </CardHeader>
         <CardContent className="px-0 sm:px-6">
           {loans.length > 0 ? (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto no-scrollbar">
               <Table>
                 <TableHeader>
                   <TableRow>

@@ -130,7 +130,7 @@ export default function GroupContributions({ contributions, groupId, currentUser
         </CardHeader>
         <CardContent className="px-0 sm:px-6">
           {contributions.length > 0 ? (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto no-scrollbar">
               <Table>
                 <TableHeader>
                   <TableRow>

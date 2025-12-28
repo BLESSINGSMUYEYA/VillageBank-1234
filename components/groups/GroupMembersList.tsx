@@ -102,122 +102,24 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Member</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Joined</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {activeMembers.map((member) => (
-                <TableRow key={member.id}>
-                  <TableCell>
-                    <div className="flex items-center space-x-3">
-                      <div className="relative group">
-                        <Avatar className="relative w-10 h-10 sm:w-12 sm:h-12 bg-card rounded-full border border-border shadow-sm overflow-hidden">
-                          <AvatarFallback className="font-black text-blue-900 bg-blue-50 dark:text-blue-100 dark:bg-blue-900">
-                            {(member.user?.firstName?.charAt(0) || '') + (member.user?.lastName?.charAt(0) || '')}
-                          </AvatarFallback>
-                        </Avatar>
-                      </div>
-                      <div>
-                        <p className="font-black text-sm">
-                          {member.user?.firstName || ''} {member.user?.lastName || ''}
-                        </p>
-                        <p className="text-xs text-gray-500">{member.user?.email || 'No email'}</p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        member.role === 'ADMIN' ? 'default' :
-                          member.role === 'TREASURER' ? 'secondary' :
-                            member.role === 'SECRETARY' ? 'outline' : 'outline'
-                      }
-                      className="font-bold uppercase tracking-wider text-xs"
-                    >
-                      {member.role}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {new Date(member.joinedAt).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {currentUserRole === 'ADMIN' && member.userId !== currentUserId && (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() => handleRoleChange(member.id, 'TREASURER')}
-                          >
-                            <Shield className="mr-2 h-4 w-4" />
-                            Make Treasurer
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleRoleChange(member.id, 'SECRETARY')}
-                          >
-                            <MessageSquare className="mr-2 h-4 w-4" />
-                            Make Secretary
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleRoleChange(member.id, 'MEMBER')}
-                          >
-                            <UserX className="mr-2 h-4 w-4" />
-                            Make Member
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            onClick={() => handleRemoveMember(member.id)}
-                            className="text-red-600"
-                          >
-                            <UserX className="mr-2 h-4 w-4" />
-                            Remove from Group
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
-      {/* Pending Members */}
-      {pendingMembers.length > 0 && (
-        <Card className="bg-card border border-border shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-lg sm:text-xl font-black text-orange-700 dark:text-orange-400">Pending Members ({pendingMembers.length})</CardTitle>
-            <CardDescription className="text-sm font-medium text-muted-foreground">
-              Members waiting to be approved
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+          <div className="overflow-x-auto no-scrollbar">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Member</TableHead>
-                  <TableHead>Requested</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead className="min-w-[200px]">Member</TableHead>
+                  <TableHead className="min-w-[100px]">Role</TableHead>
+                  <TableHead className="min-w-[100px]">Joined</TableHead>
+                  <TableHead className="text-right min-w-[50px]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {pendingMembers.map((member) => (
+                {activeMembers.map((member) => (
                   <TableRow key={member.id}>
                     <TableCell>
                       <div className="flex items-center space-x-3">
                         <div className="relative group">
                           <Avatar className="relative w-10 h-10 sm:w-12 sm:h-12 bg-card rounded-full border border-border shadow-sm overflow-hidden">
-                            <AvatarFallback className="font-black text-orange-700 bg-orange-50 dark:text-orange-100 dark:bg-orange-900">
+                            <AvatarFallback className="font-black text-blue-900 bg-blue-50 dark:text-blue-100 dark:bg-blue-900">
                               {(member.user?.firstName?.charAt(0) || '') + (member.user?.lastName?.charAt(0) || '')}
                             </AvatarFallback>
                           </Avatar>
@@ -231,35 +133,137 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
                       </div>
                     </TableCell>
                     <TableCell>
+                      <Badge
+                        variant={
+                          member.role === 'ADMIN' ? 'default' :
+                            member.role === 'TREASURER' ? 'secondary' :
+                              member.role === 'SECRETARY' ? 'outline' : 'outline'
+                        }
+                        className="font-bold uppercase tracking-wider text-xs"
+                      >
+                        {member.role}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
                       {new Date(member.joinedAt).toLocaleDateString()}
                     </TableCell>
                     <TableCell className="text-right">
-                      {currentUserRole === 'ADMIN' && (
-                        <div className="flex space-x-2">
-                          <Button
-                            size="sm"
-                            onClick={() => handleRoleChange(member.id, 'MEMBER')}
-                            disabled={loading}
-                            className="rounded-xl font-bold bg-blue-900 hover:bg-blue-800 text-white"
-                          >
-                            Approve
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleRemoveMember(member.id)}
-                            disabled={loading}
-                            className="rounded-xl font-bold border-border hover:border-red-500 hover:text-red-600 transition-colors"
-                          >
-                            Reject
-                          </Button>
-                        </div>
+                      {currentUserRole === 'ADMIN' && member.userId !== currentUserId && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => handleRoleChange(member.id, 'TREASURER')}
+                            >
+                              <Shield className="mr-2 h-4 w-4" />
+                              Make Treasurer
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleRoleChange(member.id, 'SECRETARY')}
+                            >
+                              <MessageSquare className="mr-2 h-4 w-4" />
+                              Make Secretary
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleRoleChange(member.id, 'MEMBER')}
+                            >
+                              <UserX className="mr-2 h-4 w-4" />
+                              Make Member
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => handleRemoveMember(member.id)}
+                              className="text-red-600"
+                            >
+                              <UserX className="mr-2 h-4 w-4" />
+                              Remove from Group
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       )}
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Pending Members */}
+      {pendingMembers.length > 0 && (
+        <Card className="bg-card border border-border shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg sm:text-xl font-black text-orange-700 dark:text-orange-400">Pending Members ({pendingMembers.length})</CardTitle>
+            <CardDescription className="text-sm font-medium text-muted-foreground">
+              Members waiting to be approved
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto no-scrollbar">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="min-w-[200px]">Member</TableHead>
+                    <TableHead className="min-w-[100px]">Requested</TableHead>
+                    <TableHead className="text-right min-w-[150px]">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {pendingMembers.map((member) => (
+                    <TableRow key={member.id}>
+                      <TableCell>
+                        <div className="flex items-center space-x-3">
+                          <div className="relative group">
+                            <Avatar className="relative w-10 h-10 sm:w-12 sm:h-12 bg-card rounded-full border border-border shadow-sm overflow-hidden">
+                              <AvatarFallback className="font-black text-orange-700 bg-orange-50 dark:text-orange-100 dark:bg-orange-900">
+                                {(member.user?.firstName?.charAt(0) || '') + (member.user?.lastName?.charAt(0) || '')}
+                              </AvatarFallback>
+                            </Avatar>
+                          </div>
+                          <div>
+                            <p className="font-black text-sm">
+                              {member.user?.firstName || ''} {member.user?.lastName || ''}
+                            </p>
+                            <p className="text-xs text-gray-500">{member.user?.email || 'No email'}</p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {new Date(member.joinedAt).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {currentUserRole === 'ADMIN' && (
+                          <div className="flex space-x-2">
+                            <Button
+                              size="sm"
+                              onClick={() => handleRoleChange(member.id, 'MEMBER')}
+                              disabled={loading}
+                              className="rounded-xl font-bold bg-blue-900 hover:bg-blue-800 text-white"
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleRemoveMember(member.id)}
+                              disabled={loading}
+                              className="rounded-xl font-bold border-border hover:border-red-500 hover:text-red-600 transition-colors"
+                            >
+                              Reject
+                            </Button>
+                          </div>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       )}

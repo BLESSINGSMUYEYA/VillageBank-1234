@@ -24,13 +24,13 @@ export default function GroupDetailsContainer({
 }: GroupDetailsContainerProps) {
     return (
         <Tabs defaultValue="members" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 gap-1 bg-muted p-1 rounded-xl">
-                <TabsTrigger value="members" className="rounded-lg font-bold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-200">Members</TabsTrigger>
-                <TabsTrigger value="contributions" className="rounded-lg font-bold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-200">Contributions</TabsTrigger>
-                <TabsTrigger value="loans" className="rounded-lg font-bold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-200">Loans</TabsTrigger>
+            <TabsList className="flex w-full justify-start overflow-x-auto bg-muted p-1 rounded-xl no-scrollbar space-x-2">
+                <TabsTrigger value="members" className="flex-1 min-w-[100px] rounded-lg font-bold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-200">Members</TabsTrigger>
+                <TabsTrigger value="contributions" className="flex-1 min-w-[120px] rounded-lg font-bold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-200">Contributions</TabsTrigger>
+                <TabsTrigger value="loans" className="flex-1 min-w-[100px] rounded-lg font-bold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-200">Loans</TabsTrigger>
                 {isAdmin && (
-                    <TabsTrigger value="share" className="rounded-lg font-bold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-200 flex items-center gap-1">
-                        <Share2 className="h-3 w-3" />
+                    <TabsTrigger value="share" className="flex-1 min-w-[100px] rounded-lg font-bold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all duration-200 flex items-center justify-center gap-1">
+                        <Share2 className="h-4 w-4" />
                         Share
                     </TabsTrigger>
                 )}

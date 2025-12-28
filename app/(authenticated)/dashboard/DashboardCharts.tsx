@@ -23,11 +23,11 @@ export default async function DashboardCharts() {
 
             {/* Charts Grid */}
             <Tabs defaultValue="contributions" className="space-y-4">
-                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1">
-                    <TabsTrigger value="contributions" className="text-xs sm:text-sm">Contributions</TabsTrigger>
-                    <TabsTrigger value="groups" className="text-xs sm:text-sm">Groups</TabsTrigger>
-                    <TabsTrigger value="trends" className="text-xs sm:text-sm">Trends</TabsTrigger>
-                    <TabsTrigger value="payments" className="text-xs sm:text-sm">Payments</TabsTrigger>
+                <TabsList className="flex w-full justify-start overflow-x-auto bg-muted p-1 rounded-xl no-scrollbar space-x-2">
+                    <TabsTrigger value="contributions" className="flex-1 min-w-[100px] text-xs sm:text-sm whitespace-nowrap">Contributions</TabsTrigger>
+                    <TabsTrigger value="groups" className="flex-1 min-w-[80px] text-xs sm:text-sm">Groups</TabsTrigger>
+                    <TabsTrigger value="trends" className="flex-1 min-w-[80px] text-xs sm:text-sm">Trends</TabsTrigger>
+                    <TabsTrigger value="payments" className="flex-1 min-w-[80px] text-xs sm:text-sm">Payments</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="contributions" className="space-y-4">
