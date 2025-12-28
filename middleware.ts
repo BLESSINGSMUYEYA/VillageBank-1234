@@ -8,18 +8,24 @@ const protectedRoutes = [
   '/contributions',
   '/loans',
   '/profile',
-  '/settings'
-];
-
-const adminRoutes = [
-  '/admin'
+  '/settings',
+  '/admin',  // Added admin routes to protected routes
+  '/treasurer'
 ];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Public routes
-  if (pathname.startsWith('/login') || pathname.startsWith('/register') || pathname === '/' || pathname.startsWith('/api/auth')) {
+  // Public routes - allow access without authentication
+  if (
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/register') ||
+    pathname === '/' ||
+    pathname.startsWith('/api/auth') ||
+    pathname.startsWith('/shared') ||  // Allow public shared links
+    pathname.startsWith('/_next') ||   // Allow Next.js internals
+    pathname.startsWith('/api/shared')  // Allow shared API endpoints
+  ) {
     return NextResponse.next();
   }
 
@@ -28,9 +34,29 @@ export async function middleware(req: NextRequest) {
   const payload = token ? await verifyToken(token) : null;
 
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
-  const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route));
+  const isAdminRoute = pathname.startsWith('/admin');
 
-  if (isProtectedRoute || isAdminRoute) {
+  // Role-based Redirects
+  if (payload) {
+    const role = (payload as any)?.role;
+
+    // Redirect REGIONAL_ADMIN from root or dashboard to their admin page
+    if (role === 'REGIONAL_ADMIN') {
+      if (pathname === '/' || pathname === '/dashboard') {
+        return NextResponse.redirect(new URL('/admin/regional', req.url));
+      }
+    }
+
+    // Redirect SUPER_ADMIN from root or dashboard to their system admin page
+    if (role === 'SUPER_ADMIN') {
+      if (pathname === '/' || pathname === '/dashboard') {
+        return NextResponse.redirect(new URL('/admin/system', req.url));
+      }
+    }
+  }
+
+  // Require authentication for protected routes
+  if (isProtectedRoute) {
     if (!payload) {
       const url = new URL('/login', req.url);
       url.searchParams.set('callbackUrl', pathname);
@@ -38,10 +64,14 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  if (isAdminRoute) {
+  // Additional check for admin routes - require admin role
+  if (isAdminRoute && payload) {
     const role = (payload as any)?.role;
+
+    // Allow REGIONAL_ADMIN and SUPER_ADMIN access to admin routes
     if (role !== 'REGIONAL_ADMIN' && role !== 'SUPER_ADMIN') {
-      return NextResponse.rewrite(new URL('/403', req.url)); // Or just redirect to dashboard
+      // Redirect to dashboard instead of non-existent 403 page
+      return NextResponse.redirect(new URL('/dashboard', req.url));
     }
   }
 

@@ -1,6 +1,7 @@
 'use client'
 
-import { useAuth } from '@clerk/nextjs'
+
+import { useAuth } from '@/components/providers/AuthProvider'
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -49,7 +50,8 @@ interface Group {
 }
 
 export default function GroupSettingsPage() {
-  const { userId } = useAuth()
+  const { user } = useAuth()
+  const userId = user?.id
   const params = useParams()
   const router = useRouter()
   const [group, setGroup] = useState<Group | null>(null)
@@ -57,6 +59,7 @@ export default function GroupSettingsPage() {
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
   const [success, setSuccess] = useState(false)
+
 
   // Form state
   const [formData, setFormData] = useState({

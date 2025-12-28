@@ -26,7 +26,8 @@ export function DesktopNavigation() {
 
   const { t } = useLanguage()
 
-  const navigation = [
+  // Define member-specific navigation
+  const memberNavigation = [
     { name: t('common.dashboard'), href: '/dashboard', icon: Home },
     { name: t('common.groups'), href: '/groups', icon: Users },
     { name: t('common.contributions'), href: '/contributions', icon: DollarSign },
@@ -34,13 +35,21 @@ export function DesktopNavigation() {
   ]
 
   const adminNavigation = []
-  if (user?.role === 'REGIONAL_ADMIN' || user?.role === 'SUPER_ADMIN') {
+
+  // Logic to determine which links to show
+  let displayedNavigation = memberNavigation
+
+  if (user?.role === 'REGIONAL_ADMIN') {
+    // Regional Admins ONLY see their admin page
+    displayedNavigation = []
     adminNavigation.push(
       { name: 'Regional Admin', href: '/admin/regional', icon: Shield }
     )
-  }
-  if (user?.role === 'SUPER_ADMIN') {
+  } else if (user?.role === 'SUPER_ADMIN') {
+    // Super Admins ONLY see admin pages
+    displayedNavigation = []
     adminNavigation.push(
+      { name: 'Regional Admin', href: '/admin/regional', icon: Shield },
       { name: 'System Admin', href: '/admin/system', icon: Settings }
     )
   }
@@ -58,7 +67,7 @@ export function DesktopNavigation() {
               </h1>
             </div>
             <nav className="hidden md:ml-6 md:flex md:space-x-1">
-              {navigation.map((item) => (
+              {displayedNavigation.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}

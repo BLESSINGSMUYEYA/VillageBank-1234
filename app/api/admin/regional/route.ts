@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAuth } from '@clerk/nextjs/server'
+import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = getAuth(request)
-    
+    const session = await getSession()
+    const userId = session?.userId
+
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: userId as string },
       select: { role: true, region: true }
     })
 
@@ -20,7 +21,21 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url)
-    const region = searchParams.get('region')?.toUpperCase() || user.region
+
+    // Strict Region Enforcement
+    let region: string | undefined | null
+
+    if (user.role === 'REGIONAL_ADMIN') {
+      // Enforce their assigned region, ignoring any request params
+      region = user.region
+    } else if (user.role === 'SUPER_ADMIN') {
+      // Allow selection, default to 'CENTRAL' if none provided
+      region = searchParams.get('region')?.toUpperCase() || 'CENTRAL'
+    }
+
+    if (!region) {
+      return NextResponse.json({ error: 'Region not specified or assigned' }, { status: 400 })
+    }
 
     // Get regional data
     const regionalData = await prisma.group.findMany({
@@ -44,7 +59,7 @@ export async function GET(request: NextRequest) {
           select: { amount: true }
         },
         loans: {
-          select: { 
+          select: {
             status: true,
             amountApproved: true,
             amountRequested: true
@@ -85,7 +100,7 @@ export async function GET(request: NextRequest) {
 
     // Get regional admin
     const regionalAdmin = await prisma.user.findFirst({
-      where: { 
+      where: {
         role: 'REGIONAL_ADMIN',
         region: region as any
       },
@@ -96,8 +111,24 @@ export async function GET(request: NextRequest) {
       }
     })
 
+    // Fetch users in the region
+    const usersInRegion = await prisma.user.findMany({
+      where: { region: region as any },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        role: true,
+        phoneNumber: true,
+        createdAt: true,
+        // Calculate status based on active loans or group membership if needed
+        // For now, simpler user details
+      }
+    })
+
     const responseData = {
-      users: totalUsers,
+      users: totalUsers, // Keep the calculated one for now, or replace with usersInRegion.length
       groups: totalGroups,
       activeGroups,
       totalContributions,
@@ -116,6 +147,15 @@ export async function GET(request: NextRequest) {
         createdAt: group.createdAt,
         interestRate: group.interestRate,
         maxLoanMultiplier: group.maxLoanMultiplier
+      })),
+      usersData: usersInRegion.map(u => ({
+        id: u.id,
+        name: `${u.firstName} ${u.lastName}`,
+        email: u.email,
+        role: u.role,
+        phoneNumber: u.phoneNumber,
+        joinedAt: u.createdAt,
+        status: 'ACTIVE' // Placeholder
       }))
     }
 
@@ -128,51 +168,83 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = getAuth(request)
-    
+    const session = await getSession()
+    const userId = session?.userId
+
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: userId as string },
       select: { role: true }
     })
 
-    if (!user || user.role !== 'SUPER_ADMIN') {
+    if (!user || (user.role !== 'REGIONAL_ADMIN' && user.role !== 'SUPER_ADMIN')) {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
     const body = await request.json()
-    const { groupId, action } = body
+    const { groupId, userId: targetUserId, action } = body
 
-    if (!groupId || !action) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    if (!action) {
+      return NextResponse.json({ error: 'Missing action' }, { status: 400 })
+    }
+
+    if (action.includes('group') && !groupId) {
+      return NextResponse.json({ error: 'Missing group ID' }, { status: 400 })
+    }
+
+    if (action.includes('user') && !targetUserId) {
+      return NextResponse.json({ error: 'Missing user ID' }, { status: 400 })
     }
 
     let updateData: any = {}
 
     switch (action) {
-      case 'activate':
+      case 'activate_group':
         updateData = { isActive: true }
+        await prisma.group.update({
+          where: { id: groupId },
+          data: updateData
+        })
         break
-      case 'suspend':
+      case 'suspend_group':
         updateData = { isActive: false }
+        await prisma.group.update({
+          where: { id: groupId },
+          data: updateData
+        })
+        break
+      case 'suspend_user':
+        // Placeholder for suspend logic
+        break
+      case 'activate_user':
+        // Placeholder for activate logic
+        break
+      case 'change_role':
+        const { newRole } = body
+        if (!newRole || !['MEMBER', 'REGIONAL_ADMIN'].includes(newRole)) {
+          return NextResponse.json({ error: 'Invalid role' }, { status: 400 })
+        }
+
+        // Prevent Regional Admin from creating Super Admins
+        if (newRole === 'SUPER_ADMIN' && user.role !== 'SUPER_ADMIN') {
+          return NextResponse.json({ error: 'Insufficient permissions to assign Super Admin role' }, { status: 403 })
+        }
+
+        // Update the user
+        updateData = { role: newRole }
+        await prisma.user.update({
+          where: { id: targetUserId },
+          data: updateData
+        })
         break
       default:
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
     }
 
-    const updatedGroup = await prisma.group.update({
-      where: { id: groupId },
-      data: updateData
-    })
-
-    return NextResponse.json({
-      id: updatedGroup.id,
-      name: updatedGroup.name,
-      isActive: updatedGroup.isActive
-    })
+    return NextResponse.json({ success: true, data: updateData })
   } catch (error) {
     console.error('Group management error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

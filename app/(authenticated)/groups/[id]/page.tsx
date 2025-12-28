@@ -1,4 +1,4 @@
-import { auth } from '@clerk/nextjs/server'
+import { getSession } from '@/lib/auth'
 import { notFound, redirect } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -14,14 +14,17 @@ export default async function GroupDetailPage({
 }: {
   params: Promise<{ id: string }>
 }) {
-  const { userId } = await auth()
+  const session = await getSession()
+  const sessionUserId = session?.userId
   const { id: groupId } = await params
 
-  if (!userId) {
-    redirect('/sign-in')
+  if (!sessionUserId) {
+    redirect('/login')
   }
 
-  const group = await getGroupDetails(groupId, userId)
+  const userId = sessionUserId as string
+
+  const group = await getGroupDetails(groupId, userId as string)
 
   if (!group) {
     notFound()

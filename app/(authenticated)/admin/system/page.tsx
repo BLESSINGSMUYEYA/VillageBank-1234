@@ -1,8 +1,7 @@
 'use client'
 
-export const dynamic = 'force-dynamic'
-
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -25,6 +24,15 @@ import {
   Settings,
   Activity
 } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { toast } from "sonner"
 
 interface SystemData {
   totalUsers: number
@@ -34,6 +42,38 @@ interface SystemData {
   pendingApprovals: number
   systemHealth: 'HEALTHY' | 'WARNING' | 'CRITICAL'
   databaseStatus: 'ONLINE' | 'OFFLINE' | 'MAINTENANCE'
+}
+
+interface UserData {
+  id: string
+  name: string
+  email: string
+  role: string
+  region?: string
+  phoneNumber: string | null
+  joinedAt: string
+  status: string
+}
+
+interface ActivityLog {
+  id: string
+  user: string
+  action: string
+  description: string
+  timestamp: string
+  group?: string
+}
+
+interface SystemData {
+  totalUsers: number
+  totalGroups: number
+  totalContributions: number
+  activeLoans: number
+  pendingApprovals: number
+  systemHealth: 'HEALTHY' | 'WARNING' | 'CRITICAL'
+  databaseStatus: 'ONLINE' | 'OFFLINE' | 'MAINTENANCE'
+  recentActivities?: ActivityLog[]
+  users?: UserData[]
 }
 
 interface RegionalSummary {
@@ -46,59 +86,89 @@ interface RegionalSummary {
 }
 
 export default function SystemAdminPage() {
+  const router = useRouter()
   const { user } = useAuth()
   const [data, setData] = useState<SystemData | null>(null)
   const [regionalData, setRegionalData] = useState<RegionalSummary[]>([])
   const [loading, setLoading] = useState(true)
 
+  // User Management State
+  const [selectedUser, setSelectedUser] = useState<UserData | null>(null)
+  const [isUserDialogOpen, setIsUserDialogOpen] = useState(false)
+  const [newRole, setNewRole] = useState('')
+
   useEffect(() => {
-    fetchSystemData()
-  }, [])
+    if (user?.role === 'SUPER_ADMIN') {
+      fetchSystemData()
+    }
+  }, [user])
 
   const fetchSystemData = async () => {
     setLoading(true)
     try {
-      // TODO: Replace with actual API calls
+      const response = await fetch('/api/admin/system')
+      if (!response.ok) throw new Error('Failed to fetch system data')
+
+      const data = await response.json()
+
       setData({
-        totalUsers: 1247,
-        totalGroups: 89,
-        totalContributions: 15420000,
-        activeLoans: 234,
-        pendingApprovals: 23,
-        systemHealth: 'HEALTHY',
-        databaseStatus: 'ONLINE'
+        totalUsers: data.totalUsers,
+        totalGroups: data.totalGroups,
+        totalContributions: data.totalContributions,
+        activeLoans: data.activeLoans,
+        pendingApprovals: data.pendingApprovals,
+        systemHealth: data.systemHealth,
+        databaseStatus: data.databaseStatus,
+        recentActivities: data.recentActivities,
+        users: data.users
       })
 
-      setRegionalData([
-        {
-          region: 'Northern',
-          users: 312,
-          groups: 23,
-          contributions: 3840000,
-          loans: 67,
-          admin: 'John Banda'
-        },
-        {
-          region: 'Central',
-          users: 567,
-          groups: 41,
-          contributions: 7230000,
-          loans: 98,
-          admin: 'Mary Phiri'
-        },
-        {
-          region: 'Southern',
-          users: 368,
-          groups: 25,
-          contributions: 4350000,
-          loans: 69,
-          admin: 'Joseph Mwale'
-        }
-      ])
+      setRegionalData(data.regionalSummaries || [])
     } catch (error) {
       console.error('Failed to fetch system data:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleManageUser = (user: UserData) => {
+    setSelectedUser(user)
+    setNewRole(user.role)
+    setIsUserDialogOpen(true)
+  }
+
+  const handleChangeRole = async () => {
+    if (!selectedUser || !newRole) return
+
+    try {
+      // Reusing regional admin API for user updates for now, or create new endpoint
+      // Assuming we extend standard admin API for this.
+      // Or we can assume /api/admin/system doesn't handle POST yet.
+      // Let's use /api/admin/regional for user updates as it handles "change_role" generically?
+      // No, that endpoint is role-protected.
+      // I should create a POST handler in /api/admin/system or assume one exists.
+      // I'll assume I need to implement POST in /api/admin/system IF needed.
+      // For now, let's just log or assume success for UI demo if API missing.
+      // Actually, I should update API to handle POST.
+      // But for this step I'll try calling /api/admin/regional? Wait, Super Admin can call that!
+      const response = await fetch('/api/admin/regional', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: selectedUser.id,
+          action: 'change_role',
+          newRole
+        })
+      })
+
+      if (!response.ok) throw new Error('Failed to update role')
+
+      toast.success('User role updated')
+      setIsUserDialogOpen(false)
+      fetchSystemData()
+    } catch (error) {
+      console.error(error)
+      toast.error('Failed to update role')
     }
   }
 
@@ -322,8 +392,20 @@ export default function SystemAdminPage() {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm">Manage</Button>
-                      <Button variant="outline" size="sm">View Reports</Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push(`/admin/regional?region=${region.region.toLowerCase()}`)}
+                      >
+                        Manage
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push(`/admin/regional?region=${region.region.toLowerCase()}`)}
+                      >
+                        View Reports
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -343,22 +425,64 @@ export default function SystemAdminPage() {
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
-                  <Input placeholder="Search users..." className="max-w-sm" />
-                  <Select defaultValue="all">
-                    <SelectTrigger className="w-40">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Roles</SelectItem>
-                      <SelectItem value="member">Members</SelectItem>
-                      <SelectItem value="regional_admin">Regional Admins</SelectItem>
-                      <SelectItem value="super_admin">Super Admins</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Button>Add User</Button>
+                  <Input placeholder="Search users by name or email..." className="max-w-sm" />
                 </div>
-                <div className="text-center py-8 text-gray-500">
-                  User management interface coming soon...
+
+                <div className="rounded-md border">
+                  <table className="w-full text-sm text-left">
+                    <thead className="bg-muted/50 border-b">
+                      <tr>
+                        <th className="p-4 font-medium">Name</th>
+                        <th className="p-4 font-medium hidden md:table-cell">Contact</th>
+                        <th className="p-4 font-medium hidden md:table-cell">Role</th>
+                        <th className="p-4 font-medium hidden md:table-cell">Region</th>
+                        <th className="p-4 font-medium hidden md:table-cell">Joined</th>
+                        <th className="p-4 font-medium text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(!data?.users || data.users.length === 0) ? (
+                        <tr>
+                          <td colSpan={6} className="p-8 text-center text-muted-foreground">
+                            No users found.
+                          </td>
+                        </tr>
+                      ) : (
+                        data.users.map((user) => (
+                          <tr key={user.id} className="border-b last:border-0 hover:bg-muted/50">
+                            <td className="p-4">
+                              <div className="font-medium">{user.name}</div>
+                              <div className="text-xs text-muted-foreground md:hidden">{user.email}</div>
+                            </td>
+                            <td className="p-4 hidden md:table-cell">
+                              <div className="text-xs">{user.email}</div>
+                              {user.phoneNumber && <div className="text-xs text-muted-foreground">{user.phoneNumber}</div>}
+                            </td>
+                            <td className="p-4 hidden md:table-cell">
+                              <Badge variant={user.role === 'MEMBER' ? 'secondary' : 'default'}>
+                                {user.role.replace('_', ' ')}
+                              </Badge>
+                            </td>
+                            <td className="p-4 hidden md:table-cell capitalize">
+                              {user.region?.toLowerCase() || '-'}
+                            </td>
+                            <td className="p-4 hidden md:table-cell">
+                              {new Date(user.joinedAt).toLocaleDateString()}
+                            </td>
+                            <td className="p-4 text-right">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleManageUser(user)}
+                              >
+                                Manage
+                              </Button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </CardContent>
@@ -452,14 +576,108 @@ export default function SystemAdminPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="text-center py-8 text-gray-500">
-                  Activity logs interface coming soon...
+                <div className="rounded-md border">
+                  <table className="w-full text-sm text-left">
+                    <thead className="bg-muted/50 border-b">
+                      <tr>
+                        <th className="p-4 font-medium">Time</th>
+                        <th className="p-4 font-medium">User</th>
+                        <th className="p-4 font-medium">Action</th>
+                        <th className="p-4 font-medium">Description</th>
+                        <th className="p-4 font-medium hidden md:table-cell">Group</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(!data?.recentActivities || data.recentActivities.length === 0) ? (
+                        <tr>
+                          <td colSpan={5} className="p-8 text-center text-muted-foreground">
+                            No recent activity logs found.
+                          </td>
+                        </tr>
+                      ) : (
+                        data.recentActivities.map((log) => (
+                          <tr key={log.id} className="border-b last:border-0 hover:bg-muted/50">
+                            <td className="p-4 whitespace-nowrap text-gray-500">
+                              {new Date(log.timestamp).toLocaleString()}
+                            </td>
+                            <td className="p-4 font-medium">{log.user}</td>
+                            <td className="p-4">
+                              <Badge variant="outline" className="font-mono text-xs">
+                                {log.action}
+                              </Badge>
+                            </td>
+                            <td className="p-4">{log.description}</td>
+                            <td className="p-4 hidden md:table-cell text-gray-500">
+                              {log.group || '-'}
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* User Management Dialog */}
+      <Dialog open={isUserDialogOpen} onOpenChange={setIsUserDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Manage User</DialogTitle>
+            <DialogDescription>
+              View details and manage access for {selectedUser?.name}
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedUser && (
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <span className="font-medium text-right text-sm">Name:</span>
+                <span className="col-span-3 text-sm">{selectedUser.name}</span>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <span className="font-medium text-right text-sm">Email:</span>
+                <span className="col-span-3 text-sm">{selectedUser.email}</span>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <span className="font-medium text-right text-sm">Current Role:</span>
+                <span className="col-span-3 text-sm flex items-center gap-2">
+                  <Badge variant={selectedUser.role === 'MEMBER' ? 'secondary' : 'default'}>
+                    {selectedUser.role}
+                  </Badge>
+                </span>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <span className="font-medium text-right text-sm">New Role:</span>
+                <div className="col-span-3 flex gap-2">
+                  <Select value={newRole} onValueChange={setNewRole}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="MEMBER">MEMBER</SelectItem>
+                      <SelectItem value="REGIONAL_ADMIN">REGIONAL ADMIN</SelectItem>
+                      <SelectItem value="SUPER_ADMIN">SUPER ADMIN</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button size="sm" onClick={handleChangeRole} disabled={newRole === selectedUser.role}>
+                    Update
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsUserDialogOpen(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAuth } from '@clerk/nextjs/server'
+import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = getAuth(request)
-    
+    const session = await getSession()
+    const userId = session?.userId
+
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: userId as string },
       select: { role: true }
     })
 
@@ -39,7 +40,7 @@ export async function GET(request: NextRequest) {
           where: { region },
           include: {
             members: { select: { userId: true } },
-            contributions: { 
+            contributions: {
               where: { status: 'COMPLETED' },
               select: { amount: true }
             },
@@ -48,9 +49,9 @@ export async function GET(request: NextRequest) {
         })
 
         const uniqueUsers = new Set(data.flatMap(g => g.members.map(m => m.userId))).size
-        const contributions = data.reduce((sum, g) => 
+        const contributions = data.reduce((sum, g) =>
           sum + g.contributions.reduce((s, c) => s + c.amount, 0), 0)
-        const loans = data.reduce((sum, g) => 
+        const loans = data.reduce((sum, g) =>
           sum + g.loans.filter(l => l.status === 'ACTIVE').length, 0)
 
         const regionalAdmin = await prisma.user.findFirst({
@@ -69,6 +70,32 @@ export async function GET(request: NextRequest) {
       })
     )
 
+    // Get recent system activities
+    const recentActivities = await prisma.activity.findMany({
+      take: 20,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: { select: { firstName: true, lastName: true, email: true } },
+        group: { select: { name: true } }
+      }
+    })
+
+    // Get users for management
+    const users = await prisma.user.findMany({
+      take: 50,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        role: true,
+        region: true,
+        phoneNumber: true,
+        createdAt: true
+      }
+    })
+
     const systemData = {
       totalUsers,
       totalGroups,
@@ -77,7 +104,25 @@ export async function GET(request: NextRequest) {
       pendingApprovals,
       systemHealth: 'HEALTHY' as const,
       databaseStatus: 'ONLINE' as const,
-      regionalSummaries
+      regionalSummaries,
+      recentActivities: recentActivities.map(activity => ({
+        id: activity.id,
+        user: `${activity.user.firstName} ${activity.user.lastName}`,
+        action: activity.actionType,
+        description: activity.description,
+        timestamp: activity.createdAt,
+        group: activity.group?.name
+      })),
+      users: users.map(u => ({
+        id: u.id,
+        name: `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'No Name',
+        email: u.email,
+        role: u.role,
+        region: u.region,
+        phoneNumber: u.phoneNumber,
+        joinedAt: u.createdAt,
+        status: 'ACTIVE'
+      }))
     }
 
     return NextResponse.json(systemData)
@@ -89,14 +134,15 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = getAuth(request)
-    
+    const session = await getSession()
+    const userId = session?.userId
+
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: userId as string },
       select: { role: true }
     })
 
@@ -110,14 +156,14 @@ export async function POST(request: NextRequest) {
     switch (action) {
       case 'backup_database':
         // TODO: Implement database backup logic
-        return NextResponse.json({ 
+        return NextResponse.json({
           message: 'Database backup initiated',
           backupId: `backup_${Date.now()}`
         })
 
       case 'system_maintenance':
         // TODO: Implement system maintenance logic
-        return NextResponse.json({ 
+        return NextResponse.json({
           message: 'System maintenance mode activated',
           maintenanceId: `maintenance_${Date.now()}`
         })
@@ -129,7 +175,7 @@ export async function POST(request: NextRequest) {
 
         await prisma.user.update({
           where: { id: data.userId },
-          data: { 
+          data: {
             role: 'REGIONAL_ADMIN',
             region: target.region as any
           }

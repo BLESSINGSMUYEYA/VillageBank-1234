@@ -9,6 +9,7 @@ interface User {
     firstName: string | null;
     lastName: string | null;
     role: string;
+    region?: string | null;
     phoneNumber?: string | null;
 }
 
@@ -73,7 +74,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         const { user } = await res.json();
         setUser(user);
-        router.push('/dashboard');
+
+        if (user.role === 'REGIONAL_ADMIN') {
+            router.push('/admin/regional');
+        } else if (user.role === 'SUPER_ADMIN') {
+            router.push('/admin/system');
+        } else {
+            router.push('/dashboard');
+        }
         router.refresh();
     };
 
@@ -91,7 +99,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         const { user } = await res.json();
         setUser(user);
-        router.push('/dashboard');
+
+        if (user.role === 'REGIONAL_ADMIN') {
+            router.push('/admin/regional');
+        } else if (user.role === 'SUPER_ADMIN') {
+            router.push('/admin/system');
+        } else {
+            router.push('/dashboard');
+        }
         router.refresh();
     };
 

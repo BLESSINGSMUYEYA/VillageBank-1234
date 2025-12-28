@@ -31,7 +31,8 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
 
   const { t } = useLanguage()
 
-  const navigation = [
+  // Define member-specific navigation
+  const memberNavigation = [
     { name: t('common.dashboard'), href: '/dashboard', icon: Home },
     { name: t('common.groups'), href: '/groups', icon: Users },
     { name: t('common.contributions'), href: '/contributions', icon: DollarSign },
@@ -39,18 +40,26 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
   ]
 
   const adminNavigation = []
-  if (user?.role === 'REGIONAL_ADMIN' || user?.role === 'SUPER_ADMIN') {
+
+  // Logic to determine which links to show
+  let displayedNavigation = memberNavigation
+
+  if (user?.role === 'REGIONAL_ADMIN') {
+    // Regional Admins ONLY see their admin page
+    displayedNavigation = []
     adminNavigation.push(
       { name: t('admin.regional'), href: '/admin/regional', icon: Shield }
     )
-  }
-  if (user?.role === 'SUPER_ADMIN') {
+  } else if (user?.role === 'SUPER_ADMIN') {
+    // Super Admins ONLY see admin pages
+    displayedNavigation = []
     adminNavigation.push(
+      { name: t('admin.regional'), href: '/admin/regional', icon: Shield },
       { name: t('admin.system'), href: '/admin/system', icon: Settings }
     )
   }
 
-  const allNavigation = [...navigation, ...adminNavigation]
+  const allNavigation = [...displayedNavigation, ...adminNavigation]
 
   return (
     <div className="lg:hidden">

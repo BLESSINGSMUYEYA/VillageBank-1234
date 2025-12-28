@@ -19,6 +19,14 @@ export const prisma = globalForPrisma.prisma ?? new PrismaClient({
     },
   },
   errorFormat: 'pretty',
+  // Add connection pool configuration
+  // @ts-ignore - Prisma doesn't expose these types but they work
+  __internal: {
+    engine: {
+      connection_limit: 10,  // Reduced from default 20 to prevent pool exhaustion
+      pool_timeout: 30,      // Timeout for acquiring connection from pool
+    },
+  },
 })
 
 // Graceful shutdown handler
