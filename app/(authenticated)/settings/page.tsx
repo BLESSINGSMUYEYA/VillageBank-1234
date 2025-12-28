@@ -93,20 +93,20 @@ export default function SettingsPage() {
       </div>
 
       <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="profile" className="flex items-center gap-2">
+        <TabsList className="w-full flex justify-start overflow-x-auto bg-muted p-1 rounded-xl no-scrollbar">
+          <TabsTrigger value="profile" className="flex-1 min-w-[100px] flex items-center gap-2">
             <UserIcon className="w-4 h-4" />
             Profile
           </TabsTrigger>
-          <TabsTrigger value="notifications" className="flex items-center gap-2">
+          <TabsTrigger value="notifications" className="flex-1 min-w-[130px] flex items-center gap-2">
             <Bell className="w-4 h-4" />
             Notifications
           </TabsTrigger>
-          <TabsTrigger value="security" className="flex items-center gap-2">
+          <TabsTrigger value="security" className="flex-1 min-w-[100px] flex items-center gap-2">
             <Shield className="w-4 h-4" />
             Security
           </TabsTrigger>
-          <TabsTrigger value="payment" className="flex items-center gap-2">
+          <TabsTrigger value="payment" className="flex-1 min-w-[150px] flex items-center gap-2">
             <CreditCard className="w-4 h-4" />
             Payment Methods
           </TabsTrigger>
@@ -122,7 +122,7 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSaveProfile} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="firstName" className="text-body">First Name</Label>
                     <Input

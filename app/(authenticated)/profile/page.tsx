@@ -167,11 +167,11 @@ export default function ProfilePage() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="bg-muted p-1 rounded-xl">
-          <TabsTrigger value="overview" className="rounded-lg font-bold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm">{t('profile.tabs.overview')}</TabsTrigger>
-          <TabsTrigger value="groups" className="rounded-lg font-bold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm">{t('profile.tabs.groups')}</TabsTrigger>
-          <TabsTrigger value="contributions" className="rounded-lg font-bold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm">{t('profile.tabs.contributions')}</TabsTrigger>
-          <TabsTrigger value="loans" className="rounded-lg font-bold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm">{t('profile.tabs.loans')}</TabsTrigger>
+        <TabsList className="bg-muted p-1 rounded-xl w-full justify-start overflow-x-auto flex-nowrap no-scrollbar">
+          <TabsTrigger value="overview" className="flex-shrink-0 rounded-lg font-bold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm">{t('profile.tabs.overview')}</TabsTrigger>
+          <TabsTrigger value="groups" className="flex-shrink-0 rounded-lg font-bold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm">{t('profile.tabs.groups')}</TabsTrigger>
+          <TabsTrigger value="contributions" className="flex-shrink-0 rounded-lg font-bold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm">{t('profile.tabs.contributions')}</TabsTrigger>
+          <TabsTrigger value="loans" className="flex-shrink-0 rounded-lg font-bold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm">{t('profile.tabs.loans')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -216,7 +216,7 @@ export default function ProfilePage() {
                 <CardDescription className="text-body font-medium text-muted-foreground">{t('profile.achievements.subtitle')}</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="group relative text-center p-4 bg-muted/50 rounded-2xl border border-border transition-all duration-200 hover:shadow-md hover:bg-card hover:border-blue-100">
                     <Award className="w-8 h-8 mx-auto mb-2 text-yellow-500 transform group-hover:scale-110 transition-transform" />
                     <p className="font-black text-xs uppercase tracking-wider text-foreground">{t('profile.achievements.early_bird')}</p>
