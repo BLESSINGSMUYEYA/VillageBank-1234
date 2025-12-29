@@ -171,7 +171,7 @@ export default function ProfilePage() {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="bg-card/50 backdrop-blur-sm p-1 rounded-2xl border border-border/50 w-full justify-start overflow-x-auto flex-nowrap no-scrollbar h-14">
+        <TabsList className="bg-card/50 backdrop-blur-sm p-1 rounded-2xl border border-border/50 w-full justify-start overflow-x-auto flex-nowrap h-14">
           <TabsTrigger value="overview" className="rounded-xl px-6 h-10 font-bold data-[state=active]:bg-blue-900 data-[state=active]:text-white data-[state=active]:shadow-md transition-all">{t('profile.tabs.overview')}</TabsTrigger>
           <TabsTrigger value="groups" className="rounded-xl px-6 h-10 font-bold data-[state=active]:bg-blue-900 data-[state=active]:text-white data-[state=active]:shadow-md transition-all">{t('profile.tabs.groups')}</TabsTrigger>
           <TabsTrigger value="contributions" className="rounded-xl px-6 h-10 font-bold data-[state=active]:bg-blue-900 data-[state=active]:text-white data-[state=active]:shadow-md transition-all">{t('profile.tabs.contributions')}</TabsTrigger>

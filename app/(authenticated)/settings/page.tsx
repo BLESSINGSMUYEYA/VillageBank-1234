@@ -93,7 +93,7 @@ export default function SettingsPage() {
       </div>
 
       <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="w-full flex justify-start overflow-x-auto bg-muted p-1 rounded-xl no-scrollbar flex-nowrap">
+        <TabsList className="w-full flex justify-start overflow-x-auto bg-muted p-1 rounded-xl flex-nowrap">
           <TabsTrigger value="profile" className="flex-1 min-w-[100px] flex items-center gap-2">
             <UserIcon className="w-4 h-4" />
             Profile
