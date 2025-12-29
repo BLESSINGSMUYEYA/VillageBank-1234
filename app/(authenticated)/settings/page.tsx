@@ -93,7 +93,7 @@ export default function SettingsPage() {
       </div>
 
       <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="w-full flex justify-start overflow-x-auto bg-muted p-1 rounded-xl no-scrollbar">
+        <TabsList className="w-full flex justify-start overflow-x-auto bg-muted p-1 rounded-xl no-scrollbar flex-nowrap">
           <TabsTrigger value="profile" className="flex-1 min-w-[100px] flex items-center gap-2">
             <UserIcon className="w-4 h-4" />
             Profile
@@ -207,7 +207,7 @@ export default function SettingsPage() {
             <CardContent>
               <form onSubmit={handleSaveNotifications} className="space-y-4">
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-4">
                     <div>
                       <h4 className="font-black text-body">Email Notifications</h4>
                       <p className="text-sm text-muted-foreground">Receive updates via email</p>
@@ -215,7 +215,7 @@ export default function SettingsPage() {
                     <input type="checkbox" defaultChecked className="h-4 w-4" />
                   </div>
 
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-4">
                     <div>
                       <h4 className="font-black text-body">Contribution Reminders</h4>
                       <p className="text-sm text-muted-foreground">Get reminded about monthly contributions</p>
@@ -223,7 +223,7 @@ export default function SettingsPage() {
                     <input type="checkbox" defaultChecked className="h-4 w-4" />
                   </div>
 
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-4">
                     <div>
                       <h4 className="font-black text-body">Loan Updates</h4>
                       <p className="text-sm text-muted-foreground">Notifications about loan status changes</p>
@@ -231,7 +231,7 @@ export default function SettingsPage() {
                     <input type="checkbox" defaultChecked className="h-4 w-4" />
                   </div>
 
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-4">
                     <div>
                       <h4 className="font-black text-body">Group Activities</h4>
                       <p className="text-sm text-muted-foreground">Updates about group activities</p>

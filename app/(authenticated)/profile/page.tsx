@@ -121,7 +121,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Financial Stats - Bento Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <Card className="bg-gradient-to-br from-emerald-900 to-emerald-950 text-white border-none shadow-md overflow-hidden relative group">
           <div className="absolute right-0 top-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
             <DollarSign className="w-24 h-24" />
