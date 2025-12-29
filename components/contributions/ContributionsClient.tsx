@@ -55,7 +55,7 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
             </div>
 
             {/* Stats Cards - Bento Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <Card className="bg-card border border-border/50 shadow-sm hover:shadow-md transition-shadow dark:bg-card/50">
                     <CardHeader className="pb-2">
                         <CardTitle className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('contributions.total_contributed')}</CardTitle>
@@ -220,8 +220,8 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <Badge className={`rounded-lg font-bold border-none px-2.5 py-1 ${contribution.status === 'COMPLETED' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
-                                                        contribution.status === 'PENDING' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' :
-                                                            'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                                                    contribution.status === 'PENDING' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' :
+                                                        'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                                                     }`}>
                                                     {contribution.status}
                                                 </Badge>

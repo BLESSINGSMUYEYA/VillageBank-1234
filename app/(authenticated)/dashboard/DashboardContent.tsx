@@ -38,19 +38,17 @@ export function DashboardContent({
 
     return (
         <div className="space-y-8 animate-fade-in relative">
-            {/* Nano-Glass Header */}
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-900 to-indigo-900 shadow-2xl p-8 sm:p-10 mb-8 border border-white/10">
-                <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-banana/20 rounded-full blur-3xl opacity-50"></div>
-                <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl opacity-50"></div>
-
-                <div className="relative z-10">
-                    <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight mb-2">
+            {/* Nano Header */}
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 mb-8 border-b border-border/50 pb-6">
+                <div>
+                    <h1 className="text-4xl font-black bg-gradient-to-r from-blue-900 to-indigo-800 dark:from-white dark:to-blue-200 bg-clip-text text-transparent mb-2">
                         {t('common.dashboard')}
                     </h1>
-                    <p className="text-lg text-blue-100 max-w-2xl font-medium leading-relaxed">
-                        {t('dashboard.welcome')}, <span className="text-banana font-black">{user.firstName}</span>! Ready to revolutionize your finances?
+                    <p className="text-muted-foreground font-medium max-w-2xl text-lg">
+                        {t('dashboard.welcome')}, <span className="text-banana-600 dark:text-banana font-black">{user.firstName}</span>! Ready to revolutionize your finances?
                     </p>
                 </div>
+                {/* Optional: Add a date or quick action here if needed, keeping it empty for now to match structure */}
             </div>
 
             {/* Treasurer Notification - "Nano Alert" */}

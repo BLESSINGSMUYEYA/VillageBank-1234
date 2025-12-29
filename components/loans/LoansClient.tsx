@@ -53,7 +53,7 @@ export function LoansClient({ loans, eligibilityChecks }: LoansClientProps) {
             </div>
 
             {/* Stats Cards - Bento Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <Card className="bg-gradient-to-br from-blue-900 to-indigo-900 text-white border-none shadow-md">
                     <CardHeader className="pb-2">
                         <CardTitle className="text-[10px] font-black text-blue-200 uppercase tracking-widest">{t('loans.active_loans')}</CardTitle>
@@ -166,8 +166,8 @@ export function LoansClient({ loans, eligibilityChecks }: LoansClientProps) {
                                             <TableCell className="font-black text-sm text-foreground text-right">{formatCurrency(Number(loan.amountApproved || loan.amountRequested))}</TableCell>
                                             <TableCell className="text-right">
                                                 <Badge className={`rounded-lg font-bold border-none px-2.5 py-1 ${loan.status === 'ACTIVE' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' :
-                                                        loan.status === 'COMPLETED' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
-                                                            'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                                                    loan.status === 'COMPLETED' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                                                        'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
                                                     }`}>
                                                     {loan.status}
                                                 </Badge>
