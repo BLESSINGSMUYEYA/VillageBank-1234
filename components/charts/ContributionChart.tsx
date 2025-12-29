@@ -50,7 +50,7 @@ interface ContributionChartProps {
 
 export function ContributionChart({ data, title = "Monthly Contributions", description = "Your contribution history over time" }: ContributionChartProps) {
   return (
-    <Card className="bg-card border border-border shadow-sm">
+    <Card className="bg-transparent border-none shadow-none">
       <CardHeader>
         <CardTitle className="text-xl font-black text-blue-900 dark:text-blue-100">{title}</CardTitle>
         <CardDescription className="text-muted-foreground font-medium">{description}</CardDescription>
@@ -84,7 +84,7 @@ interface GroupComparisonChartProps {
 
 export function GroupComparisonChart({ data, title = "Group Performance", description = "Compare contributions and loans across groups" }: GroupComparisonChartProps) {
   return (
-    <Card className="bg-card border border-border shadow-sm">
+    <Card className="bg-transparent border-none shadow-none">
       <CardHeader>
         <CardTitle className="text-xl font-black text-blue-900 dark:text-blue-100">{title}</CardTitle>
         <CardDescription className="text-muted-foreground font-medium">{description}</CardDescription>
@@ -119,7 +119,7 @@ interface TrendChartProps {
 
 export function TrendChart({ data, title = "Contribution Trend", description = "Track your contribution patterns over time" }: TrendChartProps) {
   return (
-    <Card className="bg-card border border-border shadow-sm">
+    <Card className="bg-transparent border-none shadow-none">
       <CardHeader>
         <CardTitle className="text-xl font-black text-blue-900 dark:text-blue-100">{title}</CardTitle>
         <CardDescription className="text-muted-foreground font-medium">{description}</CardDescription>
@@ -152,7 +152,7 @@ interface PaymentMethodsChartProps {
 
 export function PaymentMethodsChart({ data, title = "Payment Methods", description = "Distribution of payment methods used" }: PaymentMethodsChartProps) {
   return (
-    <Card className="bg-card border border-border shadow-sm">
+    <Card className="bg-transparent border-none shadow-none">
       <CardHeader>
         <CardTitle className="text-xl font-black text-blue-900 dark:text-blue-100">{title}</CardTitle>
         <CardDescription className="text-muted-foreground font-medium">{description}</CardDescription>
