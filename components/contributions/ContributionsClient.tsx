@@ -165,6 +165,7 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                                 <SelectItem value="all">{t('contributions.all_time')}</SelectItem>
                                 {Array.from({ length: 12 }, (_, i) => {
                                     const date = new Date()
+                                    date.setDate(1)
                                     date.setMonth(date.getMonth() - i)
                                     const month = (date.getMonth() + 1).toString().padStart(2, '0')
                                     const year = date.getFullYear().toString()
