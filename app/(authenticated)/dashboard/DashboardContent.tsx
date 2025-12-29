@@ -164,9 +164,7 @@ export function DashboardContent({
                     {/* Charts Section Container */}
                     <div>
                         <h2 className="text-2xl font-black text-foreground mb-4">Performance</h2>
-                        <div className="bg-card rounded-3xl border border-border shadow-sm p-2 overflow-hidden">
-                            {charts}
-                        </div>
+                        {charts}
                     </div>
                     <div className="flex items-center justify-between">
                         <h2 className="text-2xl font-black text-foreground flex items-center gap-2">
