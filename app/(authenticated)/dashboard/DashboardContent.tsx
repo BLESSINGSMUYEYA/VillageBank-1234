@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Alert } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import {
@@ -9,12 +9,15 @@ import {
     TrendingUp,
     Calendar,
     Eye,
-    BarChart3
+    BarChart3,
+    ArrowUpRight,
+    Wallet,
+    PiggyBank,
+    Zap
 } from 'lucide-react'
 import Link from 'next/link'
 import { formatCurrency } from '@/lib/utils'
 import { useLanguage } from '@/components/providers/LanguageProvider'
-import { Suspense } from 'react'
 
 interface DashboardContentProps {
     user: any
@@ -34,34 +37,39 @@ export function DashboardContent({
     const { t } = useLanguage()
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="mb-2">
-                <h1 className="text-display font-black bg-gradient-to-r from-blue-600 via-violet-600 to-purple-600 bg-clip-text text-transparent">
-                    {t('common.dashboard')}
-                </h1>
-                <p className="text-body text-muted-foreground mt-2">
-                    {t('dashboard.welcome')}, <span className="font-bold text-foreground">{user.firstName}</span>! {t('dashboard.overview')}.
-                </p>
+        <div className="space-y-8 animate-fade-in relative">
+            {/* Nano-Glass Header */}
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-900 to-indigo-900 shadow-2xl p-8 sm:p-10 mb-8 border border-white/10">
+                <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-banana/20 rounded-full blur-3xl opacity-50"></div>
+                <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl opacity-50"></div>
+
+                <div className="relative z-10">
+                    <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight mb-2">
+                        {t('common.dashboard')}
+                    </h1>
+                    <p className="text-lg text-blue-100 max-w-2xl font-medium leading-relaxed">
+                        {t('dashboard.welcome')}, <span className="text-banana font-black">{user.firstName}</span>! Ready to revolutionize your finances?
+                    </p>
+                </div>
             </div>
 
-            {/* Treasurer Notification Banner */}
+            {/* Treasurer Notification - "Nano Alert" */}
             {pendingApprovals.length > 0 && (
-                <Alert className="bg-blue-50/80 border-blue-200/50 backdrop-blur-md border-none shadow-xl">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full gap-4 sm:gap-0">
-                        <div className="flex items-center space-x-3">
-                            <div className="bg-blue-100 p-2 rounded-full shrink-0">
-                                <DollarSign className="h-5 w-5 text-blue-600" />
+                <Alert className="relative overflow-hidden border-l-4 border-l-banana bg-card shadow-lg rounded-xl border-t-0 border-r-0 border-b-0">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-1">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-banana/10 rounded-full">
+                                <DollarSign className="h-6 w-6 text-banana-700 dark:text-banana" />
                             </div>
                             <div>
-                                <CardTitle className="text-h3 text-blue-900">{t('dashboard.pending_approvals')}</CardTitle>
-                                <CardDescription className="text-blue-700 text-xs">
+                                <h3 className="font-bold text-foreground text-lg">{t('dashboard.pending_approvals')}</h3>
+                                <p className="text-muted-foreground font-medium">
                                     {t('dashboard.pending_desc').replace('{count}', pendingApprovals.length.toString())}
-                                </CardDescription>
+                                </p>
                             </div>
                         </div>
                         <Link href="/treasurer/approvals" className="w-full sm:w-auto">
-                            <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white border-none rounded-2xl font-black w-full sm:w-auto">
+                            <Button className="w-full sm:w-auto bg-banana hover:bg-yellow-400 text-banana-foreground font-black rounded-xl shadow-md transition-all hover:scale-105 active:scale-95">
                                 {t('dashboard.review_now')}
                             </Button>
                         </Link>
@@ -69,202 +77,210 @@ export function DashboardContent({
                 </Alert>
             )}
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                <Card className="bg-card border-border shadow-sm hover:shadow-md transition-shadow">
-                    <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-black text-muted-foreground uppercase leading-snug">{t('dashboard.total_groups')}</CardTitle>
-                        <div className="p-2.5 bg-blue-100 dark:bg-blue-900 rounded-xl shrink-0 ml-2">
-                            <Users className="h-4 w-4 text-blue-700 dark:text-blue-300" />
+            {/* "Banana Bento" Stats Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Card 1 */}
+                <Card className="group relative overflow-hidden border-none shadow-lg bg-card hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <Users className="w-24 h-24 text-blue-900 dark:text-blue-100" />
+                    </div>
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="p-2.5 bg-blue-100 dark:bg-blue-900/50 rounded-xl text-blue-700 dark:text-blue-300 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                <Users className="w-5 h-5" />
+                            </div>
+                            <span className="text-xs font-black uppercase tracking-wider text-muted-foreground">{t('dashboard.total_groups')}</span>
                         </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-h2 font-black text-foreground truncate">{stats.totalGroups}</div>
-                        <p className="text-xs text-muted-foreground mt-1 hidden sm:block">
-                            {t('dashboard.active_groups_desc')}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1 sm:hidden">
-                            {t('groups.members')}
-                        </p>
+                        <div className="text-4xl font-black text-foreground mb-1">{stats.totalGroups}</div>
+                        <div className="text-xs font-bold text-muted-foreground">{t('dashboard.active_groups_desc')}</div>
                     </CardContent>
                 </Card>
 
-                <Card className="bg-card border-border shadow-sm hover:shadow-md transition-shadow">
-                    <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-black text-muted-foreground uppercase leading-snug">{t('dashboard.total_contributions')}</CardTitle>
-                        <div className="p-2.5 bg-blue-100 dark:bg-blue-900 rounded-xl shrink-0 ml-2">
-                            <DollarSign className="h-4 w-4 text-blue-700 dark:text-blue-300" />
+                {/* Card 2 - Featured (Banana) */}
+                <Card className="group relative overflow-hidden border-none shadow-lg bg-card hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <Wallet className="w-24 h-24 text-banana dark:text-banana" />
+                    </div>
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="p-2.5 bg-banana/20 rounded-xl text-yellow-700 dark:text-yellow-400 group-hover:bg-banana group-hover:text-blue-950 transition-colors">
+                                <DollarSign className="w-5 h-5" />
+                            </div>
+                            <span className="text-xs font-black uppercase tracking-wider text-muted-foreground">{t('dashboard.total_contributions')}</span>
                         </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-h2 font-black text-foreground truncate" title={formatCurrency(stats.totalContributions)}>
+                        <div className="text-4xl font-black text-foreground mb-1 truncate" title={formatCurrency(stats.totalContributions)}>
                             {formatCurrency(stats.totalContributions)}
                         </div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                            {t('dashboard.all_time')}
-                        </p>
+                        <div className="flex items-center text-xs font-bold text-green-600 dark:text-green-400">
+                            <TrendingUp className="w-3 h-3 mr-1" />
+                            <span>+12.5% {t('dashboard.all_time')}</span>
+                        </div>
                     </CardContent>
                 </Card>
 
-                <Card className="bg-card border-border shadow-sm hover:shadow-md transition-shadow">
-                    <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-black text-muted-foreground uppercase leading-snug">{t('dashboard.active_loans')}</CardTitle>
-                        <div className="p-2.5 bg-blue-100 dark:bg-blue-900 rounded-xl shrink-0 ml-2">
-                            <TrendingUp className="h-4 w-4 text-blue-700 dark:text-blue-300" />
+                {/* Card 3 */}
+                <Card className="group relative overflow-hidden border-none shadow-lg bg-card hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <PiggyBank className="w-24 h-24 text-pink-600" />
+                    </div>
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="p-2.5 bg-pink-100 dark:bg-pink-900/30 rounded-xl text-pink-600 dark:text-pink-400 group-hover:bg-pink-600 group-hover:text-white transition-colors">
+                                <TrendingUp className="w-5 h-5" />
+                            </div>
+                            <span className="text-xs font-black uppercase tracking-wider text-muted-foreground">{t('dashboard.active_loans')}</span>
                         </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-h2 font-black text-foreground truncate">{stats.totalLoans}</div>
-                        <p className="text-xs text-muted-foreground mt-1 break-words">
-                            {stats.pendingLoans > 0 && (
-                                <span>{stats.pendingLoans} {t('contributions.pending').toLowerCase()}</span>
-                            )}
-                        </p>
+                        <div className="text-4xl font-black text-foreground mb-1">{stats.totalLoans}</div>
+                        <div className="text-xs font-bold text-muted-foreground break-words">
+                            {stats.pendingLoans > 0 ? (
+                                <span className="text-orange-600">{stats.pendingLoans} pending approval</span>
+                            ) : 'All active & healthy'}
+                        </div>
                     </CardContent>
                 </Card>
 
-                <Card className="bg-card border-border shadow-sm hover:shadow-md transition-shadow">
-                    <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-                        <CardTitle className="text-xs font-black text-muted-foreground uppercase leading-snug">{t('dashboard.monthly_contribution')}</CardTitle>
-                        <div className="p-2.5 bg-blue-100 dark:bg-blue-900 rounded-xl shrink-0 ml-2">
-                            <Calendar className="h-4 w-4 text-blue-700 dark:text-blue-300" />
+                {/* Card 4 */}
+                <Card className="group relative overflow-hidden border-none shadow-lg bg-card hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <Calendar className="w-24 h-24 text-purple-600" />
+                    </div>
+                    <CardContent className="p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="p-2.5 bg-purple-100 dark:bg-purple-900/30 rounded-xl text-purple-600 dark:text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                                <Calendar className="w-5 h-5" />
+                            </div>
+                            <span className="text-xs font-black uppercase tracking-wider text-muted-foreground">Monthly Avg</span>
                         </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-h2 font-black text-foreground truncate" title={formatCurrency(stats.monthlyContribution)}>
+                        <div className="text-4xl font-black text-foreground mb-1 truncate" title={formatCurrency(stats.monthlyContribution)}>
                             {formatCurrency(stats.monthlyContribution)}
                         </div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                            {t('dashboard.this_month')}
-                        </p>
+                        <div className="text-xs font-bold text-muted-foreground">{t('dashboard.this_month')}</div>
                     </CardContent>
                 </Card>
             </div>
 
-            {/* Recent Activity */}
-            <Card className="bg-card border-border shadow-sm">
-                <CardHeader>
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
-                        <div>
-                            <CardTitle className="text-h3 text-foreground">{t('dashboard.recent_activity')}</CardTitle>
-                            <CardDescription className="text-body text-muted-foreground">{t('dashboard.activity_desc')}</CardDescription>
+            {/* Split Section: Activity & Quick Actions */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Recent Activity Feed */}
+                <div className="lg:col-span-2 space-y-6">
+                    {/* Charts Section Container */}
+                    <div>
+                        <h2 className="text-2xl font-black text-foreground mb-4">Performance</h2>
+                        <div className="bg-card rounded-3xl border border-border shadow-sm p-2 overflow-hidden">
+                            {charts}
                         </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-2xl font-black text-foreground flex items-center gap-2">
+                            <Zap className="w-6 h-6 text-banana filled" fill="currentColor" />
+                            {t('dashboard.recent_activity')}
+                        </h2>
                         <Link href="/groups">
-                            <Button variant="outline" size="sm" className="w-full sm:w-auto rounded-xl font-black border-border hover:border-blue-700 hover:text-blue-700 transition-colors">
-                                <Eye className="w-4 h-4 mr-2" />
-                                <span>{t('common.view_all')}</span>
+                            <Button variant="ghost" size="sm" className="font-bold text-muted-foreground hover:text-blue-600">
+                                {t('common.view_all')} <ArrowUpRight className="w-4 h-4 ml-1" />
                             </Button>
                         </Link>
                     </div>
-                </CardHeader>
-                <CardContent>
-                    {recentActivity.length > 0 ? (
-                        <div className="space-y-3 sm:space-y-4">
-                            {recentActivity.map((activity) => (
-                                <div key={activity.id} className="p-3 sm:p-4 bg-muted/50 rounded-xl border border-border hover:shadow-md transition-shadow">
-                                    <div className="flex items-center justify-between gap-3">
-                                        <div className="flex items-center space-x-3 overflow-hidden">
-                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${activity.type.includes('LOAN') ? 'bg-blue-100 dark:bg-blue-900' :
-                                                activity.type.includes('CONTRIBUTION') ? 'bg-green-100 dark:bg-green-900' :
-                                                    'bg-gray-100 dark:bg-gray-800'
-                                                }`}>
-                                                <div className={`w-2 h-2 rounded-full ${activity.type.includes('LOAN') ? 'bg-blue-700 dark:bg-blue-400' :
-                                                    activity.type.includes('CONTRIBUTION') ? 'bg-green-700 dark:bg-green-400' :
-                                                        'bg-gray-700 dark:bg-gray-400'
-                                                    }`} />
-                                            </div>
-                                            <div className="min-w-0 flex-1">
-                                                <p className="text-body font-black truncate text-foreground">{activity.description}</p>
-                                                <p className="text-xs text-muted-foreground truncate">{activity.groupName}</p>
-                                            </div>
-                                        </div>
-                                        <div className="text-right shrink-0">
-                                            {activity.amount && (
-                                                <p className="text-body font-black text-foreground">{formatCurrency(activity.amount)}</p>
-                                            )}
-                                            <p className="text-xs text-muted-foreground font-bold">
-                                                {new Date(activity.createdAt).toLocaleDateString()}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="text-center py-6 sm:py-8 px-4">
-                            <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                            <h3 className="text-h3 text-foreground mb-2">{t('dashboard.no_activity')}</h3>
-                            <p className="text-body text-muted-foreground mb-4">
-                                {t('dashboard.no_activity_desc')}
-                            </p>
-                            <Link href="/groups/new">
-                                <Button className="w-full sm:w-auto rounded-2xl font-black">
-                                    <Users className="w-4 h-4 mr-2" />
-                                    {t('dashboard.join_create')}
-                                </Button>
-                            </Link>
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
 
-            {/* Analytics Section with Suspense */}
-            <div className="space-y-6">
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
-                    <h2 className="text-display text-foreground">{t('dashboard.analytics')}</h2>
-                    <Button variant="outline" size="sm" className="w-full sm:w-auto rounded-2xl font-black bg-card border-border hover:border-blue-500 hover:text-blue-500 transition-colors">
-                        <BarChart3 className="w-4 h-4 mr-2" />
-                        <span>{t('dashboard.view_reports')}</span>
-                    </Button>
+                    <Card className="bg-card border-none shadow-sm h-full">
+                        <CardContent className="p-0">
+                            {recentActivity.length > 0 ? (
+                                <div className="divide-y divide-border">
+                                    {recentActivity.map((activity, i) => (
+                                        <div key={activity.id} className="p-4 sm:p-6 hover:bg-muted/30 transition-colors flex flex-col sm:flex-row gap-4 sm:items-center group">
+                                            <div className="flex items-center gap-4 flex-1">
+                                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-white/20 ${activity.type.includes('LOAN') ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white' :
+                                                    activity.type.includes('CONTRIBUTION') ? 'bg-gradient-to-br from-green-500 to-emerald-600 text-white' :
+                                                        'bg-gradient-to-br from-gray-500 to-gray-600 text-white'
+                                                    }`}>
+                                                    <span className="font-black text-lg">{activity.groupName.charAt(0)}</span>
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <p className="font-bold text-foreground line-clamp-1 group-hover:text-blue-600 transition-colors">{activity.description}</p>
+                                                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{activity.groupName}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center justify-between sm:justify-end gap-6 sm:w-auto w-full pl-16 sm:pl-0">
+                                                {activity.amount && (
+                                                    <div className="font-black text-foreground whitespace-nowrap bg-muted/50 px-3 py-1 rounded-lg">
+                                                        {formatCurrency(activity.amount)}
+                                                    </div>
+                                                )}
+                                                <div className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+                                                    {new Date(activity.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center py-12">
+                                    <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <Calendar className="w-8 h-8 text-muted-foreground" />
+                                    </div>
+                                    <h3 className="text-lg font-bold text-foreground mb-1">{t('dashboard.no_activity')}</h3>
+                                    <p className="text-muted-foreground mb-4">Time to start building your wealth!</p>
+                                    <Link href="/groups/new">
+                                        <Button className="rounded-xl font-bold bg-blue-900 hover:bg-blue-800 text-white">
+                                            <Users className="w-4 h-4 mr-2" />
+                                            {t('dashboard.join_create')}
+                                        </Button>
+                                    </Link>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
                 </div>
 
-                {charts}
+                {/* Quick Action Tiles */}
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-black text-foreground">{t('dashboard.analytics')}</h2>
+                    <div className="grid grid-cols-1 gap-4">
+                        <Link href="/contributions/new">
+                            <div className="group relative bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-6 text-white shadow-lg overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer">
+                                <div className="absolute top-0 right-0 -mt-8 -mr-8 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-colors"></div>
+                                <div className="relative z-10 flex flex-col h-full justify-between min-h-[140px]">
+                                    <div className="bg-white/20 w-fit p-3 rounded-2xl backdrop-blur-sm">
+                                        <DollarSign className="w-6 h-6 text-white" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-black mb-1">{t('dashboard.make_contribution')}</h3>
+                                        <p className="text-blue-100 text-sm font-medium leading-tight opacity-90">{t('dashboard.make_contribution_desc')}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </Link>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <Link href="/loans/new">
+                                <div className="group bg-card border border-border hover:border-banana/50 hover:bg-banana-soft rounded-3xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer h-full flex flex-col justify-between">
+                                    <div className="mb-4">
+                                        <div className="w-10 h-10 bg-pink-100 dark:bg-pink-900/30 rounded-full flex items-center justify-center text-pink-600 mb-2">
+                                            <Wallet className="w-5 h-5" />
+                                        </div>
+                                        <h3 className="font-bold text-foreground leading-tight">{t('dashboard.apply_loan')}</h3>
+                                    </div>
+                                    <ArrowUpRight className="self-end w-5 h-5 text-muted-foreground group-hover:text-banana-foreground transition-colors" />
+                                </div>
+                            </Link>
+
+                            <Link href="/groups">
+                                <div className="group bg-card border border-border hover:border-blue-500/50 hover:bg-blue-50 dark:hover:bg-blue-900/10 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer h-full flex flex-col justify-between">
+                                    <div className="mb-4">
+                                        <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center text-purple-600 mb-2">
+                                            <Users className="w-5 h-5" />
+                                        </div>
+                                        <h3 className="font-bold text-foreground leading-tight">{t('dashboard.manage_groups')}</h3>
+                                    </div>
+                                    <ArrowUpRight className="self-end w-5 h-5 text-muted-foreground group-hover:text-blue-600 transition-colors" />
+                                </div>
+                            </Link>
+                        </div>
+                    </div>
+
+
+                </div>
             </div>
-
-            {/* Quick Actions */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                <Link href="/contributions/new">
-                    <Card className="group bg-card border border-border shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer">
-                        <CardHeader className="p-4 sm:p-6">
-                            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-xl flex items-center justify-center mb-4 group-hover:bg-blue-700 transition-colors">
-                                <DollarSign className="w-6 h-6 text-blue-700 dark:text-blue-300 group-hover:text-white transition-colors" />
-                            </div>
-                            <CardTitle className="text-h3 text-foreground">{t('dashboard.make_contribution')}</CardTitle>
-                            <CardDescription className="text-body text-muted-foreground mt-2">
-                                {t('dashboard.make_contribution_desc')}
-                            </CardDescription>
-                        </CardHeader>
-                    </Card>
-                </Link>
-
-                <Link href="/loans/new">
-                    <Card className="group bg-card border border-border shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer">
-                        <CardHeader className="p-4 sm:p-6">
-                            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-xl flex items-center justify-center mb-4 group-hover:bg-blue-700 transition-colors">
-                                <TrendingUp className="w-6 h-6 text-blue-700 dark:text-blue-300 group-hover:text-white transition-colors" />
-                            </div>
-                            <CardTitle className="text-h3 text-foreground">{t('dashboard.apply_loan')}</CardTitle>
-                            <CardDescription className="text-body text-muted-foreground mt-2">
-                                {t('dashboard.apply_loan_desc')}
-                            </CardDescription>
-                        </CardHeader>
-                    </Card>
-                </Link>
-
-                <Link href="/groups">
-                    <Card className="group bg-card border border-border shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer sm:col-span-2 lg:col-span-1">
-                        <CardHeader className="p-4 sm:p-6">
-                            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-xl flex items-center justify-center mb-4 group-hover:bg-blue-700 transition-colors">
-                                <Users className="w-6 h-6 text-blue-700 dark:text-blue-300 group-hover:text-white transition-colors" />
-                            </div>
-                            <CardTitle className="text-h3 text-foreground">{t('dashboard.manage_groups')}</CardTitle>
-                            <CardDescription className="text-body text-muted-foreground mt-2">
-                                {t('dashboard.manage_groups_desc')}
-                            </CardDescription>
-                        </CardHeader>
-                    </Card>
-                </Link>
-            </div>
-        </div >
+        </div>
     )
 }

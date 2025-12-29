@@ -34,12 +34,12 @@ const COLORS = [
 ]
 
 const THEME_COLORS = {
-  primary: '#1e3a8a',
-  secondary: '#3b82f6',
-  accent: '#60a5fa',
-  success: '#16a34a',
-  warning: '#ea580c',
-  info: '#2563eb'
+  primary: '#1e3a8a', // Executive Navy
+  secondary: '#F59E0B', // Banana Gold (Amber-500)
+  accent: '#FCD34D', // Banana Light (Amber-300)
+  success: '#10B981', // Emerald
+  warning: '#F97316', // Orange
+  info: '#3B82F6' // Blue
 }
 
 interface ContributionChartProps {
@@ -196,37 +196,31 @@ interface SummaryStatsProps {
 
 export function SummaryStats({ totalContributions, averageMonthly, highestMonth, currentStreak }: SummaryStatsProps) {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-      <Card className="bg-card border border-border shadow-sm">
-        <CardContent className="p-6">
-          <div className="text-h2 font-black text-foreground truncate" title={formatCurrency(totalContributions)}>
-            {formatCurrency(totalContributions)}
-          </div>
-          <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1 truncate">Total Contributions</p>
-        </CardContent>
-      </Card>
-      <Card className="bg-card border border-border shadow-sm">
-        <CardContent className="p-6">
-          <div className="text-h2 font-black text-foreground truncate" title={formatCurrency(averageMonthly)}>
-            {formatCurrency(averageMonthly)}
-          </div>
-          <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1 truncate">Average Monthly</p>
-        </CardContent>
-      </Card>
-      <Card className="bg-card border border-border shadow-sm">
-        <CardContent className="p-6">
-          <div className="text-h2 font-black text-foreground truncate" title={formatCurrency(highestMonth)}>
-            {formatCurrency(highestMonth)}
-          </div>
-          <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1 truncate">Highest Month</p>
-        </CardContent>
-      </Card>
-      <Card className="bg-card border border-border shadow-sm">
-        <CardContent className="p-6">
-          <div className="text-h2 font-black text-foreground truncate">{currentStreak}</div>
-          <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1 truncate">Current Streak</p>
-        </CardContent>
-      </Card>
+    <div className="grid grid-cols-2 gap-3">
+      <div className="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-2xl">
+        <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1">Total</p>
+        <div className="text-lg font-black text-blue-900 dark:text-blue-100 truncate" title={formatCurrency(totalContributions)}>
+          {formatCurrency(totalContributions)}
+        </div>
+      </div>
+      <div className="p-4 bg-purple-50 dark:bg-purple-900/10 rounded-2xl">
+        <p className="text-[10px] font-black text-purple-500 uppercase tracking-widest mb-1">Monthly Avg</p>
+        <div className="text-lg font-black text-purple-900 dark:text-purple-100 truncate" title={formatCurrency(averageMonthly)}>
+          {formatCurrency(averageMonthly)}
+        </div>
+      </div>
+      <div className="p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-2xl">
+        <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">Highest</p>
+        <div className="text-lg font-black text-emerald-900 dark:text-emerald-100 truncate" title={formatCurrency(highestMonth)}>
+          {formatCurrency(highestMonth)}
+        </div>
+      </div>
+      <div className="p-4 bg-banana/10 rounded-2xl">
+        <p className="text-[10px] font-black text-yellow-600 dark:text-yellow-400 uppercase tracking-widest mb-1">Streak</p>
+        <div className="text-lg font-black text-yellow-900 dark:text-yellow-100 truncate">
+          {currentStreak} <span className="text-xs font-bold opacity-60">months</span>
+        </div>
+      </div>
     </div>
   )
 }

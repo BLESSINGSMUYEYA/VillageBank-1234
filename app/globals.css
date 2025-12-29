@@ -66,6 +66,9 @@
   --text-body: 500 0.875rem/1.25rem Geist Sans;
   --text-sm: 400 0.75rem/1rem Geist Sans;
   --text-xs: 500 0.625rem/0.75rem Geist Sans;
+  --color-banana: var(--banana);
+  --color-banana-foreground: var(--banana-foreground);
+  --color-banana-soft: var(--banana-soft);
 }
 
 :root {
@@ -174,12 +177,30 @@
     @apply bg-background text-foreground;
   }
 }
+
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+}
+
+:root {
+  --banana: oklch(0.85 0.16 85);
+  /* Vibrant Banana Gold */
+  --banana-foreground: oklch(0.2 0.05 260);
+  /* Navy text on Gold */
+  --banana-soft: oklch(0.96 0.03 85);
+  /* Soft Gold Background */
+}
+
+.dark {
+  --banana: oklch(0.85 0.16 85);
+  --banana-foreground: oklch(0.15 0.05 260);
+  --banana-soft: oklch(0.25 0.05 85);
+  /* Dark Gold Background */
 }
