@@ -18,6 +18,7 @@ import { formatCurrency } from '@/lib/utils'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { StatsCard } from '@/components/ui/stats-card'
+import { SectionHeader } from '@/components/ui/section-header'
 import { motion } from 'framer-motion'
 import { staggerContainer, fadeIn, itemFadeIn } from '@/lib/motions'
 import { GlassCard } from '@/components/ui/GlassCard'
@@ -65,7 +66,7 @@ export function DashboardContent({
                     }
                     action={
                         <Link href="/contributions/new" className="hidden sm:block">
-                            <Button className="bg-banana hover:bg-yellow-400 text-banana-foreground font-black rounded-xl shadow-lg hover:shadow-yellow-500/20 transition-all hover:scale-105 active:scale-95 group">
+                            <Button variant="banana" className="shadow-yellow-500/20 group">
                                 <DollarSign className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform" />
                                 {t('dashboard.make_contribution')}
                             </Button>
@@ -167,7 +168,7 @@ export function DashboardContent({
                     {/* Quick Access Mobile */}
                     <div className="grid grid-cols-2 gap-3 xl:hidden">
                         <Link href="/contributions/new" className="col-span-2">
-                            <Button className="w-full h-14 text-lg font-black bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-xl shadow-blue-500/20">
+                            <Button variant="banana" size="xl" className="w-full text-lg shadow-blue-500/20">
                                 <DollarSign className="w-6 h-6 mr-2" />
                                 {t('dashboard.make_contribution')}
                             </Button>
@@ -189,10 +190,11 @@ export function DashboardContent({
                 <div className="space-y-6 sm:space-y-8 flex flex-col">
                     {/* Desktop Quick Actions */}
                     <motion.div variants={itemFadeIn} className="hidden xl:grid grid-cols-1 gap-4">
-                        <h3 className="text-xl font-black text-foreground px-1 flex items-center gap-2">
-                            <Zap size={20} className="text-blue-500" />
-                            {t('dashboard.quick_actions')}
-                        </h3>
+                        <SectionHeader
+                            title={t('dashboard.quick_actions')}
+                            icon={Zap}
+                            iconColor="text-blue-500"
+                        />
                         <Link href="/contributions/new">
                             <GlassCard className="p-6 group cursor-pointer border-blue-500/20 hover:border-blue-500/40" gradient={false}>
                                 <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-transparent group-hover:from-blue-600/10 transition-colors" />
@@ -236,10 +238,14 @@ export function DashboardContent({
                     <motion.div variants={itemFadeIn} className="flex-1 min-h-0">
                         <GlassCard className="h-full flex flex-col p-0 overflow-hidden" hover={false}>
                             <div className="p-5 border-b border-border/50 flex items-center justify-between bg-white/30 dark:bg-slate-900/30 backdrop-blur-xl">
-                                <h2 className="text-lg sm:text-xl font-black text-foreground flex items-center gap-2">
-                                    <TrendingUp className="w-5 h-5 text-blue-500" />
-                                    {t('dashboard.recent_activity')}
-                                </h2>
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-blue-500/10 rounded-lg">
+                                        <TrendingUp className="w-5 h-5 text-blue-500" />
+                                    </div>
+                                    <h2 className="text-lg sm:text-xl font-black text-foreground">
+                                        {t('dashboard.recent_activity')}
+                                    </h2>
+                                </div>
                                 <Link href="/groups">
                                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-blue-500/10 hover:text-blue-500">
                                         <ArrowUpRight className="w-4 h-4" />

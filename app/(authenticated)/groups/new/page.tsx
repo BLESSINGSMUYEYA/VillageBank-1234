@@ -12,6 +12,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { ArrowLeft, Plus, Landmark, Globe, Banknote, TrendingUp, ShieldCheck, Loader2, AlertCircle } from 'lucide-react'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { GlassCard } from '@/components/ui/GlassCard'
+import { SectionHeader } from '@/components/ui/section-header'
+import { FormGroup } from '@/components/ui/form-group'
+import { PremiumInput } from '@/components/ui/premium-input'
 import { motion } from 'framer-motion'
 import { fadeIn, staggerContainer, itemFadeIn } from '@/lib/motions'
 import { cn } from '@/lib/utils'
@@ -135,7 +138,7 @@ export default function CreateGroupPage() {
           description="Design the foundation of your community financial collective"
           action={
             <Link href="/groups">
-              <Button variant="outline" className="rounded-xl font-black border-2 border-white/20 hover:bg-white/5">
+              <Button variant="outline" className="rounded-xl font-black border-white/20 hover:bg-white/5">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Registry
               </Button>
@@ -159,31 +162,23 @@ export default function CreateGroupPage() {
                 )}
 
                 <div className="space-y-8">
-                  <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-                    <div className="p-2 bg-blue-500/10 rounded-lg">
-                      <Landmark className="w-5 h-5 text-blue-600" />
-                    </div>
-                    <h3 className="text-xl font-black">Core Identity</h3>
-                  </div>
+                  <SectionHeader
+                    title="Core Identity"
+                    icon={Landmark}
+                  />
 
                   <div className="grid gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="name" className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Group Name</Label>
-                      <Input
+                    <FormGroup label="Group Name" error={fieldErrors.name}>
+                      <PremiumInput
                         id="name"
                         value={formData.name}
                         onChange={(e) => handleInputChange('name', e.target.value)}
                         placeholder="Village Wealth Collective"
-                        className={cn(
-                          "bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-bold px-6 focus:ring-2 focus:ring-blue-500",
-                          fieldErrors.name && "border-red-500 focus:ring-red-500"
-                        )}
+                        error={!!fieldErrors.name}
                       />
-                      {fieldErrors.name && <p className="text-xs text-red-500 font-black ml-1">{fieldErrors.name}</p>}
-                    </div>
+                    </FormGroup>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="description" className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Mission Statement</Label>
+                    <FormGroup label="Mission Statement">
                       <Textarea
                         id="description"
                         value={formData.description}
@@ -191,10 +186,9 @@ export default function CreateGroupPage() {
                         placeholder="Our purpose is to empower members through..."
                         className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl font-bold p-6 focus:ring-2 focus:ring-blue-500 min-h-[140px]"
                       />
-                    </div>
+                    </FormGroup>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="region" className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Regional Anchor</Label>
+                    <FormGroup label="Regional Anchor">
                       <Select value={formData.region} onValueChange={(v) => handleInputChange('region', v)}>
                         <SelectTrigger className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-bold px-6">
                           <SelectValue placeholder="Identify your region" />
@@ -205,55 +199,47 @@ export default function CreateGroupPage() {
                           <SelectItem value="SOUTHERN" className="font-bold">Southern Valley</SelectItem>
                         </SelectContent>
                       </Select>
-                    </div>
+                    </FormGroup>
                   </div>
                 </div>
 
                 <div className="space-y-8 pt-6">
-                  <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-                    <div className="p-2 bg-emerald-500/10 rounded-lg">
-                      <Banknote className="w-5 h-5 text-emerald-600" />
-                    </div>
-                    <h3 className="text-xl font-black">Financial Governance</h3>
-                  </div>
+                  <SectionHeader
+                    title="Financial Governance"
+                    icon={Banknote}
+                    iconColor="text-emerald-600"
+                    iconBg="bg-emerald-500/10"
+                  />
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="space-y-2 md:col-span-2">
-                      <Label className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Target Monthly Contribution (MWK)</Label>
-                      <div className="relative">
-                        <span className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground font-black">MWK</span>
-                        <Input
+                    <div className="md:col-span-2">
+                      <FormGroup label="Target Monthly Contribution (MWK)" error={fieldErrors.monthlyContribution}>
+                        <PremiumInput
                           type="number"
+                          prefix="MWK"
                           value={formData.monthlyContribution}
                           onChange={(e) => handleInputChange('monthlyContribution', e.target.value)}
                           placeholder="10000"
-                          className={cn(
-                            "bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-black pl-20 focus:ring-2 focus:ring-emerald-500",
-                            fieldErrors.monthlyContribution && "border-red-500 focus:ring-red-500"
-                          )}
+                          error={!!fieldErrors.monthlyContribution}
                         />
-                      </div>
+                      </FormGroup>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Loan Multiplier</Label>
-                      <Input
+                    <FormGroup label="Loan Multiplier">
+                      <PremiumInput
                         type="number"
                         value={formData.maxLoanMultiplier}
                         onChange={(e) => handleInputChange('maxLoanMultiplier', e.target.value)}
-                        className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-black px-6 focus:ring-2 focus:ring-emerald-500"
                       />
-                    </div>
+                    </FormGroup>
 
-                    <div className="space-y-2">
-                      <Label className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Interest Rate (%)</Label>
-                      <Input
+                    <FormGroup label="Interest Rate (%)">
+                      <PremiumInput
                         type="number"
                         value={formData.interestRate}
                         onChange={(e) => handleInputChange('interestRate', e.target.value)}
-                        className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-black px-6 focus:ring-2 focus:ring-emerald-500"
                       />
-                    </div>
+                    </FormGroup>
                   </div>
                 </div>
 
@@ -261,7 +247,9 @@ export default function CreateGroupPage() {
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="h-16 px-12 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-2xl shadow-blue-500/40 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+                    variant="banana"
+                    size="xl"
+                    className="px-12 shadow-blue-500/40"
                   >
                     {loading ? (
                       <>

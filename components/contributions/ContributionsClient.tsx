@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Plus, Calendar, DollarSign, Search, Filter, Wallet, AlertCircle, Users, CheckCircle2, ArrowRight, History } from 'lucide-react'
+import { Plus, Calendar, Search, Filter, Wallet, AlertCircle, ArrowRight, History } from 'lucide-react'
 import Link from 'next/link'
-import { formatCurrency, cn } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { StatsCard } from '@/components/ui/stats-card'
@@ -65,7 +65,7 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                     action={
                         userGroups.length > 0 && (
                             <Link href="/contributions/new">
-                                <Button className="bg-banana hover:bg-yellow-400 text-banana-foreground font-black rounded-xl shadow-lg hover:shadow-yellow-500/20 transition-all hover:scale-105 active:scale-95 px-8 h-14 group">
+                                <Button variant="banana" size="xl" className="shadow-yellow-500/20 px-8 group">
                                     <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" />
                                     {t('contributions.make_contribution')}
                                 </Button>
@@ -223,14 +223,13 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                                                         </span>
                                                     </TableCell>
                                                     <TableCell className="text-right pr-8">
-                                                        <Badge className={cn(
-                                                            "rounded-[0.6rem] font-black border-none px-3 py-1.5 text-[10px] tracking-widest uppercase shadow-sm",
+                                                        <Badge variant={
                                                             contribution.status === 'COMPLETED'
-                                                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                                                                ? 'success'
                                                                 : contribution.status === 'PENDING'
-                                                                    ? 'bg-orange-500/10 text-orange-600 dark:text-orange-400'
-                                                                    : 'bg-red-500/10 text-red-600 dark:text-red-400'
-                                                        )}>
+                                                                    ? 'warning'
+                                                                    : 'error'
+                                                        }>
                                                             {contribution.status}
                                                         </Badge>
                                                     </TableCell>
@@ -255,7 +254,7 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                                     </div>
                                     {userGroups.length > 0 ? (
                                         <Link href="/contributions/new">
-                                            <Button className="rounded-2xl font-black bg-banana hover:bg-yellow-400 text-banana-foreground px-12 py-7 h-auto shadow-2xl shadow-yellow-500/20 hover:scale-105 active:scale-95 transition-all text-lg group">
+                                            <Button variant="banana" size="xl" className="shadow-yellow-500/20 px-12 group h-auto py-7 text-lg">
                                                 <Plus className="w-6 h-6 mr-3 group-hover:rotate-90 transition-transform" />
                                                 {t('contributions.first_contribution')}
                                             </Button>

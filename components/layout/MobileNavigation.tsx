@@ -22,12 +22,10 @@ import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
-interface MobileNavigationProps {
-  unreadNotifications?: number
-}
+// Interface for MobileNavigationProps removed as unreadNotifications was unused
 
-export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationProps) {
-  const { user, isAuthenticated, logout } = useAuth()
+export function MobileNavigation() {
+  const { user, logout } = useAuth()
   const pathname = usePathname()
   const { t } = useLanguage()
 
@@ -39,10 +37,10 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
     { name: t('common.loans'), href: '/loans', icon: CreditCard },
   ]
 
-  const adminNavigation: any[] = []
+  const adminNavigation = []
 
   // Logic to determine which links to show
-  let displayedNavigation = memberNavigation
+  const displayedNavigation = memberNavigation
 
   if (user?.role === 'REGIONAL_ADMIN') {
     adminNavigation.push(

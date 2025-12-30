@@ -4,12 +4,19 @@ import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { ArrowLeft, DollarSign, CheckCircle, Upload, ScanLine, Loader2 } from 'lucide-react'
+import { ArrowLeft, DollarSign, CheckCircle, Upload, ScanLine, Loader2, Info, Shield, TrendingUp, Zap } from 'lucide-react'
 import { CldUploadWidget } from 'next-cloudinary'
+import { PageHeader } from '@/components/layout/PageHeader'
+import { SectionHeader } from '@/components/ui/section-header'
+import { FormGroup } from '@/components/ui/form-group'
+import { PremiumInput } from '@/components/ui/premium-input'
+import { GlassCard } from '@/components/ui/GlassCard'
+import { motion, AnimatePresence } from 'framer-motion'
+import { fadeIn, itemFadeIn, staggerContainer } from '@/lib/motions'
+import { cn } from '@/lib/utils'
 
 const cloudinaryConfig = {
   cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -318,287 +325,333 @@ function NewContributionPageContent() {
   const isOverpaying = amountToPay > totalDue && totalDue > 0
 
   return (
-    <div className="min-h-screen bg-muted/30 py-8">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <Link href="/contributions" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Contributions
-          </Link>
-          <h1 className="text-3xl font-bold text-foreground">Make Contribution</h1>
-          <p className="text-muted-foreground">Record your monthly contribution</p>
-        </div>
+    <motion.div
+      variants={staggerContainer}
+      initial="initial"
+      animate="animate"
+      className="space-y-8 pb-20"
+    >
+      <motion.div variants={fadeIn}>
+        <PageHeader
+          title="Make Contribution"
+          description="Record your monthly stake in the collective wealth"
+          action={
+            <Link href="/contributions">
+              <Button variant="outline" className="rounded-xl font-black border-white/20 hover:bg-white/5">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Pulse
+              </Button>
+            </Link>
+          }
+        />
+      </motion.div>
 
-        <Card className="bg-card border-border">
-          <CardHeader>
-            <CardTitle className="text-foreground">Contribution Details</CardTitle>
-            <CardDescription className="text-muted-foreground">
-              Fill in the information for your contribution
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        <div className="xl:col-span-2 space-y-8">
+          <motion.div variants={itemFadeIn}>
+            <GlassCard className="p-8" hover={false}>
+              <form onSubmit={handleSubmit} className="space-y-10">
+                {error && (
+                  <Alert variant="destructive" className="rounded-2xl">
+                    <AlertDescription className="font-bold">{error}</AlertDescription>
+                  </Alert>
+                )}
 
-              {success && (
-                <Alert className="border-green-200 bg-green-50 dark:bg-green-900/20 dark:border-green-800/30">
-                  <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
-                  <AlertDescription className="text-green-800 dark:text-green-300">{success}</AlertDescription>
-                </Alert>
-              )}
+                {success && (
+                  <Alert className="border-green-200 bg-green-50 dark:bg-green-900/20 dark:border-green-800/30 rounded-2xl">
+                    <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+                    <AlertDescription className="text-green-800 dark:text-green-300 font-bold">{success}</AlertDescription>
+                  </Alert>
+                )}
 
-              <div className="space-y-4 border-b pb-6">
-                <Label>Receipt (Optional)</Label>
-                <div className="w-full">
-                  {cloudinaryConfig.cloudName ? (
-                    <CldUploadWidget
-                      uploadPreset={cloudinaryConfig.uploadPreset}
-                      options={{
-                        maxFiles: 1,
-                        resourceType: 'image',
-                        clientAllowedFormats: ['png', 'jpg', 'jpeg'],
-                        maxFileSize: 5000000, // 5MB
-                        folder: 'village-banking/receipts',
-                      }}
-                      onSuccess={(result: any) => {
-                        if (result?.info?.secure_url) {
-                          const url = result.info.secure_url
-                          setReceiptUrl(url)
-                          setShouldScan(true)
-                        } else {
-                          console.error('Upload result is invalid:', result)
-                          setError('Upload failed. Please try again.')
-                        }
-                      }}
-                      onError={(error: any) => {
-                        console.error('Cloudinary upload error detailed:', {
-                          error,
-                          message: error?.statusText || error?.message || 'Unknown error'
-                        })
-                        setError(`Upload failed: ${error?.statusText || 'Check console for details'}. Please ensure your upload preset is "Unsigned".`)
-                      }}
-                    >
-                      {({ open }) => (
-                        <div className="flex flex-col items-center justify-center">
-                          {receiptUrl ? (
-                            <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
-                              <img src={receiptUrl} alt="Receipt preview" className="w-full h-full object-contain" />
-                              <div className="absolute top-2 right-2 flex space-x-2">
-                                <Button
-                                  type="button"
-                                  variant="secondary"
-                                  size="sm"
-                                  onClick={() => setReceiptUrl('')}
-                                >
-                                  Change
-                                </Button>
+                <div className="space-y-8">
+                  <SectionHeader
+                    title="Financial Source"
+                    icon={DollarSign}
+                  />
+
+                  <div className="grid gap-6">
+                    <FormGroup label="Target Group *">
+                      <Select
+                        value={selectedGroup?.id || ''}
+                        onValueChange={handleGroupChange}
+                      >
+                        <SelectTrigger className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-bold px-6">
+                          <SelectValue placeholder="Select a collective" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-2xl border-white/10 backdrop-blur-3xl">
+                          {groups.map((group) => (
+                            <SelectItem key={group.id} value={group.id} className="font-bold">
+                              {group.name} - {group.region}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormGroup>
+
+                    {selectedGroup && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        className="bg-blue-500/5 dark:bg-blue-500/10 p-6 rounded-2xl border border-blue-500/10 space-y-4"
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <Info className="w-4 h-4 text-blue-500" />
+                          <h4 className="text-sm font-black uppercase tracking-wider text-blue-900 dark:text-blue-100">Live Member Standings</h4>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm font-medium">
+                          <div className="p-3 bg-white/40 dark:bg-black/20 rounded-xl">
+                            <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mb-1">Monthly Plan</p>
+                            <p className="text-lg font-black text-foreground">MWK {selectedGroup?.monthlyContribution.toLocaleString()}</p>
+                          </div>
+                          {memberDetails && (
+                            <>
+                              <div className="p-3 bg-white/40 dark:bg-black/20 rounded-xl">
+                                <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mb-1">Penalties Due</p>
+                                <p className={cn("text-lg font-black", memberDetails.unpaidPenalties > 0 ? "text-red-500" : "text-emerald-500")}>
+                                  MWK {memberDetails.unpaidPenalties.toLocaleString()}
+                                </p>
                               </div>
-                            </div>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                if (open) {
-                                  open();
-                                } else {
-                                  console.error('Cloudinary upload widget is not ready');
-                                  setError('Upload widget is still loading. Please try again in a moment.');
-                                }
-                              }}
-                              className="w-full flex flex-col items-center space-y-2 text-gray-500 py-10"
-                            >
-                              <Upload className="w-8 h-8" />
-                              <span className="text-sm font-medium">Upload receipt or screenshot</span>
-                              <span className="text-xs">Supports PNG, JPG, screenshots & photos of other screens</span>
-                            </button>
+                              <div className="p-3 bg-white/40 dark:bg-black/20 rounded-xl sm:col-span-2 flex justify-between items-center">
+                                <div>
+                                  <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mb-1">Total Effective Liability</p>
+                                  <p className="text-2xl font-black text-blue-600 dark:text-banana">MWK {totalDue.toLocaleString()}</p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mb-1">Current Balance</p>
+                                  <p className={cn("font-bold", memberDetails.balance < 0 ? "text-red-500" : "text-emerald-500")}>
+                                    MWK {memberDetails.balance.toLocaleString()}
+                                  </p>
+                                </div>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+
+                    <FormGroup label="Investment Amount (MWK) *">
+                      <PremiumInput
+                        id="amount"
+                        name="amount"
+                        type="number"
+                        prefix="MWK"
+                        placeholder="Enter amount"
+                        value={formData.amount}
+                        onChange={handleChange}
+                      />
+                      {selectedGroup && (
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 px-1">
+                          <p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+                            REMAINING AFTER: <span className={cn(remainingAfterPayment > 0 ? "text-orange-500" : "text-emerald-500")}>MWK {remainingAfterPayment.toLocaleString()}</span>
+                          </p>
+                          {isOverpaying && (
+                            <p className="text-[10px] font-black uppercase tracking-wider text-emerald-500 flex items-center gap-1">
+                              <CheckCircle className="w-3 h-3" /> CREDITED: MWK {(amountToPay - totalDue).toLocaleString()}
+                            </p>
                           )}
                         </div>
                       )}
-                    </CldUploadWidget>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-10 text-muted-foreground">
-                      <Upload className="w-8 h-8 mb-2" />
-                      <p className="text-sm font-medium">Upload temporarily unavailable</p>
-                      <p className="text-xs">Please fill the form manually</p>
-                    </div>
-                  )}
+                    </FormGroup>
+                  </div>
+                </div>
 
-                  {isScanning && (
-                    <div className="mt-4 overflow-hidden relative p-6 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-900/30 shadow-inner">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center space-x-3">
-                          <div className="p-2 bg-blue-600 rounded-lg">
-                            <ScanLine className="w-5 h-5 text-white animate-pulse" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-bold text-blue-900 dark:text-blue-100 leading-none">Scanning Receipt</p>
-                            <p className="text-[10px] text-blue-600 dark:text-blue-400 font-medium uppercase tracking-wider mt-1">AI analyzing details</p>
-                          </div>
+                <div className="space-y-8">
+                  <SectionHeader
+                    title="Transmission Verification"
+                    icon={Upload}
+                  />
+
+                  <div className="grid gap-6">
+                    <FormGroup label="Payment Architecture *">
+                      <Select
+                        value={formData.paymentMethod}
+                        onValueChange={(v) => setFormData(prev => ({ ...prev, paymentMethod: v }))}
+                      >
+                        <SelectTrigger className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-bold px-6">
+                          <SelectValue placeholder="Identify transmission channel" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-2xl border-white/10 backdrop-blur-3xl">
+                          <SelectItem value="AIRTEL_MONEY" className="font-bold">Airtel Money</SelectItem>
+                          <SelectItem value="MPAMBA" className="font-bold">Mpamba</SelectItem>
+                          <SelectItem value="BANK_CARD" className="font-bold">Bank Card</SelectItem>
+                          <SelectItem value="CASH" className="font-bold">Cash</SelectItem>
+                          <SelectItem value="OTHER" className="font-bold">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormGroup>
+
+                    <FormGroup label="System Transaction Reference">
+                      <PremiumInput
+                        id="transactionRef"
+                        name="transactionRef"
+                        placeholder="Enter network transaction hash"
+                        value={formData.transactionRef}
+                        onChange={handleChange}
+                      />
+                    </FormGroup>
+
+                    <FormGroup label="Receipt Artifact (Optional)">
+                      {cloudinaryConfig.cloudName ? (
+                        <CldUploadWidget
+                          uploadPreset={cloudinaryConfig.uploadPreset}
+                          options={{
+                            maxFiles: 1,
+                            resourceType: 'image',
+                            clientAllowedFormats: ['png', 'jpg', 'jpeg'],
+                            maxFileSize: 5000000,
+                            folder: 'village-banking/receipts',
+                          }}
+                          onSuccess={(result: any) => {
+                            if (result?.info?.secure_url) {
+                              setReceiptUrl(result.info.secure_url)
+                              setShouldScan(true)
+                            }
+                          }}
+                        >
+                          {({ open }) => (
+                            <div className="w-full">
+                              {receiptUrl ? (
+                                <div className="relative w-full aspect-video rounded-2xl overflow-hidden border-2 border-dashed border-blue-500/20 bg-black/5">
+                                  <img src={receiptUrl} alt="Receipt preview" className="w-full h-full object-contain" />
+                                  <div className="absolute top-4 right-4">
+                                    <Button
+                                      type="button"
+                                      variant="secondary"
+                                      size="sm"
+                                      onClick={() => setReceiptUrl('')}
+                                      className="rounded-xl font-bold backdrop-blur-md bg-white/50"
+                                    >
+                                      Re-upload
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => open?.()}
+                                  className="w-full h-40 flex flex-col items-center justify-center space-y-4 rounded-2xl border-2 border-dashed border-white/20 hover:border-blue-500/40 hover:bg-blue-500/5 transition-all group"
+                                >
+                                  <div className="p-3 bg-white/5 dark:bg-black/20 rounded-xl group-hover:scale-110 transition-transform">
+                                    <Upload className="w-6 h-6 text-muted-foreground group-hover:text-blue-500" />
+                                  </div>
+                                  <div className="text-center">
+                                    <p className="text-sm font-black text-foreground">Deploy Receipt Artifact</p>
+                                    <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mt-1">PNG, JPG, Screen Grabs</p>
+                                  </div>
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </CldUploadWidget>
+                      ) : (
+                        <div className="h-40 rounded-2xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center text-muted-foreground opacity-50">
+                          <Upload className="w-8 h-8 mb-2" />
+                          <p className="text-xs font-black uppercase tracking-widest">Protocol Offline</p>
                         </div>
-                        <Loader2 className="w-5 h-5 text-blue-600 dark:text-blue-400 animate-spin" />
-                      </div>
+                      )}
 
-                      <div className="h-1.5 w-full bg-blue-100 dark:bg-blue-900 rounded-full overflow-hidden">
-                        <div className="h-full bg-blue-600 dark:bg-blue-400 rounded-full animate-[progress_2s_ease-in-out_infinite]" style={{ width: '40%' }}></div>
-                      </div>
-
-                      <style jsx>{`
-                        @keyframes progress {
-                          0% { transform: translateX(-100%); width: 30%; }
-                          50% { width: 60%; }
-                          100% { transform: translateX(400%); width: 30%; }
-                        }
-                      `}</style>
-                    </div>
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Flexible scanning: screenshots and photos of other screens are supported.
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="groupId">Select Group *</Label>
-                <select
-                  id="groupId"
-                  name="groupId"
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  value={selectedGroup?.id || ''}
-                  onChange={(e) => handleGroupChange(e.target.value)}
-                  required
-                >
-                  <option value="" className="bg-background text-foreground">Select a group</option>
-                  {groups.map((group) => (
-                    <option key={group.id} value={group.id} className="bg-background text-foreground">
-                      {group.name} - {group.region} (MWK {group.monthlyContribution.toLocaleString()})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {selectedGroup && (
-                <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-lg border border-blue-100 dark:border-blue-900/30">
-                  <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-2">Group Information</h3>
-                  <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-                    <p><strong>Monthly Contribution:</strong> MWK {selectedGroup?.monthlyContribution.toLocaleString()}</p>
-                    <p><strong>Region:</strong> {selectedGroup?.region}</p>
-                    {memberDetails && (
-                      <div className="mt-2 pt-2 border-t border-blue-200 dark:border-blue-800/30">
-                        <p className="flex justify-between">
-                          <span>Outstanding Penalties:</span>
-                          <span className={memberDetails.unpaidPenalties > 0 ? "font-bold text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"}>
-                            MWK {memberDetails.unpaidPenalties.toLocaleString()}
-                          </span>
-                        </p>
-                        <p className="flex justify-between">
-                          <span>Current Balance:</span>
-                          <span className={memberDetails.balance < 0 ? "font-bold text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"}>
-                            MWK {memberDetails.balance.toLocaleString()}
-                            {memberDetails.balance < 0 ? " (Owed)" : " (Credit)"}
-                          </span>
-                        </p>
-                        <p className="flex justify-between pt-1 border-t border-blue-100 dark:border-blue-800/30 mt-1 font-semibold text-blue-900 dark:text-blue-100">
-                          <span>Total Due Now:</span>
-                          <span>MWK {totalDue.toLocaleString()}</span>
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                  <div className="mt-3 p-2 bg-blue-100 dark:bg-blue-900/30 rounded">
-                    <p className="text-xs text-blue-800 dark:text-blue-200">
-                      <strong>Note:</strong> You can pay any amount. Contributions first pay off penalties, then the monthly amount. Remaining funds are added as credit.
-                    </p>
+                      <AnimatePresence>
+                        {isScanning && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="mt-4 p-6 bg-blue-500/5 rounded-2xl border border-blue-500/10 overflow-hidden relative"
+                          >
+                            <div className="flex items-center justify-between relative z-10">
+                              <div className="flex items-center gap-4">
+                                <div className="p-3 bg-blue-600 rounded-xl shadow-lg shadow-blue-500/20">
+                                  <ScanLine className="w-6 h-6 text-white animate-pulse" />
+                                </div>
+                                <div>
+                                  <p className="text-sm font-black text-foreground">AI Neural Analysis</p>
+                                  <p className="text-[10px] font-black uppercase tracking-widest text-blue-500">Extracting Ledger Data</p>
+                                </div>
+                              </div>
+                              <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
+                            </div>
+                            <div className="mt-4 h-1 bg-white/10 rounded-full overflow-hidden">
+                              <motion.div
+                                className="h-full bg-blue-600"
+                                animate={{ x: ['-100%', '100%'] }}
+                                transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+                                style={{ width: '40%' }}
+                              />
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </FormGroup>
                   </div>
                 </div>
-              )}
 
-              <div className="space-y-2">
-                <Label htmlFor="amount">Amount (MWK) *</Label>
-                <Input
-                  id="amount"
-                  name="amount"
-                  type="number"
-                  step="0.01"
-                  placeholder="Enter amount"
-                  value={formData.amount}
-                  onChange={handleChange}
-                  required
-                />
-                {selectedGroup && (
-                  <div className="space-y-1 mt-2">
-                    <p className="text-sm text-muted-foreground flex justify-between">
-                      <span>Expected montly:</span>
-                      <span>MWK {selectedGroup.monthlyContribution.toLocaleString()}</span>
-                    </p>
-                    <p className="text-sm font-medium flex justify-between">
-                      <span>Remaining after this payment:</span>
-                      <span className={remainingAfterPayment > 0 ? "text-orange-600 dark:text-orange-400" : "text-green-600 dark:text-green-400"}>
-                        MWK {remainingAfterPayment.toLocaleString()}
-                      </span>
-                    </p>
-                    {isOverpaying && (
-                      <p className="text-xs text-green-600 dark:text-green-400 font-medium">
-                        You are overpaying! MWK {(amountToPay - totalDue).toLocaleString()} will be added as credit.
-                      </p>
+                <div className="flex justify-end pt-10">
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    variant="banana"
+                    size="xl"
+                    className="px-12 shadow-blue-500/40"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin mr-3" />
+                        Validating Stake...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle className="w-5 h-5 mr-3" />
+                        Formalize Contribution
+                      </>
                     )}
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="paymentMethod">Payment Method *</Label>
-                <select
-                  id="paymentMethod"
-                  name="paymentMethod"
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  value={formData.paymentMethod}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="" className="bg-background text-foreground">Select payment method</option>
-                  <option value="AIRTEL_MONEY" className="bg-background text-foreground">Airtel Money</option>
-                  <option value="MPAMBA" className="bg-background text-foreground">Mpamba</option>
-                  <option value="BANK_CARD" className="bg-background text-foreground">Bank Card</option>
-                  <option value="CASH" className="bg-background text-foreground">Cash</option>
-                  <option value="OTHER" className="bg-background text-foreground">Other</option>
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="transactionRef">Transaction Reference</Label>
-                <Input
-                  id="transactionRef"
-                  name="transactionRef"
-                  type="text"
-                  placeholder="Enter transaction ID (optional)"
-                  value={formData.transactionRef}
-                  onChange={handleChange}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Reference number from your payment confirmation
-                </p>
-              </div>
-
-              <div className="flex justify-end space-x-4 pt-4">
-                <Link href="/contributions">
-                  <Button variant="outline" type="button" className="border-border text-foreground hover:bg-muted">
-                    Cancel
                   </Button>
-                </Link>
-                <Button type="submit" disabled={loading} className="bg-blue-900 hover:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 text-white">
-                  {loading ? 'Creating...' : 'Create Contribution'}
-                </Button>
+                </div>
+              </form>
+            </GlassCard>
+          </motion.div>
+        </div>
+
+        <div className="space-y-8">
+          <motion.div variants={itemFadeIn}>
+            <GlassCard className="p-8 space-y-6" hover={false}>
+              <h4 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground border-b border-white/10 pb-4">Protocol Insights</h4>
+              <div className="space-y-6">
+                <div className="flex gap-4">
+                  <div className="p-2 bg-blue-500/10 rounded-lg h-fit">
+                    <Shield className="w-4 h-4 text-blue-500" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="font-black text-xs uppercase tracking-wider">Priority Settlement</p>
+                    <p className="text-[11px] text-muted-foreground font-medium leading-relaxed">Contributions automatically settle active penalties before applying to your monthly target.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="p-2 bg-emerald-500/10 rounded-lg h-fit">
+                    <TrendingUp className="w-4 h-4 text-emerald-500" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="font-black text-xs uppercase tracking-wider">Stake Accrual</p>
+                    <p className="text-[11px] text-muted-foreground font-medium leading-relaxed">Any amount exceeding your current liability will be added to your member balance as future credit.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="p-2 bg-purple-500/10 rounded-lg h-fit">
+                    <Zap className="w-4 h-4 text-purple-500" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="font-black text-xs uppercase tracking-wider">AI Acceleration</p>
+                    <p className="text-[11px] text-muted-foreground font-medium leading-relaxed">Uploading a receipt artifact allows our OCR engine to auto-populate critical financial fields.</p>
+                  </div>
+                </div>
               </div>
-            </form>
-          </CardContent>
-        </Card>
+            </GlassCard>
+          </motion.div>
+        </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 

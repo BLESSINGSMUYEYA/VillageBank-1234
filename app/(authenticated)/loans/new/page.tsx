@@ -4,13 +4,19 @@ import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { ArrowLeft, CreditCard, TrendingUp, AlertCircle, CheckCircle2, DollarSign } from 'lucide-react'
-import { formatCurrency } from '@/lib/utils'
+import { ArrowLeft, CreditCard, TrendingUp, AlertCircle, CheckCircle2, DollarSign, Loader2, Info } from 'lucide-react'
+import { formatCurrency, cn } from '@/lib/utils'
 import { useLanguage } from '@/components/providers/LanguageProvider'
+import { PageHeader } from '@/components/layout/PageHeader'
+import { SectionHeader } from '@/components/ui/section-header'
+import { FormGroup } from '@/components/ui/form-group'
+import { PremiumInput } from '@/components/ui/premium-input'
+import { GlassCard } from '@/components/ui/GlassCard'
+import { motion, AnimatePresence } from 'framer-motion'
+import { fadeIn, itemFadeIn, staggerContainer } from '@/lib/motions'
 
 interface Group {
   id: string
@@ -196,38 +202,46 @@ function NewLoanPageContent() {
   }
 
   const renderGroupSelection = () => (
-    <div className="space-y-4">
-      <div>
-        <Label htmlFor="group" className="text-sm font-bold text-foreground">Select Group</Label>
+    <div className="space-y-6">
+      <SectionHeader title="Access Point" icon={CreditCard} />
+      <FormGroup label="Target Group *">
         {selectedGroup ? (
-          <div className="mt-2 p-4 border rounded-2xl bg-muted/30 border-banana/20 hover:border-banana/40 transition-colors flex justify-between items-center group">
+          <div className="p-5 border-2 border-blue-500/20 rounded-2xl bg-blue-500/5 backdrop-blur-sm flex justify-between items-center group animate-in fade-in slide-in-from-top-2">
             <div>
-              <p className="font-bold text-foreground text-lg">{selectedGroup.name}</p>
-              <div className="flex gap-3 mt-1 text-xs font-medium text-muted-foreground">
+              <p className="font-black text-foreground text-xl">{selectedGroup.name}</p>
+              <div className="flex gap-3 mt-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-70">
                 <span>{selectedGroup.region}</span>
-                <span>•</span>
+                <span className="text-blue-500">•</span>
                 <span>{formatCurrency(selectedGroup.monthlyContribution)} / mo</span>
               </div>
             </div>
-            <Button variant="ghost" size="sm" onClick={() => { setSelectedGroup(null); setEligibility(null); }} className="text-muted-foreground hover:text-destructive">Change</Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => { setSelectedGroup(null); setEligibility(null); }}
+              className="text-muted-foreground hover:text-destructive font-black uppercase text-[10px] tracking-widest"
+            >
+              Transfer Group
+            </Button>
           </div>
         ) : (
-          <select
-            id="group"
-            name="group"
-            className="mt-2 block w-full rounded-xl border-input bg-background text-foreground shadow-sm focus:border-banana focus:ring-banana px-4 py-3 text-base transition-all"
-            value={(selectedGroup as Group | null)?.id || ''}
-            onChange={(e) => handleGroupChange(e.target.value)}
+          <Select
+            value={selectedGroup?.id || ''}
+            onValueChange={handleGroupChange}
           >
-            <option value="" className="bg-background text-foreground">Select a group...</option>
-            {groups.map((group) => (
-              <option key={group.id} value={group.id} className="bg-background text-foreground">
-                {group.name} ({group.region})
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-bold px-6">
+              <SelectValue placeholder="Select a collective" />
+            </SelectTrigger>
+            <SelectContent className="rounded-2xl border-white/10 backdrop-blur-3xl">
+              {groups.map((group) => (
+                <SelectItem key={group.id} value={group.id} className="font-bold">
+                  {group.name} ({group.region})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         )}
-      </div>
+      </FormGroup>
     </div>
   )
 
@@ -235,35 +249,54 @@ function NewLoanPageContent() {
     if (!eligibility) return null;
 
     return (
-      <Card className={`mt-6 border shadow-sm overflow-hidden ${eligibility.eligible ? 'bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-200 dark:border-green-900' : 'bg-red-50 dark:bg-red-950/20 border-red-200'}`}>
-        <CardContent className="p-5">
-          <div className="flex items-start gap-4">
-            <div className={`p-2 rounded-full ${eligibility.eligible ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' : 'bg-red-100 text-red-700'}`}>
-              {eligibility.eligible ? <CheckCircle2 className="w-6 h-6" /> : <AlertCircle className="w-6 h-6" />}
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className={cn(
+            "mt-8 p-6 rounded-2xl border-2 flex gap-5",
+            eligibility.eligible
+              ? "bg-emerald-500/5 border-emerald-500/10 text-emerald-900 dark:text-emerald-100"
+              : "bg-red-500/5 border-red-500/10 text-red-900 dark:text-red-100"
+          )}
+        >
+          <div className={cn(
+            "p-4 rounded-2xl h-fit shadow-lg",
+            eligibility.eligible ? "bg-emerald-500 shadow-emerald-500/20" : "bg-red-500 shadow-red-500/20"
+          )}>
+            {eligibility.eligible ? <CheckCircle2 className="w-8 h-8 text-white" /> : <AlertCircle className="w-8 h-8 text-white" />}
+          </div>
+          <div className="flex-1 space-y-4">
+            <div>
+              <h3 className="text-2xl font-black tracking-tight">{eligibility.eligible ? 'Node Eligible' : 'Access Restricted'}</h3>
+              <p className="text-[10px] uppercase font-black tracking-widest opacity-60 mt-1">
+                {eligibility.eligible ? 'Credit ceiling optimized' : 'Protocol requirements not met'}
+              </p>
             </div>
-            <div className="flex-1">
-              <h3 className={`text-lg font-black mb-1 ${eligibility.eligible ? 'text-green-800 dark:text-green-300' : 'text-red-800 dark:text-red-300'}`}>
-                {eligibility.eligible ? 'You are Eligible!' : 'Not Eligible Yet'}
-              </h3>
 
-              {eligibility.eligible ? (
-                <div className="space-y-3 mt-3">
-                  <div className="p-3 bg-white/60 dark:bg-black/20 rounded-xl border border-green-100 dark:border-green-900/50">
-                    <p className="text-sm text-muted-foreground font-medium mb-1">Maximum Loan Limit</p>
-                    <p className="text-2xl font-black text-green-700 dark:text-green-400">{formatCurrency(eligibility.maxAmount || 0)}</p>
+            {eligibility.eligible ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-4 bg-white/40 dark:bg-black/20 rounded-2xl border border-emerald-500/10">
+                  <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1 text-muted-foreground">Credit Ceiling</p>
+                  <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{formatCurrency(eligibility.maxAmount || 0)}</p>
+                </div>
+                <div className="grid grid-cols-1 gap-2 p-1">
+                  <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest opacity-70">
+                    <span>History Staking</span>
+                    <span className="text-foreground">{eligibility.contributionsCount} Cycles</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 text-xs font-medium text-muted-foreground">
-                    <span>Contributions: <span className="text-foreground font-bold">{eligibility.contributionsCount} months</span></span>
-                    <span>Total Saved: <span className="text-foreground font-bold">{formatCurrency(eligibility.totalContributions || 0)}</span></span>
+                  <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest opacity-70">
+                    <span>Ledger Total</span>
+                    <span className="text-foreground">{formatCurrency(eligibility.totalContributions || 0)}</span>
                   </div>
                 </div>
-              ) : (
-                <p className="text-sm font-medium text-red-700 dark:text-red-400 mt-1">{eligibility.reason || 'You are not eligible for a loan at this time.'}</p>
-              )}
-            </div>
+              </div>
+            ) : (
+              <p className="p-4 bg-white/40 dark:bg-black/20 rounded-2xl border border-red-500/10 text-sm font-bold">{eligibility.reason}</p>
+            )}
           </div>
-        </CardContent>
-      </Card>
+        </motion.div>
+      </AnimatePresence>
     );
   };
 
@@ -271,51 +304,42 @@ function NewLoanPageContent() {
     if (!selectedGroup || !eligibility?.eligible) return null
 
     return (
-      <div className="space-y-6 mt-8 animate-fade-in">
-        <div className="bg-blue-50 dark:bg-blue-900/10 p-5 rounded-2xl border border-blue-100 dark:border-blue-800/30">
-          <h3 className="font-bold text-blue-900 dark:text-blue-100 mb-3 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4" /> Group Terms
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-            <div className="bg-white/50 dark:bg-black/20 p-3 rounded-xl">
-              <span className="block text-muted-foreground text-xs uppercase tracking-wider font-bold mb-1">Interest</span>
-              <span className="font-black text-blue-700 dark:text-blue-300 text-lg">{selectedGroup.interestRate}% <span className="text-xs font-medium text-muted-foreground">/ yr</span></span>
+      <div className="space-y-10 mt-10 animate-in fade-in slide-in-from-top-4 duration-500">
+        <div className="space-y-6">
+          <SectionHeader title="Protocol Calibration" icon={TrendingUp} />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="bg-white/40 dark:bg-black/20 p-4 rounded-2xl border border-white/20">
+              <span className="block text-muted-foreground text-[10px] uppercase tracking-widest font-black mb-2">Yield Interest</span>
+              <span className="font-black text-blue-600 dark:text-banana text-2xl">{selectedGroup.interestRate}% <span className="text-xs opacity-50 font-bold">/ APR</span></span>
             </div>
-            <div className="bg-white/50 dark:bg-black/20 p-3 rounded-xl">
-              <span className="block text-muted-foreground text-xs uppercase tracking-wider font-bold mb-1">Multiplier</span>
-              <span className="font-black text-blue-700 dark:text-blue-300 text-lg">{selectedGroup.maxLoanMultiplier}x</span>
+            <div className="bg-white/40 dark:bg-black/20 p-4 rounded-2xl border border-white/20">
+              <span className="block text-muted-foreground text-[10px] uppercase tracking-widest font-black mb-2">Collateral Mult</span>
+              <span className="font-black text-blue-600 dark:text-banana text-2xl">{selectedGroup.maxLoanMultiplier}x</span>
             </div>
-            <div className="bg-white/50 dark:bg-black/20 p-3 rounded-xl">
-              <span className="block text-muted-foreground text-xs uppercase tracking-wider font-bold mb-1">Monthly</span>
-              <span className="font-black text-blue-700 dark:text-blue-300 text-lg">{formatCurrency(selectedGroup.monthlyContribution)}</span>
+            <div className="bg-white/40 dark:bg-black/20 p-4 rounded-2xl border border-white/20">
+              <span className="block text-muted-foreground text-[10px] uppercase tracking-widest font-black mb-2">Plan Target</span>
+              <span className="font-black text-blue-600 dark:text-banana text-2xl truncate">{formatCurrency(selectedGroup.monthlyContribution)}</span>
             </div>
           </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="amountRequested" className="text-base font-bold">Loan Amount (MWK) <span className="text-red-500">*</span></Label>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">MWK</div>
-              <Input
-                id="amountRequested"
-                name="amountRequested"
-                type="number"
-                step="0.01"
-                placeholder="0.00"
-                value={formData.amountRequested}
-                onChange={handleChange}
-                required
-                className="pl-14 h-14 text-lg font-bold rounded-xl border-border bg-background focus:ring-banana focus:border-banana shadow-sm"
-              />
-            </div>
-          </div>
+        <div className="grid gap-8">
+          <FormGroup label="Nominal Loan Request (MWK) *">
+            <PremiumInput
+              id="amountRequested"
+              name="amountRequested"
+              type="number"
+              prefix="MWK"
+              placeholder="0.00"
+              value={formData.amountRequested}
+              onChange={handleChange}
+            />
+          </FormGroup>
 
-          <div className="space-y-2">
-            <Label htmlFor="repaymentPeriodMonths" className="text-base font-bold">Repayment Period <span className="text-red-500">*</span></Label>
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+          <FormGroup label="Settlement Duration *">
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
               {[3, 6, 9, 12, 18, 24].map((m) => (
-                <div key={m} className="relative">
+                <div key={m} className="relative h-20">
                   <input
                     type="radio"
                     name="repaymentPeriodMonths"
@@ -325,100 +349,109 @@ function NewLoanPageContent() {
                     onChange={handleChange}
                     className="peer sr-only"
                   />
-                  <label htmlFor={`period-${m}`} className="flex flex-col items-center justify-center p-3 rounded-xl border-2 border-muted bg-card hover:bg-muted/50 peer-checked:border-banana peer-checked:bg-banana/5 peer-checked:text-foreground cursor-pointer transition-all">
-                    <span className="text-lg font-black">{m}</span>
-                    <span className="text-[10px] uppercase font-bold text-muted-foreground">Months</span>
+                  <label htmlFor={`period-${m}`} className="flex flex-col items-center justify-center h-full rounded-2xl border-2 border-white/10 bg-white/5 hover:bg-white/10 peer-checked:border-blue-500 peer-checked:bg-blue-600/10 cursor-pointer transition-all">
+                    <span className="text-xl font-black">{m}</span>
+                    <span className="text-[9px] uppercase font-black text-muted-foreground tracking-widest">Months</span>
                   </label>
                 </div>
               ))}
             </div>
-          </div>
+          </FormGroup>
 
-          <div className="space-y-2">
-            <Label htmlFor="purpose" className="text-base font-bold text-foreground">Purpose <span className="text-muted-foreground text-sm font-normal">(Optional)</span></Label>
-            <textarea
+          <FormGroup label="Investment Rationale (Purpose)">
+            <Textarea
               id="purpose"
               name="purpose"
-              className="flex min-h-[100px] w-full rounded-xl border border-input bg-background px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-banana focus-visible:border-banana disabled:cursor-not-allowed disabled:opacity-50"
-              placeholder="What will this loan be used for?"
+              className="bg-white/50 dark:bg-black/20 border-white/20 rounded-2xl min-h-[120px] font-bold py-4 px-6 focus:ring-blue-500"
+              placeholder="Briefly describe the objective for this credit injection..."
               value={formData.purpose}
               onChange={handleChange}
             />
-          </div>
+          </FormGroup>
         </div>
 
-        {formData.amountRequested && formData.repaymentPeriodMonths && (
-          <Card className="border-none bg-muted/40 shadow-inner rounded-2xl overflow-hidden mt-6">
-            <CardHeader className="pb-2 bg-muted/50 border-b border-border/50">
-              <CardTitle className="text-lg font-black text-foreground flex items-center gap-2">
-                <DollarSign className="w-5 h-5 text-banana" /> Repayment Summary
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-5">
-              <div className="space-y-4">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground font-medium">Principal</span>
-                  <span className="font-bold text-foreground">
-                    {formatCurrency(parseFloat(formData.amountRequested))}
-                  </span>
+        <AnimatePresence>
+          {formData.amountRequested && formData.repaymentPeriodMonths && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-10"
+            >
+              <GlassCard className="p-8 border-blue-500/20 shadow-2xl overflow-hidden relative" hover={false}>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 rounded-full -mr-16 -mt-16 blur-3xl pointer-events-none" />
+                <div className="flex items-center gap-3 border-b border-white/10 pb-6 mb-6">
+                  <div className="p-2.5 bg-blue-600 rounded-xl shadow-lg shadow-blue-500/20">
+                    <DollarSign className="w-5 h-5 text-white" />
+                  </div>
+                  <h4 className="text-xl font-black">Projection Summary</h4>
                 </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground font-medium">Interest ({selectedGroup.interestRate}%)</span>
-                  <span className="font-bold text-foreground">
-                    {formatCurrency(
-                      (parseFloat(formData.amountRequested) * ((selectedGroup.interestRate / 100) * (parseInt(formData.repaymentPeriodMonths) / 12)))
-                    )}
-                  </span>
+
+                <div className="grid gap-6">
+                  <div className="flex justify-between items-center bg-white/5 dark:bg-black/20 p-4 rounded-xl">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-70">Total Repayment Amount</span>
+                    <span className="text-xl font-black text-foreground">
+                      {formatCurrency(
+                        parseFloat(formData.amountRequested) * (1 + (selectedGroup.interestRate / 100) * (parseInt(formData.repaymentPeriodMonths) / 12))
+                      )}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between items-center bg-blue-600/10 p-6 rounded-2xl border border-blue-500/20">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-1">Monthly Cycle Settlement</p>
+                      <p className="text-3xl font-black text-blue-700 dark:text-banana tracking-tighter">
+                        {formatCurrency(
+                          (parseFloat(formData.amountRequested) * (1 + (selectedGroup.interestRate / 100) * (parseInt(formData.repaymentPeriodMonths) / 12))) /
+                          parseInt(formData.repaymentPeriodMonths)
+                        )}
+                      </p>
+                    </div>
+                    <div className="hidden sm:block text-right">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">Interest Component</p>
+                      <p className="font-bold text-foreground">
+                        {formatCurrency(
+                          (parseFloat(formData.amountRequested) * ((selectedGroup.interestRate / 100) * (parseInt(formData.repaymentPeriodMonths) / 12)))
+                        )}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div className="border-t border-border/50 pt-4 flex justify-between items-center">
-                  <span className="text-base font-bold text-foreground">Estimated Monthly</span>
-                  <span className="text-2xl font-black text-banana-foreground">
-                    {formatCurrency(
-                      (parseFloat(formData.amountRequested) * (1 + (selectedGroup.interestRate / 100) * (parseInt(formData.repaymentPeriodMonths) / 12))) /
-                      parseInt(formData.repaymentPeriodMonths)
-                    )}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+              </GlassCard>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     )
   }
 
-  const renderFormActions = () => (
-    <div className="flex justify-end gap-4 pt-6 mt-6 border-t border-border/50">
-      <Link href="/loans">
-        <Button variant="ghost" type="button" className="rounded-xl font-bold hover:bg-muted text-muted-foreground">
-          Cancel
-        </Button>
-      </Link>
-      {eligibility?.eligible && (
-        <Button type="submit" disabled={loading} className="bg-banana hover:bg-yellow-400 text-banana-foreground font-black rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all px-8 h-12">
-          {loading ? 'Submitting...' : 'Submit Application'}
-        </Button>
-      )}
-    </div>
-  )
-
   return (
-    <div className="min-h-screen py-8 animate-fade-in pb-20">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 pl-1">
-          <Link href="/loans" className="inline-flex items-center text-sm font-bold text-muted-foreground hover:text-foreground mb-4 transition-colors">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Loans
-          </Link>
-          <h1 className="text-4xl font-black bg-gradient-to-r from-blue-900 to-indigo-800 dark:from-white dark:to-blue-200 bg-clip-text text-transparent">Request Loan</h1>
-          <p className="text-lg text-muted-foreground font-medium mt-2">Apply for a new loan from your available groups.</p>
-        </div>
+    <motion.div
+      variants={staggerContainer}
+      initial="initial"
+      animate="animate"
+      className="space-y-10 pb-20"
+    >
+      <motion.div variants={fadeIn}>
+        <PageHeader
+          title="Protocol Request"
+          description="Initiate a new credit cycle from your active collectives"
+          action={
+            <Link href="/loans">
+              <Button variant="outline" className="rounded-xl font-bold border-white/20 hover:bg-white/5">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Archive
+              </Button>
+            </Link>
+          }
+        />
+      </motion.div>
 
-        <Card className="bg-card border-border/50 shadow-xl rounded-3xl overflow-hidden">
-          <CardContent className="p-6 sm:p-8">
-            <form onSubmit={handleSubmit}>
+      <div className="max-w-4xl mx-auto w-full">
+        <motion.div variants={itemFadeIn}>
+          <GlassCard className="p-10 border-white/10 shadow-2xl" hover={false}>
+            <form onSubmit={handleSubmit} className="space-y-10">
               {error && (
-                <Alert variant="destructive" className="mb-6 rounded-xl">
+                <Alert variant="destructive" className="rounded-2xl">
                   <AlertDescription className="font-bold">{error}</AlertDescription>
                 </Alert>
               )}
@@ -426,12 +459,35 @@ function NewLoanPageContent() {
               {renderGroupSelection()}
               {renderEligibilityInfo()}
               {renderLoanForm()}
-              {renderFormActions()}
+
+              <div className="flex justify-end pt-10 border-t border-white/10">
+                {eligibility?.eligible && (
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    variant="banana"
+                    size="xl"
+                    className="px-12 shadow-blue-500/20"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin mr-3" />
+                        Transmitting...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 className="w-5 h-5 mr-3" />
+                        Formalize Application
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
             </form>
-          </CardContent>
-        </Card>
+          </GlassCard>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 

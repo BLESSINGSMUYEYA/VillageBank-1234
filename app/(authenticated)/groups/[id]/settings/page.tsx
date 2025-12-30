@@ -5,8 +5,6 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -14,8 +12,11 @@ import { ArrowLeft, AlertCircle, Save, Landmark, ShieldQuestion, Loader2, CheckC
 import Link from 'next/link'
 import { formatCurrency, cn } from '@/lib/utils'
 import { PageHeader } from '@/components/layout/PageHeader'
+import { SectionHeader } from '@/components/ui/section-header'
+import { FormGroup } from '@/components/ui/form-group'
+import { PremiumInput } from '@/components/ui/premium-input'
 import { GlassCard } from '@/components/ui/GlassCard'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { fadeIn, staggerContainer, itemFadeIn } from '@/lib/motions'
 
 interface Group {
@@ -239,39 +240,32 @@ export default function GroupSettingsPage() {
         <div className="xl:col-span-2 space-y-8">
           {/* Identity Section */}
           <motion.div variants={itemFadeIn}>
-            <GlassCard className="p-8 space-y-6" hover={false}>
-              <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-                <div className="p-2 bg-blue-500/10 rounded-lg">
-                  <Landmark className="w-5 h-5 text-blue-600" />
-                </div>
-                <h3 className="text-xl font-black">Identity & Presence</h3>
-              </div>
+            <GlassCard className="p-10 space-y-10" hover={false}>
+              <SectionHeader title="Identity & Presence" icon={Landmark} />
 
-              <div className="space-y-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="name" className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Group Name</Label>
-                  <Input
+              <div className="space-y-8">
+                <FormGroup label="Group Name *">
+                  <PremiumInput
                     id="name"
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
-                    className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-12 font-bold px-4 focus:ring-2 focus:ring-blue-500"
+                    placeholder="Grand Savannas Collective"
                   />
-                </div>
+                </FormGroup>
 
-                <div className="grid gap-2">
-                  <Label htmlFor="description" className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Mission / Description</Label>
+                <FormGroup label="Mission / Description">
                   <Textarea
                     id="description"
                     value={formData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
-                    className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl font-bold p-4 focus:ring-2 focus:ring-blue-500 min-h-[120px]"
+                    className="bg-white/50 dark:bg-black/20 border-white/20 rounded-2xl font-bold p-6 focus:ring-blue-500 min-h-[140px]"
+                    placeholder="Define the group's investment philosophy..."
                   />
-                </div>
+                </FormGroup>
 
-                <div className="grid gap-2">
-                  <Label htmlFor="region" className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Geographical Region</Label>
+                <FormGroup label="Geographical Region">
                   <Select value={formData.region} onValueChange={(v) => handleInputChange('region', v)}>
-                    <SelectTrigger className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-12 font-bold px-4">
+                    <SelectTrigger className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-bold px-6">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="rounded-2xl border-white/10 backdrop-blur-3xl">
@@ -280,75 +274,59 @@ export default function GroupSettingsPage() {
                       <SelectItem value="SOUTHERN" className="font-bold">Southern</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
+                </FormGroup>
               </div>
             </GlassCard>
           </motion.div>
 
           {/* Financial Architecture */}
           <motion.div variants={itemFadeIn}>
-            <GlassCard className="p-8 space-y-6" hover={false}>
-              <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-                <div className="p-2 bg-emerald-500/10 rounded-lg">
-                  <Save className="w-5 h-5 text-emerald-600" />
-                </div>
-                <h3 className="text-xl font-black">Financial Architecture</h3>
-              </div>
+            <GlassCard className="p-10 space-y-10" hover={false}>
+              <SectionHeader title="Financial Architecture" icon={Save} />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="grid gap-2">
-                  <Label className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Monthly Share</Label>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-black">MWK</span>
-                    <Input
-                      type="number"
-                      value={formData.monthlyContribution}
-                      onChange={(e) => handleInputChange('monthlyContribution', e.target.value)}
-                      className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-12 font-black pl-14 focus:ring-2 focus:ring-emerald-500"
-                    />
-                  </div>
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <FormGroup label="Nominal Monthly Share">
+                  <PremiumInput
+                    type="number"
+                    prefix="MWK"
+                    value={formData.monthlyContribution}
+                    onChange={(e) => handleInputChange('monthlyContribution', e.target.value)}
+                  />
+                </FormGroup>
 
-                <div className="grid gap-2">
-                  <Label className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Interest Rate (%)</Label>
-                  <Input
+                <FormGroup label="Asset Interest Rate (%)">
+                  <PremiumInput
                     type="number"
                     value={formData.interestRate}
                     onChange={(e) => handleInputChange('interestRate', e.target.value)}
-                    className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-12 font-black px-4 focus:ring-2 focus:ring-emerald-500"
                   />
-                </div>
+                </FormGroup>
 
-                <div className="grid gap-2">
-                  <Label className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Loan Limit Multiplier</Label>
-                  <Input
+                <FormGroup label="Credit Limit Multiplier">
+                  <PremiumInput
                     type="number"
                     value={formData.maxLoanMultiplier}
                     onChange={(e) => handleInputChange('maxLoanMultiplier', e.target.value)}
-                    className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-12 font-black px-4 focus:ring-2 focus:ring-emerald-500"
                   />
-                  <p className="text-[10px] font-bold text-muted-foreground opacity-60 px-1">Max borrows: Monthly × Multiplier</p>
-                </div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50 px-1 mt-2">Maximum liquidity: Share × Multiplier</p>
+                </FormGroup>
 
-                <div className="grid gap-2">
-                  <Label className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Late Fine Amount</Label>
-                  <Input
+                <FormGroup label="Default Penalty Fine">
+                  <PremiumInput
                     type="number"
+                    prefix="MWK"
                     value={formData.penaltyAmount}
                     onChange={(e) => handleInputChange('penaltyAmount', e.target.value)}
-                    className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-12 font-black px-4 focus:ring-2 focus:ring-emerald-500"
                   />
-                </div>
+                </FormGroup>
 
-                <div className="grid gap-2">
-                  <Label className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Monthly Deadline (Day)</Label>
-                  <Input
+                <FormGroup label="Cycle Settlement Deadline (Day)">
+                  <PremiumInput
                     type="number"
                     value={formData.contributionDueDay}
                     onChange={(e) => handleInputChange('contributionDueDay', e.target.value)}
-                    className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-12 font-black px-4 focus:ring-2 focus:ring-emerald-500"
                   />
-                </div>
+                </FormGroup>
               </div>
             </GlassCard>
           </motion.div>
@@ -376,10 +354,12 @@ export default function GroupSettingsPage() {
                 <Button
                   onClick={handleSave}
                   disabled={saving}
-                  className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl shadow-lg shadow-blue-500/20 disabled:opacity-50"
+                  variant="banana"
+                  size="xl"
+                  className="w-full shadow-blue-500/20"
                 >
                   {saving ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Save className="w-5 h-5 mr-2" />}
-                  Finalize Settings
+                  Synchronize Protocol
                 </Button>
 
                 <Link href={`/groups/${group?.id}`} className="block">

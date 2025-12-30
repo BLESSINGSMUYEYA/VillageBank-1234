@@ -3,7 +3,7 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Plus, CreditCard, AlertCircle, DollarSign, Wallet, CheckCircle, Clock, ArrowRight, TrendingDown, History, Zap } from 'lucide-react'
+import { Plus, CreditCard, AlertCircle, Wallet, CheckCircle, Clock, ArrowRight, History, Zap } from 'lucide-react'
 import Link from 'next/link'
 import { formatCurrency, formatDate, cn } from '@/lib/utils'
 import { useLanguage } from '@/components/providers/LanguageProvider'
@@ -67,7 +67,7 @@ export function LoansClient({ loans, eligibilityChecks }: LoansClientProps) {
                     }
                     action={eligibilityChecks.some(check => check.eligible) && (
                         <Link href="/loans/new">
-                            <Button className="bg-banana hover:bg-yellow-400 text-banana-foreground font-black rounded-xl shadow-lg hover:shadow-yellow-500/20 transition-all hover:scale-105 active:scale-95 px-8 h-14 group">
+                            <Button variant="banana" size="xl" className="shadow-yellow-500/20 px-8 group">
                                 <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" />
                                 {t('loans.request_loan')}
                             </Button>
@@ -131,7 +131,7 @@ export function LoansClient({ loans, eligibilityChecks }: LoansClientProps) {
                 </motion.h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {eligibilityChecks.map((check, idx) => (
+                    {eligibilityChecks.map((check) => (
                         <motion.div key={check.group.id} variants={itemFadeIn}>
                             <GlassCard
                                 className={cn(
@@ -152,7 +152,7 @@ export function LoansClient({ loans, eligibilityChecks }: LoansClientProps) {
                                             {check.eligible ? <Zap className="w-6 h-6" fill="currentColor" /> : <AlertCircle className="w-6 h-6" />}
                                         </div>
                                         {check.eligible && (
-                                            <Badge className="bg-blue-600 text-white dark:bg-blue-900/50 dark:text-blue-300 border-none px-3 py-1 font-black text-[9px] tracking-widest uppercase">
+                                            <Badge variant="info">
                                                 Verified
                                             </Badge>
                                         )}
@@ -242,14 +242,13 @@ export function LoansClient({ loans, eligibilityChecks }: LoansClientProps) {
                                                     </span>
                                                 </TableCell>
                                                 <TableCell className="text-right px-8">
-                                                    <Badge className={cn(
-                                                        "rounded-[0.6rem] font-black border-none px-3 py-1 text-[9px] tracking-widest uppercase",
+                                                    <Badge variant={
                                                         loan.status === 'ACTIVE'
-                                                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                                                            ? 'success'
                                                             : loan.status === 'COMPLETED'
-                                                                ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
-                                                                : 'bg-orange-500/10 text-orange-600 dark:text-orange-400'
-                                                    )}>
+                                                                ? 'info'
+                                                                : 'warning'
+                                                    }>
                                                         {loan.status}
                                                     </Badge>
                                                 </TableCell>
@@ -277,7 +276,7 @@ export function LoansClient({ loans, eligibilityChecks }: LoansClientProps) {
                                 </div>
                                 {eligibilityChecks.some(check => check.eligible) ? (
                                     <Link href="/loans/new">
-                                        <Button className="rounded-2xl font-black bg-banana hover:bg-yellow-400 text-banana-foreground px-10 py-7 h-auto shadow-xl hover:scale-105 active:scale-95 transition-all group">
+                                        <Button variant="banana" size="xl" className="shadow-yellow-500/20 px-10 group h-auto py-7">
                                             <Plus className="w-5 h-5 mr-3 group-hover:rotate-90 transition-transform" />
                                             {t('loans.apply_first')}
                                         </Button>

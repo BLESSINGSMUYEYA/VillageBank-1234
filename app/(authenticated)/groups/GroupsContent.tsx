@@ -48,7 +48,7 @@ export function GroupsContent({ userGroups }: GroupsContentProps) {
                 }
                 action={
                     <Link href="/groups/new">
-                        <Button className="bg-banana hover:bg-yellow-400 text-banana-foreground font-black rounded-xl shadow-lg hover:shadow-yellow-500/20 transition-all hover:scale-105 active:scale-95 group px-6">
+                        <Button variant="banana" className="shadow-yellow-500/20 group px-6">
                             <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" />
                             {t('groups.create_group')}
                         </Button>
@@ -75,12 +75,7 @@ export function GroupsContent({ userGroups }: GroupsContentProps) {
                                                     {membership.group.name}
                                                 </h3>
                                                 <div className="flex items-center gap-2 mt-1.5">
-                                                    <Badge className={cn(
-                                                        "rounded-lg px-2 py-0.5 text-[9px] font-black uppercase tracking-wider",
-                                                        membership.status === 'ACTIVE'
-                                                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                                                            : 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400'
-                                                    )}>
+                                                    <Badge variant={membership.status === 'ACTIVE' ? 'success' : 'warning'}>
                                                         {membership.status}
                                                     </Badge>
                                                     <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-1 opacity-60">
@@ -142,7 +137,7 @@ export function GroupsContent({ userGroups }: GroupsContentProps) {
                                 {/* Action Area */}
                                 <div className="p-6 mt-auto">
                                     <Link href={`/groups/${membership.groupId}`} className="block">
-                                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-900/30 dark:text-blue-200 dark:hover:bg-blue-900/50 rounded-2xl font-black h-12 shadow-lg shadow-blue-500/10 group-hover:scale-[1.02] active:scale-[0.98] transition-all border-none">
+                                        <Button variant="outline" className="w-full h-12 rounded-2xl font-black shadow-lg shadow-blue-500/10 group-hover:scale-[1.02] active:scale-[0.98] transition-all border-none">
                                             {t('groups.view_dashboard')}
                                             <ChevronRight className="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform" />
                                         </Button>
@@ -190,7 +185,7 @@ export function GroupsContent({ userGroups }: GroupsContentProps) {
                     </p>
 
                     <Link href="/groups/new">
-                        <Button className="bg-banana hover:bg-yellow-400 text-banana-foreground font-black rounded-2xl shadow-2xl shadow-yellow-500/20 px-10 h-14 text-lg hover:scale-105 active:scale-95 transition-all">
+                        <Button variant="banana" size="xl" className="shadow-2xl shadow-yellow-500/20 px-10">
                             <Plus className="w-6 h-6 mr-2" />
                             {t('groups.create_group')}
                         </Button>

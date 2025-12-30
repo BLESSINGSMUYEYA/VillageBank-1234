@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -8,27 +8,23 @@ import Link from 'next/link'
 import {
     Mail,
     MapPin,
-    CreditCard,
     Calendar,
     TrendingUp,
     Award,
     Users,
-    Target,
     Settings,
     Wallet,
     Shield,
     Zap,
-    ArrowRight,
     CheckCircle2,
-    Trophy,
     History
 } from 'lucide-react'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { StatsCard } from '@/components/ui/stats-card'
 import { PageHeader } from '@/components/layout/PageHeader'
-import { formatCurrency, cn } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
 import { motion } from 'framer-motion'
-import { staggerContainer, itemFadeIn, fadeIn, hoverScale } from '@/lib/motions'
+import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
 import { GlassCard } from '@/components/ui/GlassCard'
 
 interface ProfileData {
@@ -101,7 +97,7 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                     }
                     action={
                         <Link href="/settings">
-                            <Button className="bg-blue-600 hover:bg-blue-700 text-white dark:bg-banana dark:hover:bg-yellow-400 dark:text-blue-950 font-black rounded-xl shadow-lg hover:shadow-blue-500/20 transition-all hover:scale-105 active:scale-95 group px-6">
+                            <Button variant="banana" className="px-6 group">
                                 <Settings className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform" />
                                 {t('profile.edit_profile') || 'Manage Account'}
                             </Button>
@@ -137,11 +133,10 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                             {profile?.firstName} {profile?.lastName}
                                         </h2>
                                         <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                                            <Badge className="bg-blue-600 text-white dark:bg-blue-900/50 dark:text-blue-300 font-black uppercase text-[9px] tracking-[0.15em] border-none px-3 py-1">
+                                            <Badge variant="info">
                                                 {profile?.role?.replace('_', ' ')}
                                             </Badge>
-                                            <Badge variant="outline" className="border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-black text-[9px] uppercase tracking-widest flex items-center gap-1.5 bg-emerald-500/5 dark:bg-emerald-500/10">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-0.5" />
+                                            <Badge variant="success">
                                                 Active Node
                                             </Badge>
                                         </div>
@@ -224,9 +219,9 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                     <Tabs defaultValue="overview" className="space-y-8">
                         <div className="sticky top-0 z-20 pt-2 pointer-events-none">
                             <TabsList className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl p-1.5 rounded-2xl border border-white/40 dark:border-white/10 w-full justify-start h-14 shadow-xl pointer-events-auto no-scrollbar overflow-x-auto">
-                                <TabsTrigger value="overview" className="rounded-xl px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950">Overview</TabsTrigger>
-                                <TabsTrigger value="groups" className="rounded-xl px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950">Memberships</TabsTrigger>
-                                <TabsTrigger value="history" className="rounded-xl px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950">Ledger</TabsTrigger>
+                                <TabsTrigger value="overview" className="rounded-xl px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-950 dark:data-[state=active]:bg-blue-950 data-[state=active]:text-white dark:data-[state=active]:text-white">Overview</TabsTrigger>
+                                <TabsTrigger value="groups" className="rounded-xl px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-950 dark:data-[state=active]:bg-blue-950 data-[state=active]:text-white dark:data-[state=active]:text-white">Memberships</TabsTrigger>
+                                <TabsTrigger value="history" className="rounded-xl px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-950 dark:data-[state=active]:bg-blue-950 data-[state=active]:text-white dark:data-[state=active]:text-white">Ledger</TabsTrigger>
                             </TabsList>
                         </div>
 
@@ -285,14 +280,14 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                         <TabsContent value="groups" className="mt-0 outline-none">
                             <motion.div variants={fadeIn} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {memberships.length > 0 ? (
-                                    memberships.map((group, i) => (
+                                    memberships.map((group) => (
                                         <motion.div key={group.id} variants={itemFadeIn}>
                                             <GlassCard className="p-6 relative group" hover={true}>
                                                 <div className="flex justify-between items-start mb-4">
                                                     <div className="w-12 h-12 rounded-2xl bg-blue-600/10 flex items-center justify-center text-blue-600 font-black text-xl">
                                                         {group.name.charAt(0)}
                                                     </div>
-                                                    <Badge className="bg-blue-600/10 text-blue-600 dark:text-blue-400 border-none font-black text-[9px] uppercase tracking-widest px-2">
+                                                    <Badge variant="info">
                                                         {group.role}
                                                     </Badge>
                                                 </div>
