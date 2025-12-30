@@ -5,8 +5,11 @@ import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Users, DollarSign, TrendingUp, Shield, Clock, Award } from 'lucide-react'
+import { Users, DollarSign, TrendingUp, Shield, Clock, Award, ArrowRight, Zap, Globe, Sparkles } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { staggerContainer, itemFadeIn, fadeIn, hoverScale } from '@/lib/motions'
+import { GlassCard } from '@/components/ui/GlassCard'
+import { cn } from '@/lib/utils'
 
 export default function Home() {
     const { isAuthenticated, loading } = useAuth()
@@ -20,118 +23,229 @@ export default function Home() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-100">
-                <div className="text-lg">Loading...</div>
+            <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+                <div className="relative">
+                    <div className="w-20 h-20 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-10 h-10 bg-blue-600 rounded-full animate-pulse" />
+                    </div>
+                </div>
             </div>
         )
     }
 
     if (isAuthenticated) {
-        return null // Will redirect to dashboard
+        return null
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-100">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 xl:py-20">
-                {/* Hero Section */}
-                <div className="text-center mb-12 sm:mb-16 lg:mb-20">
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-blue-900 mb-4 sm:mb-6 leading-tight">
-                        Village Banking System
-                    </h1>
-                    <p className="text-base sm:text-lg lg:text-xl xl:text-2xl text-gray-600 mb-8 sm:mb-10 max-w-3xl mx-auto px-4 font-medium">
-                        Community banking management for Malawi villages and groups
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 selection:bg-blue-500/30 overflow-x-hidden">
+            {/* Ambient Background */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-blue-600/10 dark:bg-blue-600/20 rounded-full blur-[120px] animate-pulse-slow" />
+                <div className="absolute top-[20%] -right-[5%] w-[35%] h-[35%] bg-indigo-600/10 dark:bg-indigo-600/20 rounded-full blur-[100px] animate-pulse-slow delay-700" />
+                <div className="absolute -bottom-[10%] left-[20%] w-[30%] h-[30%] bg-banana/10 dark:bg-banana/20 rounded-full blur-[110px] animate-pulse-slow delay-1000" />
+            </div>
+
+            <div className="relative z-10">
+                {/* Navbar */}
+                <header className="container mx-auto px-6 py-8 flex items-center justify-between">
+                    <div className="flex items-center gap-2 group cursor-pointer">
+                        <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform">
+                            <Zap className="w-6 h-6 text-white" fill="currentColor" />
+                        </div>
+                        <span className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">
+                            VILLAGE<span className="text-blue-600">BANK</span>
+                        </span>
+                    </div>
+                    <div className="hidden md:flex items-center gap-8">
+                        <nav className="flex items-center gap-6">
+                            {['Ecosystem', 'Security', 'Features'].map((item) => (
+                                <Link key={item} href="#" className="text-sm font-black uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-banana transition-colors">
+                                    {item}
+                                </Link>
+                            ))}
+                        </nav>
+                        <Link href="/login">
+                            <Button className="bg-slate-950 dark:bg-white text-white dark:text-slate-950 font-black rounded-xl px-8 h-12 hover:scale-105 transition-all">
+                                Launch App
+                            </Button>
+                        </Link>
+                    </div>
+                </header>
+
+                <main className="container mx-auto px-6 pt-12 pb-24">
+                    <motion.div
+                        variants={staggerContainer}
+                        initial="initial"
+                        animate="animate"
+                        className="text-center space-y-8 mb-32"
+                    >
+                        {/* Hero Badge */}
+                        <motion.div variants={fadeIn} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600/5 dark:bg-white/5 border border-blue-600/10 dark:border-white/10 backdrop-blur-md">
+                            <Sparkles className="w-4 h-4 text-blue-600 dark:text-banana" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 dark:text-banana">The Future of Community Finance</span>
+                        </motion.div>
+
+                        {/* Main Title */}
+                        <motion.h1 variants={fadeIn} className="text-5xl md:text-7xl lg:text-8xl font-black text-slate-900 dark:text-white tracking-tighter leading-[0.9] max-w-5xl mx-auto">
+                            Modern Banking, <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-600 bg-300% animate-shimmer">Localized Impact.</span>
+                        </motion.h1>
+
+                        {/* Subtitle */}
+                        <motion.p variants={fadeIn} className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto font-bold leading-relaxed">
+                            Empowering Malawian communities with a secure, transparent, and mobile-first ecosystem for village banking and collective growth.
+                        </motion.p>
+
+                        {/* CTA Buttons */}
+                        <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                            <Link href="/register" className="w-full sm:w-auto">
+                                <Button className="w-full sm:w-auto h-16 px-12 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-lg shadow-2xl shadow-blue-500/20 hover:scale-105 active:scale-95 transition-all group">
+                                    Start Moving Forward
+                                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                                </Button>
+                            </Link>
+                            <Link href="/login" className="w-full sm:w-auto">
+                                <Button variant="outline" className="w-full sm:w-auto h-16 px-12 rounded-2xl border-2 border-slate-200 dark:border-white/10 dark:bg-white/5 font-black text-lg hover:bg-slate-100 dark:hover:bg-white/10 transition-all">
+                                    Access Ledger
+                                </Button>
+                            </Link>
+                        </motion.div>
+
+                        {/* Stats Preview */}
+                        <motion.div variants={fadeIn} className="pt-20 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+                            {[
+                                { label: 'Active Members', value: '12K+' },
+                                { label: 'Managed Capital', value: '$2.4M' },
+                                { label: 'Success Rate', value: '99.8%' },
+                                { label: 'Community Groups', value: '450+' },
+                            ].map((stat, i) => (
+                                <div key={i} className="space-y-1">
+                                    <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">{stat.value}</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{stat.label}</p>
+                                </div>
+                            ))}
+                        </motion.div>
+                    </motion.div>
+
+                    {/* Features Grid */}
+                    <motion.div
+                        variants={staggerContainer}
+                        initial="initial"
+                        whileInView="animate"
+                        viewport={{ once: true }}
+                        className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto"
+                    >
+                        {[
+                            {
+                                icon: Users,
+                                title: 'Circle Management',
+                                desc: 'Dynamic group creation with automated bylaws and role-based governance.',
+                                color: 'bg-blue-500'
+                            },
+                            {
+                                icon: DollarSign,
+                                title: 'Instant Liquidity',
+                                desc: 'Frictionless loan deployment with automated eligibility verification.',
+                                color: 'bg-emerald-500'
+                            },
+                            {
+                                icon: TrendingUp,
+                                title: 'Staking Protocol',
+                                desc: 'Track every contribution with immutable ledger accuracy and yield insights.',
+                                color: 'bg-indigo-500'
+                            }
+                        ].map((feature, i) => (
+                            <motion.div key={i} variants={itemFadeIn}>
+                                <GlassCard className="h-full p-10 flex flex-col items-center text-center group" hover={true}>
+                                    <div className={cn("w-20 h-20 rounded-3xl flex items-center justify-center mb-8 shadow-inner group-hover:rotate-6 transition-transform", feature.color)}>
+                                        <feature.icon className="w-10 h-10 text-white" />
+                                    </div>
+                                    <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">{feature.title}</h3>
+                                    <p className="text-slate-600 dark:text-slate-400 font-bold leading-relaxed">
+                                        {feature.desc}
+                                    </p>
+                                </GlassCard>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+
+                    {/* Trust Section */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 40 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="mt-40 space-y-16"
+                    >
+                        <div className="text-center space-y-4">
+                            <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight">Built on Absolute Trust.</h2>
+                            <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto font-bold">
+                                We combine traditional communal values with state-of-the-art security protocols to protect your future.
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                            {[
+                                { icon: Shield, title: 'Bank-Grade Security', desc: 'SHA-256 encryption for every transaction and data point.' },
+                                { icon: clock, title: 'Real-time Ledger', desc: 'Synchronized updates across all member devices instantly.' },
+                                { icon: Award, title: 'Elite Interface', desc: 'Crafted for performance and ease across all Malawian networks.' }
+                            ].map((item, i) => (
+                                <div key={i} className="flex flex-col items-center text-center space-y-4">
+                                    <div className="w-12 h-12 bg-slate-900 dark:bg-white rounded-2xl flex items-center justify-center text-white dark:text-slate-950">
+                                        <item.icon className="w-6 h-6" />
+                                    </div>
+                                    <h4 className="font-black text-slate-900 dark:text-white tracking-tight">{item.title}</h4>
+                                    <p className="text-xs font-bold text-slate-500 leading-relaxed uppercase tracking-wider">{item.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
+
+                    {/* Registration CTA */}
+                    <div className="mt-40">
+                        <GlassCard className="p-12 sm:p-20 border-none bg-slate-900 dark:bg-white relative overflow-hidden" hover={false}>
+                            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/20 rounded-full blur-[100px] -mr-48 -mt-48" />
+                            <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-600/20 rounded-full blur-[80px] -ml-32 -mb-32" />
+
+                            <div className="relative z-10 flex flex-col items-center text-center space-y-8">
+                                <h2 className="text-4xl sm:text-6xl font-black text-white dark:text-slate-950 tracking-tighter">Ready to revolutionize <br /> your circle?</h2>
+                                <p className="text-lg text-slate-400 dark:text-slate-600 max-w-xl font-bold">
+                                    Join thousands of Malawians managing their community wealth with unparalleled efficiency.
+                                </p>
+                                <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+                                    <Link href="/register" className="w-full sm:w-auto">
+                                        <Button className="h-16 px-12 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-lg shadow-2xl hover:scale-105 transition-all w-full">
+                                            Create First Group
+                                        </Button>
+                                    </Link>
+                                    <Link href="/login" className="w-full sm:w-auto">
+                                        <Button variant="outline" className="h-16 px-12 rounded-2xl border-white/20 dark:border-slate-950/20 text-white dark:text-slate-950 font-black text-lg hover:bg-white/10 dark:hover:bg-slate-950/5 transition-all w-full">
+                                            Member Login
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </div>
+                        </GlassCard>
+                    </div>
+                </main>
+
+                <footer className="container mx-auto px-6 py-12 border-t border-slate-200 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div className="flex items-center gap-2">
+                        <Zap className="w-6 h-6 text-blue-600" fill="currentColor" />
+                        <span className="font-black text-slate-900 dark:text-white tracking-tighter">VILLAGE BANK</span>
+                    </div>
+                    <p className="text-slate-500 text-sm font-black uppercase tracking-widest">
+                        © {new Date().getFullYear()} Malawian Financial Technologies.
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center px-4 sm:px-0">
-                        <Link href="/login" className="w-full sm:w-auto">
-                            <Button size="lg" className="w-full sm:w-auto px-8 py-6 text-base sm:text-lg font-bold rounded-xl bg-blue-900 hover:bg-blue-800 text-white shadow-lg hover:shadow-xl transition-all">
-                                Sign In
-                            </Button>
-                        </Link>
-                        <Link href="/register" className="w-full sm:w-auto">
-                            <Button variant="outline" size="lg" className="w-full sm:w-auto px-8 py-6 text-base sm:text-lg font-bold rounded-xl border-2 border-blue-900 text-blue-900 hover:bg-blue-50 hover:text-blue-900 transition-all">
-                                Register
-                            </Button>
-                        </Link>
+                    <div className="flex items-center gap-6">
+                        <Globe className="w-5 h-5 text-slate-400" />
+                        <span className="text-xs font-black uppercase tracking-widest text-slate-400">Chichewa / English</span>
                     </div>
-                </div>
-
-                {/* Features Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto mb-16 sm:mb-20 lg:mb-24">
-                    <Card className="h-full bg-white border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                        <CardHeader className="text-center p-6 sm:p-8">
-                            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-4 mx-auto">
-                                <Users className="w-7 h-7 sm:w-8 sm:h-8 text-blue-700" />
-                            </div>
-                            <CardTitle className="text-lg sm:text-xl lg:text-2xl mb-3 font-black text-blue-900">Group Management</CardTitle>
-                            <CardDescription className="text-sm sm:text-base leading-relaxed text-gray-600 font-medium">
-                                Create and manage village banking groups with role-based permissions
-                            </CardDescription>
-                        </CardHeader>
-                    </Card>
-
-                    <Card className="h-full bg-white border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                        <CardHeader className="text-center p-6 sm:p-8">
-                            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-4 mx-auto">
-                                <DollarSign className="w-7 h-7 sm:w-8 sm:h-8 text-green-700" />
-                            </div>
-                            <CardTitle className="text-lg sm:text-xl lg:text-2xl mb-3 font-black text-blue-900">Loan System</CardTitle>
-                            <CardDescription className="text-sm sm:text-base leading-relaxed text-gray-600 font-medium">
-                                Apply for loans with eligibility checks and automated approval workflows
-                            </CardDescription>
-                        </CardHeader>
-                    </Card>
-
-                    <Card className="h-full bg-white border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 sm:col-span-2 lg:col-span-1">
-                        <CardHeader className="text-center p-6 sm:p-8">
-                            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-purple-100 rounded-2xl flex items-center justify-center mb-4 mx-auto">
-                                <TrendingUp className="w-7 h-7 sm:w-8 sm:h-8 text-purple-700" />
-                            </div>
-                            <CardTitle className="text-lg sm:text-xl lg:text-2xl mb-3 font-black text-blue-900">Contribution Tracking</CardTitle>
-                            <CardDescription className="text-sm sm:text-base leading-relaxed text-gray-600 font-medium">
-                                Track monthly contributions and manage group finances efficiently
-                            </CardDescription>
-                        </CardHeader>
-                    </Card>
-                </div>
-
-                {/* Why Choose Section */}
-                <div className="mt-16 sm:mt-20 lg:mt-24">
-                    <div className="text-center mb-12 sm:mb-16">
-                        <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black text-blue-900 mb-4 sm:mb-6">
-                            Why Choose Village Banking?
-                        </h2>
-                        <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto px-4 font-medium">
-                            Empowering communities with transparent, secure, and efficient financial management
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 max-w-7xl mx-auto">
-                        <div className="text-center p-6 sm:p-8 bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-shadow">
-                            <Shield className="w-10 h-10 sm:w-12 sm:h-12 text-blue-700 mx-auto mb-4 sm:mb-6" />
-                            <h3 className="font-bold text-lg sm:text-xl lg:text-2xl mb-3 text-gray-900">Secure & Trusted</h3>
-                            <p className="text-gray-600 text-sm sm:text-base leading-relaxed font-medium">
-                                Bank-level security for your financial data and transactions
-                            </p>
-                        </div>
-
-                        <div className="text-center p-6 sm:p-8 bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-shadow">
-                            <Clock className="w-10 h-10 sm:w-12 sm:h-12 text-green-700 mx-auto mb-4 sm:mb-6" />
-                            <h3 className="font-bold text-lg sm:text-xl lg:text-2xl mb-3 text-gray-900">Real-time Updates</h3>
-                            <p className="text-gray-600 text-sm sm:text-base leading-relaxed font-medium">
-                                Instant notifications and live tracking of all activities
-                            </p>
-                        </div>
-
-                        <div className="text-center p-6 sm:p-8 bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-shadow sm:col-span-2 lg:col-span-1">
-                            <Award className="w-10 h-10 sm:w-12 sm:h-12 text-purple-700 mx-auto mb-4 sm:mb-6" />
-                            <h3 className="font-bold text-lg sm:text-xl lg:text-2xl mb-3 text-gray-900">Easy to Use</h3>
-                            <p className="text-gray-600 text-sm sm:text-base leading-relaxed font-medium">
-                                Intuitive interface designed for users of all technical levels
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                </footer>
             </div>
         </div>
     )
 }
+
+const clock = Clock // Fix for lucide icon casing inconsistency

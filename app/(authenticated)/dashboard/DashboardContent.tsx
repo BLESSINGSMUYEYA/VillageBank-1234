@@ -1,6 +1,5 @@
 'use client'
 
-import { Card, CardContent } from '@/components/ui/card'
 import { Alert } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import {
@@ -8,16 +7,21 @@ import {
     DollarSign,
     TrendingUp,
     Calendar,
-    Eye,
-    BarChart3,
     ArrowUpRight,
+    Zap,
     Wallet,
     PiggyBank,
-    Zap
+    ArrowRight
 } from 'lucide-react'
 import Link from 'next/link'
 import { formatCurrency } from '@/lib/utils'
 import { useLanguage } from '@/components/providers/LanguageProvider'
+import { PageHeader } from '@/components/layout/PageHeader'
+import { StatsCard } from '@/components/ui/stats-card'
+import { motion } from 'framer-motion'
+import { staggerContainer, fadeIn, itemFadeIn } from '@/lib/motions'
+import { GlassCard } from '@/components/ui/GlassCard'
+import { cn } from '@/lib/utils'
 
 interface DashboardContentProps {
     user: any
@@ -37,246 +41,262 @@ export function DashboardContent({
     const { t } = useLanguage()
 
     return (
-        <div className="space-y-8 animate-fade-in relative">
-            {/* Nano Header */}
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 mb-8 border-b border-border/50 pb-6">
-                <div>
-                    <h1 className="text-4xl font-black bg-gradient-to-r from-blue-900 to-indigo-800 dark:from-white dark:to-blue-200 bg-clip-text text-transparent mb-2">
-                        {t('common.dashboard')}
-                    </h1>
-                    <p className="text-muted-foreground font-medium max-w-2xl text-lg">
-                        {t('dashboard.welcome')}, <span className="text-banana-600 dark:text-banana font-black">{user.firstName}</span>! Ready to revolutionize your finances?
-                    </p>
-                </div>
-                {/* Optional: Add a date or quick action here if needed, keeping it empty for now to match structure */}
-            </div>
-
-            {/* Treasurer Notification - "Nano Alert" */}
-            {pendingApprovals.length > 0 && (
-                <Alert className="relative overflow-hidden border-l-4 border-l-banana bg-card shadow-lg rounded-xl border-t-0 border-r-0 border-b-0">
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-1">
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 bg-banana/10 rounded-full">
-                                <DollarSign className="h-6 w-6 text-banana-700 dark:text-banana" />
-                            </div>
-                            <div>
-                                <h3 className="font-bold text-foreground text-lg">{t('dashboard.pending_approvals')}</h3>
-                                <p className="text-muted-foreground font-medium">
-                                    {t('dashboard.pending_desc').replace('{count}', pendingApprovals.length.toString())}
-                                </p>
-                            </div>
-                        </div>
-                        <Link href="/treasurer/approvals" className="w-full sm:w-auto">
-                            <Button className="w-full sm:w-auto bg-banana hover:bg-yellow-400 text-banana-foreground font-black rounded-xl shadow-md transition-all hover:scale-105 active:scale-95">
-                                {t('dashboard.review_now')}
+        <motion.div
+            variants={staggerContainer}
+            initial="initial"
+            animate="animate"
+            className="space-y-6 sm:space-y-10 pb-10"
+        >
+            {/* Header Section */}
+            <motion.div variants={fadeIn}>
+                <PageHeader
+                    title={t('common.dashboard')}
+                    description={
+                        <span className="flex flex-wrap items-center gap-1.5">
+                            {t('dashboard.welcome')},
+                            <span className="text-blue-600 dark:text-banana font-black relative group px-1">
+                                {user.firstName}
+                                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-500/30 dark:bg-banana/30 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                            </span>!
+                            <span className="text-muted-foreground/80 font-normal">
+                                Ready to revolutionize your finances?
+                            </span>
+                        </span>
+                    }
+                    action={
+                        <Link href="/contributions/new" className="hidden sm:block">
+                            <Button className="bg-banana hover:bg-yellow-400 text-banana-foreground font-black rounded-xl shadow-lg hover:shadow-yellow-500/20 transition-all hover:scale-105 active:scale-95 group">
+                                <DollarSign className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform" />
+                                {t('dashboard.make_contribution')}
                             </Button>
                         </Link>
-                    </div>
-                </Alert>
+                    }
+                />
+            </motion.div>
+
+            {/* Pending Approvals Alert */}
+            {pendingApprovals.length > 0 && (
+                <motion.div variants={itemFadeIn}>
+                    <Alert className="relative overflow-hidden border border-banana/20 bg-gradient-to-r from-banana/10 via-yellow-100/30 to-transparent dark:from-banana/5 dark:via-yellow-900/5 dark:to-transparent shadow-xl rounded-3xl group">
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:rotate-12 transition-transform duration-500">
+                            <Zap size={60} className="text-banana" />
+                        </div>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-2 relative z-10">
+                            <div className="flex items-start sm:items-center gap-4">
+                                <div className="p-3 bg-banana text-banana-foreground rounded-2xl shrink-0 shadow-lg shadow-yellow-500/20">
+                                    <DollarSign className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <h3 className="font-black text-foreground text-lg leading-tight flex items-center gap-2">
+                                        {t('dashboard.pending_approvals')}
+                                        <span className="flex h-2 w-2 rounded-full bg-red-500 animate-ping" />
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground font-medium mt-1">
+                                        {t('dashboard.pending_desc').replace('{count}', pendingApprovals.length.toString())}
+                                    </p>
+                                </div>
+                            </div>
+                            <Link href="/treasurer/approvals" className="w-full sm:w-auto">
+                                <Button size="lg" className="w-full sm:w-auto bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 text-foreground border border-white/20 dark:border-white/10 font-bold rounded-2xl backdrop-blur-md shadow-sm">
+                                    {t('dashboard.review_now')}
+                                    <ArrowRight className="w-4 h-4 ml-2" />
+                                </Button>
+                            </Link>
+                        </div>
+                    </Alert>
+                </motion.div>
             )}
 
-            {/* "Banana Bento" Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Card 1 */}
-                <Card className="group relative overflow-hidden border-none shadow-lg bg-card hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <Users className="w-24 h-24 text-blue-900 dark:text-blue-100" />
-                    </div>
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="p-2.5 bg-blue-100 dark:bg-blue-900/50 rounded-xl text-blue-700 dark:text-blue-300 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                <Users className="w-5 h-5" />
-                            </div>
-                            <span className="text-xs font-black uppercase tracking-wider text-muted-foreground">{t('dashboard.total_groups')}</span>
-                        </div>
-                        <div className="text-4xl font-black text-foreground mb-1">{stats.totalGroups}</div>
-                        <div className="text-xs font-bold text-muted-foreground">{t('dashboard.active_groups_desc')}</div>
-                    </CardContent>
-                </Card>
+            {/* Stats Grid */}
+            <div className="flex overflow-x-auto pb-4 -mx-4 px-4 gap-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-6 no-scrollbar">
+                <StatsCard
+                    index={1}
+                    label={t('dashboard.total_groups')}
+                    value={stats.totalGroups}
+                    description={t('dashboard.active_groups_desc')}
+                    icon={Users}
+                    className="shrink-0 w-[280px] sm:w-auto"
+                />
 
-                {/* Card 2 - Featured (Banana) */}
-                <Card className="group relative overflow-hidden border-none shadow-lg bg-card hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <Wallet className="w-24 h-24 text-banana dark:text-banana" />
-                    </div>
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="p-2.5 bg-banana/20 rounded-xl text-yellow-700 dark:text-yellow-400 group-hover:bg-banana group-hover:text-blue-950 transition-colors">
-                                <DollarSign className="w-5 h-5" />
-                            </div>
-                            <span className="text-xs font-black uppercase tracking-wider text-muted-foreground">{t('dashboard.total_contributions')}</span>
-                        </div>
-                        <div className="text-4xl font-black text-foreground mb-1 truncate" title={formatCurrency(stats.totalContributions)}>
-                            {formatCurrency(stats.totalContributions)}
-                        </div>
-                        <div className="flex items-center text-xs font-bold text-green-600 dark:text-green-400">
-                            <TrendingUp className="w-3 h-3 mr-1" />
-                            <span>+12.5% {t('dashboard.all_time')}</span>
-                        </div>
-                    </CardContent>
-                </Card>
+                <StatsCard
+                    index={2}
+                    variant="featured"
+                    label={t('dashboard.total_contributions')}
+                    value={formatCurrency(stats.totalContributions)}
+                    icon={Wallet}
+                    trend={{
+                        value: `+12.5%`,
+                        positive: true,
+                        icon: TrendingUp
+                    }}
+                    className="shrink-0 w-[280px] sm:w-auto"
+                />
 
-                {/* Card 3 */}
-                <Card className="group relative overflow-hidden border-none shadow-lg bg-card hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <PiggyBank className="w-24 h-24 text-pink-600" />
-                    </div>
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="p-2.5 bg-pink-100 dark:bg-pink-900/30 rounded-xl text-pink-600 dark:text-pink-400 group-hover:bg-pink-600 group-hover:text-white transition-colors">
-                                <TrendingUp className="w-5 h-5" />
-                            </div>
-                            <span className="text-xs font-black uppercase tracking-wider text-muted-foreground">{t('dashboard.active_loans')}</span>
-                        </div>
-                        <div className="text-4xl font-black text-foreground mb-1">{stats.totalLoans}</div>
-                        <div className="text-xs font-bold text-muted-foreground break-words">
-                            {stats.pendingLoans > 0 ? (
-                                <span className="text-orange-600">{stats.pendingLoans} pending approval</span>
-                            ) : 'All active & healthy'}
-                        </div>
-                    </CardContent>
-                </Card>
+                <StatsCard
+                    index={3}
+                    variant="glass"
+                    label={t('dashboard.active_loans')}
+                    value={stats.totalLoans}
+                    description={stats.pendingLoans > 0 ? `${stats.pendingLoans} pending` : 'All healthy'}
+                    icon={PiggyBank}
+                    className="shrink-0 w-[280px] sm:w-auto"
+                />
 
-                {/* Card 4 */}
-                <Card className="group relative overflow-hidden border-none shadow-lg bg-card hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <Calendar className="w-24 h-24 text-purple-600" />
-                    </div>
-                    <CardContent className="p-6">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="p-2.5 bg-purple-100 dark:bg-purple-900/30 rounded-xl text-purple-600 dark:text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                                <Calendar className="w-5 h-5" />
-                            </div>
-                            <span className="text-xs font-black uppercase tracking-wider text-muted-foreground">Monthly Avg</span>
-                        </div>
-                        <div className="text-4xl font-black text-foreground mb-1 truncate" title={formatCurrency(stats.monthlyContribution)}>
-                            {formatCurrency(stats.monthlyContribution)}
-                        </div>
-                        <div className="text-xs font-bold text-muted-foreground">{t('dashboard.this_month')}</div>
-                    </CardContent>
-                </Card>
+                <StatsCard
+                    index={4}
+                    label="Monthly Avg"
+                    value={formatCurrency(stats.monthlyContribution)}
+                    description={t('dashboard.this_month')}
+                    icon={Calendar}
+                    variant="gradient"
+                    gradient="bg-gradient-to-br from-blue-600 to-indigo-700 shadow-blue-500/20"
+                    className="shrink-0 w-[280px] sm:w-auto"
+                />
             </div>
 
-            {/* Split Section: Activity & Quick Actions */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Recent Activity Feed */}
-                <div className="lg:col-span-2 space-y-6">
-                    {/* Charts Section Container */}
-                    <div>
-                        <h2 className="text-2xl font-black text-foreground mb-4">Performance</h2>
-                        {charts}
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-2xl font-black text-foreground flex items-center gap-2">
-                            <Zap className="w-6 h-6 text-banana filled" fill="currentColor" />
-                            {t('dashboard.recent_activity')}
-                        </h2>
+            {/* Main Content Split */}
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8 min-h-[500px]">
+                {/* Left Column: Charts */}
+                <motion.div variants={itemFadeIn} className="xl:col-span-2 space-y-6 sm:space-y-8">
+                    <GlassCard className="p-1 sm:p-2" hover={false}>
+                        <div className="rounded-2xl overflow-hidden bg-card/30">
+                            {charts}
+                        </div>
+                    </GlassCard>
+
+                    {/* Quick Access Mobile */}
+                    <div className="grid grid-cols-2 gap-3 xl:hidden">
+                        <Link href="/contributions/new" className="col-span-2">
+                            <Button className="w-full h-14 text-lg font-black bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-xl shadow-blue-500/20">
+                                <DollarSign className="w-6 h-6 mr-2" />
+                                {t('dashboard.make_contribution')}
+                            </Button>
+                        </Link>
+                        <Link href="/loans/new">
+                            <Button variant="outline" className="w-full h-14 font-black border-2 rounded-2xl hover:bg-white/50 dark:hover:bg-slate-800/50 backdrop-blur-sm">
+                                {t('dashboard.apply_loan')}
+                            </Button>
+                        </Link>
                         <Link href="/groups">
-                            <Button variant="ghost" size="sm" className="font-bold text-muted-foreground hover:text-blue-600">
-                                {t('common.view_all')} <ArrowUpRight className="w-4 h-4 ml-1" />
+                            <Button variant="outline" className="w-full h-14 font-black border-2 rounded-2xl hover:bg-white/50 dark:hover:bg-slate-800/50 backdrop-blur-sm">
+                                {t('dashboard.manage_groups')}
                             </Button>
                         </Link>
                     </div>
+                </motion.div>
 
-                    <Card className="bg-card border-none shadow-sm h-full">
-                        <CardContent className="p-0">
-                            {recentActivity.length > 0 ? (
-                                <div className="divide-y divide-border">
-                                    {recentActivity.map((activity, i) => (
-                                        <div key={activity.id} className="p-4 sm:p-6 hover:bg-muted/30 transition-colors flex flex-col sm:flex-row gap-4 sm:items-center group">
-                                            <div className="flex items-center gap-4 flex-1">
-                                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-white/20 ${activity.type.includes('LOAN') ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white' :
-                                                    activity.type.includes('CONTRIBUTION') ? 'bg-gradient-to-br from-green-500 to-emerald-600 text-white' :
-                                                        'bg-gradient-to-br from-gray-500 to-gray-600 text-white'
-                                                    }`}>
-                                                    <span className="font-black text-lg">{activity.groupName.charAt(0)}</span>
-                                                </div>
-                                                <div className="min-w-0">
-                                                    <p className="font-bold text-foreground line-clamp-1 group-hover:text-blue-600 transition-colors">{activity.description}</p>
-                                                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{activity.groupName}</p>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center justify-between sm:justify-end gap-6 sm:w-auto w-full pl-16 sm:pl-0">
-                                                {activity.amount && (
-                                                    <div className="font-black text-foreground whitespace-nowrap bg-muted/50 px-3 py-1 rounded-lg">
-                                                        {formatCurrency(activity.amount)}
-                                                    </div>
-                                                )}
-                                                <div className="text-xs font-medium text-muted-foreground whitespace-nowrap">
-                                                    {new Date(activity.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-center py-12">
-                                    <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <Calendar className="w-8 h-8 text-muted-foreground" />
-                                    </div>
-                                    <h3 className="text-lg font-bold text-foreground mb-1">{t('dashboard.no_activity')}</h3>
-                                    <p className="text-muted-foreground mb-4">Time to start building your wealth!</p>
-                                    <Link href="/groups/new">
-                                        <Button className="rounded-xl font-bold bg-blue-900 hover:bg-blue-800 text-white">
-                                            <Users className="w-4 h-4 mr-2" />
-                                            {t('dashboard.join_create')}
-                                        </Button>
-                                    </Link>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                </div>
-
-                {/* Quick Action Tiles */}
-                <div className="space-y-6">
-                    <h2 className="text-2xl font-black text-foreground">{t('dashboard.analytics')}</h2>
-                    <div className="grid grid-cols-1 gap-4">
+                {/* Right Column: Activity & Quick Actions */}
+                <div className="space-y-6 sm:space-y-8 flex flex-col">
+                    {/* Desktop Quick Actions */}
+                    <motion.div variants={itemFadeIn} className="hidden xl:grid grid-cols-1 gap-4">
+                        <h3 className="text-xl font-black text-foreground px-1 flex items-center gap-2">
+                            <Zap size={20} className="text-blue-500" />
+                            {t('dashboard.quick_actions')}
+                        </h3>
                         <Link href="/contributions/new">
-                            <div className="group relative bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-6 text-white shadow-lg overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer">
-                                <div className="absolute top-0 right-0 -mt-8 -mr-8 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:bg-white/20 transition-colors"></div>
-                                <div className="relative z-10 flex flex-col h-full justify-between min-h-[140px]">
-                                    <div className="bg-white/20 w-fit p-3 rounded-2xl backdrop-blur-sm">
-                                        <DollarSign className="w-6 h-6 text-white" />
+                            <GlassCard className="p-6 group cursor-pointer border-blue-500/20 hover:border-blue-500/40" gradient={false}>
+                                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-transparent group-hover:from-blue-600/10 transition-colors" />
+                                <div className="relative z-10 flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <div className="bg-blue-600 w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform">
+                                            <DollarSign className="w-7 h-7 text-white" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-lg font-black leading-tight">{t('dashboard.make_contribution')}</h3>
+                                            <p className="text-muted-foreground text-xs font-bold mt-1">Instant financial record</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h3 className="text-xl font-black mb-1">{t('dashboard.make_contribution')}</h3>
-                                        <p className="text-blue-100 text-sm font-medium leading-tight opacity-90">{t('dashboard.make_contribution_desc')}</p>
-                                    </div>
+                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                 </div>
-                            </div>
+                            </GlassCard>
                         </Link>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-3">
                             <Link href="/loans/new">
-                                <div className="group bg-card border border-border hover:border-banana/50 hover:bg-banana-soft rounded-3xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer h-full flex flex-col justify-between">
-                                    <div className="mb-4">
-                                        <div className="w-10 h-10 bg-pink-100 dark:bg-pink-900/30 rounded-full flex items-center justify-center text-pink-600 mb-2">
-                                            <Wallet className="w-5 h-5" />
-                                        </div>
-                                        <h3 className="font-bold text-foreground leading-tight">{t('dashboard.apply_loan')}</h3>
+                                <GlassCard className="p-4" blur="sm">
+                                    <div className="p-2 bg-pink-500/10 rounded-xl w-fit mb-3">
+                                        <Wallet className="w-5 h-5 text-pink-500" />
                                     </div>
-                                    <ArrowUpRight className="self-end w-5 h-5 text-muted-foreground group-hover:text-banana-foreground transition-colors" />
-                                </div>
+                                    <h3 className="font-black text-sm leading-tight">{t('dashboard.apply_loan')}</h3>
+                                </GlassCard>
                             </Link>
 
                             <Link href="/groups">
-                                <div className="group bg-card border border-border hover:border-blue-500/50 hover:bg-blue-50 dark:hover:bg-blue-900/10 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer h-full flex flex-col justify-between">
-                                    <div className="mb-4">
-                                        <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center text-purple-600 mb-2">
-                                            <Users className="w-5 h-5" />
-                                        </div>
-                                        <h3 className="font-bold text-foreground leading-tight">{t('dashboard.manage_groups')}</h3>
+                                <GlassCard className="p-4" blur="sm">
+                                    <div className="p-2 bg-purple-500/10 rounded-xl w-fit mb-3">
+                                        <Users className="w-5 h-5 text-purple-600" />
                                     </div>
-                                    <ArrowUpRight className="self-end w-5 h-5 text-muted-foreground group-hover:text-blue-600 transition-colors" />
-                                </div>
+                                    <h3 className="font-black text-sm leading-tight">{t('dashboard.manage_groups')}</h3>
+                                </GlassCard>
                             </Link>
                         </div>
-                    </div>
+                    </motion.div>
 
+                    {/* Recent Activity Feed */}
+                    <motion.div variants={itemFadeIn} className="flex-1 min-h-0">
+                        <GlassCard className="h-full flex flex-col p-0 overflow-hidden" hover={false}>
+                            <div className="p-5 border-b border-border/50 flex items-center justify-between bg-white/30 dark:bg-slate-900/30 backdrop-blur-xl">
+                                <h2 className="text-lg sm:text-xl font-black text-foreground flex items-center gap-2">
+                                    <TrendingUp className="w-5 h-5 text-blue-500" />
+                                    {t('dashboard.recent_activity')}
+                                </h2>
+                                <Link href="/groups">
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-blue-500/10 hover:text-blue-500">
+                                        <ArrowUpRight className="w-4 h-4" />
+                                    </Button>
+                                </Link>
+                            </div>
 
+                            <div className="flex-1 overflow-y-auto max-h-[500px] xl:max-h-none scrollbar-thin scrollbar-thumb-muted-foreground/10">
+                                {recentActivity.length > 0 ? (
+                                    <div className="divide-y divide-border/30">
+                                        {recentActivity.map((activity, i) => (
+                                            <motion.div
+                                                key={activity.id}
+                                                initial={{ opacity: 0, x: -10 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: i * 0.05 }}
+                                                className="p-4 hover:bg-white/40 dark:hover:bg-slate-800/40 transition-colors flex items-center gap-4 group cursor-pointer"
+                                            >
+                                                <div className={cn(
+                                                    "w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-110",
+                                                    activity.type.includes('LOAN') ? 'bg-blue-500 text-white' :
+                                                        activity.type.includes('CONTRIBUTION') ? 'bg-emerald-500 text-white' :
+                                                            'bg-slate-500 text-white'
+                                                )}>
+                                                    <span className="font-black text-lg">{activity.groupName.charAt(0)}</span>
+                                                </div>
+
+                                                <div className="flex-1 min-w-0 grid gap-1">
+                                                    <div className="flex items-center justify-between">
+                                                        <p className="text-sm font-black text-foreground truncate">{activity.description}</p>
+                                                        {activity.amount && (
+                                                            <span className="text-[10px] font-black text-blue-600 dark:text-banana bg-blue-500/10 dark:bg-banana/10 px-2.5 py-1 rounded-full whitespace-nowrap">
+                                                                {formatCurrency(activity.amount)}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex items-center justify-between text-[11px] text-muted-foreground font-bold">
+                                                        <span className="truncate pr-2 opacity-70">{activity.groupName}</span>
+                                                        <span className="opacity-60">{new Date(activity.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col items-center justify-center py-20 text-center px-4">
+                                        <div className="w-16 h-16 bg-muted/30 rounded-full flex items-center justify-center mb-4 backdrop-blur-md">
+                                            <Calendar className="w-8 h-8 text-muted-foreground/30" />
+                                        </div>
+                                        <p className="text-sm font-black text-muted-foreground">No recent activity detected.</p>
+                                    </div>
+                                )}
+                            </div>
+                        </GlassCard>
+                    </motion.div>
                 </div>
             </div>
-        </div>
+        </motion.div>
     )
 }

@@ -41,35 +41,35 @@ export default async function LoansPage() {
     },
   })
 
-  // Calculate eligibility server-side
-  const eligibilityChecks = await Promise.all(
-    userGroups.map(async (groupMember) => {
-      const contributions = await prisma.contribution.findMany({
-        where: {
-          userId: userId,
-          groupId: groupMember.groupId,
-          status: 'COMPLETED',
-        },
-      })
-
-      const totalContributions = contributions.reduce((sum, c) => sum + Number(c.amount), 0)
-      const maxLoanAmount = totalContributions * groupMember.group.maxLoanMultiplier
-
-      const hasActiveLoan = loans.some(l =>
-        l.groupId === groupMember.groupId &&
-        ['PENDING', 'APPROVED', 'ACTIVE'].includes(l.status)
-      )
-
-      return {
-        group: groupMember.group,
-        eligible: contributions.length >= 3 && !hasActiveLoan,
-        contributionsCount: contributions.length,
-        totalContributions,
-        maxLoanAmount,
-        hasActiveLoan,
-      }
+  // Calculate eligibility server-side - Sequenced to avoid overwhelming the database connection in dev
+  const eligibilityChecks = []
+  for (const groupMember of userGroups) {
+    const contributions = await prisma.contribution.findMany({
+      where: {
+        userId: userId,
+        groupId: groupMember.groupId,
+        status: 'COMPLETED',
+      },
+      take: 12 // Optimization: only need to check if count >= 3
     })
-  )
+
+    const totalContributions = contributions.reduce((sum, c) => sum + Number(c.amount), 0)
+    const maxLoanAmount = totalContributions * groupMember.group.maxLoanMultiplier
+
+    const hasActiveLoan = loans.some(l =>
+      l.groupId === groupMember.groupId &&
+      ['PENDING', 'APPROVED', 'ACTIVE'].includes(l.status)
+    )
+
+    eligibilityChecks.push({
+      group: groupMember.group,
+      eligible: contributions.length >= 3 && !hasActiveLoan,
+      contributionsCount: contributions.length,
+      totalContributions,
+      maxLoanAmount,
+      hasActiveLoan,
+    })
+  }
 
   return (
     <LoansClient

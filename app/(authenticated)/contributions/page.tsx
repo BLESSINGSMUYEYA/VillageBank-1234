@@ -1,6 +1,8 @@
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { Prisma, PaymentStatus } from '@prisma/client'
 import { ContributionsClient } from '@/components/contributions/ContributionsClient'
+import { redirect } from 'next/navigation'
 
 export default async function ContributionsPage({
   searchParams,
@@ -12,16 +14,16 @@ export default async function ContributionsPage({
   const params = await searchParams
 
   if (!userId) {
-    return <div className="p-8 text-center text-h3">Please sign in to access contributions.</div>
+    redirect('/sign-in')
   }
 
   // Build prisma query
-  const whereClause: any = {
+  const whereClause: Prisma.ContributionWhereInput = {
     userId: userId as string,
   }
 
-  if (params.status && params.status !== 'all') {
-    whereClause.status = params.status
+  if (params.status && params.status !== 'all' && Object.values(PaymentStatus).includes(params.status as PaymentStatus)) {
+    whereClause.status = params.status as PaymentStatus
   }
 
   if (params.groupId && params.groupId !== 'all') {

@@ -19,6 +19,8 @@ import {
 } from 'lucide-react'
 import { NotificationCenter } from '@/components/notifications/NotificationCenter'
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher'
+import { motion, AnimatePresence } from 'framer-motion'
+import { cn } from '@/lib/utils'
 
 interface MobileNavigationProps {
   unreadNotifications?: number
@@ -43,13 +45,11 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
   let displayedNavigation = memberNavigation
 
   if (user?.role === 'REGIONAL_ADMIN') {
-    // Regional Admins ONLY see their admin page
     displayedNavigation = []
     adminNavigation.push(
       { name: t('admin.regional'), href: '/admin/regional', icon: Shield }
     )
   } else if (user?.role === 'SUPER_ADMIN') {
-    // Super Admins ONLY see admin pages
     displayedNavigation = []
     adminNavigation.push(
       { name: t('admin.regional'), href: '/admin/regional', icon: Shield },
@@ -62,69 +62,70 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
   return (
     <div className="lg:hidden">
       {/* Mobile Header - Nano Glass */}
-      <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between p-4 bg-background/80 backdrop-blur-xl border-b border-white/10 shadow-sm transition-all duration-300">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg">
-            <span className="text-white font-black text-sm">V</span>
-          </div>
-          <h1 className="text-xl font-black bg-gradient-to-r from-blue-900 via-indigo-800 to-blue-900 dark:from-white dark:to-blue-200 bg-clip-text text-transparent">Village Bank</h1>
-        </div>
+      <div className="fixed top-0 left-0 right-0 z-40 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl border-b border-white/20 dark:border-white/10 shadow-sm transition-all duration-300">
+        <div className="flex items-center justify-between p-4 px-6">
+          <Link href="/dashboard" className="flex items-center space-x-3 group">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-500/20 group-active:scale-95 transition-transform">
+              <span className="text-white font-black text-sm">V</span>
+            </div>
+            <div>
+              <h1 className="text-lg font-black bg-gradient-to-r from-blue-900 via-indigo-800 to-blue-900 dark:from-white dark:to-blue-200 bg-clip-text text-transparent leading-none">Village Bank</h1>
+              <p className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 leading-none mt-1">Premium Member</p>
+            </div>
+          </Link>
 
-        <div className="flex items-center gap-2">
-          <LanguageSwitcher />
-          {user && <NotificationCenter />}
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-9 w-9 rounded-xl hover:bg-banana/10 transition-colors p-0">
-                  <Avatar className="h-8 w-8 border border-border/50 rounded-lg">
-                    <AvatarFallback className="font-black text-xs text-blue-900 bg-banana-soft dark:text-banana dark:bg-blue-900">
-                      {user?.firstName?.charAt(0).toUpperCase() || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <div className="flex items-center justify-start gap-2 p-2">
-                  <div className="flex flex-col space-y-1 leading-none">
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            {user && <NotificationCenter />}
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-xl hover:bg-white/50 dark:hover:bg-slate-800/50 transition-all p-0">
+                    <Avatar className="h-9 w-9 border border-white/20 dark:border-white/10 rounded-xl">
+                      <AvatarFallback className="font-black text-xs text-blue-900 bg-banana-soft dark:text-banana dark:bg-slate-800">
+                        {user?.firstName?.charAt(0).toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-64 rounded-2xl p-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-white/20 dark:border-white/10" align="end" forceMount>
+                  <div className="flex flex-col space-y-1 p-3">
                     <p className="font-black text-sm text-foreground">{user?.firstName} {user?.lastName}</p>
-                    <p className="w-50 truncate text-xs text-muted-foreground">
+                    <p className="truncate text-xs text-muted-foreground font-bold opacity-70">
                       {user?.email}
                     </p>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                      {user?.role}
-                    </p>
+                    <div className="mt-2 inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-blue-500/10 text-blue-600 dark:bg-banana/10 dark:text-banana w-fit">
+                      {user?.role?.replace('_', ' ')}
+                    </div>
                   </div>
-                </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/profile" className="w-full cursor-pointer rounded-lg font-bold">
-                    <User className="mr-2 h-4 w-4" />
-                    {t('common.profile')}
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/settings" className="w-full cursor-pointer rounded-lg font-bold">
-                    <Settings className="mr-2 h-4 w-4" />
-                    {t('common.settings')}
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <button className="w-full text-left flex items-center font-bold text-red-500" onClick={() => logout()}>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    {t('common.logout')}
-                  </button>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <div className="flex items-center space-x-2">
+                  <DropdownMenuSeparator className="bg-white/10" />
+                  <DropdownMenuItem asChild className="rounded-xl focus:bg-blue-600 focus:text-white dark:focus:bg-banana dark:focus:text-blue-900">
+                    <Link href="/profile" className="flex items-center p-2 font-bold">
+                      <User className="mr-3 h-4 w-4" />
+                      {t('common.profile')}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="rounded-xl focus:bg-blue-600 focus:text-white dark:focus:bg-banana dark:focus:text-blue-900">
+                    <Link href="/settings" className="flex items-center p-2 font-bold">
+                      <Settings className="mr-3 h-4 w-4" />
+                      {t('common.settings')}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-white/10" />
+                  <DropdownMenuItem asChild className="rounded-xl focus:bg-red-500 focus:text-white">
+                    <button className="w-full text-left flex items-center p-2 font-bold text-red-500" onClick={() => logout()}>
+                      <LogOut className="mr-3 h-4 w-4" />
+                      {t('common.logout')}
+                    </button>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
               <Link href="/login">
-                <Button variant="ghost" size="sm" className="font-bold">Sign In</Button>
+                <Button size="sm" className="font-black rounded-xl bg-blue-600 text-white">Sign In</Button>
               </Link>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
@@ -134,7 +135,11 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
       {/* Mobile Bottom Navigation - Floating Glass Dock */}
       {user && (
         <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden px-4 pb-6 pointer-events-none">
-          <div className="bg-background/80 backdrop-blur-xl border border-white/20 shadow-2xl rounded-full px-2 py-2 pointer-events-auto mx-auto max-w-sm">
+          <motion.div
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl border border-white/30 dark:border-white/10 shadow-2xl rounded-[32px] px-2 py-2 pointer-events-auto mx-auto max-w-sm"
+          >
             <div className="flex items-center justify-around gap-1">
               {allNavigation.slice(0, 5).map((item) => {
                 const Icon = item.icon
@@ -143,23 +148,31 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`relative flex flex-col items-center justify-center w-12 h-12 rounded-full transition-all duration-300 group ${isActive
-                      ? 'text-yellow-600 dark:text-banana'
-                      : 'text-muted-foreground hover:text-foreground'
-                      }`}
+                    className={cn(
+                      "relative flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all duration-300 group",
+                      isActive
+                        ? 'text-blue-600 dark:text-banana'
+                        : 'text-muted-foreground hover:text-foreground'
+                    )}
                   >
-                    {isActive && (
-                      <div className="absolute inset-0 bg-banana/10 rounded-full animate-in fade-in zoom-in duration-200" />
-                    )}
-                    <Icon className={`w-5 h-5 transition-transform duration-300 ${isActive ? 'scale-110 stroke-[2.5px]' : ''}`} />
-                    {isActive && (
-                      <div className="absolute -bottom-1 w-1 h-1 bg-yellow-500 dark:bg-banana rounded-full" />
-                    )}
+                    <AnimatePresence>
+                      {isActive && (
+                        <motion.div
+                          layoutId="mobile-dock-active"
+                          className="absolute inset-x-1 inset-y-1 bg-blue-500/10 dark:bg-banana/10 border-b-2 border-blue-500 dark:border-banana rounded-2xl z-0"
+                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                    </AnimatePresence>
+                    <Icon className={cn(
+                      "w-5 h-5 relative z-10 transition-transform duration-300",
+                      isActive ? 'scale-110 stroke-[2.5px]' : 'group-active:scale-95'
+                    )} />
                   </Link>
                 )
               })}
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>

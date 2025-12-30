@@ -37,6 +37,7 @@
     "crypto-js": "^4.2.0",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
+    "framer-motion": "^12.23.26",
     "html2canvas": "^1.4.1",
     "jimp": "^1.6.0",
     "jose": "^6.1.3",

@@ -68,8 +68,8 @@ export default async function GroupDetailPage({
       </div>
 
       {/* Group Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <Card className="bg-card border border-border shadow-sm">
+      <div className="flex overflow-x-auto pb-4 -mx-4 px-4 gap-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-6 no-scrollbar">
+        <Card className="bg-card border border-border shadow-sm shrink-0 w-[280px] sm:w-auto">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs sm:text-sm font-black text-muted-foreground uppercase tracking-widest">Total Members</CardTitle>
             <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
@@ -82,7 +82,7 @@ export default async function GroupDetailPage({
           </CardContent>
         </Card>
 
-        <Card className="bg-card border border-border shadow-sm">
+        <Card className="bg-card border border-border shadow-sm shrink-0 w-[280px] sm:w-auto">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs sm:text-sm font-black text-muted-foreground uppercase tracking-widest">Monthly Contribution</CardTitle>
             <DollarSign className="h-4 w-4 text-green-600 dark:text-green-400" />
@@ -97,7 +97,7 @@ export default async function GroupDetailPage({
           </CardContent>
         </Card>
 
-        <Card className="bg-card border border-border shadow-sm">
+        <Card className="bg-card border border-border shadow-sm shrink-0 w-[280px] sm:w-auto">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs sm:text-sm font-black text-muted-foreground uppercase tracking-widest">Interest Rate</CardTitle>
             <CreditCard className="h-4 w-4 text-purple-600 dark:text-purple-400" />
@@ -110,7 +110,7 @@ export default async function GroupDetailPage({
           </CardContent>
         </Card>
 
-        <Card className="bg-card border border-border shadow-sm">
+        <Card className="bg-card border border-border shadow-sm shrink-0 w-[280px] sm:w-auto">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs sm:text-sm font-black text-muted-foreground uppercase tracking-widest">Loan Multiplier</CardTitle>
             <TrendingUp className="h-4 w-4 text-orange-600 dark:text-orange-400" />
