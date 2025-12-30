@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAuth } from '@clerk/nextjs/server'
+import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { PenaltyService } from '@/lib/penalty-service'
 import { z } from 'zod'
@@ -14,7 +14,8 @@ const createContributionSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = getAuth(request)
+    const session = await getSession()
+    const userId = session?.userId
 
     if (!userId) {
       return NextResponse.json(
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
     const groupMember = await prisma.groupMember.findFirst({
       where: {
         groupId: validatedData.groupId,
-        userId: userId,
+        userId: userId as string,
         status: 'ACTIVE',
       },
       include: {
@@ -60,7 +61,7 @@ export async function POST(request: NextRequest) {
     const existingContributionMonth = await prisma.contribution.findFirst({
       where: {
         groupId: validatedData.groupId,
-        userId: userId,
+        userId: userId as string,
         month: currentMonth,
         year: currentYear,
         status: { in: ['COMPLETED', 'PENDING'] }
@@ -99,7 +100,7 @@ export async function POST(request: NextRequest) {
     const contribution = await prisma.contribution.create({
       data: {
         groupId: validatedData.groupId,
-        userId: userId,
+        userId: userId as string,
         amount: validatedData.amount,
         month: currentMonth,
         year: currentYear,
@@ -115,7 +116,7 @@ export async function POST(request: NextRequest) {
     // Create activity log
     await prisma.activity.create({
       data: {
-        userId: userId,
+        userId: userId as string,
         groupId: validatedData.groupId,
         actionType: isLate ? 'CONTRIBUTION_MADE_LATE' : 'CONTRIBUTION_MADE',
         description: `Made payment of MWK ${validatedData.amount.toLocaleString()}. Applied: MWK ${penaltyPaid.toLocaleString()} to penalties, MWK ${remainingAmount.toLocaleString()} to balance.`,
@@ -161,7 +162,8 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = getAuth(request)
+    const session = await getSession()
+    const userId = session?.userId
 
     if (!userId) {
       return NextResponse.json(
@@ -180,7 +182,7 @@ export async function GET(request: NextRequest) {
 
     // Build where clause for filtering
     const whereClause: any = {
-      userId: userId,
+      userId: userId as string,
     }
 
     if (status) {

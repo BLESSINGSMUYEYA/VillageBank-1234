@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAuth } from '@clerk/nextjs/server'
+import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 import QRCode from 'qrcode'
 import { v4 as uuidv4 } from 'uuid'
 import CryptoJS from 'crypto-js'
+import { Jimp, HorizontalAlign, VerticalAlign } from 'jimp'
 
 const shareSchema = z.object({
   permissions: z.enum(['VIEW_ONLY', 'REQUEST_JOIN', 'LIMITED_ACCESS', 'FULL_PREVIEW']),
@@ -19,7 +20,8 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { userId } = getAuth(request)
+    const session = await getSession()
+    const userId = session?.userId
 
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -33,7 +35,7 @@ export async function POST(
     const membership = await prisma.groupMember.findFirst({
       where: {
         groupId,
-        userId,
+        userId: userId as string,
         role: 'ADMIN',
         status: 'ACTIVE',
       },
@@ -53,7 +55,7 @@ export async function POST(
     const groupShare = await (prisma as any).groupShare.create({
       data: {
         groupId,
-        sharedById: userId,
+        sharedById: userId as string,
         shareToken,
         shareType: 'QR_CODE',
         permissions,
@@ -88,12 +90,9 @@ export async function POST(
       errorCorrectionLevel: 'H', // Higher error correction to allow branding
     })
 
-    // Add branding with Jimp (already in dependencies)
+    // Add branding with Jimp
     let finalBuffer = qrCodeBuffer
     try {
-      // Use dynamic import for Jimp to prevent build-time issues
-      const { Jimp } = await import('jimp')
-
       const qrImage = await Jimp.read(qrCodeBuffer)
 
       // Create a canvas for the branded image (400x460 to allow space for text)
@@ -108,21 +107,31 @@ export async function POST(
 
       // Add "Village Banking" text branding at the bottom
       try {
+        // Try to load a font from a known reliable path or use a fallback
+        // In Jimp 1.x, fonts are sometimes tricky. We'll try to import it dynamically here
+        // to avoid breaking the whole thing if the import fails.
         const { loadFont } = await import('jimp')
-        const { SANS_32_BLACK } = await import('jimp/fonts')
-        const font = await loadFont(SANS_32_BLACK)
+        // Try to use a standard font that usually comes with Jimp
+        // If this fails, it will just skip the text branding
+        try {
+          // @ts-ignore
+          const { SANS_32_BLACK } = await import('jimp/fonts')
+          const font = await loadFont(SANS_32_BLACK)
 
-        canvas.print({
-          font,
-          x: 0,
-          y: 405, // Position in the new white space
-          text: {
-            text: 'Village Banking',
-            alignmentX: 'center' as any, // use string for alignment in Jimp 1.x
-            alignmentY: 'middle' as any
-          },
-          maxWidth: 400
-        })
+          canvas.print({
+            font,
+            x: 0,
+            y: 405,
+            text: {
+              text: 'Village Banking',
+              alignmentX: HorizontalAlign.CENTER,
+              alignmentY: VerticalAlign.MIDDLE
+            },
+            maxWidth: 400
+          })
+        } catch (e) {
+          console.log("Font import failed, skipping text branding")
+        }
       } catch (fontError) {
         console.error('Font loading error:', fontError)
       }
@@ -162,7 +171,8 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { userId } = getAuth(request)
+    const session = await getSession()
+    const userId = session?.userId
 
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -174,7 +184,7 @@ export async function GET(
     const membership = await prisma.groupMember.findFirst({
       where: {
         groupId,
-        userId,
+        userId: userId as string,
         role: 'ADMIN',
         status: 'ACTIVE',
       },
