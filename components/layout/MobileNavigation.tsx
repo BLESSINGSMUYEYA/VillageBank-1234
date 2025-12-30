@@ -45,12 +45,10 @@ export function MobileNavigation({ unreadNotifications = 0 }: MobileNavigationPr
   let displayedNavigation = memberNavigation
 
   if (user?.role === 'REGIONAL_ADMIN') {
-    displayedNavigation = []
     adminNavigation.push(
       { name: t('admin.regional'), href: '/admin/regional', icon: Shield }
     )
   } else if (user?.role === 'SUPER_ADMIN') {
-    displayedNavigation = []
     adminNavigation.push(
       { name: t('admin.regional'), href: '/admin/regional', icon: Shield },
       { name: t('admin.system'), href: '/admin/system', icon: Settings }

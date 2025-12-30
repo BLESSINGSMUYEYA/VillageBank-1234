@@ -23,12 +23,14 @@ export default async function DashboardCharts() {
 
             {/* Charts Grid */}
             <Tabs defaultValue="contributions" className="space-y-4">
-                <TabsList className="flex w-full justify-start overflow-x-auto bg-muted p-1 rounded-xl space-x-2">
-                    <TabsTrigger value="contributions" className="flex-1 min-w-[100px] text-xs sm:text-sm whitespace-nowrap">Contributions</TabsTrigger>
-                    <TabsTrigger value="groups" className="flex-1 min-w-[80px] text-xs sm:text-sm">Groups</TabsTrigger>
-                    <TabsTrigger value="trends" className="flex-1 min-w-[80px] text-xs sm:text-sm">Trends</TabsTrigger>
-                    <TabsTrigger value="payments" className="flex-1 min-w-[80px] text-xs sm:text-sm">Payments</TabsTrigger>
-                </TabsList>
+                <div className="sticky top-0 z-20 pt-2 pointer-events-none">
+                    <TabsList className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl p-1.5 rounded-2xl border border-white/40 dark:border-white/10 w-full justify-start h-14 sm:h-16 shadow-xl pointer-events-auto overflow-x-auto no-scrollbar">
+                        <TabsTrigger value="contributions" className="rounded-xl px-4 sm:px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all flex items-center gap-2 whitespace-nowrap">Contributions</TabsTrigger>
+                        <TabsTrigger value="groups" className="rounded-xl px-4 sm:px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all flex items-center gap-2 whitespace-nowrap">Groups</TabsTrigger>
+                        <TabsTrigger value="trends" className="rounded-xl px-4 sm:px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all flex items-center gap-2 whitespace-nowrap">Trends</TabsTrigger>
+                        <TabsTrigger value="payments" className="rounded-xl px-4 sm:px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all flex items-center gap-2 whitespace-nowrap">Payments</TabsTrigger>
+                    </TabsList>
+                </div>
 
                 <TabsContent value="contributions" className="space-y-4">
                     <ContributionChart

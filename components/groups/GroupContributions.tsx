@@ -2,11 +2,11 @@
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { formatCurrency } from '@/lib/utils'
-import { Plus, Eye } from 'lucide-react'
+import { formatCurrency, cn } from '@/lib/utils'
+import { Plus, Eye, CheckCircle2, Clock, Wallet, ArrowUpRight } from 'lucide-react'
 import Link from 'next/link'
+import { StatsCard } from '@/components/ui/stats-card'
 
 interface Contribution {
   id: string
@@ -40,184 +40,150 @@ export default function GroupContributions({ contributions, groupId, currentUser
   const totalPending = pendingContributions.reduce((sum, c) => sum + c.amount, 0)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 sm:space-y-10">
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-        <Card className="bg-card border border-border shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Completed</CardTitle>
-            <div className="p-2 bg-green-50 dark:bg-green-900 rounded-xl">
-              <div className="w-2 h-2 bg-green-600 dark:bg-green-400 rounded-full"></div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg sm:text-2xl font-black text-foreground truncate" title={formatCurrency(totalCompleted)}>
-              {formatCurrency(totalCompleted)}
-            </div>
-            <p className="text-[10px] text-muted-foreground font-bold mt-1">
-              {completedContributions.length} contributions
-            </p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+        <StatsCard
+          index={1}
+          label="Completed"
+          value={formatCurrency(totalCompleted)}
+          description={`${completedContributions.length} contributions settled`}
+          icon={CheckCircle2}
+          variant="glass"
+          className="w-full"
+        />
 
-        <Card className="bg-card border border-border shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Pending</CardTitle>
-            <div className="p-2 bg-orange-50 dark:bg-orange-900 rounded-xl">
-              <div className="w-2 h-2 bg-orange-600 dark:bg-orange-400 rounded-full"></div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg sm:text-2xl font-black text-foreground truncate" title={formatCurrency(totalPending)}>
-              {formatCurrency(totalPending)}
-            </div>
-            <p className="text-[10px] text-muted-foreground font-bold mt-1">
-              {pendingContributions.length} contributions
-            </p>
-          </CardContent>
-        </Card>
+        <StatsCard
+          index={2}
+          label="Pending"
+          value={formatCurrency(totalPending)}
+          description={`${pendingContributions.length} awaiting approval`}
+          icon={Clock}
+          className="w-full"
+        />
 
-        <Card className="bg-card border border-border shadow-sm md:col-span-2 lg:col-span-1">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Total</CardTitle>
-            <div className="p-2 bg-purple-50 dark:bg-purple-900 rounded-xl">
-              <div className="w-2 h-2 bg-purple-600 dark:bg-purple-400 rounded-full"></div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg sm:text-2xl font-black text-foreground truncate" title={formatCurrency(totalCompleted + totalPending)}>
-              {formatCurrency(totalCompleted + totalPending)}
-            </div>
-            <p className="text-[10px] text-muted-foreground font-bold mt-1">
-              All time
-            </p>
-          </CardContent>
-        </Card>
+        <StatsCard
+          index={3}
+          label="Total Volume"
+          value={formatCurrency(totalCompleted + totalPending)}
+          description="Life-time contribution"
+          icon={Wallet}
+          variant="featured"
+          className="w-full"
+        />
       </div>
 
-      {/* Quick Actions */}
-      <Card className="bg-card border border-border shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-lg sm:text-xl font-black text-foreground">Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-4">
-            <Link href="/contributions/new">
-              <Button className="rounded-xl font-bold bg-blue-900 hover:bg-blue-800 text-white shadow-sm dark:bg-blue-700 dark:hover:bg-blue-600">
-                <Plus className="w-4 h-4 mr-2" />
-                Make Contribution
+      {/* Action Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-6">
+        <div>
+          <h2 className="text-xl font-black text-foreground">Contribution History</h2>
+          <p className="text-xs font-bold text-muted-foreground opacity-70">Records of all financial participation</p>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <Link href="/contributions/new">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl px-6 shadow-lg shadow-blue-500/20 group">
+              <Plus className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform" />
+              New Contribution
+            </Button>
+          </Link>
+          {(currentUserRole === 'TREASURER' || currentUserRole === 'ADMIN') && (
+            <Link href="/treasurer/approvals">
+              <Button variant="outline" className="border-2 font-black rounded-xl px-6 hover:bg-blue-500/5 group">
+                <Eye className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
+                Review Pending
               </Button>
             </Link>
-            {(currentUserRole === 'TREASURER' || currentUserRole === 'ADMIN') && (
-              <Link href="/treasurer/approvals">
-                <Button variant="outline" className="rounded-xl font-bold border-border hover:border-blue-700 hover:text-blue-700 transition-colors">
-                  <Eye className="w-4 h-4 mr-2" />
-                  Review Pending
-                </Button>
-              </Link>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Recent Contributions */}
-      <Card className="bg-card border border-border shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-lg sm:text-xl font-black text-foreground">Recent Contributions</CardTitle>
-          <CardDescription className="text-sm font-medium text-muted-foreground">
-            Latest contributions from group members
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="px-0 sm:px-6">
-          {contributions.length > 0 ? (
-            <div className="overflow-x-auto no-scrollbar">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="min-w-[150px]">Member</TableHead>
-                    <TableHead className="min-w-[120px]">Amount</TableHead>
-                    <TableHead className="min-w-[120px]">Period</TableHead>
-                    <TableHead className="min-w-[120px]">Payment</TableHead>
-                    <TableHead className="min-w-[100px]">Status</TableHead>
-                    <TableHead className="min-w-[100px]">Date</TableHead>
-                    <TableHead>Receipt</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {contributions.map((contribution) => (
-                    <TableRow key={contribution.id}>
-                      <TableCell>
-                        <div className="font-black text-sm">
-                          {contribution.user.firstName} {contribution.user.lastName}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <div className="font-black text-sm">{formatCurrency(contribution.amount)}</div>
-                          {contribution.isLate && (
-                            <div className="text-xs text-red-600 font-bold">
-                              +{formatCurrency(contribution.penaltyApplied)} Penalty
-                            </div>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap">
-                        {new Date(contribution.year, contribution.month - 1).toLocaleDateString('en-US', {
-                          month: 'long',
-                          year: 'numeric'
-                        })}
-                      </TableCell>
-                      <TableCell>
-                        {contribution.paymentMethod || '-'}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-col gap-1">
-                          <Badge
-                            variant={
-                              contribution.status === 'COMPLETED' ? 'default' :
-                                contribution.status === 'PENDING' ? 'secondary' : 'destructive'
-                            }
-                            className="w-fit font-bold uppercase tracking-wider text-xs"
-                          >
-                            {contribution.status}
-                          </Badge>
-                          {contribution.isLate && (
-                            <Badge variant="outline" className="w-fit border-red-200 text-red-700 bg-red-50 text-[10px] py-0 font-bold uppercase tracking-wider">LATE</Badge>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap">
-                        {new Date(contribution.createdAt).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell>
-                        {contribution.receiptUrl && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => window.open(contribution.receiptUrl, '_blank')}
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground mb-4 font-medium">No contributions yet</p>
-              <Link href="/contributions/new" className="mt-4 inline-block">
-                <Button size="sm" className="rounded-xl font-bold bg-blue-900 hover:bg-blue-800 text-white dark:bg-blue-700 dark:hover:bg-blue-600">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Make First Contribution
-                </Button>
-              </Link>
-            </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
+      {/* Recent Contributions Table */}
+      <div className="overflow-x-auto scrollbar-premium">
+        {contributions.length > 0 ? (
+          <Table>
+            <TableHeader className="bg-white/30 dark:bg-slate-900/30">
+              <TableRow className="hover:bg-transparent border-b border-white/20 dark:border-white/10">
+                <TableHead className="font-black text-[10px] uppercase tracking-widest pl-6">Member</TableHead>
+                <TableHead className="font-black text-[10px] uppercase tracking-widest">Amount</TableHead>
+                <TableHead className="font-black text-[10px] uppercase tracking-widest">Period</TableHead>
+                <TableHead className="font-black text-[10px] uppercase tracking-widest">Status</TableHead>
+                <TableHead className="font-black text-[10px] uppercase tracking-widest">Date</TableHead>
+                <TableHead className="text-right font-black text-[10px] uppercase tracking-widest pr-6">Receipt</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {contributions.map((contribution) => (
+                <TableRow key={contribution.id} className="border-b border-white/10 dark:border-white/5 hover:bg-white/40 dark:hover:bg-slate-800/40 transition-colors group">
+                  <TableCell className="py-4 pl-6">
+                    <div className="font-black text-sm text-foreground">
+                      {contribution.user.firstName} {contribution.user.lastName}
+                    </div>
+                    <div className="text-[10px] font-bold text-muted-foreground opacity-60">
+                      via {contribution.paymentMethod || 'Transfer'}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="font-black text-sm text-blue-600 dark:text-banana">
+                      {formatCurrency(contribution.amount)}
+                    </div>
+                    {contribution.isLate && (
+                      <div className="text-[10px] text-red-600 font-bold uppercase tracking-tight">
+                        +{formatCurrency(contribution.penaltyApplied)} Late Fee
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-xs font-bold text-muted-foreground italic">
+                    {new Date(contribution.year, contribution.month - 1).toLocaleDateString('en-US', {
+                      month: 'short',
+                      year: 'numeric'
+                    })}
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      className={cn(
+                        "font-black uppercase tracking-wider text-[9px] px-2.5 py-0.5 rounded-lg",
+                        contribution.status === 'COMPLETED' ? 'bg-emerald-500 text-white shadow-sm' :
+                          contribution.status === 'PENDING' ? 'bg-orange-500 text-white shadow-sm' :
+                            'bg-red-500 text-white shadow-sm'
+                      )}
+                    >
+                      {contribution.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-[11px] font-bold text-muted-foreground opacity-70">
+                    {new Date(contribution.createdAt).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell className="text-right pr-6">
+                    {contribution.receiptUrl && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 rounded-full hover:bg-blue-500/10 hover:text-blue-600 transition-colors"
+                        onClick={() => window.open(contribution.receiptUrl, '_blank')}
+                      >
+                        <ArrowUpRight className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <div className="text-center py-20 bg-white/20 dark:bg-slate-900/20 backdrop-blur-sm rounded-3xl m-6 border-2 border-dashed border-white/10">
+            <div className="w-16 h-16 bg-muted/30 rounded-full flex items-center justify-center mb-4 mx-auto">
+              <Plus className="w-8 h-8 text-muted-foreground/30" />
+            </div>
+            <p className="text-sm font-black text-muted-foreground mb-6">No contributions recorded yet.</p>
+            <Link href="/contributions/new">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl px-8 shadow-lg shadow-blue-500/20">
+                Submit First Record
+                <ArrowUpRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

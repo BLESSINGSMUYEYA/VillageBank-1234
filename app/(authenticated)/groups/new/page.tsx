@@ -6,9 +6,15 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Plus, Landmark, Globe, Banknote, TrendingUp, ShieldCheck, Loader2, AlertCircle } from 'lucide-react'
+import { PageHeader } from '@/components/layout/PageHeader'
+import { GlassCard } from '@/components/ui/GlassCard'
+import { motion } from 'framer-motion'
+import { fadeIn, staggerContainer, itemFadeIn } from '@/lib/motions'
+import { cn } from '@/lib/utils'
 
 export default function CreateGroupPage() {
   const [formData, setFormData] = useState({
@@ -24,14 +30,11 @@ export default function CreateGroupPage() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const router = useRouter()
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
+  const handleInputChange = (name: string, value: string) => {
     setFormData(prev => ({
       ...prev,
       [name]: value
     }))
-
-    // Real-time validation
     validateField(name, value)
   }
 
@@ -50,8 +53,6 @@ export default function CreateGroupPage() {
         const contribution = parseFloat(value)
         if (value && (isNaN(contribution) || contribution <= 0)) {
           errors.monthlyContribution = 'Monthly contribution must be a positive number'
-        } else if (value && contribution > 1000000) {
-          errors.monthlyContribution = 'Monthly contribution seems too high'
         }
         break
       case 'maxLoanMultiplier':
@@ -76,33 +77,9 @@ export default function CreateGroupPage() {
 
   const validateForm = () => {
     if (!formData.name || !formData.region || !formData.monthlyContribution) {
-      setError('All required fields must be filled')
+      setError('Essential fields are missing. Please complete the architecture.')
       return false
     }
-
-    if (formData.name.length < 3) {
-      setError('Group name must be at least 3 characters long')
-      return false
-    }
-
-    const contribution = parseFloat(formData.monthlyContribution)
-    if (isNaN(contribution) || contribution <= 0) {
-      setError('Monthly contribution must be a positive number')
-      return false
-    }
-
-    const multiplier = parseInt(formData.maxLoanMultiplier)
-    if (isNaN(multiplier) || multiplier < 1 || multiplier > 10) {
-      setError('Loan multiplier must be between 1 and 10')
-      return false
-    }
-
-    const interest = parseFloat(formData.interestRate)
-    if (isNaN(interest) || interest < 0 || interest > 100) {
-      setError('Interest rate must be between 0 and 100')
-      return false
-    }
-
     return true
   }
 
@@ -110,9 +87,7 @@ export default function CreateGroupPage() {
     e.preventDefault()
     setError('')
 
-    if (!validateForm()) {
-      return
-    }
+    if (!validateForm()) return
 
     setLoading(true)
 
@@ -135,198 +110,216 @@ export default function CreateGroupPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        setError(data.error || 'Failed to create group')
+        setError(data.error || 'The system could not initialize the group.')
       } else {
-        // Add a small delay to ensure database transaction is complete
-        await new Promise(resolve => setTimeout(resolve, 500))
+        await new Promise(resolve => setTimeout(resolve, 800))
         router.push(`/groups/${data.groupId}`)
       }
     } catch (error) {
-      console.error('Group creation error:', error)
-      if (error instanceof Error) {
-        if (error.message.includes('Failed to fetch')) {
-          setError('Network error. Please check your internet connection and try again.')
-        } else if (error.message.includes('timeout')) {
-          setError('Request timed out. Please try again.')
-        } else {
-          setError('An unexpected error occurred. Please try again.')
-        }
-      } else {
-        setError('An unexpected error occurred. Please try again.')
-      }
+      setError('A secure connection could not be established. Retrying might help.')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-muted/30 py-8">
-      {/* Loading overlay */}
-      {loading && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 flex items-center space-x-3">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-            <span className="text-gray-700">Creating your group...</span>
-          </div>
-        </div>
-      )}
+    <motion.div
+      variants={staggerContainer}
+      initial="initial"
+      animate="animate"
+      className="space-y-10 pb-20"
+    >
+      <motion.div variants={fadeIn}>
+        <PageHeader
+          title="Establish Local Bank"
+          description="Design the foundation of your community financial collective"
+          action={
+            <Link href="/groups">
+              <Button variant="outline" className="rounded-xl font-black border-2 border-white/20 hover:bg-white/5">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Registry
+              </Button>
+            </Link>
+          }
+        />
+      </motion.div>
 
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <Link href="/groups" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Groups
-          </Link>
-          <h1 className="text-3xl font-bold text-foreground">Create New Group</h1>
-          <p className="text-muted-foreground">Set up a new village banking group</p>
-        </div>
-
-        <Card className="bg-card border-border">
-          <CardHeader>
-            <CardTitle className="text-foreground">Group Details</CardTitle>
-            <CardDescription className="text-muted-foreground">
-              Fill in the information for your new village banking group
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {error && (
-                <Alert variant="destructive">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
-
-              <div className="space-y-2">
-                <Label htmlFor="name">Group Name *</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  type="text"
-                  placeholder="Enter group name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className={fieldErrors.name ? 'border-red-500' : ''}
-                />
-                {fieldErrors.name && (
-                  <p className="text-sm text-red-500">{fieldErrors.name}</p>
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
+        <div className="xl:col-span-2 space-y-10">
+          <motion.div variants={itemFadeIn}>
+            <GlassCard className="p-10" hover={false}>
+              <form onSubmit={handleSubmit} className="space-y-10">
+                {error && (
+                  <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
+                    <Alert className="bg-red-500/10 border-red-500/20 text-red-600 dark:text-red-400 font-bold rounded-2xl py-4">
+                      <AlertCircle className="h-5 w-5" />
+                      <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                  </motion.div>
                 )}
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <textarea
-                  id="description"
-                  name="description"
-                  className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Describe the purpose of this group (optional)"
-                  value={formData.description}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="region">Region *</Label>
-                <select
-                  id="region"
-                  name="region"
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-foreground"
-                  value={formData.region}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="" className="bg-background text-foreground">Select region</option>
-                  <option value="NORTHERN" className="bg-background text-foreground">Northern</option>
-                  <option value="SOUTHERN" className="bg-background text-foreground">Southern</option>
-                  <option value="CENTRAL" className="bg-background text-foreground">Central</option>
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="monthlyContribution">Monthly Contribution (MWK) *</Label>
-                <Input
-                  id="monthlyContribution"
-                  name="monthlyContribution"
-                  type="number"
-                  step="0.01"
-                  placeholder="e.g., 10000"
-                  value={formData.monthlyContribution}
-                  onChange={handleChange}
-                  required
-                  className={fieldErrors.monthlyContribution ? 'border-red-500' : ''}
-                />
-                {fieldErrors.monthlyContribution && (
-                  <p className="text-sm text-red-500">{fieldErrors.monthlyContribution}</p>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="maxLoanMultiplier">Loan Multiplier</Label>
-                  <Input
-                    id="maxLoanMultiplier"
-                    name="maxLoanMultiplier"
-                    type="number"
-                    min="1"
-                    max="10"
-                    placeholder="3"
-                    value={formData.maxLoanMultiplier}
-                    onChange={handleChange}
-                    className={fieldErrors.maxLoanMultiplier ? 'border-red-500' : ''}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Maximum loan = contributions × multiplier
-                  </p>
-                  {fieldErrors.maxLoanMultiplier && (
-                    <p className="text-sm text-red-500">{fieldErrors.maxLoanMultiplier}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="interestRate">Interest Rate (%)</Label>
-                  <Input
-                    id="interestRate"
-                    name="interestRate"
-                    type="number"
-                    step="0.1"
-                    min="0"
-                    max="100"
-                    placeholder="10"
-                    value={formData.interestRate}
-                    onChange={handleChange}
-                    className={fieldErrors.interestRate ? 'border-red-500' : ''}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Annual interest rate on loans
-                  </p>
-                  {fieldErrors.interestRate && (
-                    <p className="text-sm text-red-500">{fieldErrors.interestRate}</p>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex justify-end space-x-4 pt-4">
-                <Link href="/groups">
-                  <Button variant="outline" type="button" className="border-border text-foreground hover:bg-muted">
-                    Cancel
-                  </Button>
-                </Link>
-                <Button type="submit" disabled={loading} className="min-w-30 bg-blue-900 hover:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 text-white">
-                  {loading ? (
-                    <div className="flex items-center">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Creating...
+                <div className="space-y-8">
+                  <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+                    <div className="p-2 bg-blue-500/10 rounded-lg">
+                      <Landmark className="w-5 h-5 text-blue-600" />
                     </div>
-                  ) : (
-                    'Create Group'
-                  )}
-                </Button>
+                    <h3 className="text-xl font-black">Core Identity</h3>
+                  </div>
+
+                  <div className="grid gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="name" className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Group Name</Label>
+                      <Input
+                        id="name"
+                        value={formData.name}
+                        onChange={(e) => handleInputChange('name', e.target.value)}
+                        placeholder="Village Wealth Collective"
+                        className={cn(
+                          "bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-bold px-6 focus:ring-2 focus:ring-blue-500",
+                          fieldErrors.name && "border-red-500 focus:ring-red-500"
+                        )}
+                      />
+                      {fieldErrors.name && <p className="text-xs text-red-500 font-black ml-1">{fieldErrors.name}</p>}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="description" className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Mission Statement</Label>
+                      <Textarea
+                        id="description"
+                        value={formData.description}
+                        onChange={(e) => handleInputChange('description', e.target.value)}
+                        placeholder="Our purpose is to empower members through..."
+                        className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl font-bold p-6 focus:ring-2 focus:ring-blue-500 min-h-[140px]"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="region" className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Regional Anchor</Label>
+                      <Select value={formData.region} onValueChange={(v) => handleInputChange('region', v)}>
+                        <SelectTrigger className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-bold px-6">
+                          <SelectValue placeholder="Identify your region" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-2xl border-white/10 backdrop-blur-3xl">
+                          <SelectItem value="NORTHERN" className="font-bold">Northern Highlands</SelectItem>
+                          <SelectItem value="CENTRAL" className="font-bold">Central Plains</SelectItem>
+                          <SelectItem value="SOUTHERN" className="font-bold">Southern Valley</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-8 pt-6">
+                  <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+                    <div className="p-2 bg-emerald-500/10 rounded-lg">
+                      <Banknote className="w-5 h-5 text-emerald-600" />
+                    </div>
+                    <h3 className="text-xl font-black">Financial Governance</h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-2 md:col-span-2">
+                      <Label className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Target Monthly Contribution (MWK)</Label>
+                      <div className="relative">
+                        <span className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground font-black">MWK</span>
+                        <Input
+                          type="number"
+                          value={formData.monthlyContribution}
+                          onChange={(e) => handleInputChange('monthlyContribution', e.target.value)}
+                          placeholder="10000"
+                          className={cn(
+                            "bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-black pl-20 focus:ring-2 focus:ring-emerald-500",
+                            fieldErrors.monthlyContribution && "border-red-500 focus:ring-red-500"
+                          )}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Loan Multiplier</Label>
+                      <Input
+                        type="number"
+                        value={formData.maxLoanMultiplier}
+                        onChange={(e) => handleInputChange('maxLoanMultiplier', e.target.value)}
+                        className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-black px-6 focus:ring-2 focus:ring-emerald-500"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Interest Rate (%)</Label>
+                      <Input
+                        type="number"
+                        value={formData.interestRate}
+                        onChange={(e) => handleInputChange('interestRate', e.target.value)}
+                        className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-black px-6 focus:ring-2 focus:ring-emerald-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-10">
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className="h-16 px-12 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-2xl shadow-blue-500/40 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin mr-3" />
+                        Initializing Registry...
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="w-5 h-5 mr-3" />
+                        Formalize Group
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </GlassCard>
+          </motion.div>
+        </div>
+
+        <div className="space-y-10">
+          <motion.div variants={itemFadeIn}>
+            <GlassCard className="p-8 space-y-6" hover={false}>
+              <h4 className="font-black text-sm uppercase tracking-widest text-muted-foreground border-b border-white/10 pb-4">Onboarding Insights</h4>
+              <div className="space-y-6">
+                <div className="flex gap-4">
+                  <div className="p-2 bg-blue-500/10 rounded-lg h-fit">
+                    <Globe className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="font-black text-sm">Regional Anchoring</p>
+                    <p className="text-xs text-muted-foreground font-medium leading-relaxed">Selecting a region helps in identifying the local community and aligning with local banking standards.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="p-2 bg-emerald-500/10 rounded-lg h-fit">
+                    <TrendingUp className="w-4 h-4 text-emerald-600" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="font-black text-sm">Growth Multipliers</p>
+                    <p className="text-xs text-muted-foreground font-medium leading-relaxed">The loan multiplier determines the maximum borrowing power of a member relative to their contributions.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="p-2 bg-amber-500/10 rounded-lg h-fit">
+                    <ShieldCheck className="w-4 h-4 text-amber-600" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="font-black text-sm">Secure Initialization</p>
+                    <p className="text-xs text-muted-foreground font-medium leading-relaxed">All parameters can later be fine-tuned by administrators through the secure settings portal.</p>
+                  </div>
+                </div>
               </div>
-            </form>
-          </CardContent>
-        </Card>
+            </GlassCard>
+          </motion.div>
+        </div>
       </div>
-    </div>
+    </motion.div>
   )
 }

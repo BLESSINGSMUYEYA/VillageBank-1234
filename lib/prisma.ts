@@ -12,12 +12,6 @@ if (!process.env.DATABASE_URL) {
 export const prisma = globalForPrisma.prisma ?? new PrismaClient({
   log: ['error', 'warn'],
   errorFormat: 'pretty',
-  datasources: {
-    db: {
-      // Append connect_timeout if not present to handle slow cold starts
-      url: process.env.DATABASE_URL
-    }
-  }
 })
 
 if (process.env.NODE_ENV !== 'production') {

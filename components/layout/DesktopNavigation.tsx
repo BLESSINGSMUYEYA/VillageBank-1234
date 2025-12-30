@@ -19,6 +19,35 @@ import { motion } from 'framer-motion'
 import { itemFadeIn, staggerContainer } from '@/lib/motions'
 import { cn } from '@/lib/utils'
 
+const NavigationLink = ({ item, isActive }: { item: any; isActive: boolean }) => (
+  <motion.div variants={itemFadeIn}>
+    <Link
+      href={item.href}
+      className={cn(
+        "relative group px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2",
+        isActive
+          ? "text-blue-600 dark:text-banana"
+          : "text-muted-foreground hover:text-foreground"
+      )}
+    >
+      {/* Active Background Indicator */}
+      {isActive && (
+        <motion.div
+          layoutId="active-nav"
+          className="absolute inset-0 bg-blue-500/10 dark:bg-banana/10 border-b-2 border-blue-500 dark:border-banana rounded-xl z-0"
+          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+        />
+      )}
+
+      <item.icon className={cn(
+        "w-4 h-4 relative z-10 transition-transform duration-300 group-hover:scale-110",
+        isActive ? "stroke-[2.5px]" : ""
+      )} />
+      <span className="relative z-10 whitespace-nowrap">{item.name}</span>
+    </Link>
+  </motion.div>
+)
+
 export function DesktopNavigation() {
   const { user } = useAuth()
   const pathname = usePathname()
@@ -34,52 +63,16 @@ export function DesktopNavigation() {
 
   const adminNavigation: { name: string; href: string; icon: any }[] = []
 
-  // Logic to determine which links to show
-  let displayedNavigation = memberNavigation
-
   if (user?.role === 'REGIONAL_ADMIN') {
-    displayedNavigation = []
     adminNavigation.push(
       { name: 'Regional Admin', href: '/admin/regional', icon: Shield }
     )
   } else if (user?.role === 'SUPER_ADMIN') {
-    displayedNavigation = []
     adminNavigation.push(
       { name: 'Regional Admin', href: '/admin/regional', icon: Shield },
       { name: 'System Admin', href: '/admin/system', icon: Settings }
     )
   }
-
-  const isActive = (href: string) => pathname === href
-
-  const NavigationLink = ({ item, index }: { item: any; index: number }) => (
-    <motion.div variants={itemFadeIn} key={item.name}>
-      <Link
-        href={item.href}
-        className={cn(
-          "relative group px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2",
-          isActive(item.href)
-            ? "text-blue-600 dark:text-banana"
-            : "text-muted-foreground hover:text-foreground"
-        )}
-      >
-        {/* Active Background Indicator */}
-        {isActive(item.href) && (
-          <motion.div
-            layoutId="active-nav"
-            className="absolute inset-0 bg-blue-500/10 dark:bg-banana/10 border-b-2 border-blue-500 dark:border-banana rounded-xl z-0"
-            transition={{ type: "spring", stiffness: 380, damping: 30 }}
-          />
-        )}
-
-        <item.icon className={cn(
-          "w-4 h-4 relative z-10 transition-transform duration-300 group-hover:scale-110",
-          isActive(item.href) ? "stroke-[2.5px]" : ""
-        )} />
-        <span className="relative z-10">{item.name}</span>
-      </Link>
-    </motion.div>
-  )
 
   return (
     <header className="hidden lg:flex sticky top-0 z-50 w-full">
@@ -111,17 +104,19 @@ export function DesktopNavigation() {
               variants={staggerContainer}
               initial="initial"
               animate="animate"
-              className="hidden md:flex items-center space-x-1"
+              className="flex items-center space-x-1"
             >
-              {displayedNavigation.map((item, i) => (
-                <NavigationLink key={item.name} item={item} index={i} />
+              {memberNavigation.map((item) => (
+                <NavigationLink key={item.href} item={item} isActive={pathname === item.href} />
               ))}
               {adminNavigation.length > 0 && (
-                <div className="h-6 w-px bg-border/50 mx-2" />
+                <>
+                  <div className="h-6 w-px bg-border/50 mx-2" />
+                  {adminNavigation.map((item) => (
+                    <NavigationLink key={item.href} item={item} isActive={pathname === item.href} />
+                  ))}
+                </>
               )}
-              {adminNavigation.map((item, i) => (
-                <NavigationLink key={item.name} item={item} index={i + displayedNavigation.length} />
-              ))}
             </motion.nav>
           </motion.div>
 

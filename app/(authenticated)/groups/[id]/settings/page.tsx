@@ -1,10 +1,8 @@
 'use client'
 
-
 import { useAuth } from '@/components/providers/AuthProvider'
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,9 +10,13 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { ArrowLeft, Settings, Users, DollarSign, CreditCard, TrendingUp, AlertCircle, Save } from 'lucide-react'
+import { ArrowLeft, AlertCircle, Save, Landmark, ShieldQuestion, Loader2, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency, cn } from '@/lib/utils'
+import { PageHeader } from '@/components/layout/PageHeader'
+import { GlassCard } from '@/components/ui/GlassCard'
+import { motion } from 'framer-motion'
+import { fadeIn, staggerContainer, itemFadeIn } from '@/lib/motions'
 
 interface Group {
   id: string
@@ -60,7 +62,6 @@ export default function GroupSettingsPage() {
   const [saving, setSaving] = useState(false)
   const [success, setSuccess] = useState(false)
 
-
   // Form state
   const [formData, setFormData] = useState({
     name: '',
@@ -77,41 +78,40 @@ export default function GroupSettingsPage() {
   useEffect(() => {
     if (!userId) return
 
-    fetchGroupData()
-  }, [userId, params.id])
-
-  const fetchGroupData = async () => {
-    try {
-      const response = await fetch(`/api/groups/${params.id}`)
-      if (!response.ok) {
-        if (response.status === 404) {
-          router.push('/groups')
-          return
+    const fetchGroupData = async () => {
+      try {
+        const response = await fetch(`/api/groups/${params.id}`)
+        if (!response.ok) {
+          if (response.status === 404) {
+            router.push('/groups')
+            return
+          }
+          throw new Error('Failed to fetch group data')
         }
-        throw new Error('Failed to fetch group data')
+
+        const data = await response.json()
+        setGroup(data)
+
+        setFormData({
+          name: data.name,
+          description: data.description || '',
+          region: data.region,
+          monthlyContribution: data.monthlyContribution.toString(),
+          maxLoanMultiplier: data.maxLoanMultiplier.toString(),
+          interestRate: data.interestRate.toString(),
+          penaltyAmount: data.penaltyAmount.toString(),
+          contributionDueDay: data.contributionDueDay.toString(),
+          isActive: data.isActive
+        })
+      } catch (error) {
+        setError(error instanceof Error ? error.message : 'An error occurred')
+      } finally {
+        setLoading(false)
       }
-
-      const data = await response.json()
-      setGroup(data)
-
-      // Initialize form data
-      setFormData({
-        name: data.name,
-        description: data.description || '',
-        region: data.region,
-        monthlyContribution: data.monthlyContribution.toString(),
-        maxLoanMultiplier: data.maxLoanMultiplier.toString(),
-        interestRate: data.interestRate.toString(),
-        penaltyAmount: data.penaltyAmount.toString(),
-        contributionDueDay: data.contributionDueDay.toString(),
-        isActive: data.isActive
-      })
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'An error occurred')
-    } finally {
-      setLoading(false)
     }
-  }
+
+    fetchGroupData()
+  }, [userId, params.id, router])
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({
@@ -155,7 +155,6 @@ export default function GroupSettingsPage() {
       setGroup(updatedGroup)
       setSuccess(true)
 
-      // Clear success message after 3 seconds
       setTimeout(() => setSuccess(false), 3000)
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to save settings')
@@ -164,343 +163,259 @@ export default function GroupSettingsPage() {
     }
   }
 
-  if (!userId) {
-    return <div>Please sign in to access this page.</div>
-  }
-
   if (loading) {
-    return <div>Loading group settings...</div>
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+      </div>
+    )
   }
 
-  if (error && !group) {
-    return <div>Error: {error}</div>
-  }
-
-  if (!group) {
-    return <div>Group not found</div>
-  }
-
-  // Find current user's role in this group
-  const currentUserMember = group?.members?.find(
-    member => member.userId === userId
-  )
-
+  const currentUserMember = group?.members?.find(member => member.userId === userId)
   const isAdmin = currentUserMember?.role === 'ADMIN'
 
   if (!isAdmin) {
     return (
-      <div className="space-y-4 sm:space-y-6">
-        <Card className="border-none shadow-lg bg-white/40 dark:bg-gray-900/40 backdrop-blur-md">
-          <CardContent className="text-center py-8 sm:py-12 px-4">
-            <AlertCircle className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-base sm:text-lg font-black text-gray-900 mb-2">Access Denied</h3>
-            <p className="text-gray-500 mb-6 text-sm sm:text-base">
-              Only group administrators can access settings.
-            </p>
-            <Link href={`/groups/${group.id}`}>
-              <Button variant="outline" className="w-full sm:w-auto rounded-2xl font-bold bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:border-[#6c47ff] hover:text-[#6c47ff] transition-colors">
-                Back to Group
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+      <div className="max-w-2xl mx-auto py-20 px-6">
+        <GlassCard className="p-12 text-center" hover={false}>
+          <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <ShieldQuestion className="w-10 h-10 text-red-600" />
+          </div>
+          <h2 className="text-2xl font-black text-foreground mb-4">Access Restricted</h2>
+          <p className="text-muted-foreground font-bold mb-8">
+            Only administrators are authorized to modify group parameters and settings.
+          </p>
+          <Link href={`/groups/${params.id}`}>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl px-10">
+              Return to Group
+            </Button>
+          </Link>
+        </GlassCard>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
-        <div className="space-y-3">
-          <Link href={`/groups/${group.id}`}>
-            <Button variant="outline" size="sm" className="w-full sm:w-auto rounded-xl font-bold border-border hover:border-blue-700 hover:text-blue-700 transition-colors">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Group
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-black text-blue-900 dark:text-blue-100">Group Settings</h1>
-            <p className="text-muted-foreground text-sm sm:text-base font-medium">Manage your group configuration</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge variant={group.isActive ? 'default' : 'secondary'} className={`font-bold uppercase tracking-wider text-xs px-3 py-1 ${group.isActive ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200' : 'bg-muted text-muted-foreground'}`}>
-            {group.isActive ? 'Active' : 'Inactive'}
-          </Badge>
-        </div>
-      </div>
+    <motion.div
+      variants={staggerContainer}
+      initial="initial"
+      animate="animate"
+      className="space-y-8 pb-10"
+    >
+      <motion.div variants={fadeIn}>
+        <PageHeader
+          title="Group Configuration"
+          description={`Fine-tune parameters for ${group?.name}`}
+          action={
+            <Link href={`/groups/${group?.id}`}>
+              <Button variant="outline" className="rounded-xl font-black border-2 border-white/20 hover:bg-white/5">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Dashboard
+              </Button>
+            </Link>
+          }
+        />
+      </motion.div>
 
       {success && (
-        <Alert className="bg-green-50/80 dark:bg-green-900/20 border-green-200/50 dark:border-green-800/30 backdrop-blur-md border-none shadow-xl">
-          <AlertCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
-          <AlertDescription className="text-green-800 dark:text-green-300 font-medium">
-            Settings saved successfully!
-          </AlertDescription>
-        </Alert>
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
+          <Alert className="bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold rounded-2xl flex items-center gap-3 py-4 shadow-xl shadow-emerald-500/5">
+            <CheckCircle2 className="h-5 w-5" />
+            <AlertDescription>Configuration updated successfully.</AlertDescription>
+          </Alert>
+        </motion.div>
       )}
 
       {error && (
-        <Alert className="bg-red-50/80 dark:bg-red-900/20 border-red-200/50 dark:border-red-800/30 backdrop-blur-md border-none shadow-xl">
-          <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
-          <AlertDescription className="text-red-800 dark:text-red-300 font-medium">
-            {error}
-          </AlertDescription>
-        </Alert>
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
+          <Alert className="bg-red-500/10 border-red-500/20 text-red-600 dark:text-red-400 font-bold rounded-2xl flex items-center gap-3 py-4">
+            <AlertCircle className="h-5 w-5" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        </motion.div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-        {/* Main Settings */}
-        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-          {/* Basic Information */}
-          <Card className="bg-card border border-border shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg sm:text-xl font-black text-blue-900 dark:text-blue-100">Basic Information</CardTitle>
-              <CardDescription className="text-sm font-medium text-muted-foreground">
-                Update your group&apos;s basic details
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="name" className="text-sm font-bold text-foreground">Group Name</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  className="mt-1"
-                  placeholder="Enter group name"
-                />
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        <div className="xl:col-span-2 space-y-8">
+          {/* Identity Section */}
+          <motion.div variants={itemFadeIn}>
+            <GlassCard className="p-8 space-y-6" hover={false}>
+              <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+                <div className="p-2 bg-blue-500/10 rounded-lg">
+                  <Landmark className="w-5 h-5 text-blue-600" />
+                </div>
+                <h3 className="text-xl font-black">Identity & Presence</h3>
               </div>
 
-              <div>
-                <Label htmlFor="description" className="text-sm font-bold text-foreground">Description</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
-                  className="mt-1"
-                  placeholder="Describe your group's purpose"
-                  rows={3}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="region" className="text-sm font-bold text-foreground">Region</Label>
-                <Select
-                  value={formData.region}
-                  onValueChange={(value) => handleInputChange('region', value)}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select region" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="NORTHERN">Northern</SelectItem>
-                    <SelectItem value="CENTRAL">Central</SelectItem>
-                    <SelectItem value="SOUTHERN">Southern</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Financial Settings */}
-          <Card className="bg-card border border-border shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg sm:text-xl font-black text-blue-900 dark:text-blue-100">Financial Settings</CardTitle>
-              <CardDescription className="text-sm font-medium text-muted-foreground">
-                Configure contribution and loan parameters
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="monthlyContribution" className="text-sm font-bold text-foreground">Monthly Contribution</Label>
+              <div className="space-y-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="name" className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Group Name</Label>
                   <Input
-                    id="monthlyContribution"
-                    type="number"
-                    value={formData.monthlyContribution}
-                    onChange={(e) => handleInputChange('monthlyContribution', e.target.value)}
-                    className="mt-1"
-                    placeholder="0.00"
-                    min="0"
-                    step="0.01"
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-12 font-bold px-4 focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="interestRate" className="text-sm font-bold text-foreground">Interest Rate (%)</Label>
+                <div className="grid gap-2">
+                  <Label htmlFor="description" className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Mission / Description</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => handleInputChange('description', e.target.value)}
+                    className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl font-bold p-4 focus:ring-2 focus:ring-blue-500 min-h-[120px]"
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="region" className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Geographical Region</Label>
+                  <Select value={formData.region} onValueChange={(v) => handleInputChange('region', v)}>
+                    <SelectTrigger className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-12 font-bold px-4">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl border-white/10 backdrop-blur-3xl">
+                      <SelectItem value="NORTHERN" className="font-bold">Northern</SelectItem>
+                      <SelectItem value="CENTRAL" className="font-bold">Central</SelectItem>
+                      <SelectItem value="SOUTHERN" className="font-bold">Southern</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </GlassCard>
+          </motion.div>
+
+          {/* Financial Architecture */}
+          <motion.div variants={itemFadeIn}>
+            <GlassCard className="p-8 space-y-6" hover={false}>
+              <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+                <div className="p-2 bg-emerald-500/10 rounded-lg">
+                  <Save className="w-5 h-5 text-emerald-600" />
+                </div>
+                <h3 className="text-xl font-black">Financial Architecture</h3>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid gap-2">
+                  <Label className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Monthly Share</Label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-black">MWK</span>
+                    <Input
+                      type="number"
+                      value={formData.monthlyContribution}
+                      onChange={(e) => handleInputChange('monthlyContribution', e.target.value)}
+                      className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-12 font-black pl-14 focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Interest Rate (%)</Label>
                   <Input
-                    id="interestRate"
                     type="number"
                     value={formData.interestRate}
                     onChange={(e) => handleInputChange('interestRate', e.target.value)}
-                    className="mt-1"
-                    placeholder="0"
-                    min="0"
-                    max="100"
-                    step="0.1"
+                    className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-12 font-black px-4 focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Loan Limit Multiplier</Label>
+                  <Input
+                    type="number"
+                    value={formData.maxLoanMultiplier}
+                    onChange={(e) => handleInputChange('maxLoanMultiplier', e.target.value)}
+                    className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-12 font-black px-4 focus:ring-2 focus:ring-emerald-500"
+                  />
+                  <p className="text-[10px] font-bold text-muted-foreground opacity-60 px-1">Max borrows: Monthly × Multiplier</p>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Late Fine Amount</Label>
+                  <Input
+                    type="number"
+                    value={formData.penaltyAmount}
+                    onChange={(e) => handleInputChange('penaltyAmount', e.target.value)}
+                    className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-12 font-black px-4 focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label className="font-black text-xs uppercase tracking-widest text-muted-foreground ml-1">Monthly Deadline (Day)</Label>
+                  <Input
+                    type="number"
+                    value={formData.contributionDueDay}
+                    onChange={(e) => handleInputChange('contributionDueDay', e.target.value)}
+                    className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-12 font-black px-4 focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
               </div>
+            </GlassCard>
+          </motion.div>
+        </div>
 
-              <div>
-                <Label htmlFor="maxLoanMultiplier" className="text-sm font-bold text-foreground">Loan Multiplier</Label>
-                <Input
-                  id="maxLoanMultiplier"
-                  type="number"
-                  value={formData.maxLoanMultiplier}
-                  onChange={(e) => handleInputChange('maxLoanMultiplier', e.target.value)}
-                  className="mt-1"
-                  placeholder="1"
-                  min="1"
-                  max="10"
-                  step="0.1"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Maximum loan amount = (Total contributions × Multiplier)
-                </p>
-              </div>
-
-              <div className="pt-4 border-t">
-                <h4 className="text-sm font-black mb-3">Penalty Settings</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="penaltyAmount" className="text-sm font-bold text-foreground">Late Penalty Amount</Label>
-                    <Input
-                      id="penaltyAmount"
-                      type="number"
-                      value={formData.penaltyAmount}
-                      onChange={(e) => handleInputChange('penaltyAmount', e.target.value)}
-                      className="mt-1"
-                      placeholder="0.00"
-                      min="0"
-                      step="0.01"
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">Charged for late contributions</p>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="contributionDueDay" className="text-sm font-bold text-foreground">Due Day of Month (1-31)</Label>
-                    <Input
-                      id="contributionDueDay"
-                      type="number"
-                      value={formData.contributionDueDay}
-                      onChange={(e) => handleInputChange('contributionDueDay', e.target.value)}
-                      className="mt-1"
-                      placeholder="5"
-                      min="1"
-                      max="31"
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">Deadline for contributions</p>
-                  </div>
+        {/* Sidebar Actions */}
+        <div className="space-y-6">
+          <motion.div variants={itemFadeIn}>
+            <GlassCard className="p-6 space-y-4" hover={false}>
+              <h4 className="font-black text-xs uppercase tracking-widest text-muted-foreground">Publication Status</h4>
+              <div className="flex items-center justify-between p-4 bg-white/40 dark:bg-white/5 rounded-2xl border border-white/10">
+                <div className="space-y-0.5">
+                  <p className="text-sm font-black">Accepting Activity</p>
+                  <p className="text-[10px] text-muted-foreground font-bold italic">Enables contributions & loans</p>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Status Settings */}
-          <Card className="bg-card border border-border shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg sm:text-xl font-black text-blue-900 dark:text-blue-100">Group Status</CardTitle>
-              <CardDescription className="text-sm font-medium text-muted-foreground">
-                Control group activity and membership
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center space-x-2">
                 <input
                   type="checkbox"
-                  id="isActive"
                   checked={formData.isActive}
                   onChange={(e) => handleInputChange('isActive', e.target.checked)}
-                  className="rounded"
+                  className="w-10 h-6 rounded-full appearance-none bg-slate-300 dark:bg-slate-700 checked:bg-blue-600 transition-colors cursor-pointer relative after:content-[''] after:absolute after:top-1 after:left-1 after:w-4 after:h-4 after:bg-white after:rounded-full after:transition-transform checked:after:translate-x-4"
                 />
-                <Label htmlFor="isActive" className="text-sm font-bold text-foreground">
-                  Group is active
-                </Label>
               </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Inactive groups cannot receive new contributions or loan applications
-              </p>
-            </CardContent>
-          </Card>
-        </div>
 
-        {/* Sidebar */}
-        <div className="space-y-4 sm:space-y-6">
-          {/* Quick Stats */}
-          <Card className="bg-card border border-border shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-base sm:text-lg font-black text-blue-900 dark:text-blue-100">Group Stats</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Total Members</span>
-                <span className="font-black text-foreground">{group._count.members}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Active Members</span>
-                <span className="font-black text-foreground">
-                  {group.members.filter(m => m.status === 'ACTIVE').length}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Total Contributions</span>
-                <span className="font-black text-foreground">{group._count.contributions}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Total Loans</span>
-                <span className="font-black text-foreground">{group._count.loans}</span>
-              </div>
-              <div className="pt-4 border-t">
+              <div className="pt-4 space-y-3">
                 <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full text-xs rounded-xl font-bold border-border hover:border-orange-500 hover:text-orange-600 transition-colors"
-                  onClick={async () => {
-                    try {
-                      const res = await fetch(`/api/groups/${group.id}/penalties`, { method: 'POST' })
-                      if (res.ok) {
-                        const data = await res.json()
-                        alert(`Penalty check completed. Applied ${data.penaltiesApplied} penalties.`)
-                      } else {
-                        alert('Failed to run penalty check.')
-                      }
-                    } catch (e) {
-                      alert('An error occurred.')
-                    }
-                  }}
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl shadow-lg shadow-blue-500/20 disabled:opacity-50"
                 >
-                  <AlertCircle className="w-3 h-3 mr-2" />
-                  Run Penalty Check Now
+                  {saving ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Save className="w-5 h-5 mr-2" />}
+                  Finalize Settings
                 </Button>
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Save Actions */}
-          <Card className="bg-card border border-border shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-base sm:text-lg font-black text-blue-900 dark:text-blue-100">Save Changes</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
+                <Link href={`/groups/${group?.id}`} className="block">
+                  <Button variant="ghost" className="w-full font-bold text-muted-foreground hover:text-red-600 hover:bg-red-500/5 rounded-xl">
+                    Discard Changes
+                  </Button>
+                </Link>
+              </div>
+            </GlassCard>
+          </motion.div>
+
+          <motion.div variants={itemFadeIn}>
+            <GlassCard className="p-6" hover={false}>
+              <h4 className="font-black text-xs uppercase tracking-widest text-muted-foreground mb-4">Maintenance</h4>
               <Button
-                onClick={handleSave}
-                disabled={saving}
-                className="w-full rounded-xl font-bold bg-blue-900 hover:bg-blue-800 dark:bg-blue-700 dark:hover:bg-blue-600 text-white"
+                variant="outline"
+                className="w-full border-2 border-orange-500/20 hover:border-orange-500/50 hover:bg-orange-500/5 text-orange-600 font-bold rounded-xl"
+                onClick={async () => {
+                  try {
+                    const res = await fetch(`/api/groups/${group?.id}/penalties`, { method: 'POST' })
+                    if (res.ok) {
+                      const data = await res.json()
+                      alert(`Maintenance check: Applied ${data.penaltiesApplied} pending penalties.`)
+                    }
+                  } catch (e) {
+                    alert('Check failed.')
+                  }
+                }}
               >
-                <Save className="w-4 h-4 mr-2" />
-                {saving ? 'Saving...' : 'Save Settings'}
+                <AlertCircle className="w-4 h-4 mr-2" />
+                Audit Penalty Sync
               </Button>
-              <Link href={`/groups/${group.id}`}>
-                <Button variant="outline" className="w-full rounded-xl font-bold border-border hover:border-red-500 hover:text-red-600 transition-colors">
-                  Cancel
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+            </GlassCard>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
