@@ -74,6 +74,12 @@ interface SystemData {
   databaseStatus: 'ONLINE' | 'OFFLINE' | 'MAINTENANCE'
   recentActivities?: ActivityLog[]
   users?: UserData[]
+  configurationHealth?: {
+    cloudinary: boolean
+    gemini: boolean
+    database: boolean
+    clerk: boolean
+  }
 }
 
 interface RegionalSummary {
@@ -120,7 +126,8 @@ export default function SystemAdminPage() {
         systemHealth: data.systemHealth,
         databaseStatus: data.databaseStatus,
         recentActivities: data.recentActivities,
-        users: data.users
+        users: data.users,
+        configurationHealth: data.configurationHealth
       })
 
       setRegionalData(data.regionalSummaries || [])
@@ -361,6 +368,36 @@ export default function SystemAdminPage() {
                     <span>Uptime</span>
                   </div>
                   <span className="text-sm">99.9%</span>
+                </div>
+                <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                  <span className="text-xs font-bold uppercase text-muted-foreground mr-2">External Protocols</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Activity className="w-3 h-3" />
+                    <span className="text-xs">Cloudinary (Receipts)</span>
+                  </div>
+                  <Badge variant={data?.configurationHealth?.cloudinary ? 'default' : 'destructive'} className="text-[8px] h-4">
+                    {data?.configurationHealth?.cloudinary ? 'ONLINE' : 'OFFLINE'}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Activity className="w-3 h-3" />
+                    <span className="text-xs">Gemini AI (OCR Scan)</span>
+                  </div>
+                  <Badge variant={data?.configurationHealth?.gemini ? 'default' : 'destructive'} className="text-[8px] h-4">
+                    {data?.configurationHealth?.gemini ? 'ONLINE' : 'OFFLINE'}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Shield className="w-3 h-3" />
+                    <span className="text-xs">Security (Clerk)</span>
+                  </div>
+                  <Badge variant={data?.configurationHealth?.clerk ? 'default' : 'destructive'} className="text-[8px] h-4">
+                    {data?.configurationHealth?.clerk ? 'ONLINE' : 'OFFLINE'}
+                  </Badge>
                 </div>
               </CardContent>
             </Card>

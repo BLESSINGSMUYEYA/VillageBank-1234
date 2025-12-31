@@ -12,6 +12,7 @@ import { CldUploadWidget } from 'next-cloudinary'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { SectionHeader } from '@/components/ui/section-header'
 import { FormGroup } from '@/components/ui/form-group'
+import { useLanguage } from '@/components/providers/LanguageProvider'
 import { PremiumInput } from '@/components/ui/premium-input'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -38,6 +39,7 @@ interface Group {
 }
 
 function NewContributionPageContent() {
+  const { t } = useLanguage()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [groups, setGroups] = useState<Group[]>([])
@@ -333,13 +335,13 @@ function NewContributionPageContent() {
     >
       <motion.div variants={fadeIn}>
         <PageHeader
-          title="Make Contribution"
-          description="Record your monthly stake in the collective wealth"
+          title={t('contributions.make_contribution')}
+          description={t('contributions.subtitle')}
           action={
             <Link href="/contributions">
               <Button variant="outline" className="rounded-xl font-black border-white/20 hover:bg-white/5">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Pulse
+                {t('contributions.back_to_pulse')}
               </Button>
             </Link>
           }
@@ -522,7 +524,7 @@ function NewContributionPageContent() {
                                       onClick={() => setReceiptUrl('')}
                                       className="rounded-xl font-bold backdrop-blur-md bg-white/50"
                                     >
-                                      Re-upload
+                                      {t('contributions.re_upload')}
                                     </Button>
                                   </div>
                                 </div>
@@ -536,7 +538,7 @@ function NewContributionPageContent() {
                                     <Upload className="w-6 h-6 text-muted-foreground group-hover:text-blue-500" />
                                   </div>
                                   <div className="text-center">
-                                    <p className="text-sm font-black text-foreground">Deploy Receipt Artifact</p>
+                                    <p className="text-sm font-black text-foreground">{t('contributions.deploy_receipt') || 'Deploy Receipt Artifact'}</p>
                                     <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mt-1">PNG, JPG, Screen Grabs</p>
                                   </div>
                                 </button>
@@ -597,12 +599,12 @@ function NewContributionPageContent() {
                     {loading ? (
                       <>
                         <Loader2 className="w-5 h-5 animate-spin mr-3" />
-                        Validating Stake...
+                        {t('contributions.validating_stake') || 'Validating Stake...'}
                       </>
                     ) : (
                       <>
                         <CheckCircle className="w-5 h-5 mr-3" />
-                        Formalize Contribution
+                        {t('contributions.formalize_contribution') || 'Formalize Contribution'}
                       </>
                     )}
                   </Button>

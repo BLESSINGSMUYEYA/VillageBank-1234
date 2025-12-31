@@ -3,6 +3,8 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatCurrency } from '@/lib/utils'
+import { motion } from 'framer-motion'
+import { fadeIn, itemFadeIn, staggerContainer } from '@/lib/motions'
 
 interface ContributionData {
   month: string
@@ -50,29 +52,37 @@ interface ContributionChartProps {
 
 export function ContributionChart({ data, title = "Monthly Contributions", description = "Your contribution history over time" }: ContributionChartProps) {
   return (
-    <Card className="bg-transparent border-none shadow-none">
-      <CardHeader>
-        <CardTitle className="text-xl font-black text-blue-900 dark:text-blue-100">{title}</CardTitle>
-        <CardDescription className="text-muted-foreground font-medium">{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" strokeOpacity={0.2} />
-            <XAxis dataKey="month" stroke="#6B7280" fontSize={12} tickLine={false} axisLine={false} />
-            <YAxis tickFormatter={(value) => formatCurrency(value)} stroke="#6B7280" fontSize={12} tickLine={false} axisLine={false} />
-            <Tooltip
-              cursor={{ fill: 'var(--muted)' }}
-              contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: 'var(--card)', color: 'var(--foreground)' }}
-              itemStyle={{ color: 'var(--foreground)' }}
-              formatter={(value: number | undefined) => [formatCurrency(value || 0), 'Amount']}
-              labelFormatter={(label) => `Month: ${label}`}
-            />
-            <Bar dataKey="amount" fill={THEME_COLORS.primary} radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
+    <motion.div variants={fadeIn}>
+      <Card className="bg-transparent border-none shadow-none">
+        <CardHeader>
+          <CardTitle className="text-xl font-black text-blue-900 dark:text-blue-100">{title}</CardTitle>
+          <CardDescription className="text-muted-foreground font-medium">{description}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" strokeOpacity={0.2} />
+              <XAxis dataKey="month" stroke="#6B7280" fontSize={12} tickLine={false} axisLine={false} />
+              <YAxis tickFormatter={(value) => formatCurrency(value)} stroke="#6B7280" fontSize={12} tickLine={false} axisLine={false} />
+              <Tooltip
+                cursor={{ fill: 'var(--muted)' }}
+                contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: 'var(--card)', color: 'var(--foreground)' }}
+                itemStyle={{ color: 'var(--foreground)' }}
+                formatter={(value: number | undefined) => [formatCurrency(value || 0), 'Amount']}
+                labelFormatter={(label) => `Month: ${label}`}
+              />
+              <Bar
+                dataKey="amount"
+                fill={THEME_COLORS.primary}
+                radius={[4, 4, 0, 0]}
+                animationDuration={1500}
+                animationEasing="ease-out"
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+    </motion.div>
   )
 }
 
@@ -84,30 +94,32 @@ interface GroupComparisonChartProps {
 
 export function GroupComparisonChart({ data, title = "Group Performance", description = "Compare contributions and loans across groups" }: GroupComparisonChartProps) {
   return (
-    <Card className="bg-transparent border-none shadow-none">
-      <CardHeader>
-        <CardTitle className="text-xl font-black text-blue-900 dark:text-blue-100">{title}</CardTitle>
-        <CardDescription className="text-muted-foreground font-medium">{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" strokeOpacity={0.2} />
-            <XAxis dataKey="name" stroke="#6B7280" fontSize={12} tickLine={false} axisLine={false} />
-            <YAxis tickFormatter={(value) => formatCurrency(value)} stroke="#6B7280" fontSize={12} tickLine={false} axisLine={false} />
-            <Tooltip
-              cursor={{ fill: 'var(--muted)' }}
-              contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: 'var(--card)', color: 'var(--foreground)' }}
-              itemStyle={{ color: 'var(--foreground)' }}
-              formatter={(value: number | undefined) => [formatCurrency(value || 0), 'Amount']}
-              labelFormatter={(label) => `Group: ${label}`}
-            />
-            <Bar dataKey="contributions" fill={THEME_COLORS.primary} name="Contributions" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="loans" fill={THEME_COLORS.warning} name="Loans" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
+    <motion.div variants={fadeIn}>
+      <Card className="bg-transparent border-none shadow-none">
+        <CardHeader>
+          <CardTitle className="text-xl font-black text-blue-900 dark:text-blue-100">{title}</CardTitle>
+          <CardDescription className="text-muted-foreground font-medium">{description}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" strokeOpacity={0.2} />
+              <XAxis dataKey="name" stroke="#6B7280" fontSize={12} tickLine={false} axisLine={false} />
+              <YAxis tickFormatter={(value) => formatCurrency(value)} stroke="#6B7280" fontSize={12} tickLine={false} axisLine={false} />
+              <Tooltip
+                cursor={{ fill: 'var(--muted)' }}
+                contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: 'var(--card)', color: 'var(--foreground)' }}
+                itemStyle={{ color: 'var(--foreground)' }}
+                formatter={(value: number | undefined) => [formatCurrency(value || 0), 'Amount']}
+                labelFormatter={(label) => `Group: ${label}`}
+              />
+              <Bar dataKey="contributions" fill={THEME_COLORS.primary} name="Contributions" radius={[4, 4, 0, 0]} animationDuration={1000} />
+              <Bar dataKey="loans" fill={THEME_COLORS.warning} name="Loans" radius={[4, 4, 0, 0]} animationDuration={1500} />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+    </motion.div>
   )
 }
 
@@ -119,28 +131,38 @@ interface TrendChartProps {
 
 export function TrendChart({ data, title = "Contribution Trend", description = "Track your contribution patterns over time" }: TrendChartProps) {
   return (
-    <Card className="bg-transparent border-none shadow-none">
-      <CardHeader>
-        <CardTitle className="text-xl font-black text-blue-900 dark:text-blue-100">{title}</CardTitle>
-        <CardDescription className="text-muted-foreground font-medium">{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" strokeOpacity={0.2} />
-            <XAxis dataKey="month" stroke="#6B7280" fontSize={12} tickLine={false} axisLine={false} />
-            <YAxis tickFormatter={(value) => formatCurrency(value)} stroke="#6B7280" fontSize={12} tickLine={false} axisLine={false} />
-            <Tooltip
-              contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: 'var(--card)', color: 'var(--foreground)' }}
-              itemStyle={{ color: 'var(--foreground)' }}
-              formatter={(value: number | undefined) => [formatCurrency(value || 0), 'Amount']}
-              labelFormatter={(label) => `Month: ${label}`}
-            />
-            <Line type="monotone" dataKey="amount" stroke={THEME_COLORS.secondary} strokeWidth={3} dot={{ fill: THEME_COLORS.secondary, r: 4 }} activeDot={{ r: 6 }} />
-          </LineChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
+    <motion.div variants={fadeIn}>
+      <Card className="bg-transparent border-none shadow-none">
+        <CardHeader>
+          <CardTitle className="text-xl font-black text-blue-900 dark:text-blue-100">{title}</CardTitle>
+          <CardDescription className="text-muted-foreground font-medium">{description}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" strokeOpacity={0.2} />
+              <XAxis dataKey="month" stroke="#6B7280" fontSize={12} tickLine={false} axisLine={false} />
+              <YAxis tickFormatter={(value) => formatCurrency(value)} stroke="#6B7280" fontSize={12} tickLine={false} axisLine={false} />
+              <Tooltip
+                contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: 'var(--card)', color: 'var(--foreground)' }}
+                itemStyle={{ color: 'var(--foreground)' }}
+                formatter={(value: number | undefined) => [formatCurrency(value || 0), 'Amount']}
+                labelFormatter={(label) => `Month: ${label}`}
+              />
+              <Line
+                type="monotone"
+                dataKey="amount"
+                stroke={THEME_COLORS.secondary}
+                strokeWidth={4}
+                dot={{ fill: THEME_COLORS.secondary, r: 4, strokeWidth: 2, stroke: '#fff' }}
+                activeDot={{ r: 8, strokeWidth: 0 }}
+                animationDuration={2000}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+    </motion.div>
   )
 }
 
@@ -196,31 +218,36 @@ interface SummaryStatsProps {
 
 export function SummaryStats({ totalContributions, averageMonthly, highestMonth, currentStreak }: SummaryStatsProps) {
   return (
-    <div className="grid grid-cols-2 gap-3">
-      <div className="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-2xl">
+    <motion.div
+      variants={staggerContainer}
+      initial="initial"
+      animate="animate"
+      className="grid grid-cols-2 gap-3"
+    >
+      <motion.div variants={itemFadeIn} className="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-500/5 hover:border-blue-500/20 transition-colors">
         <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1">Total</p>
         <div className="text-lg font-black text-blue-900 dark:text-blue-100 truncate" title={formatCurrency(totalContributions)}>
           {formatCurrency(totalContributions)}
         </div>
-      </div>
-      <div className="p-4 bg-purple-50 dark:bg-purple-900/10 rounded-2xl">
+      </motion.div>
+      <motion.div variants={itemFadeIn} className="p-4 bg-purple-50 dark:bg-purple-900/10 rounded-2xl border border-purple-500/5 hover:border-purple-500/20 transition-colors">
         <p className="text-[10px] font-black text-purple-500 uppercase tracking-widest mb-1">Monthly Avg</p>
         <div className="text-lg font-black text-purple-900 dark:text-purple-100 truncate" title={formatCurrency(averageMonthly)}>
           {formatCurrency(averageMonthly)}
         </div>
-      </div>
-      <div className="p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-2xl">
+      </motion.div>
+      <motion.div variants={itemFadeIn} className="p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-2xl border border-emerald-500/5 hover:border-emerald-500/20 transition-colors">
         <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">Highest</p>
         <div className="text-lg font-black text-emerald-900 dark:text-emerald-100 truncate" title={formatCurrency(highestMonth)}>
           {formatCurrency(highestMonth)}
         </div>
-      </div>
-      <div className="p-4 bg-banana/10 rounded-2xl">
+      </motion.div>
+      <motion.div variants={itemFadeIn} className="p-4 bg-banana/10 rounded-2xl border border-banana/5 hover:border-banana/20 transition-colors">
         <p className="text-[10px] font-black text-yellow-600 dark:text-yellow-400 uppercase tracking-widest mb-1">Streak</p>
         <div className="text-lg font-black text-yellow-900 dark:text-yellow-100 truncate">
           {currentStreak} <span className="text-xs font-bold opacity-60">months</span>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }

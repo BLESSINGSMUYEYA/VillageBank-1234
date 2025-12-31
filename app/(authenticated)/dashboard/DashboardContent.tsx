@@ -93,7 +93,7 @@ export function DashboardContent({
                                         <span className="flex h-2 w-2 rounded-full bg-red-500 animate-ping" />
                                     </h3>
                                     <p className="text-sm text-muted-foreground font-medium mt-1">
-                                        {t('dashboard.pending_desc').replace('{count}', pendingApprovals.length.toString())}
+                                        {t('dashboard.pending_desc', { count: pendingApprovals.length })}
                                     </p>
                                 </div>
                             </div>

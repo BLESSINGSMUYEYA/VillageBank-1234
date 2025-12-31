@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { fadeIn } from '@/lib/motions'
 
 interface PageHeaderProps {
-    title: string
+    title: React.ReactNode
     description?: React.ReactNode
     action?: React.ReactNode
     variant?: 'default' | 'compact'

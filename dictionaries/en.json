@@ -87,7 +87,12 @@
     "no_contributions": "No Contributions Yet",
     "no_contributions_desc": "Start contributing to your village banking groups.",
     "first_contribution": "Make First Contribution",
-    "join_first": "Join a Group First"
+    "join_first": "Join a Group First",
+    "back_to_pulse": "Back to Pulse",
+    "re_upload": "Re-upload",
+    "deploy_receipt": "Deploy Receipt Artifact",
+    "validating_stake": "Validating Stake...",
+    "formalize_contribution": "Formalize Contribution"
   },
   "loans": {
     "title": "Loans",

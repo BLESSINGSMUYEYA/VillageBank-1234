@@ -1,0 +1,49 @@
+{
+    "common": {
+        "dashboard": "Tableau de Bord",
+        "groups": "Groupes",
+        "contributions": "Contributions",
+        "loans": "Prêts",
+        "settings": "Paramètres",
+        "back": "Retour",
+        "view_all": "Voir Tout",
+        "loading": "Chargement...",
+        "error": "Erreur",
+        "success": "Succès",
+        "cancel": "Annuler",
+        "save": "Enregistrer",
+        "create": "Créer",
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "profile": "Profil",
+        "logout": "Déconnexion",
+        "no_description": "Aucune description"
+    },
+    "dashboard": {
+        "welcome": "Bon retour",
+        "overview": "Voici l'aperçu de votre village banking",
+        "total_groups": "Total Groupes",
+        "total_contributions": "Total Contributions",
+        "active_loans": "Prêts Actifs",
+        "monthly_contribution": "Contribution Mensuelle",
+        "recent_activity": "Activité Récente",
+        "activity_desc": "Vos dernières activités de village banking",
+        "no_activity": "Aucune Activité",
+        "no_activity_desc": "Commencez par rejoindre un groupe ou faire une contribution.",
+        "join_create": "Rejoindre ou Créer un Groupe",
+        "quick_actions": "Actions Rapides",
+        "make_contribution": "Faire une Contribution",
+        "apply_loan": "Demander un Prêt",
+        "manage_groups": "Gérer les Groupes",
+        "pending_approvals": "Approbations en Attente",
+        "pending_desc": "Il y a {count} contributions en attente de votre examen.",
+        "review_now": "Examiner Maintenant"
+    },
+    "contributions": {
+        "back_to_pulse": "Retour au Flux",
+        "re_upload": "Ré-télécharger",
+        "deploy_receipt": "Déployer le Reçu",
+        "validating_stake": "Validation de la Mise...",
+        "formalize_contribution": "Formaliser la Contribution"
+    }
+}

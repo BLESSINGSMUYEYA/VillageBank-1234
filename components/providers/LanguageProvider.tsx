@@ -3,19 +3,23 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import en from '../../dictionaries/en.json'
 import ny from '../../dictionaries/ny.json'
+import bem from '../../dictionaries/bem.json'
+import fr from '../../dictionaries/fr.json'
 
-type Language = 'en' | 'ny'
+type Language = 'en' | 'ny' | 'bem' | 'fr'
 type Dictionary = typeof en
 
 const dictionaries: Record<Language, any> = {
     en,
-    ny
+    ny,
+    bem,
+    fr
 }
 
 interface LanguageContextType {
     language: Language
     setLanguage: (lang: Language) => void
-    t: (key: string) => string
+    t: (key: string, variables?: Record<string, string | number>) => string
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
@@ -26,8 +30,14 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         const savedLang = localStorage.getItem('app-language') as Language
-        if (savedLang && (savedLang === 'en' || savedLang === 'ny')) {
+        if (savedLang && ['en', 'ny', 'bem', 'fr'].includes(savedLang)) {
             setLanguageState(savedLang)
+        } else {
+            // Detect browser language
+            const browserLang = navigator.language.split('-')[0]
+            if (['en', 'ny', 'bem', 'fr'].includes(browserLang)) {
+                setLanguageState(browserLang as Language)
+            }
         }
         setIsLoaded(true)
     }, [])
@@ -37,16 +47,17 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('app-language', lang)
     }, [])
 
-    const t = useCallback((key: string): string => {
+    const t = useCallback((key: string, variables?: Record<string, string | number>): string => {
         const keys = key.split('.')
         let result: any = dictionaries[language]
 
+        // Find the translation string
         for (const k of keys) {
             if (result && k in result) {
                 result = result[k]
             } else {
-                // Fallback to English if key missing in Chichewa
-                if (language === 'ny') {
+                // Fallback to English
+                if (language !== 'en') {
                     let fallbackResult: any = dictionaries['en']
                     for (const fk of keys) {
                         if (fallbackResult && fk in fallbackResult) {
@@ -55,13 +66,23 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
                             return key
                         }
                     }
-                    return typeof fallbackResult === 'string' ? fallbackResult : key
+                    result = fallbackResult
+                    break
                 }
                 return key
             }
         }
 
-        return typeof result === 'string' ? result : key
+        if (typeof result !== 'string') return key
+
+        // Replace variables if provided
+        if (variables) {
+            Object.entries(variables).forEach(([vKey, vValue]) => {
+                result = (result as string).replace(`{${vKey}}`, vValue.toString())
+            });
+        }
+
+        return result
     }, [language])
 
     // if (!isLoaded) {
