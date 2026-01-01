@@ -39,59 +39,76 @@ export async function getDashboardStats(): Promise<DashboardStats> {
         throw new Error('Unauthorized')
     }
 
-    // Get user's groups
-    const userGroups = await prisma.group.findMany({
-        where: {
-            members: {
-                some: {
-                    userId: userId,
-                    status: 'ACTIVE',
+    // Parallel fetch of main entities
+    const [userGroupsCount, contributions, loans] = await Promise.all([
+        prisma.group.count({
+            where: {
+                members: {
+                    some: {
+                        userId: userId,
+                        status: 'ACTIVE',
+                    },
                 },
             },
-        },
-    })
+        }),
+        prisma.contribution.findMany({
+            where: {
+                userId: userId,
+                status: 'COMPLETED',
+            },
+        }),
+        prisma.loan.findMany({
+            where: {
+                userId: userId,
+            },
+            include: {
+                repayments: true
+            }
+        })
+    ])
 
-    // Get user's contributions
-    const contributions = await prisma.contribution.findMany({
-        where: {
-            userId: userId,
-            status: 'COMPLETED',
-        },
-    })
-
-    // Get user's loans
-    const loans = await prisma.loan.findMany({
-        where: {
-            userId: userId,
-        },
-    })
-
-    // Get current month contribution
+    // Get current month info for filtering
     const now = new Date()
     const currentMonth = now.getMonth() + 1
     const currentYear = now.getFullYear()
 
-    const monthlyContribution = await prisma.contribution.findFirst({
-        where: {
-            userId: userId,
-            month: currentMonth,
-            year: currentYear,
-            status: 'COMPLETED',
-        },
-    })
+    // Filter in memory to avoid extra DB calls
+    const monthlyContribution = contributions.find(c =>
+        c.month === currentMonth &&
+        c.year === currentYear
+    )
 
     // Calculate stats
     const totalContributions = contributions.reduce((sum, c) => sum + Number(c.amount), 0)
     const pendingLoans = loans.filter(loan => loan.status === 'PENDING').length
     const activeLoans = loans.filter(loan => ['APPROVED', 'ACTIVE'].includes(loan.status)).length
 
+    // Calculate repayment progress using the already fetched loans
+    let repaymentProgress = 0
+    const eligibleLoans = loans.filter(l => ['APPROVED', 'ACTIVE', 'COMPLETED'].includes(l.status))
+    if (eligibleLoans.length > 0) {
+        let totalToRepay = 0
+        let totalRepaid = 0
+
+        eligibleLoans.forEach(loan => {
+            const principal = loan.amountApproved || loan.amountRequested
+            const interest = (principal * loan.interestRate) / 100
+            totalToRepay += principal + interest
+            totalRepaid += loan.repayments.reduce((sum, r) => sum + Number(r.amount), 0)
+        })
+
+        if (totalToRepay > 0) {
+            repaymentProgress = Math.min(100, Math.round((totalRepaid / totalToRepay) * 100))
+        }
+    }
+
     return {
-        totalGroups: userGroups.length,
+        totalGroups: userGroupsCount,
         totalContributions,
         totalLoans: activeLoans,
         pendingLoans,
         monthlyContribution: monthlyContribution?.amount || 0,
-        loanRepaymentProgress: await calculateRepaymentProgress(userId as string),
+        loanRepaymentProgress: repaymentProgress,
     }
 }
 
@@ -303,29 +320,20 @@ export async function getPendingApprovals() {
         throw new Error('Unauthorized')
     }
 
-    // Get groups where user is Admin or Treasurer
-    const managedGroups = await prisma.groupMember.findMany({
-        where: {
-            userId: userId,
-            role: { in: ['ADMIN', 'TREASURER'] },
-            status: 'ACTIVE'
-        },
-        select: {
-            groupId: true
-        }
-    })
-
-    const groupIds = managedGroups.map(mg => mg.groupId)
-
-    if (groupIds.length === 0) {
-        return []
-    }
-
-    // Get pending contributions for these groups
+    // Get pending contributions for groups where user is Admin or Treasurer
+    // Combined into a single efficient query using relational filtering
     const pendingContributions = await prisma.contribution.findMany({
         where: {
-            groupId: { in: groupIds },
-            status: 'PENDING'
+            status: 'PENDING',
+            group: {
+                members: {
+                    some: {
+                        userId: userId,
+                        role: { in: ['ADMIN', 'TREASURER'] },
+                        status: 'ACTIVE'
+                    }
+                }
+            }
         },
         include: {
             user: {
@@ -349,34 +357,3 @@ export async function getPendingApprovals() {
     return pendingContributions
 }
 
-
-async function calculateRepaymentProgress(userId: string): Promise<number> {
-    const loans = await prisma.loan.findMany({
-        where: {
-            userId,
-            status: { in: ['APPROVED', 'ACTIVE', 'COMPLETED'] }
-        },
-        include: {
-            repayments: true
-        }
-    })
-
-    if (loans.length === 0) return 0
-
-    let totalToRepay = 0
-    let totalRepaid = 0
-
-    loans.forEach(loan => {
-        // Simple logic: total due = principal + (principal * interest / 100)
-        const principal = loan.amountApproved || loan.amountRequested
-        const interest = (principal * loan.interestRate) / 100
-        totalToRepay += principal + interest
-
-        const repaid = loan.repayments.reduce((sum, r) => sum + Number(r.amount), 0)
-        totalRepaid += repaid
-    })
-
-    if (totalToRepay === 0) return 0
-
-    return Math.min(100, Math.round((totalRepaid / totalToRepay) * 100))
-}

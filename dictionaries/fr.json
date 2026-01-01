@@ -39,6 +39,9 @@
         "pending_desc": "Il y a {count} contributions en attente de votre examen.",
         "review_now": "Examiner Maintenant"
     },
+    "groups": {
+        "view_dashboard": "Voir le Tableau de Bord"
+    },
     "contributions": {
         "back_to_pulse": "Retour au Flux",
         "re_upload": "Ré-télécharger",

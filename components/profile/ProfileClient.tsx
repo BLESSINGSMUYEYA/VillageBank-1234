@@ -17,7 +17,8 @@ import {
     Shield,
     Zap,
     CheckCircle2,
-    History
+    History,
+    ArrowLeft
 } from 'lucide-react'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { StatsCard } from '@/components/ui/stats-card'
@@ -87,6 +88,10 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
         >
             {/* Header Section */}
             <motion.div variants={fadeIn}>
+                <Link href="/dashboard" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-blue-600 dark:hover:text-banana transition-all duration-300 group mb-4">
+                    <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
+                    Back to Hub
+                </Link>
                 <PageHeader
                     title={t('profile.title') || 'Member Profile'}
                     description={

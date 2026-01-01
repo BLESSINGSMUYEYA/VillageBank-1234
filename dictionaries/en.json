@@ -49,7 +49,7 @@
     "this_month": "This month's contribution",
     "pending_approvals": "Pending Approvals",
     "pending_desc": "There are {count} contributions waiting for your review.",
-    "review_now": "Review Now"
+    "review_now": "View Now"
   },
   "groups": {
     "my_groups": "My Groups",
@@ -61,6 +61,7 @@
     "multiplier": "Loan Multiplier",
     "region": "Region",
     "view": "View",
+    "view_dashboard": "View Dashboard",
     "no_groups": "No Groups Yet",
     "no_groups_desc": "You haven't joined any village banking groups yet."
   },

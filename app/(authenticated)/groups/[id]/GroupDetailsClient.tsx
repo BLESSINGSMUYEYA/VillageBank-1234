@@ -45,6 +45,10 @@ export default function GroupDetailsClient({
         >
             {/* Header */}
             <motion.div variants={fadeIn}>
+                <Link href="/groups" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-blue-600 dark:hover:text-banana transition-all duration-300 group mb-4">
+                    <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
+                    Back to Groups
+                </Link>
                 <PageHeader
                     title={group.name}
                     description={
@@ -65,22 +69,14 @@ export default function GroupDetailsClient({
                         </div>
                     }
                     action={
-                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                            <Link href="/groups" className="w-full sm:w-auto">
-                                <Button variant="outline" size="lg" className="w-full sm:w-auto rounded-xl border-2 border-border hover:border-blue-600 hover:text-blue-600 dark:hover:border-banana dark:hover:text-banana transition-all font-black group px-6">
-                                    <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-                                    Back
+                        isAdmin && (
+                            <Link href={`/groups/${group.id}/settings`} className="w-full sm:w-auto">
+                                <Button size="lg" className="w-full sm:w-auto bg-banana hover:bg-yellow-400 text-banana-foreground font-black rounded-xl shadow-lg hover:shadow-yellow-500/20 transition-all hover:scale-105 active:scale-95 group px-6">
+                                    <Settings className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform" />
+                                    Settings
                                 </Button>
                             </Link>
-                            {isAdmin && (
-                                <Link href={`/groups/${group.id}/settings`} className="w-full sm:w-auto">
-                                    <Button size="lg" className="w-full sm:w-auto bg-banana hover:bg-yellow-400 text-banana-foreground font-black rounded-xl shadow-lg hover:shadow-yellow-500/20 transition-all hover:scale-105 active:scale-95 group px-6">
-                                        <Settings className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform" />
-                                        Settings
-                                    </Button>
-                                </Link>
-                            )}
-                        </div>
+                        )
                     }
                 />
             </motion.div>

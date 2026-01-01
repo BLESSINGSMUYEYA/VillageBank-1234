@@ -11,7 +11,8 @@ import {
     Zap,
     Wallet,
     PiggyBank,
-    ArrowRight
+    ArrowRight,
+    Eye
 } from 'lucide-react'
 import Link from 'next/link'
 import { formatCurrency } from '@/lib/utils'
@@ -78,35 +79,38 @@ export function DashboardContent({
             {/* Pending Approvals Alert */}
             {pendingApprovals.length > 0 && (
                 <motion.div variants={itemFadeIn}>
-                    <Alert className="relative overflow-hidden border border-banana/20 bg-gradient-to-r from-banana/10 via-yellow-100/30 to-transparent dark:from-banana/5 dark:via-yellow-900/5 dark:to-transparent shadow-xl rounded-3xl group">
-                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:rotate-12 transition-transform duration-500">
+                    <Alert className="relative overflow-hidden border border-banana/20 bg-gradient-to-r from-banana/10 via-yellow-100/30 to-transparent dark:from-banana/5 dark:via-yellow-900/5 dark:to-transparent shadow-xl rounded-2xl xs:rounded-3xl group transition-all duration-300">
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:rotate-12 transition-transform duration-500 hidden xs:block">
                             <Zap size={60} className="text-banana" />
                         </div>
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-2 relative z-10">
-                            <div className="flex items-start sm:items-center gap-4">
-                                <div className="p-3 bg-banana text-banana-foreground rounded-2xl shrink-0 shadow-lg shadow-yellow-500/20">
-                                    <DollarSign className="h-6 w-6" />
+                        <div className="flex flex-col min-[480px]:flex-row items-stretch min-[480px]:items-center justify-between gap-4 p-1 xs:p-2 relative z-10">
+                            <div className="flex items-start min-[480px]:items-center gap-3 xs:gap-4 flex-1">
+                                <div className="p-2.5 xs:p-3 bg-banana text-banana-foreground rounded-xl xs:rounded-2xl shrink-0 shadow-lg shadow-yellow-500/20">
+                                    <DollarSign className="h-5 w-5 xs:h-6 xs:w-6" />
                                 </div>
-                                <div>
-                                    <h3 className="font-black text-foreground text-lg leading-tight flex items-center gap-2">
+                                <div className="min-w-0">
+                                    <h3 className="font-black text-foreground text-base xs:text-lg leading-tight flex items-center gap-2">
                                         {t('dashboard.pending_approvals')}
-                                        <span className="flex h-2 w-2 rounded-full bg-red-500 animate-ping" />
+                                        <span className="flex h-1.5 w-1.5 xs:h-2 xs:w-2 rounded-full bg-red-500 animate-ping" />
                                     </h3>
-                                    <p className="text-sm text-muted-foreground font-medium mt-1">
+                                    <p className="text-xs xs:text-sm text-muted-foreground font-medium mt-0.5 xs:mt-1 truncate xs:whitespace-normal">
                                         {t('dashboard.pending_desc', { count: pendingApprovals.length })}
                                     </p>
                                 </div>
                             </div>
-                            <Link href="/treasurer/approvals" className="w-full sm:w-auto">
-                                <Button size="lg" className="w-full sm:w-auto bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 text-foreground border border-white/20 dark:border-white/10 font-bold rounded-2xl backdrop-blur-md shadow-sm">
-                                    {t('dashboard.review_now')}
-                                    <ArrowRight className="w-4 h-4 ml-2" />
+                            <div className="shrink-0 flex items-center">
+                                <Button asChild size="lg" variant="default" className="w-full min-[480px]:w-auto bg-blue-900 border-none hover:bg-blue-800 text-white font-black rounded-xl xs:rounded-2xl shadow-lg shadow-blue-900/20 active:scale-95 transition-all h-12 xs:h-14 px-6">
+                                    <Link href="/treasurer/approvals">
+                                        <Eye className="w-5 h-5 mr-2" />
+                                        {t('dashboard.review_now')}
+                                    </Link>
                                 </Button>
-                            </Link>
+                            </div>
                         </div>
                     </Alert>
                 </motion.div>
             )}
+
 
             {/* Stats Grid */}
             <div className="flex overflow-x-auto pb-4 -mx-4 px-4 gap-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-6 no-scrollbar">

@@ -334,17 +334,13 @@ function NewContributionPageContent() {
       className="space-y-8 pb-20"
     >
       <motion.div variants={fadeIn}>
+        <Link href="/contributions" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-blue-600 dark:hover:text-banana transition-all duration-300 group mb-4">
+          <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
+          {t('contributions.back_to_pulse')}
+        </Link>
         <PageHeader
           title={t('contributions.make_contribution')}
           description={t('contributions.subtitle')}
-          action={
-            <Link href="/contributions">
-              <Button variant="outline" className="rounded-xl font-black border-white/20 hover:bg-white/5">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                {t('contributions.back_to_pulse')}
-              </Button>
-            </Link>
-          }
         />
       </motion.div>
 

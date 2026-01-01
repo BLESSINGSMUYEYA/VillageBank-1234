@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/providers/AuthProvider'
+import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -19,7 +20,8 @@ import {
   Clock,
   Search,
   Filter,
-  MoreHorizontal
+  MoreHorizontal,
+  ArrowLeft
 } from 'lucide-react'
 import {
   Dialog,
@@ -30,6 +32,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { toast } from "sonner"
+import { motion } from 'framer-motion'
+import { fadeIn, staggerContainer, itemFadeIn } from '@/lib/motions'
+import { PageHeader } from '@/components/layout/PageHeader'
 
 interface UserData {
   id: string
@@ -207,11 +212,22 @@ export default function RegionalAdminPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto py-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Regional Administration</h1>
-        <p className="text-gray-600">Manage groups and users in your region</p>
-      </div>
+    <motion.div
+      variants={staggerContainer}
+      initial="initial"
+      animate="animate"
+      className="max-w-7xl mx-auto py-6"
+    >
+      <motion.div variants={fadeIn} className="mb-8">
+        <Link href="/dashboard" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-blue-600 dark:hover:text-banana transition-all duration-300 group mb-4">
+          <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
+          Back to Hub
+        </Link>
+        <PageHeader
+          title="Regional Administration"
+          description="Manage groups and users in your region"
+        />
+      </motion.div>
 
       <div className="mb-6">
         {user?.role === 'SUPER_ADMIN' ? (
@@ -564,6 +580,6 @@ export default function RegionalAdminPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </motion.div>
   )
 }

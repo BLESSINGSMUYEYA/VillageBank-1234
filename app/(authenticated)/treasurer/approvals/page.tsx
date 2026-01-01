@@ -148,12 +148,12 @@ export default function TreasurerApprovalsPage() {
 
     return (
         <div className="space-y-6 max-w-5xl mx-auto px-4 py-8">
+            <Link href="/dashboard" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-blue-600 dark:hover:text-banana transition-all duration-300 group mb-4">
+                <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
+                Back to Dashboard
+            </Link>
             <div className="flex items-center justify-between">
                 <div>
-                    <Link href="/dashboard" className="inline-flex items-center text-body text-muted-foreground hover:text-foreground mb-2">
-                        <ArrowLeft className="w-4 h-4 mr-2" />
-                        Back to Dashboard
-                    </Link>
                     <h1 className="text-display font-black text-foreground">Pending Approvals</h1>
                     <p className="text-muted-foreground text-body">Review and approve member contributions</p>
                 </div>

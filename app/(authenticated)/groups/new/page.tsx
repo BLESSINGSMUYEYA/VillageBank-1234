@@ -133,17 +133,13 @@ export default function CreateGroupPage() {
       className="space-y-10 pb-20"
     >
       <motion.div variants={fadeIn}>
+        <Link href="/groups" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-blue-600 dark:hover:text-banana transition-all duration-300 group mb-4">
+          <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
+          Back to Registry
+        </Link>
         <PageHeader
           title="Establish Local Bank"
           description="Design the foundation of your community financial collective"
-          action={
-            <Link href="/groups">
-              <Button variant="outline" className="rounded-xl font-black border-white/20 hover:bg-white/5">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Registry
-              </Button>
-            </Link>
-          }
         />
       </motion.div>
 

@@ -2,6 +2,7 @@
 
 import { useAuth } from '@/components/providers/AuthProvider'
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -22,7 +23,8 @@ import {
   Fingerprint,
   Smartphone,
   Mail,
-  Plus
+  Plus,
+  ArrowLeft
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
@@ -112,6 +114,10 @@ export default function SettingsPage() {
       className="space-y-8 sm:space-y-12 pb-20"
     >
       <motion.div variants={fadeIn}>
+        <Link href="/dashboard" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-blue-600 dark:hover:text-banana transition-all duration-300 group mb-4">
+          <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
+          Back to Hub
+        </Link>
         <PageHeader
           title="Account Configuration"
           description={
