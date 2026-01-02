@@ -32,15 +32,30 @@ export class PenaltyService {
             })
 
             if (!group) throw new Error('Group not found')
-            if (group.penaltyAmount <= 0) return result // No penalty configured
+
+            const penaltyToApply = group.lateContributionFee > 0 ? group.lateContributionFee : group.penaltyAmount
+            if (penaltyToApply <= 0) return result // No penalty configured
 
             const now = new Date()
             const currentMonth = now.getMonth() + 1
             const currentYear = now.getFullYear()
             const currentDay = now.getDate()
+            const currentDayOfWeek = now.getDay() // 0 = Sunday, 1 = Monday, ...
+
+            let isPastDeadline = false
+            if (group.contributionDeadlineType === 'WEEKLY') {
+                // If weekly, assume contributionDueDay is 1-7 (Mon-Sun)
+                // We check if current day of week is past the due day
+                // Note: getDay() 0=Sun, so we map 1=Mon, 7=Sun
+                const normalizedDueDay = group.contributionDueDay === 7 ? 0 : group.contributionDueDay
+                isPastDeadline = currentDayOfWeek > normalizedDueDay
+            } else {
+                // Monthly
+                isPastDeadline = currentDay > group.contributionDueDay
+            }
 
             // Only check if we are past the due day
-            if (currentDay <= group.contributionDueDay) {
+            if (!isPastDeadline) {
                 return result
             }
 
@@ -52,7 +67,7 @@ export class PenaltyService {
                         userId: member.userId,
                         month: currentMonth,
                         year: currentYear,
-                        status: { not: 'FAILED' } // Don't count placeholder/failed payments as a contribution
+                        status: { not: 'FAILED' }
                     }
                 })
 
@@ -61,22 +76,22 @@ export class PenaltyService {
                     await prisma.groupMember.update({
                         where: { id: member.id },
                         data: {
-                            unpaidPenalties: { increment: group.penaltyAmount },
-                            balance: { decrement: group.monthlyContribution } // Debt increases
+                            unpaidPenalties: { increment: penaltyToApply },
+                            balance: { decrement: group.monthlyContribution }
                         }
                     })
 
-                    // Create a placeholder contribution for the month to avoid duplicate penalty triggers
+                    // Create a placeholder contribution
                     await prisma.contribution.create({
                         data: {
                             groupId,
                             userId: member.userId,
                             month: currentMonth,
                             year: currentYear,
-                            amount: 0, // No payment made yet
-                            penaltyApplied: group.penaltyAmount,
+                            amount: 0,
+                            penaltyApplied: penaltyToApply,
                             isLate: true,
-                            status: 'FAILED', // Placeholder for missed payment
+                            status: 'FAILED',
                         }
                     })
 
@@ -86,35 +101,35 @@ export class PenaltyService {
                             userId: member.userId,
                             groupId,
                             actionType: 'PENALTY_APPLIED',
-                            description: `Late contribution penalty of ${group.penaltyAmount} applied for ${currentMonth}/${currentYear}`,
+                            description: `Late contribution penalty of ${penaltyToApply} applied for ${currentMonth}/${currentYear}`,
                             metadata: {
-                                amount: group.penaltyAmount,
+                                amount: penaltyToApply,
                                 month: currentMonth,
                                 year: currentYear
                             }
                         }
                     })
 
-                    // Create notification for the user
+                    // Create notification
                     await NotificationService.send({
                         userId: member.userId,
                         title: 'Penalty Applied',
-                        message: `A late contribution penalty of MWK ${group.penaltyAmount.toLocaleString()} has been applied for ${currentMonth}/${currentYear}.`,
+                        message: `A late contribution penalty of MWK ${penaltyToApply.toLocaleString()} has been applied for ${currentMonth}/${currentYear}.`,
                         type: 'WARNING',
                         actionUrl: `/contributions/new?groupId=${groupId}`,
                         actionText: 'Pay Now'
                     })
 
                     result.penaltiesApplied++
-                    result.totalAmount += group.penaltyAmount
+                    result.totalAmount += penaltyToApply
                 } else if (!existingContribution.isLate &&
                     existingContribution.status === 'PENDING' &&
-                    new Date(existingContribution.createdAt).getDate() > group.contributionDueDay) {
-                    // If contribution exists but was created after due date and hasn't been marked late yet
+                    isPastDeadline) {
+
                     await prisma.groupMember.update({
                         where: { id: member.id },
                         data: {
-                            unpaidPenalties: { increment: group.penaltyAmount }
+                            unpaidPenalties: { increment: penaltyToApply }
                         }
                     })
 
@@ -122,12 +137,12 @@ export class PenaltyService {
                         where: { id: existingContribution.id },
                         data: {
                             isLate: true,
-                            penaltyApplied: group.penaltyAmount
+                            penaltyApplied: penaltyToApply
                         }
                     })
 
                     result.penaltiesApplied++
-                    result.totalAmount += group.penaltyAmount
+                    result.totalAmount += penaltyToApply
                 }
             }
 

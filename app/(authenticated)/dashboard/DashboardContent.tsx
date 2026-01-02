@@ -61,7 +61,7 @@ export function DashboardContent({
                                 <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-500/30 dark:bg-banana/30 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
                             </span>!
                             <span className="text-muted-foreground/80 font-normal">
-                                Ready to revolutionize your finances?
+                                {t('dashboard.rev_finances')}
                             </span>
                         </span>
                     }
@@ -142,14 +142,14 @@ export function DashboardContent({
                     variant="glass"
                     label={t('dashboard.active_loans')}
                     value={stats.totalLoans}
-                    description={stats.pendingLoans > 0 ? `${stats.pendingLoans} pending` : 'All healthy'}
+                    description={stats.pendingLoans > 0 ? t('dashboard.pending_count', { count: stats.pendingLoans }) : t('dashboard.all_healthy')}
                     icon={PiggyBank}
                     className="shrink-0 w-[280px] sm:w-auto"
                 />
 
                 <StatsCard
                     index={4}
-                    label="Monthly Avg"
+                    label={t('dashboard.monthly_avg')}
                     value={formatCurrency(stats.monthlyContribution)}
                     description={t('dashboard.this_month')}
                     icon={Calendar}
@@ -209,7 +209,7 @@ export function DashboardContent({
                                         </div>
                                         <div>
                                             <h3 className="text-lg font-black leading-tight">{t('dashboard.make_contribution')}</h3>
-                                            <p className="text-muted-foreground text-xs font-bold mt-1">Instant financial record</p>
+                                            <p className="text-muted-foreground text-xs font-bold mt-1">{t('dashboard.instant_record')}</p>
                                         </div>
                                     </div>
                                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -299,7 +299,7 @@ export function DashboardContent({
                                         <div className="w-16 h-16 bg-muted/30 rounded-full flex items-center justify-center mb-4 backdrop-blur-md">
                                             <Calendar className="w-8 h-8 text-muted-foreground/30" />
                                         </div>
-                                        <p className="text-sm font-black text-muted-foreground">No recent activity detected.</p>
+                                        <p className="text-sm font-black text-muted-foreground">{t('dashboard.no_activity_detected')}</p>
                                     </div>
                                 )}
                             </div>

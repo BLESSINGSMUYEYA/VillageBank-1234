@@ -1,16 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
-import { 
-  History, 
-  Filter, 
-  Search, 
-  Download, 
+import {
+  History,
+  Filter,
+  Search,
+  Download,
   Calendar,
   Users,
   DollarSign,
@@ -64,14 +64,10 @@ export function AuditTrail({ groupId, showFilters = true, showExport = true }: A
     pages: 0
   })
 
-  useEffect(() => {
-    fetchAuditTrail()
-  }, [filters, pagination.page])
-
-  const fetchAuditTrail = async () => {
+  const fetchAuditTrail = useCallback(async () => {
     try {
       setLoading(true)
-      
+
       const queryParams = new URLSearchParams()
       queryParams.append('type', filters.type)
       queryParams.append('dateRange', filters.dateRange)
@@ -90,7 +86,11 @@ export function AuditTrail({ groupId, showFilters = true, showExport = true }: A
     } finally {
       setLoading(false)
     }
-  }
+  }, [filters, pagination.page, pagination.limit, groupId])
+
+  useEffect(() => {
+    fetchAuditTrail()
+  }, [fetchAuditTrail, filters, pagination.page])
 
   const getActivityIcon = (type: string, severity: string) => {
     switch (type) {

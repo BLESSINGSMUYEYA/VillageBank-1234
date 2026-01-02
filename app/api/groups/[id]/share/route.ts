@@ -93,6 +93,7 @@ export async function POST(
     // Add branding with Jimp
     let finalBuffer = qrCodeBuffer
     try {
+      const { Jimp } = await import('jimp')
       const qrImage = await Jimp.read(qrCodeBuffer)
 
       // Create a canvas for the branded image (400x460 to allow space for text)
@@ -107,30 +108,33 @@ export async function POST(
 
       // Add "Village Banking" text branding at the bottom
       try {
-        // Try to load a font from a known reliable path or use a fallback
-        // In Jimp 1.x, fonts are sometimes tricky. We'll try to import it dynamically here
-        // to avoid breaking the whole thing if the import fails.
-        const { loadFont } = await import('jimp')
-        // Try to use a standard font that usually comes with Jimp
-        // If this fails, it will just skip the text branding
-        try {
-          // @ts-ignore
-          const { SANS_32_BLACK } = await import('jimp/fonts')
-          const font = await loadFont(SANS_32_BLACK)
+        // @ts-expect-error: Jimp dynamic import types
+        const { HorizontalAlign, VerticalAlign } = await import('jimp')
 
-          canvas.print({
-            font,
-            x: 0,
-            y: 405,
-            text: {
-              text: 'Village Banking',
-              alignmentX: HorizontalAlign.CENTER,
-              alignmentY: VerticalAlign.MIDDLE
-            },
-            maxWidth: 400
-          })
+        try {
+          // Try to import fonts safely
+          // @ts-expect-error: Jimp font import types
+          const { SANS_32_BLACK } = await import('jimp/fonts')
+          // @ts-expect-error: Jimp loadFont dynamic import
+          const { loadFont } = await import('jimp')
+
+          if (loadFont && SANS_32_BLACK) {
+            const font = await loadFont(SANS_32_BLACK)
+
+            canvas.print({
+              font,
+              x: 0,
+              y: 405,
+              text: {
+                text: 'Village Banking',
+                alignmentX: HorizontalAlign.CENTER,
+                alignmentY: VerticalAlign.MIDDLE
+              },
+              maxWidth: 400
+            })
+          }
         } catch (e) {
-          console.log("Font import failed, skipping text branding")
+          console.log("Font/Text branding failed, using plain QR on canvas")
         }
       } catch (fontError) {
         console.error('Font loading error:', fontError)
@@ -139,6 +143,7 @@ export async function POST(
       finalBuffer = await canvas.getBuffer('image/png')
     } catch (jimpError) {
       console.error('Jimp branding error, falling back to standard QR:', jimpError)
+      finalBuffer = qrCodeBuffer
     }
 
     const qrCodeDataUrl = `data:image/png;base64,${finalBuffer.toString('base64')}`

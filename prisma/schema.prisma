@@ -44,16 +44,35 @@ enum Region {
   CENTRAL
 }
 
+enum MeetingFrequency {
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+}
+
+enum InterestType {
+  FLAT_RATE
+  REDUCING_BALANCE
+}
+
 model Group {
   id                      String   @id @default(cuid())
   name                    String
   description             String?
   region                  Region
+  meetingFrequency        MeetingFrequency @default(MONTHLY)
   monthlyContribution     Float
+  socialFundAmount        Float    @default(0)
   maxLoanMultiplier       Int      @default(3)
   interestRate            Float    @default(10)
-  penaltyAmount           Float    @default(0)
+  loanInterestType        InterestType @default(FLAT_RATE)
+  penaltyAmount           Float    @default(0) // Default late payment penalty (general)
+  lateContributionFee     Float    @default(0) // Specific fee for late contributions
+  lateMeetingFine         Float    @default(0)
+  missedMeetingFine       Float    @default(0)
   contributionDueDay      Int      @default(5)
+  contributionDeadlineType MeetingFrequency @default(MONTHLY)
+  loanGracePeriodDays     Int      @default(0)
   isActive                Boolean  @default(true)
   createdById             String
   createdAt               DateTime @default(now())
@@ -120,6 +139,8 @@ model Contribution {
   user                User    @relation(fields: [userId], references: [id])
   
   @@index([groupId, userId, month, year])
+  @@index([status])
+  @@index([userId, status])
 }
 
 enum PaymentStatus {
@@ -149,6 +170,9 @@ model Loan {
   group                 Group          @relation(fields: [groupId], references: [id])
   user                  User           @relation(fields: [userId], references: [id])
   repayments            LoanRepayment[]
+
+  @@index([groupId, status])
+  @@index([userId, status])
 }
 
 enum LoanStatus {
@@ -204,6 +228,9 @@ model Activity {
   
   user        User     @relation(fields: [userId], references: [id])
   group       Group?   @relation(fields: [groupId], references: [id])
+
+  @@index([userId, groupId, createdAt])
+  @@index([groupId, createdAt])
 }
 
 model Notification {
@@ -218,6 +245,9 @@ model Notification {
   createdAt  DateTime            @default(now())
   
   user       User                @relation(fields: [userId], references: [id])
+
+  @@index([userId, read])
+  @@index([userId, createdAt])
 }
 
 enum NotificationType {

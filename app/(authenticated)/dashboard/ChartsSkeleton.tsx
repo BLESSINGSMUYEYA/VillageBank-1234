@@ -1,5 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+import { StatsCardSkeleton, Skeleton } from "@/components/ui/Skeletons"
 
 export default function ChartsSkeleton() {
     return (
@@ -7,10 +6,7 @@ export default function ChartsSkeleton() {
             {/* Summary Stats Skeleton */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {Array.from({ length: 4 }).map((_, i) => (
-                    <Card key={i} className="p-6">
-                        <Skeleton className="h-8 w-[80px] mb-2" />
-                        <Skeleton className="h-3 w-[120px]" />
-                    </Card>
+                    <StatsCardSkeleton key={i} />
                 ))}
             </div>
 

@@ -24,7 +24,9 @@ export default function CreateGroupPage() {
     name: '',
     description: '',
     region: '',
+    meetingFrequency: 'MONTHLY',
     monthlyContribution: '',
+    socialFundAmount: '0',
     maxLoanMultiplier: '3',
     interestRate: '10',
   })
@@ -104,7 +106,9 @@ export default function CreateGroupPage() {
           name: formData.name,
           description: formData.description,
           region: formData.region,
+          meetingFrequency: formData.meetingFrequency,
           monthlyContribution: parseFloat(formData.monthlyContribution),
+          socialFundAmount: parseFloat(formData.socialFundAmount) || 0,
           maxLoanMultiplier: parseInt(formData.maxLoanMultiplier),
           interestRate: parseFloat(formData.interestRate),
         }),
@@ -196,6 +200,19 @@ export default function CreateGroupPage() {
                         </SelectContent>
                       </Select>
                     </FormGroup>
+
+                    <FormGroup label="Meeting Frequency">
+                      <Select value={formData.meetingFrequency} onValueChange={(v) => handleInputChange('meetingFrequency', v)}>
+                        <SelectTrigger className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-bold px-6">
+                          <SelectValue placeholder="Select frequency" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-2xl border-white/10 backdrop-blur-3xl">
+                          <SelectItem value="WEEKLY" className="font-bold">Weekly Meetings</SelectItem>
+                          <SelectItem value="BIWEEKLY" className="font-bold">Bi-Weekly Meetings</SelectItem>
+                          <SelectItem value="MONTHLY" className="font-bold">Monthly Meetings</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormGroup>
                   </div>
                 </div>
 
@@ -208,7 +225,7 @@ export default function CreateGroupPage() {
                   />
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="md:col-span-2">
+                    <div className="md:col-span-1">
                       <FormGroup label="Target Monthly Contribution (MWK)" error={fieldErrors.monthlyContribution}>
                         <PremiumInput
                           type="number"
@@ -217,6 +234,18 @@ export default function CreateGroupPage() {
                           onChange={(e) => handleInputChange('monthlyContribution', e.target.value)}
                           placeholder="10000"
                           error={!!fieldErrors.monthlyContribution}
+                        />
+                      </FormGroup>
+                    </div>
+
+                    <div className="md:col-span-1">
+                      <FormGroup label="Social/Emergency Fund (MWK)">
+                        <PremiumInput
+                          type="number"
+                          prefix="MWK"
+                          value={formData.socialFundAmount}
+                          onChange={(e) => handleInputChange('socialFundAmount', e.target.value)}
+                          placeholder="500"
                         />
                       </FormGroup>
                     </div>

@@ -1,0 +1,280 @@
+﻿
+> village-banking@0.1.0 lint
+> eslint .
+
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\(authenticated)\admin\regional\page.tsx
+  52:6  warning  React Hook useEffect has a missing dependency: 'fetchRegionalData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\(authenticated)\admin\system\page.tsx
+  21:3  warning  'CheckCircle' is defined but never used  @typescript-eslint/no-unused-vars
+  22:3  warning  'Clock' is defined but never used        @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\(authenticated)\contributions\new\page.tsx
+   11:21  warning  'DollarSign' is defined but never used                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+   45:62  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   95:42  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  107:44  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  114:49  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  129:18  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  136:46  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  296:14  warning  'error' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  368:43  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  378:40  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  390:31  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\(authenticated)\contributions\page.tsx
+  18:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\(authenticated)\dashboard\ChartsSkeleton.tsx
+  1:16  warning  'CardContent' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\(authenticated)\dashboard\DashboardContent.tsx
+  17:10  warning  'Suspense' is defined but never used      @typescript-eslint/no-unused-vars
+  20:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  21:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  22:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  23:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\(authenticated)\groups\GroupsContent.tsx
+  12:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\(authenticated)\groups\[id]\GroupDetailsContainer.tsx
+  11:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  15:24  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  22:5   warning  'isTreasurer' is defined but never used   @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\(authenticated)\groups\[id]\settings\page.tsx
+   14:21  warning  'Settings' is defined but never used                                                                               @typescript-eslint/no-unused-vars
+   14:31  warning  'Users' is defined but never used                                                                                  @typescript-eslint/no-unused-vars
+   14:38  warning  'DollarSign' is defined but never used                                                                             @typescript-eslint/no-unused-vars
+   14:50  warning  'CreditCard' is defined but never used                                                                             @typescript-eslint/no-unused-vars
+   14:62  warning  'TrendingUp' is defined but never used                                                                             @typescript-eslint/no-unused-vars
+   16:10  warning  'formatCurrency' is defined but never used                                                                         @typescript-eslint/no-unused-vars
+   78:6   warning  React Hook useEffect has a missing dependency: 'fetchGroupData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  466:30  warning  'e' is defined but never used                                                                                      @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\(authenticated)\loans\new\page.tsx
+   11:21   warning  'CreditCard' is defined but never used    @typescript-eslint/no-unused-vars
+   11:33   warning  'TrendingUp' is defined but never used    @typescript-eslint/no-unused-vars
+   66:42   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   66:70   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   66:110  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  189:14   warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\(authenticated)\profile\page.tsx
+  11:3   warning  'User' is defined but never used            @typescript-eslint/no-unused-vars
+  12:3   warning  'DollarSign' is defined but never used      @typescript-eslint/no-unused-vars
+  13:3   warning  'CreditCard' is defined but never used      @typescript-eslint/no-unused-vars
+  14:3   warning  'Calendar' is defined but never used        @typescript-eslint/no-unused-vars
+  19:3   warning  'Eye' is defined but never used             @typescript-eslint/no-unused-vars
+  20:3   warning  'Settings' is defined but never used        @typescript-eslint/no-unused-vars
+  33:10  warning  'error' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\(authenticated)\treasurer\approvals\page.tsx
+    4:29  warning  'CardDescription' is defined but never used                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+    4:46  warning  'CardHeader' is defined but never used                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+    4:58  warning  'CardTitle' is defined but never used                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+    6:10  warning  'Alert' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+    6:17  warning  'AlertDescription' is defined but never used                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+    8:10  warning  'Checkbox' is defined but never used                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+   15:44  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   17:12  warning  'reviewingId' is assigned a value but never used                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   76:18  warning  'error' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   83:11  warning  'handleSelectAll' is assigned a value but never used                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+   91:11  warning  'handleSelectContribution' is assigned a value but never used                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+  122:18  warning  'error' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  129:11  warning  'handleBulkApproval' is assigned a value but never used                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+  268:45  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\(public)\page.tsx
+  8:16  warning  'CardContent' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\api\admin\bulk\route.ts
+   46:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   47:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  101:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  176:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  251:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  317:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  370:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\api\admin\regional\route.ts
+   27:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   90:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  153:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\api\admin\system\route.ts
+  134:38  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  145:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\api\audit\route.ts
+  45:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\api\clerk\webhook\route.ts
+   25:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   61:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   80:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  100:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\api\contributions\route.ts
+    4:10  warning  'PenaltyService' is defined but never used  @typescript-eslint/no-unused-vars
+  182:24  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\api\groups\[id]\route.ts
+  2:10  warning  'clerkClient' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\api\groups\[id]\share\route.ts
+   53:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  121:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  122:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  190:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\api\groups\route.ts
+  29:11  warning  'userRole' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\api\loans\[id]\route.ts
+  144:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\api\monitoring\route.ts
+  4:27  warning  'request' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\api\ocr\route.ts
+  67:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\api\search\route.ts
+   26:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   48:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  101:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  162:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  219:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\api\shared\[token]\route.ts
+  15:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  72:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  81:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\api\sign-cloudinary\route.ts
+  6:13  warning  'public_id' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  6:24  warning  'version' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  6:44  warning  'signature' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\api\treasurer\pending\route.ts
+  1:10  warning  'NextRequest' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\app\api\users\profile\route.ts
+  244:53  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  270:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  284:46  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\components\audit\AuditTrail.tsx
+  13:3   warning  'Download' is defined but never used                                                                                @typescript-eslint/no-unused-vars
+  14:3   warning  'Calendar' is defined but never used                                                                                @typescript-eslint/no-unused-vars
+  20:3   warning  'XCircle' is defined but never used                                                                                 @typescript-eslint/no-unused-vars
+  30:28  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+  69:6   warning  React Hook useEffect has a missing dependency: 'fetchAuditTrail'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  95:42  warning  'severity' is defined but never used                                                                                @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\components\charts\ContributionChart.tsx
+  23:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\components\contributions\ContributionsClient.tsx
+   9:26  warning  'DollarSign' is defined but never used    @typescript-eslint/no-unused-vars
+   9:38  warning  'TrendingUp' is defined but never used    @typescript-eslint/no-unused-vars
+  11:26  warning  'formatDate' is defined but never used    @typescript-eslint/no-unused-vars
+  15:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  16:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  17:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\components\export\ExportButton.tsx
+    7:10  warning  'Badge' is defined but never used         @typescript-eslint/no-unused-vars
+   12:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  149:69  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\components\groups\GroupContributions.tsx
+  35:61  warning  'groupId' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\components\groups\GroupLoans.tsx
+  69:9  warning  'rejectedLoans' is assigned a value but never used         @typescript-eslint/no-unused-vars
+  71:9  warning  'totalAmountRequested' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\components\groups\GroupMembersList.tsx
+  10:34  warning  'DollarSign' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\components\layout\DesktopNavigation.tsx
+   3:19  warning  'useAuth' is defined but never used            @typescript-eslint/no-unused-vars
+   3:28  warning  'SignInButton' is defined but never used       @typescript-eslint/no-unused-vars
+   3:42  warning  'SignUpButton' is defined but never used       @typescript-eslint/no-unused-vars
+  24:17  warning  'isLoaded' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\components\layout\MobileNavigation.tsx
+   3:19  warning  'useAuth' is defined but never used                       @typescript-eslint/no-unused-vars
+   3:28  warning  'SignInButton' is defined but never used                  @typescript-eslint/no-unused-vars
+   3:42  warning  'SignUpButton' is defined but never used                  @typescript-eslint/no-unused-vars
+  10:10  warning  'Badge' is defined but never used                         @typescript-eslint/no-unused-vars
+  28:36  warning  'unreadNotifications' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  29:17  warning  'isLoaded' is assigned a value but never used             @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\components\loans\LoansClient.tsx
+   7:28  warning  'TrendingUp' is defined but never used    @typescript-eslint/no-unused-vars
+  13:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  14:24  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  31:77  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\components\notifications\NotificationCenter.tsx
+    7:10  warning  'Badge' is defined but never used                          @typescript-eslint/no-unused-vars
+    8:26  warning  'Settings' is defined but never used                       @typescript-eslint/no-unused-vars
+  105:9   warning  'getNotificationColor' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\components\providers\LanguageProvider.tsx
+   8:6   warning  'Dictionary' is defined but never used         @typescript-eslint/no-unused-vars
+  10:38  warning  Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  25:12  warning  'isLoaded' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  42:21  warning  Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  50:41  warning  Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\components\search\AdvancedSearch.tsx
+   36:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  213:91  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  233:96  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\components\sharing\QRCodeShare.tsx
+   19:46  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   50:14  warning  'error' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  330:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\components\ui\textarea.tsx
+  3:18  warning  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\components\user-profile.tsx
+  15:10  warning  'prisma' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\lib\cache.ts
+  10:45  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\lib\dashboard-service.ts
+  127:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\lib\errors.ts
+  108:41  warning  Unexpected any. Specify a different type                                                                                 @typescript-eslint/no-explicit-any
+  142:44  warning  The `Function` type accepts any function-like value.
+Prefer explicitly defining any function parameters and return type  @typescript-eslint/no-unsafe-function-type
+  143:26  warning  Unexpected any. Specify a different type                                                                                 @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\lib\export.ts
+    7:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   59:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  205:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  205:59  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\lib\payments.ts
+  20:38  warning  'request' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\lib\prisma.ts
+  1:24  warning  'MemberStatus' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\mwenitete\Desktop\Blessings\yes\village-banking\middleware.ts
+  32:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+Ô£û 166 problems (0 errors, 166 warnings)
+

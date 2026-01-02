@@ -1,14 +1,15 @@
 'use client'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Share2, Users, Receipt, Landmark } from 'lucide-react'
 import GroupMembersList from '@/components/groups/GroupMembersList'
 import GroupContributions from '@/components/groups/GroupContributions'
 import GroupLoans from '@/components/groups/GroupLoans'
+import GroupActivities from '@/components/groups/GroupActivities'
 import { QRCodeShare } from '@/components/sharing/QRCodeShare'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { motion } from 'framer-motion'
 import { itemFadeIn } from '@/lib/motions'
+import { Activity, Share2, Users, Receipt, Landmark } from 'lucide-react'
 
 interface GroupDetailsContainerProps {
     group: any
@@ -50,6 +51,13 @@ export default function GroupDetailsContainer({
                         <Landmark className="w-4 h-4" />
                         Loans
                     </TabsTrigger>
+                    <TabsTrigger
+                        value="activities"
+                        className="rounded-xl px-4 sm:px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all flex items-center gap-2 whitespace-nowrap"
+                    >
+                        <Activity className="w-4 h-4" />
+                        Activities
+                    </TabsTrigger>
                     {isAdmin && (
                         <TabsTrigger
                             value="share"
@@ -87,6 +95,12 @@ export default function GroupDetailsContainer({
                             groupId={group.id}
                             currentUserRole={currentUserMember?.role}
                             key={group.id}
+                        />
+                    </TabsContent>
+
+                    <TabsContent value="activities" className="m-0 border-none outline-none focus-visible:ring-0">
+                        <GroupActivities
+                            activities={group.activities}
                         />
                     </TabsContent>
 

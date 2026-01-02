@@ -90,21 +90,21 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
             <motion.div variants={fadeIn}>
                 <Link href="/dashboard" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-blue-600 dark:hover:text-banana transition-all duration-300 group mb-4">
                     <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
-                    Back to Hub
+                    {t('common.back')}
                 </Link>
                 <PageHeader
-                    title={t('profile.title') || 'Member Profile'}
+                    title={t('profile.title')}
                     description={
                         <span className="flex flex-wrap items-center gap-1.5 opacity-80">
                             <Shield className="w-4 h-4 text-blue-600 dark:text-banana" />
-                            {t('profile.subtitle') || 'Synchronized identity and financial standing across the global network.'}
+                            {t('profile.subtitle')}
                         </span>
                     }
                     action={
                         <Link href="/settings">
                             <Button variant="banana" className="px-6 group">
                                 <Settings className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform" />
-                                {t('profile.edit_profile') || 'Manage Account'}
+                                {t('profile.edit_profile')}
                             </Button>
                         </Link>
                     }
@@ -142,16 +142,16 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                                 {profile?.role?.replace('_', ' ')}
                                             </Badge>
                                             <Badge variant="success">
-                                                Active Node
+                                                {t('profile.active_node')}
                                             </Badge>
                                         </div>
                                     </div>
 
                                     <div className="space-y-2 pt-2">
                                         {[
-                                            { icon: Mail, label: 'Transmission Code', value: profile?.email },
-                                            { icon: MapPin, label: 'Regional Sector', value: profile?.region || 'Central Domain' },
-                                            { icon: Calendar, label: 'Node Activated', value: profile?.joinedAt ? new Date(profile.joinedAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : '---' }
+                                            { icon: Mail, label: t('profile.transmission_code'), value: profile?.email },
+                                            { icon: MapPin, label: t('profile.regional_sector'), value: profile?.region || 'Central Domain' },
+                                            { icon: Calendar, label: t('profile.node_activated'), value: profile?.joinedAt ? new Date(profile.joinedAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) : '---' }
                                         ].map((item, idx) => (
                                             <div key={idx} className="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/40 dark:hover:bg-slate-800/40 transition-colors group/item">
                                                 <div className="p-2.5 rounded-xl bg-blue-600/10 dark:bg-banana/10 text-blue-600 dark:text-banana group-hover/item:scale-110 transition-transform">
@@ -174,7 +174,7 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                         <GlassCard className="p-6 border-none bg-gradient-to-br from-blue-700/10 to-transparent" hover={true}>
                             <h3 className="text-xs font-black text-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
                                 <Award className="w-4 h-4 text-banana" />
-                                Investor Status Tier
+                                {t('profile.investor_tier')}
                             </h3>
                             <div className="space-y-4">
                                 <div className="flex justify-between items-end mb-1">
@@ -205,18 +205,18 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                             variant="gradient"
                             gradient="bg-gradient-to-br from-blue-600 to-indigo-800"
                             icon={Wallet}
-                            label="Net Capital Stake"
+                            label={t('profile.net_capital')}
                             value={formatCurrency(financials?.totalContributions || 0)}
-                            description="Real-time synchronized balance"
+                            description={t('profile.real_time_sync')}
                             className="shrink-0 w-[280px] sm:w-auto"
                         />
                         <StatsCard
                             index={2}
                             variant="glass"
                             icon={TrendingUp}
-                            label="Reliability Rating"
+                            label={t('profile.reliability_rating')}
                             value={`${financials?.eligibilityScore}%`}
-                            description="Trust factor optimized"
+                            description={t('profile.trust_optimized')}
                             className="shrink-0 w-[280px] sm:w-auto"
                         />
                     </div>
@@ -224,9 +224,9 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                     <Tabs defaultValue="overview" className="space-y-8">
                         <div className="sticky top-0 z-20 pt-2 pointer-events-none">
                             <TabsList className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl p-1.5 rounded-2xl border border-white/40 dark:border-white/10 w-full justify-start h-14 shadow-xl pointer-events-auto no-scrollbar overflow-x-auto">
-                                <TabsTrigger value="overview" className="rounded-xl px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-950 dark:data-[state=active]:bg-blue-950 data-[state=active]:text-white dark:data-[state=active]:text-white">Overview</TabsTrigger>
-                                <TabsTrigger value="groups" className="rounded-xl px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-950 dark:data-[state=active]:bg-blue-950 data-[state=active]:text-white dark:data-[state=active]:text-white">Memberships</TabsTrigger>
-                                <TabsTrigger value="history" className="rounded-xl px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-950 dark:data-[state=active]:bg-blue-950 data-[state=active]:text-white dark:data-[state=active]:text-white">Ledger</TabsTrigger>
+                                <TabsTrigger value="overview" className="rounded-xl px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-950 dark:data-[state=active]:bg-blue-950 data-[state=active]:text-white dark:data-[state=active]:text-white">{t('profile.tabs.overview')}</TabsTrigger>
+                                <TabsTrigger value="groups" className="rounded-xl px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-950 dark:data-[state=active]:bg-blue-950 data-[state=active]:text-white dark:data-[state=active]:text-white">{t('profile.tabs.groups')}</TabsTrigger>
+                                <TabsTrigger value="history" className="rounded-xl px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-950 dark:data-[state=active]:bg-blue-950 data-[state=active]:text-white dark:data-[state=active]:text-white">{t('profile.tabs.contributions')}</TabsTrigger>
                             </TabsList>
                         </div>
 
@@ -236,7 +236,7 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                     <GlassCard className="p-8 h-full" hover={false}>
                                         <h3 className="text-lg font-black text-foreground mb-6 uppercase tracking-wider flex items-center gap-2">
                                             <Shield className="w-5 h-5 text-blue-600" />
-                                            Credit Protocol
+                                            {t('profile.credit_protocol')}
                                         </h3>
                                         <div className="space-y-6">
                                             <div className="flex justify-between items-center bg-white/40 dark:bg-slate-900/40 p-5 rounded-2xl">
@@ -263,18 +263,18 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                     <GlassCard className="p-8 h-full" hover={false}>
                                         <h3 className="text-lg font-black text-foreground mb-6 uppercase tracking-wider flex items-center gap-2">
                                             <Zap className="w-5 h-5 text-banana" />
-                                            Active Liabilities
+                                            {t('profile.active_liabilities')}
                                         </h3>
                                         <div className="space-y-4">
                                             <div className="p-4 rounded-2xl bg-red-500/5 border border-red-500/10 flex justify-between items-center">
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-red-500">Outstanding</span>
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-red-500">{t('profile.outstanding')}</span>
                                                 <span className="text-xl font-black text-red-500">{formatCurrency(financials.outstandingLoanBalance)}</span>
                                             </div>
                                             <p className="text-[10px] font-bold text-muted-foreground opacity-70 leading-relaxed uppercase tracking-widest">
                                                 You have {financials.recentLoans?.filter(l => l.status === 'ACTIVE').length || 0} active borrowing cycles in progress.
                                             </p>
                                             <Button className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-black h-12 mt-2">
-                                                View Repayment Plan
+                                                {t('profile.view_repayment')}
                                             </Button>
                                         </div>
                                     </GlassCard>
@@ -299,11 +299,11 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                                 <h4 className="text-xl font-black text-foreground truncate mb-1">{group.name}</h4>
                                                 <div className="flex items-center gap-2 text-muted-foreground mb-4">
                                                     <Users className="w-3.5 h-3.5" />
-                                                    <span className="text-[10px] font-bold uppercase tracking-widest">{group.memberCount} Members</span>
+                                                    <span className="text-[10px] font-bold uppercase tracking-widest">{group.memberCount} {t('groups.members')}</span>
                                                 </div>
                                                 <div className="pt-4 border-t border-white/10 flex justify-between items-center">
                                                     <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">
-                                                        Contribution
+                                                        {t('dashboard.monthly_contribution')}
                                                     </div>
                                                     <div className="text-sm font-black text-blue-600 dark:text-banana">
                                                         {formatCurrency(group.monthlyContribution)}
@@ -315,7 +315,7 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                 ) : (
                                     <div className="col-span-2 text-center py-20 opacity-40">
                                         <Users className="w-16 h-16 mx-auto mb-4" />
-                                        <p className="font-black uppercase tracking-widest">No active memberships found</p>
+                                        <p className="font-black uppercase tracking-widest">{t('groups.no_groups')}</p>
                                     </div>
                                 )}
                             </motion.div>
@@ -325,7 +325,7 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                             <motion.div variants={fadeIn}>
                                 <GlassCard className="p-0 overflow-hidden" hover={false}>
                                     <div className="p-8 border-b border-white/10 flex justify-between items-center">
-                                        <h3 className="font-black uppercase tracking-widest text-sm">Recent Ledger Events</h3>
+                                        <h3 className="font-black uppercase tracking-widest text-sm">{t('profile.ledger_events')}</h3>
                                         <History className="w-4 h-4 opacity-40" />
                                     </div>
                                     <div className="divide-y divide-white/10">
@@ -336,7 +336,7 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                                         +
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-black">Stake Deposit</p>
+                                                        <p className="text-sm font-black">{t('profile.deposits')}</p>
                                                         <p className="text-[10px] font-bold text-muted-foreground uppercase">{new Date(item.date).toLocaleDateString()}</p>
                                                     </div>
                                                 </div>

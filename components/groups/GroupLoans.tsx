@@ -3,11 +3,13 @@
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { formatCurrency, cn } from '@/lib/utils'
-import { Plus, CheckCircle, XCircle, Clock, CheckCircle2, Wallet, Landmark, ArrowUpRight } from 'lucide-react'
+import { Plus, CheckCircle, XCircle, Clock, Landmark, Wallet, ArrowUpRight, User, Calendar, Percent } from 'lucide-react'
 import Link from 'next/link'
 import { StatsCard } from '@/components/ui/stats-card'
+import { GlassCard } from '@/components/ui/GlassCard'
+import { motion, AnimatePresence } from 'framer-motion'
+import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
 
 interface Loan {
   id: string
@@ -61,194 +63,164 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
   }
 
   const pendingLoans = loans.filter(l => l.status === 'PENDING')
-  const activeLoans = loans.filter(l => l.status === 'ACTIVE')
-  const completedLoans = loans.filter(l => l.status === 'COMPLETED')
-
   const totalAmountApproved = loans.reduce((sum, l) => sum + (l.amountApproved || 0), 0)
 
   return (
-    <div className="space-y-8 sm:space-y-10">
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+    <motion.div
+      variants={staggerContainer}
+      initial="initial"
+      animate="animate"
+      className="space-y-10 p-6 sm:p-10"
+    >
+      {/* Redesigned Summary Cards - 2 inline */}
+      <div className="grid grid-cols-2 gap-4 sm:gap-6">
         <StatsCard
           index={1}
-          label="Pending"
-          value={pendingLoans.length}
-          description={formatCurrency(pendingLoans.reduce((sum, l) => sum + l.amountRequested, 0))}
-          icon={Clock}
+          label="Total Disbursed"
+          value={formatCurrency(totalAmountApproved)}
+          description={`${loans.length} total loans issued`}
+          icon={Wallet}
+          variant="featured"
           className="w-full"
         />
 
         <StatsCard
           index={2}
-          label="Active"
-          value={activeLoans.length}
-          description={formatCurrency(activeLoans.reduce((sum, l) => sum + (l.amountApproved || 0), 0))}
-          icon={Landmark}
+          label="Pending Request"
+          value={pendingLoans.length}
+          description={formatCurrency(pendingLoans.reduce((sum, l) => sum + l.amountRequested, 0))}
+          icon={Clock}
           variant="glass"
           className="w-full"
         />
-
-        <StatsCard
-          index={3}
-          label="Completed"
-          value={completedLoans.length}
-          description="Fully repaid loans"
-          icon={CheckCircle2}
-          className="w-full"
-        />
-
-        <StatsCard
-          index={4}
-          label="Total Disbursed"
-          value={formatCurrency(totalAmountApproved)}
-          description={`${loans.length} total loans`}
-          icon={Wallet}
-          variant="featured"
-          className="w-full"
-        />
       </div>
 
-      {/* Action Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-6">
-        <div>
-          <h2 className="text-xl font-black text-foreground">Loan History</h2>
-          <p className="text-xs font-bold text-muted-foreground opacity-70">Track borrowing and repayments</p>
+      {/* Simplified Action Header */}
+      <motion.div variants={itemFadeIn} className="flex flex-col sm:flex-row items-center justify-between gap-6 pb-2">
+        <div className="text-center sm:text-left">
+          <h2 className="text-2xl font-black text-foreground tracking-tight">Loan Lifecycle</h2>
+          <p className="text-sm font-bold text-muted-foreground opacity-70">Management and history of group credit</p>
         </div>
-        <Link href={`/loans/new?groupId=${groupId}`}>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl px-6 shadow-lg shadow-blue-500/20 group">
-            <Plus className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform" />
-            Request Loan
+        <Link href={`/loans/new?groupId=${groupId}`} className="w-full sm:w-auto">
+          <Button size="xl" variant="banana" className="w-full sm:w-auto shadow-xl shadow-yellow-500/10 group h-14 rounded-2xl">
+            <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" />
+            New Application
           </Button>
         </Link>
-      </div>
+      </motion.div>
 
-      {/* Pending Repayments / Approvals for Treasurer */}
+      {/* Treasurer Approvals - Refined Glass Look */}
       {currentUserRole === 'TREASURER' && pendingLoans.length > 0 && (
-        <div className="space-y-4">
-          <div className="px-6">
-            <h3 className="text-lg font-black text-orange-600 dark:text-banana flex items-center gap-2">
-              <Clock className="w-5 h-5" />
-              Needs Your Approval
+        <motion.div variants={fadeIn} className="space-y-4">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-orange-600 dark:text-banana">
+              Urgent Approvals Required
             </h3>
           </div>
-          <div className="overflow-x-auto scrollbar-premium bg-orange-500/5 dark:bg-banana/5 rounded-3xl border border-orange-500/10 dark:border-banana/10 mx-6">
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent border-b border-orange-500/10">
-                  <TableHead className="font-black text-[10px] uppercase tracking-widest pl-6">Member</TableHead>
-                  <TableHead className="font-black text-[10px] uppercase tracking-widest">Amount</TableHead>
-                  <TableHead className="font-black text-[10px] uppercase tracking-widest">Period</TableHead>
-                  <TableHead className="text-right font-black text-[10px] uppercase tracking-widest pr-6">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {pendingLoans.map((loan) => (
-                  <TableRow key={loan.id} className="hover:bg-orange-500/5 border-none transition-colors">
-                    <TableCell className="py-4 pl-6">
-                      <div className="font-black text-sm text-foreground">
-                        {loan.user.firstName} {loan.user.lastName}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {pendingLoans.map((loan) => (
+              <GlassCard key={loan.id} className="p-6 border-orange-500/20 bg-orange-500/5" hover={true}>
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center">
+                        <User className="w-5 h-5 text-orange-600" />
                       </div>
-                    </TableCell>
-                    <TableCell className="font-black text-sm text-orange-600 dark:text-banana">
-                      {formatCurrency(loan.amountRequested)}
-                    </TableCell>
-                    <TableCell className="text-xs font-bold text-muted-foreground italic">
-                      {loan.repaymentPeriodMonths} months @ {loan.interestRate}%
-                    </TableCell>
-                    <TableCell className="text-right pr-6">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          size="sm"
-                          onClick={() => handleLoanApproval(loan.id, true)}
-                          disabled={loading}
-                          className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-black h-8 w-8 p-0"
-                        >
-                          <CheckCircle className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleLoanApproval(loan.id, false)}
-                          disabled={loading}
-                          className="border-2 border-red-200 text-red-600 hover:bg-red-50 rounded-xl font-black h-8 w-8 p-0"
-                        >
-                          <XCircle className="w-4 h-4" />
-                        </Button>
+                      <div>
+                        <p className="text-sm font-black">{loan.user.firstName} {loan.user.lastName}</p>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase">{new Date(loan.createdAt).toLocaleDateString()}</p>
                       </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                    </div>
+                    <p className="text-lg font-black text-orange-600 dark:text-banana">{formatCurrency(loan.amountRequested)}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => handleLoanApproval(loan.id, true)}
+                      disabled={loading}
+                      className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-black h-12"
+                    >
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Approve
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => handleLoanApproval(loan.id, false)}
+                      disabled={loading}
+                      className="flex-1 border-2 border-red-500/20 text-red-600 font-black h-12 rounded-xl"
+                    >
+                      <XCircle className="w-4 h-4 mr-2" />
+                      Reject
+                    </Button>
+                  </div>
+                </div>
+              </GlassCard>
+            ))}
           </div>
-        </div>
+        </motion.div>
       )}
 
-      {/* Main Loan Table */}
-      <div className="overflow-x-auto scrollbar-premium">
-        {loans.length > 0 ? (
-          <Table>
-            <TableHeader className="bg-white/30 dark:bg-slate-900/30">
-              <TableRow className="hover:bg-transparent border-b border-white/20 dark:border-white/10">
-                <TableHead className="font-black text-[10px] uppercase tracking-widest pl-6">Member</TableHead>
-                <TableHead className="font-black text-[10px] uppercase tracking-widest">Approved Amount</TableHead>
-                <TableHead className="font-black text-[10px] uppercase tracking-widest">Status</TableHead>
-                <TableHead className="font-black text-[10px] uppercase tracking-widest">Rate</TableHead>
-                <TableHead className="font-black text-[10px] uppercase tracking-widest">Term</TableHead>
-                <TableHead className="text-right font-black text-[10px] uppercase tracking-widest pr-6">Date</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loans.map((loan) => (
-                <TableRow key={loan.id} className="border-b border-white/10 dark:border-white/5 hover:bg-white/40 dark:hover:bg-slate-800/40 transition-colors group">
-                  <TableCell className="py-4 pl-6">
-                    <div className="font-black text-sm text-foreground">
-                      {loan.user.firstName} {loan.user.lastName}
+      {/* Simple Card-based History List */}
+      <motion.div variants={fadeIn} className="space-y-4">
+        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground pl-1">Historical Ledger</h4>
+        <div className="space-y-3">
+          {loans.length > 0 ? (
+            loans.map((loan) => (
+              <motion.div key={loan.id} variants={itemFadeIn}>
+                <GlassCard className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group" hover={true}>
+                  <div className="flex items-center gap-4">
+                    <div className={cn(
+                      "w-12 h-12 rounded-2xl flex items-center justify-center border transition-colors",
+                      loan.status === 'COMPLETED' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600' :
+                        loan.status === 'ACTIVE' ? 'bg-blue-600/10 border-blue-600/20 text-blue-600' :
+                          'bg-slate-500/10 border-slate-500/20 text-slate-500'
+                    )}>
+                      <Landmark className="w-6 h-6" />
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-black text-sm text-blue-600 dark:text-banana">
-                      {formatCurrency(loan.amountApproved || loan.amountRequested)}
+                    <div>
+                      <h4 className="font-black text-sm text-foreground">{loan.user.firstName} {loan.user.lastName}</h4>
+                      <div className="flex items-center gap-3 text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">
+                        <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {new Date(loan.createdAt).toLocaleDateString()}</span>
+                        <span className="flex items-center gap-1"><Percent className="w-3 h-3" /> {loan.interestRate}% Interest</span>
+                      </div>
                     </div>
-                  </TableCell>
-                  <TableCell>
+                  </div>
+
+                  <div className="flex items-center justify-between sm:justify-end gap-6 sm:gap-10">
+                    <div className="text-right">
+                      <p className="text-base font-black text-foreground">{formatCurrency(loan.amountApproved || loan.amountRequested)}</p>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase mt-0.5">{loan.repaymentPeriodMonths} Month Term</p>
+                    </div>
                     <Badge
                       className={cn(
-                        "font-black uppercase tracking-wider text-[9px] px-2.5 py-0.5 rounded-lg",
-                        loan.status === 'COMPLETED' ? 'bg-emerald-500 text-white' :
-                          loan.status === 'ACTIVE' ? 'bg-blue-600 text-white' :
-                            loan.status === 'PENDING' ? 'bg-orange-500 text-white' :
-                              'bg-slate-500 text-white'
+                        "font-black uppercase tracking-widest text-[9px] px-3 py-1 rounded-lg border-2",
+                        loan.status === 'COMPLETED' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' :
+                          loan.status === 'ACTIVE' ? 'bg-blue-600/10 text-blue-600 border-blue-600/20' :
+                            'bg-slate-500/10 text-slate-500 border-slate-500/20'
                       )}
                     >
                       {loan.status}
                     </Badge>
-                  </TableCell>
-                  <TableCell className="text-xs font-bold text-muted-foreground">{loan.interestRate}%</TableCell>
-                  <TableCell className="text-xs font-bold text-muted-foreground">{loan.repaymentPeriodMonths}mo</TableCell>
-                  <TableCell className="text-right pr-6 text-[11px] font-bold text-muted-foreground opacity-70">
-                    {new Date(loan.createdAt).toLocaleDateString()}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <div className="text-center py-20 bg-white/20 dark:bg-slate-900/20 backdrop-blur-sm rounded-3xl m-6 border-2 border-dashed border-white/10">
-            <div className="w-16 h-16 bg-muted/30 rounded-full flex items-center justify-center mb-4 mx-auto">
-              <Landmark className="w-8 h-8 text-muted-foreground/30" />
+                  </div>
+                </GlassCard>
+              </motion.div>
+            ))
+          ) : (
+            <div className="text-center py-24 bg-white/5 dark:bg-black/10 backdrop-blur-sm rounded-[32px] border-2 border-dashed border-white/10">
+              <div className="w-20 h-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 mx-auto">
+                <Landmark className="w-10 h-10 text-muted-foreground/30" />
+              </div>
+              <p className="text-lg font-black text-muted-foreground mb-8">No group financial data yet.</p>
+              <Link href={`/loans/new?groupId=${groupId}`}>
+                <Button size="xl" className="bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl px-10 shadow-xl shadow-blue-500/20 h-14">
+                  Request Initial Loan
+                  <ArrowUpRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
             </div>
-            <p className="text-sm font-black text-muted-foreground mb-6">No loan applications yet.</p>
-            <Link href={`/loans/new?groupId=${groupId}`}>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl px-8 shadow-lg shadow-blue-500/20">
-                Apply for First Loan
-                <ArrowUpRight className="w-4 h-4 ml-2" />
-              </Button>
-            </Link>
-          </div>
-        )}
-      </div>
-    </div>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
   )
 }

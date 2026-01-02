@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/components/providers/AuthProvider'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -85,11 +85,7 @@ export default function RegionalAdminPage() {
     }
   }, [user])
 
-  useEffect(() => {
-    fetchRegionalData()
-  }, [selectedRegion])
-
-  const fetchRegionalData = async () => {
+  const fetchRegionalData = useCallback(async () => {
     setLoading(true)
     try {
       const response = await fetch(`/api/admin/regional?region=${selectedRegion}`)
@@ -113,7 +109,11 @@ export default function RegionalAdminPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedRegion])
+
+  useEffect(() => {
+    fetchRegionalData()
+  }, [selectedRegion, fetchRegionalData])
 
   const handleApproveGroup = async (groupId: string) => {
     try {

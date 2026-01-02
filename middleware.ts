@@ -58,9 +58,9 @@ export async function middleware(req: NextRequest) {
   // Require authentication for protected routes
   if (isProtectedRoute) {
     if (!payload) {
-      const url = new URL('/login', req.url);
-      url.searchParams.set('callbackUrl', pathname);
-      return NextResponse.redirect(url);
+      const loginUrl = new URL('/login', req.nextUrl.origin);
+      loginUrl.searchParams.set('callbackUrl', pathname);
+      return NextResponse.redirect(loginUrl);
     }
   }
 

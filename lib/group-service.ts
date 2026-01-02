@@ -56,11 +56,26 @@ export async function getGroupDetails(groupId: string, userId: string) {
                 },
                 take: 10,
             },
+            activities: {
+                include: {
+                    user: {
+                        select: {
+                            firstName: true,
+                            lastName: true,
+                        },
+                    },
+                },
+                orderBy: {
+                    createdAt: 'desc',
+                },
+                take: 20,
+            },
             _count: {
                 select: {
                     members: true,
                     contributions: true,
                     loans: true,
+                    activities: true,
                 },
             },
         },

@@ -75,6 +75,59 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                 />
             </motion.div>
 
+            {/* Penalty & Contribution Alerts */}
+            <div className="space-y-4">
+                {userGroups.some(g => g.unpaidPenalties > 0) && (
+                    <motion.div variants={fadeIn} className="space-y-4">
+                        {userGroups.filter(g => g.unpaidPenalties > 0).map((membership) => (
+                            <GlassCard key={membership.groupId} className="border-red-500/20 bg-red-500/5 p-6" hover={false}>
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                                    <div className="w-12 h-12 rounded-2xl bg-red-500/20 flex items-center justify-center shrink-0">
+                                        <AlertCircle className="w-6 h-6 text-red-600" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h4 className="font-black text-red-600 uppercase tracking-widest text-xs mb-1">Outstanding Penalty</h4>
+                                        <p className="font-bold text-foreground">
+                                            You have an unpaid penalty of <span className="text-red-600">{formatCurrency(membership.unpaidPenalties)}</span> in <span className="font-black">{membership.group.name}</span>.
+                                        </p>
+                                        <p className="text-xs text-muted-foreground font-medium mt-1">Please settle this along with your next contribution to maintain a healthy stakeholder standing.</p>
+                                    </div>
+                                    <Link href={`/contributions/new?groupId=${membership.groupId}`} className="w-full sm:w-auto">
+                                        <Button variant="outline" size="sm" className="w-full sm:w-auto rounded-xl font-bold border-red-500/20 hover:bg-red-500/10 text-red-600">
+                                            Settle Now
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </GlassCard>
+                        ))}
+                    </motion.div>
+                )}
+
+                {userGroups.length > 0 && currentMonthContributions.length === 0 && (
+                    <motion.div variants={fadeIn}>
+                        <GlassCard className="border-blue-500/20 bg-blue-500/5 p-6" hover={false}>
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-blue-600/20 flex items-center justify-center shrink-0">
+                                    <Calendar className="w-6 h-6 text-blue-600" />
+                                </div>
+                                <div className="flex-1">
+                                    <h4 className="font-black text-blue-600 uppercase tracking-widest text-xs mb-1">Contribution Reminder</h4>
+                                    <p className="font-bold text-foreground">
+                                        You haven&apos;t recorded a contribution for <span className="text-blue-600">{new Date().toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</span>.
+                                    </p>
+                                    <p className="text-xs text-muted-foreground font-medium mt-1">Keep your streak alive and help your community grow by making your contribution today.</p>
+                                </div>
+                                <Link href="/contributions/new" className="w-full sm:w-auto">
+                                    <Button variant="banana" size="sm" className="w-full sm:w-auto rounded-xl font-bold">
+                                        Record Stake
+                                    </Button>
+                                </Link>
+                            </div>
+                        </GlassCard>
+                    </motion.div>
+                )}
+            </div>
+
             {/* Stats Grid */}
             <div className="flex overflow-x-auto pb-4 -mx-4 px-4 gap-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-6 no-scrollbar">
                 <StatsCard
@@ -215,7 +268,12 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                                                             <span className="font-black text-lg text-foreground tracking-tight">
                                                                 {formatCurrency(Number(contribution.amount))}
                                                             </span>
-                                                            <span className="text-[10px] font-bold text-muted-foreground opacity-40 uppercase tracking-tighter">Verified Stake</span>
+                                                            <div className="flex items-center gap-1.5">
+                                                                {contribution.isLate && (
+                                                                    <Badge variant="error" className="text-[8px] h-4 px-1.2 py-0 font-black uppercase tracking-tighter animate-pulse flex items-center justify-center">LATE</Badge>
+                                                                )}
+                                                                <span className="text-[10px] font-bold text-muted-foreground opacity-40 uppercase tracking-tighter">Verified Stake</span>
+                                                            </div>
                                                         </div>
                                                     </TableCell>
                                                     <TableCell className="hidden md:table-cell text-center px-8">

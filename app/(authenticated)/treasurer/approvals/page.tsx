@@ -11,9 +11,17 @@ import Link from 'next/link'
 import { formatCurrency } from '@/lib/utils'
 import { toast } from 'sonner'
 
+import { useOptimistic, useTransition, useActionState } from 'react'
+
 export default function TreasurerApprovalsPage() {
     const [pending, setPending] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
+    const [optimisticPending, addOptimisticPending] = useOptimistic(
+        pending,
+        (state, idToRemove: string) => state.filter(p => p.id !== idToRemove)
+    )
+    const [isPending, startTransition] = useTransition()
+
     const [reviewingId, setReviewingId] = useState<string | null>(null)
     const [rejectionReason, setRejectionReason] = useState('')
     const [showRejectForm, setShowRejectForm] = useState<string | null>(null)
@@ -103,27 +111,32 @@ export default function TreasurerApprovalsPage() {
         }
 
         setReviewingId(id)
-        try {
-            const response = await fetch(`/api/contributions/${id}/review`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status, rejectionReason }),
-            })
 
-            if (response.ok) {
-                toast.success(`Contribution ${status.toLowerCase()} successfully`)
-                setPending(prev => prev.filter(p => p.id !== id))
-                setShowRejectForm(null)
-                setRejectionReason('')
-            } else {
-                const data = await response.json()
-                toast.error(data.error || 'Failed to update status')
+        startTransition(async () => {
+            addOptimisticPending(id)
+
+            try {
+                const response = await fetch(`/api/contributions/${id}/review`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status, rejectionReason }),
+                })
+
+                if (response.ok) {
+                    toast.success(`Contribution ${status.toLowerCase()} successfully`)
+                    setPending(prev => prev.filter(p => p.id !== id))
+                    setShowRejectForm(null)
+                    setRejectionReason('')
+                } else {
+                    const data = await response.json()
+                    toast.error(data.error || 'Failed to update status')
+                }
+            } catch (error) {
+                toast.error('An error occurred during review')
+            } finally {
+                setReviewingId(null)
             }
-        } catch (error) {
-            toast.error('An error occurred during review')
-        } finally {
-            setReviewingId(null)
-        }
+        })
     }
 
     const handleBulkApproval = async () => {
@@ -158,11 +171,11 @@ export default function TreasurerApprovalsPage() {
                     <p className="text-muted-foreground text-body">Review and approve member contributions</p>
                 </div>
                 <Badge variant="outline" className="text-body px-3 py-1 text-foreground border-border">
-                    {pending.length} Pending
+                    {optimisticPending.length} Pending
                 </Badge>
             </div>
 
-            {pending.length === 0 ? (
+            {optimisticPending.length === 0 ? (
                 <Card className="bg-card border-border shadow-sm">
                     <CardContent className="flex flex-col items-center justify-center py-12 text-center">
                         <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4">
@@ -174,7 +187,7 @@ export default function TreasurerApprovalsPage() {
                 </Card>
             ) : (
                 <div className="grid gap-6">
-                    {pending.map((item) => (
+                    {optimisticPending.map((item) => (
                         <Card key={item.id} className="overflow-hidden bg-card border-border shadow-sm">
                             <div className="grid md:grid-cols-[1fr,250px] gap-0">
                                 <CardContent className="p-6">

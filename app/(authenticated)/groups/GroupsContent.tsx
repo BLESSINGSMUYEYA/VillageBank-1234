@@ -41,9 +41,9 @@ export function GroupsContent({ userGroups }: GroupsContentProps) {
                 title={t('groups.my_groups')}
                 description={
                     <span className="flex flex-wrap items-center gap-1.5 opacity-80">
-                        Manage your savings circles.
+                        {t('groups.manage_circles_desc')}
                         <span className="text-blue-600 dark:text-banana font-bold">
-                            Track contributions, loans, and financial growth.
+                            {t('groups.track_growth')}
                         </span>
                     </span>
                 }
@@ -104,7 +104,7 @@ export function GroupsContent({ userGroups }: GroupsContentProps) {
                                         <div className="bg-white/40 dark:bg-slate-900/40 rounded-2xl p-4 border border-white/50 dark:border-white/5">
                                             <div className="flex items-center gap-2 text-muted-foreground mb-1.5 opacity-70">
                                                 <Users className="w-3.5 h-3.5" />
-                                                <span className="text-[10px] font-black uppercase tracking-[0.1em]">Members</span>
+                                                <span className="text-[10px] font-black uppercase tracking-[0.1em]">{t('groups.members')}</span>
                                             </div>
                                             <p className="font-black text-2xl text-foreground">
                                                 {membership.group._count?.members || 0}
@@ -113,7 +113,7 @@ export function GroupsContent({ userGroups }: GroupsContentProps) {
                                         <div className="bg-white/40 dark:bg-slate-900/40 rounded-2xl p-4 border border-white/50 dark:border-white/5">
                                             <div className="flex items-center gap-2 text-muted-foreground mb-1.5 opacity-70">
                                                 <Wallet className="w-3.5 h-3.5" />
-                                                <span className="text-[10px] font-black uppercase tracking-[0.1em]">Target</span>
+                                                <span className="text-[10px] font-black uppercase tracking-[0.1em]">{t('dashboard.monthly_contribution')}</span>
                                             </div>
                                             <p className="font-black text-2xl text-foreground truncate">
                                                 {formatCurrency(membership.group.monthlyContribution)}
@@ -125,15 +125,15 @@ export function GroupsContent({ userGroups }: GroupsContentProps) {
                                     <div className="space-y-3 pt-2">
                                         <div className="flex items-center justify-between">
                                             <span className="text-[11px] font-bold text-muted-foreground/80 flex items-center gap-2">
-                                                <Calendar className="w-4 h-4 text-blue-500" /> Cycle Duration
+                                                <Calendar className="w-4 h-4 text-blue-500" /> {t('groups.cycle_duration')}
                                             </span>
-                                            <span className="text-xs font-black text-foreground">Next 30 Days</span>
+                                            <span className="text-xs font-black text-foreground">{t('groups.next_30_days')}</span>
                                         </div>
                                         <div className="flex items-center justify-between">
                                             <span className="text-[11px] font-bold text-muted-foreground/80 flex items-center gap-2">
-                                                <DollarSign className="w-4 h-4 text-emerald-500" /> Max Loan Cap
+                                                <DollarSign className="w-4 h-4 text-emerald-500" /> {t('groups.max_loan_cap')}
                                             </span>
-                                            <span className="text-xs font-black text-foreground">{membership.group.maxLoanMultiplier}x Multiplier</span>
+                                            <span className="text-xs font-black text-foreground">{membership.group.maxLoanMultiplier}x {t('groups.multiplier')}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -162,7 +162,7 @@ export function GroupsContent({ userGroups }: GroupsContentProps) {
                                 <div className="relative z-10">
                                     <h3 className="text-xl font-black text-foreground">{t('groups.create_group')}</h3>
                                     <p className="text-sm text-muted-foreground font-bold mt-2 max-w-[200px] mx-auto opacity-70">
-                                        Start a new savings circle and empower your community today.
+                                        {t('groups.create_group_desc')}
                                     </p>
                                 </div>
                             </div>
