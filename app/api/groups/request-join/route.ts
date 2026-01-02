@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { clerkClient, getAuth } from '@clerk/nextjs/server'
+import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
@@ -10,8 +10,9 @@ const requestJoinSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = getAuth(request)
-    
+    const session = await getSession()
+    const userId = session?.userId as string
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -22,30 +23,16 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = requestJoinSchema.parse(body)
 
-    // Get user details from Clerk
-    const clerk = await clerkClient()
-    const user = await clerk.users.getUser(userId)
-
     // Ensure user exists in database
     const existingUser = await prisma.user.findUnique({
       where: { id: userId }
     })
 
     if (!existingUser) {
-      const primaryEmail = user.emailAddresses?.[0]?.emailAddress || ''
-      const primaryPhone = user.phoneNumbers?.[0]?.phoneNumber || ''
-      
-      await prisma.user.create({
-        data: {
-          id: userId,
-          email: primaryEmail,
-          firstName: user.firstName || '',
-          lastName: user.lastName || '',
-          phoneNumber: primaryPhone,
-          role: (user.publicMetadata?.role as 'MEMBER' | 'REGIONAL_ADMIN' | 'SUPER_ADMIN') || 'MEMBER',
-          region: (user.publicMetadata?.region as string) || 'CENTRAL',
-        },
-      })
+      return NextResponse.json(
+        { error: 'User profile not found' },
+        { status: 404 }
+      )
     }
 
     // Check if group exists
@@ -137,28 +124,19 @@ export async function POST(request: NextRequest) {
         groupId: validatedData.groupId,
         role: 'ADMIN',
         status: 'ACTIVE',
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-          }
-        }
       }
     })
 
     // Send notifications to all admins
     if (adminMembers.length > 0) {
       await Promise.all(
-        adminMembers.map((admin: { userId: string }) => 
+        adminMembers.map((admin) =>
           prisma.notification.create({
             data: {
               userId: admin.userId,
               type: 'INFO',
               title: 'New Join Request',
-              message: `${user.firstName || 'Someone'} ${user.lastName || ''} wants to join your group "${group.name}"`,
+              message: `${existingUser.firstName || 'Someone'} ${existingUser.lastName || ''} wants to join your group "${group.name}"`,
               actionUrl: `/groups/${validatedData.groupId}`,
               actionText: 'Review Request',
               read: false,
@@ -194,7 +172,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('Request to join error:', error)
-    
+
     if (error instanceof Error) {
       if (error.message.includes('Unique constraint')) {
         return NextResponse.json(
@@ -203,7 +181,7 @@ export async function POST(request: NextRequest) {
         )
       }
     }
-    
+
     return NextResponse.json(
       { error: 'Failed to send join request. Please try again.' },
       { status: 500 }

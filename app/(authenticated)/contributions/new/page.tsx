@@ -48,6 +48,7 @@ function NewContributionPageContent() {
     amount: '',
     paymentMethod: '',
     transactionRef: '',
+    paymentDate: new Date().toISOString().slice(0, 16), // Format for datetime-local input
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -218,6 +219,15 @@ function NewContributionPageContent() {
           setFormData(prev => ({ ...prev, paymentMethod: data.paymentMethod }))
           updatedFields.push('payment method')
         }
+        if (data.date) {
+          // If OCR only gives date, we use that date but keep current time if possible or default to noon
+          const ocrDate = new Date(data.date)
+          if (!isNaN(ocrDate.getTime())) {
+            const formattedDate = ocrDate.toISOString().slice(0, 10) + 'T' + new Date().toTimeString().slice(0, 5)
+            setFormData(prev => ({ ...prev, paymentDate: formattedDate }))
+            updatedFields.push('payment date')
+          }
+        }
 
         if (updatedFields.length > 0) {
           setSuccess(`Receipt scanned successfully! Auto-filled: ${updatedFields.join(', ')}`)
@@ -255,6 +265,7 @@ function NewContributionPageContent() {
         paymentMethod: formData.paymentMethod,
         transactionRef: formData.transactionRef || undefined,
         receiptUrl: receiptUrl || undefined,
+        paymentDate: formData.paymentDate ? new Date(formData.paymentDate).toISOString() : undefined,
       }
 
       console.log('Sending contribution request:', requestData)
@@ -450,6 +461,20 @@ function NewContributionPageContent() {
                           )}
                         </div>
                       )}
+                    </FormGroup>
+
+                    <FormGroup label="Actual Payment Date & Time *">
+                      <PremiumInput
+                        id="paymentDate"
+                        name="paymentDate"
+                        type="datetime-local"
+                        placeholder="Select date and time"
+                        value={formData.paymentDate}
+                        onChange={handleChange}
+                      />
+                      <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mt-2 px-1">
+                        Record the exact moment the capital was transferred
+                      </p>
                     </FormGroup>
                   </div>
                 </div>

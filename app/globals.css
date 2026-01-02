@@ -212,6 +212,19 @@
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 2rem;
+
+    /* Scalable UI for mobile - reduces overall screen scale on smaller devices */
+    @media (max-width: 640px) {
+      font-size: 95%;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 92%;
+    }
+
+    @media (max-width: 380px) {
+      font-size: 88%;
+    }
   }
 
   body {

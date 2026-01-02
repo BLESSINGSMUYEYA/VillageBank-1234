@@ -74,7 +74,7 @@ export function StatsCard({
                     <div className="absolute -right-4 -bottom-4 bg-white/20 w-24 h-24 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
                 )}
 
-                <CardHeader className="pb-2 p-4 sm:p-6 relative z-10">
+                <CardHeader className="pb-2 p-3.5 sm:p-6 relative z-10">
                     <div className="flex items-center justify-between">
                         <CardTitle className={cn(
                             "text-[10px] font-black uppercase tracking-[0.2em]",
@@ -99,7 +99,7 @@ export function StatsCard({
                     </div>
                 </CardHeader>
 
-                <CardContent className="p-4 sm:p-6 pt-0 relative z-10">
+                <CardContent className="p-3.5 sm:p-6 pt-0 relative z-10">
                     <div className={cn(
                         "text-2xl sm:text-3xl font-black break-words leading-none",
                         isColorVariant ? 'text-white' : 'text-foreground'

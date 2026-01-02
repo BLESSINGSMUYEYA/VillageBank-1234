@@ -104,6 +104,7 @@ model Contribution {
   amount              Float
   month               Int
   year                Int
+  paymentDate         DateTime           @default(now())
   paymentMethod       String?
   transactionRef      String?
   receiptUrl          String?

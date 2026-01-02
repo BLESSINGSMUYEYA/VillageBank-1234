@@ -59,7 +59,7 @@ export function MobileNavigation() {
     <div className="lg:hidden">
       {/* Mobile Header - Nano Glass */}
       <div className="fixed top-0 left-0 right-0 z-40 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl border-b border-white/20 dark:border-white/10 shadow-sm transition-all duration-300">
-        <div className="flex items-center justify-between p-4 px-6">
+        <div className="flex items-center justify-between p-4 px-4">
           <Link href="/dashboard" className="flex items-center space-x-3 group">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-500/20 group-active:scale-95 transition-transform">
               <span className="text-white font-black text-sm">V</span>

@@ -10,6 +10,7 @@ const createContributionSchema = z.object({
   paymentMethod: z.enum(['AIRTEL_MONEY', 'MPAMBA', 'BANK_CARD', 'CASH', 'OTHER']),
   transactionRef: z.string().optional(),
   receiptUrl: z.string().optional(),
+  paymentDate: z.string().datetime().optional(),
 })
 
 export async function POST(request: NextRequest) {
@@ -104,6 +105,7 @@ export async function POST(request: NextRequest) {
         amount: validatedData.amount,
         month: currentMonth,
         year: currentYear,
+        paymentDate: validatedData.paymentDate ? new Date(validatedData.paymentDate) : now,
         paymentMethod: validatedData.paymentMethod,
         transactionRef: validatedData.transactionRef,
         receiptUrl: validatedData.receiptUrl,

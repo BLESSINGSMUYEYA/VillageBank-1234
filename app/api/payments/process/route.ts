@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAuth } from '@clerk/nextjs/server'
+import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { processPayment, validatePhoneNumber, PaymentRequest } from '@/lib/payments'
 import { z } from 'zod'
@@ -12,8 +12,9 @@ const processPaymentSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = getAuth(request)
-    
+    const session = await getSession()
+    const userId = session?.userId as string
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -102,7 +103,7 @@ export async function POST(request: NextRequest) {
         userId: userId,
         groupId: contribution.groupId,
         actionType: paymentResult.success ? 'CONTRIBUTION_PAID' : 'CONTRIBUTION_FAILED',
-        description: paymentResult.success 
+        description: paymentResult.success
           ? `Payment processed for contribution of MWK ${contribution.amount.toLocaleString()}`
           : `Payment failed for contribution of MWK ${contribution.amount.toLocaleString()}`,
         metadata: {

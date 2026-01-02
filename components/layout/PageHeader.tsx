@@ -20,7 +20,7 @@ export function PageHeader({
     className = ''
 }: PageHeaderProps) {
     return (
-        <div className={`flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 ${variant === 'default' ? 'mb-8 sm:mb-10' : 'mb-4 sm:mb-6'} border-b border-white/10 dark:border-white/5 pb-8 ${className}`}>
+        <div className={`flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 sm:gap-6 ${variant === 'default' ? 'mb-6 sm:mb-10' : 'mb-4 sm:mb-6'} border-b border-white/10 dark:border-white/5 pb-6 sm:pb-8 ${className}`}>
             <div className="flex-1 min-w-0">
                 <motion.h1
                     initial={{ opacity: 0, x: -10 }}

@@ -182,6 +182,7 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                                         <TableRow className="hover:bg-transparent border-white/10 dark:border-white/5 h-16">
                                             <TableHead className="font-black text-foreground text-[10px] uppercase tracking-[0.2em] pl-8">Transaction Origin</TableHead>
                                             <TableHead className="font-black text-foreground text-[10px] uppercase tracking-[0.2em] text-right">Settled Amount</TableHead>
+                                            <TableHead className="font-black text-foreground text-[10px] uppercase tracking-[0.2em] hidden md:table-cell px-8 text-center">Date & Time</TableHead>
                                             <TableHead className="font-black text-foreground text-[10px] uppercase tracking-[0.2em] hidden sm:table-cell px-8 text-center">Protocol Period</TableHead>
                                             <TableHead className="font-black text-foreground text-[10px] uppercase tracking-[0.2em] text-right pr-8">Ledger Status</TableHead>
                                         </TableRow>
@@ -215,6 +216,16 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                                                                 {formatCurrency(Number(contribution.amount))}
                                                             </span>
                                                             <span className="text-[10px] font-bold text-muted-foreground opacity-40 uppercase tracking-tighter">Verified Stake</span>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="hidden md:table-cell text-center px-8">
+                                                        <div className="inline-flex flex-col items-center">
+                                                            <span className="text-sm font-black text-foreground">
+                                                                {new Date((contribution as any).paymentDate || (contribution as any).createdAt).toLocaleDateString()}
+                                                            </span>
+                                                            <span className="text-[10px] font-bold text-muted-foreground opacity-60 uppercase tracking-widest">
+                                                                {new Date((contribution as any).paymentDate || (contribution as any).createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                            </span>
                                                         </div>
                                                     </TableCell>
                                                     <TableCell className="hidden sm:table-cell text-center px-8">

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(
@@ -7,9 +7,10 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { userId } = await auth()
+    const session = await getSession()
+    const userId = session?.userId
     const { id } = await params
-    
+
     if (!userId || userId !== id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }

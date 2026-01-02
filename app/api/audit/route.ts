@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAuth } from '@clerk/nextjs/server'
+import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = getAuth(request)
-    
+    const session = await getSession()
+    const userId = session?.userId as string
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -109,10 +110,10 @@ export async function GET(request: NextRequest) {
       group: activity.group,
       // Add formatted fields for easier consumption
       type: activity.actionType.includes('CONTRIBUTION') ? 'contribution' :
-            activity.actionType.includes('LOAN') ? 'loan' :
-            activity.actionType.includes('GROUP') ? 'group' : 'system',
+        activity.actionType.includes('LOAN') ? 'loan' :
+          activity.actionType.includes('GROUP') ? 'group' : 'system',
       severity: activity.actionType.includes('DELETE') || activity.actionType.includes('REJECT') ? 'high' :
-                activity.actionType.includes('CREATE') || activity.actionType.includes('APPROVE') ? 'medium' : 'low'
+        activity.actionType.includes('CREATE') || activity.actionType.includes('APPROVE') ? 'medium' : 'low'
     }))
 
     return NextResponse.json({
@@ -141,8 +142,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = getAuth(request)
-    
+    const session = await getSession()
+    const userId = session?.userId as string
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },

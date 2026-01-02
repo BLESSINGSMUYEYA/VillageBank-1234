@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAuth } from '@clerk/nextjs/server'
+import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { checkLoanEligibility } from '@/lib/permissions'
 
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = getAuth(request)
-    
+    const session = await getSession()
+    const userId = session?.userId as string
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
