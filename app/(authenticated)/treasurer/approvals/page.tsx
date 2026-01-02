@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Check, X, Eye, ArrowLeft, Loader2, Image as ImageIcon } from 'lucide-react'
+import { Check, X, Eye, ArrowLeft, Loader2, Image as ImageIcon, AlertTriangle, User, History, Wallet } from 'lucide-react'
 import Link from 'next/link'
 import { formatCurrency } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -153,108 +153,213 @@ export default function TreasurerApprovalsPage() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-100">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            <div className="flex items-center justify-center min-h-[400px]">
+                <div className="text-center">
+                    <Loader2 className="w-10 h-10 animate-spin text-blue-600 mx-auto mb-4" />
+                    <p className="text-muted-foreground animate-pulse">Loading pending approvals...</p>
+                </div>
             </div>
         )
     }
 
     return (
-        <div className="space-y-6 max-w-5xl mx-auto px-4 py-8">
-            <Link href="/dashboard" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-blue-600 dark:hover:text-banana transition-all duration-300 group mb-4">
+        <div className="space-y-6 max-w-6xl mx-auto px-4 py-8">
+            <Link href="/dashboard" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 group mb-4">
                 <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
                 Back to Dashboard
             </Link>
-            <div className="flex items-center justify-between">
+
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-display font-black text-foreground">Pending Approvals</h1>
-                    <p className="text-muted-foreground text-body">Review and approve member contributions</p>
+                    <h1 className="text-display font-black text-foreground">Contribution Approvals</h1>
+                    <p className="text-muted-foreground text-body max-w-lg">Review pending member contributions and verify payments before updating group balances.</p>
                 </div>
-                <Badge variant="outline" className="text-body px-3 py-1 text-foreground border-border">
-                    {optimisticPending.length} Pending
-                </Badge>
+                <div className="flex items-center gap-3">
+                    {selectedContributions.length > 0 && (
+                        <div className="flex items-center gap-2 mr-4 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-full border border-blue-100 dark:border-blue-800">
+                            <span className="text-xs font-bold text-blue-700 dark:text-blue-300">{selectedContributions.length} selected</span>
+                            <Button size="sm" variant="ghost" className="h-6 px-1.5 text-xs text-blue-700 hover:bg-blue-100 dark:hover:bg-blue-800" onClick={() => setBulkAction('approve')}>Approve All</Button>
+                            <Button size="sm" variant="ghost" className="h-6 px-1.5 text-xs text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30" onClick={() => setBulkAction('reject')}>Reject All</Button>
+                        </div>
+                    )}
+                    <Badge variant="outline" className="text-sm px-4 py-1.5 rounded-full font-bold bg-muted/30 border-border">
+                        {optimisticPending.length} Remaining
+                    </Badge>
+                </div>
             </div>
 
-            {optimisticPending.length === 0 ? (
-                <Card className="bg-card border-border shadow-sm">
-                    <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                        <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4">
-                            <Check className="w-6 h-6 text-green-600 dark:text-green-400" />
+            {bulkAction && (
+                <Card className="border-blue-200 dark:border-blue-900/50 bg-blue-50/50 dark:bg-blue-900/10 backdrop-blur-sm">
+                    <CardContent className="p-4 flex flex-col md:flex-row items-center gap-4">
+                        <div className="flex-1">
+                            <h4 className="font-bold text-blue-900 dark:text-blue-100 flex items-center gap-2">
+                                {bulkAction === 'approve' ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                                Bulk {bulkAction === 'approve' ? 'Approval' : 'Rejection'}
+                            </h4>
+                            <p className="text-xs text-blue-700 dark:text-blue-400">Processing {selectedContributions.length} contributions at once.</p>
                         </div>
-                        <h3 className="text-h3 font-black text-foreground">All caught up!</h3>
-                        <p className="text-muted-foreground text-body">There are no contributions waiting for approval.</p>
+                        {bulkAction === 'reject' && (
+                            <textarea
+                                className="flex-1 min-h-[40px] p-2 bg-background border rounded text-sm"
+                                placeholder="Reason for bulk rejection..."
+                                value={bulkRejectionReason}
+                                onChange={(e) => setBulkRejectionReason(e.target.value)}
+                            />
+                        )}
+                        <div className="flex gap-2">
+                            <Button size="sm" variant="ghost" onClick={() => setBulkAction(null)}>Cancel</Button>
+                            <Button
+                                size="sm"
+                                variant={bulkAction === 'approve' ? 'default' : 'destructive'}
+                                className={bulkAction === 'approve' ? 'bg-blue-600 hover:bg-blue-700' : ''}
+                                onClick={handleBulkApproval}
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? 'Processing...' : 'Confirm Bulk Action'}
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
+            {optimisticPending.length === 0 ? (
+                <Card className="bg-card border-border shadow-sm border-dashed">
+                    <CardContent className="flex flex-col items-center justify-center py-20 text-center">
+                        <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-6">
+                            <Check className="w-8 h-8 text-green-600 dark:text-green-400" />
+                        </div>
+                        <h3 className="text-2xl font-black text-foreground mb-2">Queue Clear!</h3>
+                        <p className="text-muted-foreground text-body max-w-sm">There are no pending contributions that require your attention at the moment.</p>
+                        <Button variant="outline" className="mt-8" asChild>
+                            <Link href="/dashboard">Return to Dashboard</Link>
+                        </Button>
                     </CardContent>
                 </Card>
             ) : (
-                <div className="grid gap-6">
+                <div className="space-y-4">
                     {optimisticPending.map((item) => (
-                        <Card key={item.id} className="overflow-hidden bg-card border-border shadow-sm">
-                            <div className="grid md:grid-cols-[1fr,250px] gap-0">
-                                <CardContent className="p-6">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div>
-                                            <h3 className="text-h3 font-black text-foreground">
-                                                {item.user.firstName} {item.user.lastName}
-                                            </h3>
-                                            <p className="text-body text-muted-foreground">{item.group.name}</p>
+                        <Card key={item.id} className="overflow-hidden bg-card border-border shadow-sm hover:shadow-md transition-shadow group">
+                            <div className="grid md:grid-cols-[auto,1fr,240px] gap-0">
+                                {/* Selection Column */}
+                                <div className="hidden md:flex items-center px-4 bg-muted/10 border-r border-border">
+                                    <Checkbox
+                                        checked={selectedContributions.includes(item.id)}
+                                        onCheckedChange={(checked) => handleSelectContribution(item.id, checked as boolean)}
+                                    />
+                                </div>
+
+                                {/* Main Info Column */}
+                                <CardContent className="p-5 md:p-6">
+                                    <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-black text-xl">
+                                                {item.user.firstName[0]}{item.user.lastName[0]}
+                                            </div>
+                                            <div>
+                                                <h3 className="text-xl font-black text-foreground group-hover:text-blue-600 transition-colors">
+                                                    {item.user.firstName} {item.user.lastName}
+                                                </h3>
+                                                <div className="flex flex-wrap items-center gap-2 mt-1">
+                                                    <Badge variant="secondary" className="text-[10px] font-bold uppercase tracking-wider h-5">
+                                                        {item.group.name}
+                                                    </Badge>
+                                                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                                        <History className="w-3 h-3" />
+                                                        {new Date(item.createdAt).toLocaleDateString()}
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
+
                                         <div className="text-right">
-                                            <div className="text-h3 font-black text-blue-600 dark:text-blue-400">
+                                            <div className="text-2xl font-black text-blue-600 dark:text-blue-400 leading-none mb-1">
                                                 {formatCurrency(item.amount)}
                                             </div>
-                                            <p className="text-xs text-muted-foreground">
-                                                {new Date(item.createdAt).toLocaleDateString()}
-                                            </p>
+                                            <div className="flex items-center justify-end gap-2">
+                                                {item.isLate && (
+                                                    <Badge variant="destructive" className="bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 border-none flex items-center gap-1 px-2 h-5">
+                                                        <AlertTriangle className="w-3 h-3" />
+                                                        Late (+{formatCurrency(item.penaltyApplied)})
+                                                    </Badge>
+                                                )}
+                                                <Badge variant="outline" className="text-[10px] uppercase font-bold h-5 border-border">
+                                                    {item.paymentMethod.replace('_', ' ')}
+                                                </Badge>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4 text-body mb-6">
-                                        <div className="p-3 bg-muted/50 rounded-lg">
-                                            <p className="text-muted-foreground text-xs mb-1 uppercase font-black">Payment Method</p>
-                                            <p className="font-medium text-foreground">{item.paymentMethod.replace('_', ' ')}</p>
+                                    {/* Member Financial Context Stats */}
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+                                        <div className="p-3 bg-muted/30 rounded-xl border border-border/50">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">Current Balance</span>
+                                                <Wallet className="w-3 h-3 text-muted-foreground opacity-50" />
+                                            </div>
+                                            <div className={`text-sm font-black ${item.member.balance < 0 ? 'text-red-500' : 'text-green-600 dark:text-green-500'}`}>
+                                                {formatCurrency(item.member.balance)}
+                                            </div>
                                         </div>
-                                        <div className="p-3 bg-muted/50 rounded-lg">
-                                            <p className="text-muted-foreground text-xs mb-1 uppercase font-black">Reference</p>
-                                            <p className="font-medium truncate text-foreground">{item.transactionRef || 'N/A'}</p>
+                                        <div className="p-3 bg-muted/30 rounded-xl border border-border/50">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">Unpaid Penalties</span>
+                                                <AlertTriangle className="w-3 h-3 text-red-500" />
+                                            </div>
+                                            <div className={`text-sm font-black ${item.member.unpaidPenalties > 0 ? 'text-red-600' : 'text-foreground'}`}>
+                                                {formatCurrency(item.member.unpaidPenalties)}
+                                            </div>
+                                        </div>
+                                        <div className="p-3 bg-muted/30 rounded-xl border border-border/50">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">Reference</span>
+                                                <History className="w-3 h-3 text-muted-foreground opacity-50" />
+                                            </div>
+                                            <div className="text-sm font-black truncate text-foreground">
+                                                {item.transactionRef || 'No Reference'}
+                                            </div>
                                         </div>
                                     </div>
 
                                     {showRejectForm === item.id ? (
-                                        <div className="space-y-4 pt-4 border-t border-border">
+                                        <div className="space-y-4 pt-4 border-t border-border mt-2 animate-in slide-in-from-top-2 duration-300">
                                             <div>
-                                                <label className="text-body font-medium mb-1 block text-foreground">Reason for rejection</label>
+                                                <label className="text-xs font-black uppercase tracking-wider text-muted-foreground mb-1 block">Reason for rejection</label>
                                                 <textarea
-                                                    className="w-full min-h-25 p-3 border border-input rounded-md text-body bg-background text-foreground placeholder:text-muted-foreground"
+                                                    className="w-full min-h-[80px] p-3 border border-input rounded-xl text-sm bg-background/50 placeholder:text-muted-foreground focus:ring-2 focus:ring-blue-500 transition-all outline-none"
                                                     placeholder="e.g. Reference number doesn't match receipt"
                                                     value={rejectionReason}
                                                     onChange={(e) => setRejectionReason(e.target.value)}
                                                 />
                                             </div>
-                                            <div className="flex justify-end space-x-3">
+                                            <div className="flex justify-end gap-2">
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
-                                                    onClick={() => setShowRejectForm(null)}
-                                                    className="text-muted-foreground hover:text-foreground"
+                                                    onClick={() => {
+                                                        setShowRejectForm(null)
+                                                        setRejectionReason('')
+                                                    }}
+                                                    className="rounded-full"
                                                 >
                                                     Cancel
                                                 </Button>
                                                 <Button
                                                     variant="destructive"
                                                     size="sm"
-                                                    disabled={isSubmitting}
+                                                    disabled={isSubmitting || isPending}
                                                     onClick={() => handleReview(item.id, 'REJECTED')}
+                                                    className="rounded-full px-6"
                                                 >
-                                                    {isSubmitting ? 'Rejecting...' : 'Confirm Rejection'}
+                                                    {isSubmitting ? 'Processing...' : 'Confirm Rejection'}
                                                 </Button>
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="flex justify-end space-x-3 pt-4 border-t border-border">
+                                        <div className="flex justify-end gap-3 pt-4 border-t border-border mt-2">
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                className="border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                                className="rounded-full border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 px-6 transition-all"
                                                 onClick={() => setShowRejectForm(item.id)}
                                             >
                                                 <X className="w-4 h-4 mr-2" />
@@ -263,35 +368,43 @@ export default function TreasurerApprovalsPage() {
                                             <Button
                                                 variant="default"
                                                 size="sm"
-                                                className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600 text-white"
-                                                disabled={isSubmitting}
+                                                className="rounded-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 px-8 shadow-sm hover:shadow-blue-200 dark:hover:shadow-none transition-all"
+                                                disabled={isSubmitting || isPending}
                                                 onClick={() => handleReview(item.id, 'COMPLETED')}
                                             >
-                                                {isSubmitting ? 'Approving...' : (
-                                                    <><Check className="w-4 h-4 mr-2" /> Approve</>
+                                                {reviewingId === item.id ? (
+                                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                                ) : (
+                                                    <><Check className="w-4 h-4 mr-2" /> Approve Payment</>
                                                 )}
                                             </Button>
                                         </div>
                                     )}
                                 </CardContent>
 
-                                <div className="bg-muted/30 border-l border-border relative overflow-hidden group/receipt">
+                                {/* Receipt Column */}
+                                <div className="bg-muted/30 border-l border-border relative overflow-hidden group/receipt min-h-[200px] md:min-h-0">
                                     {item.receiptUrl ? (
-                                        <div className="h-full w-full flex items-center justify-center p-4">
-                                            <img
-                                                src={item.receiptUrl}
-                                                alt="Receipt"
-                                                className="w-full h-full object-contain cursor-zoom-in transition-transform group-hover/receipt:scale-105"
-                                                onClick={() => window.open(item.receiptUrl, '_blank')}
-                                            />
-                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/receipt:opacity-100 transition-opacity flex items-center justify-center">
-                                                <Eye className="text-white w-8 h-8" />
+                                        <>
+                                            <div className="h-full w-full flex items-center justify-center p-2">
+                                                <img
+                                                    src={item.receiptUrl}
+                                                    alt="Receipt Preview"
+                                                    className="w-full h-full object-cover rounded-md transition-transform duration-500 group-hover/receipt:scale-110"
+                                                />
                                             </div>
-                                        </div>
+                                            <button
+                                                onClick={() => window.open(item.receiptUrl, '_blank')}
+                                                className="absolute inset-0 bg-blue-900/60 opacity-0 group-hover/receipt:opacity-100 transition-opacity flex flex-col items-center justify-center text-white backdrop-blur-[2px]"
+                                            >
+                                                <Eye className="w-10 h-10 mb-2 scale-50 group-hover/receipt:scale-100 transition-transform duration-300" />
+                                                <span className="text-[10px] font-black uppercase tracking-widest">View Full Receipt</span>
+                                            </button>
+                                        </>
                                     ) : (
-                                        <div className="h-full w-full flex flex-col items-center justify-center text-muted-foreground p-8 text-center">
-                                            <ImageIcon className="w-12 h-12 mb-2 opacity-50" />
-                                            <p className="text-xs">No receipt uploaded</p>
+                                        <div className="h-full w-full flex flex-col items-center justify-center text-muted-foreground p-8 text-center opacity-40">
+                                            <ImageIcon className="w-10 h-10 mb-2" />
+                                            <p className="text-[10px] uppercase font-bold tracking-wider">No Receipt Attached</p>
                                         </div>
                                     )}
                                 </div>

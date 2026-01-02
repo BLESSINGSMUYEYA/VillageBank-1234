@@ -50,15 +50,104 @@ export async function POST(
             )
         }
 
-        const updatedContribution = await prisma.contribution.update({
-            where: { id },
-            data: {
-                status: status as PaymentStatus,
-                rejectionReason: status === 'REJECTED' ? rejectionReason : null,
-                reviewedById: userId,
-                reviewDate: new Date(),
-            },
+        if (contribution.status !== 'PENDING') {
+            return NextResponse.json(
+                { error: 'This contribution has already been reviewed' },
+                { status: 400 }
+            )
+        }
+
+        const result = await prisma.$transaction(async (tx) => {
+            // Update the contribution status
+            const updatedContribution = await tx.contribution.update({
+                where: { id },
+                data: {
+                    status: status as PaymentStatus,
+                    rejectionReason: status === 'REJECTED' ? rejectionReason : null,
+                    reviewedById: userId,
+                    reviewDate: new Date(),
+                },
+            })
+
+            if (status === 'COMPLETED') {
+                // Get the member record
+                const member = await tx.groupMember.findUnique({
+                    where: {
+                        groupId_userId: {
+                            groupId: contribution.groupId,
+                            userId: contribution.userId
+                        }
+                    },
+                    include: { group: true }
+                })
+
+                if (!member) throw new Error('Member not found')
+
+                // Check if the monthly fee has already been applied for this month/year
+                // It's applied if there's a COMPLETED contribution or a FAILED one (applied by PenaltyService)
+                const feeAlreadyApplied = await tx.contribution.findFirst({
+                    where: {
+                        groupId: contribution.groupId,
+                        userId: contribution.userId,
+                        month: contribution.month,
+                        year: contribution.year,
+                        status: { in: ['COMPLETED', 'FAILED'] },
+                        id: { not: id }
+                    }
+                })
+
+                // Also check if a penalty for this month was already applied
+                const penaltyAlreadyApplied = await tx.contribution.findFirst({
+                    where: {
+                        groupId: contribution.groupId,
+                        userId: contribution.userId,
+                        month: contribution.month,
+                        year: contribution.year,
+                        isLate: true,
+                        penaltyApplied: { gt: 0 },
+                        status: { in: ['COMPLETED', 'FAILED'] },
+                        id: { not: id }
+                    }
+                })
+
+                let balanceAdjustment = 0
+                if (!feeAlreadyApplied) {
+                    balanceAdjustment -= member.group.monthlyContribution
+                }
+
+                // Initial pool of penalties to pay off
+                let totalUnpaidPenalties = member.unpaidPenalties
+
+                // If this is a late contribution and penalty hasn't been applied yet, add it
+                if (contribution.penaltyApplied > 0 && !penaltyAlreadyApplied) {
+                    totalUnpaidPenalties += contribution.penaltyApplied
+                }
+
+                let remainingAmount = contribution.amount
+                let penaltyPaid = 0
+
+                // 1. Pay off unpaid penalties first
+                if (totalUnpaidPenalties > 0) {
+                    penaltyPaid = Math.min(remainingAmount, totalUnpaidPenalties)
+                    remainingAmount -= penaltyPaid
+                }
+
+                // 2. Increment balance with remaining amount (minus initial debt adjustment)
+                await tx.groupMember.update({
+                    where: { id: member.id },
+                    data: {
+                        unpaidPenalties: totalUnpaidPenalties - penaltyPaid,
+                        balance: { increment: balanceAdjustment + remainingAmount }
+                    }
+                })
+
+                return { updatedContribution, penaltyPaid, balanceIncrement: remainingAmount }
+            }
+
+            return { updatedContribution, penaltyPaid: 0, balanceIncrement: 0 }
         })
+
+        const { updatedContribution, penaltyPaid, balanceIncrement } = result
 
         // Create activity log
         await prisma.activity.create({

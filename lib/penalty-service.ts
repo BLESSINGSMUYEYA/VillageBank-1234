@@ -126,13 +126,6 @@ export class PenaltyService {
                     existingContribution.status === 'PENDING' &&
                     isPastDeadline) {
 
-                    await prisma.groupMember.update({
-                        where: { id: member.id },
-                        data: {
-                            unpaidPenalties: { increment: penaltyToApply }
-                        }
-                    })
-
                     await prisma.contribution.update({
                         where: { id: existingContribution.id },
                         data: {

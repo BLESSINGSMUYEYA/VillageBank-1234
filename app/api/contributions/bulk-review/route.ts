@@ -53,35 +53,124 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Update all contributions
-    const updatedContributions = await prisma.contribution.updateMany({
-      where: {
-        id: { in: contributionIds },
-        status: 'PENDING'
-      },
-      data: {
-        status: status as PaymentStatus,
-        rejectionReason: status === 'REJECTED' ? rejectionReason : null,
-        reviewedById: userId,
-        reviewDate: new Date(),
+    const reviewResults = await prisma.$transaction(async (tx) => {
+      const results = []
+
+      for (const contribution of contributions) {
+        // Update contribution status
+        const updatedContribution = await tx.contribution.update({
+          where: { id: contribution.id },
+          data: {
+            status: status as PaymentStatus,
+            rejectionReason: status === 'REJECTED' ? rejectionReason : null,
+            reviewedById: userId,
+            reviewDate: new Date(),
+          }
+        })
+
+        let penaltyPaid = 0
+        let balanceIncrement = 0
+
+        if (status === 'COMPLETED') {
+          // Get the member record
+          const member = await tx.groupMember.findUnique({
+            where: {
+              groupId_userId: {
+                groupId: contribution.groupId,
+                userId: contribution.userId
+              }
+            },
+            include: { group: true }
+          })
+
+          if (!member) throw new Error(`Member not found for contribution ${contribution.id}`)
+
+          // Check if the monthly fee has already been applied for this month/year
+          const feeAlreadyApplied = await tx.contribution.findFirst({
+            where: {
+              groupId: contribution.groupId,
+              userId: contribution.userId,
+              month: contribution.month,
+              year: contribution.year,
+              status: { in: ['COMPLETED', 'FAILED'] },
+              id: { not: contribution.id }
+            }
+          })
+
+          // Also check if a penalty for this month was already applied
+          const penaltyAlreadyApplied = await tx.contribution.findFirst({
+            where: {
+              groupId: contribution.groupId,
+              userId: contribution.userId,
+              month: contribution.month,
+              year: contribution.year,
+              isLate: true,
+              penaltyApplied: { gt: 0 },
+              status: { in: ['COMPLETED', 'FAILED'] },
+              id: { not: contribution.id }
+            }
+          })
+
+          let balanceAdjustment = 0
+          if (!feeAlreadyApplied) {
+            balanceAdjustment -= member.group.monthlyContribution
+          }
+
+          let totalUnpaidPenalties = member.unpaidPenalties
+          if (contribution.penaltyApplied > 0 && !penaltyAlreadyApplied) {
+            totalUnpaidPenalties += contribution.penaltyApplied
+          }
+
+          let remainingAmount = contribution.amount
+
+          // 1. Pay off unpaid penalties first
+          if (totalUnpaidPenalties > 0) {
+            penaltyPaid = Math.min(remainingAmount, totalUnpaidPenalties)
+            remainingAmount -= penaltyPaid
+          }
+
+          balanceIncrement = balanceAdjustment + remainingAmount
+
+          // 2. Update GroupMember balance and penalties
+          await tx.groupMember.update({
+            where: { id: member.id },
+            data: {
+              unpaidPenalties: totalUnpaidPenalties - penaltyPaid,
+              balance: { increment: balanceIncrement }
+            }
+          })
+        }
+
+        results.push({
+          contribution,
+          penaltyPaid,
+          balanceIncrement,
+          status
+        })
       }
+
+      return results
     })
 
     // Create activity logs and notifications for each contribution
-    const activities = contributions.map(contribution => ({
+    const activityData = reviewResults.map(({ contribution, penaltyPaid, balanceIncrement }) => ({
       userId: userId,
       groupId: contribution.groupId,
       actionType: `CONTRIBUTION_${status}`,
-      description: `${status === 'COMPLETED' ? 'Approved' : 'Rejected'} contribution of MWK ${contribution.amount.toLocaleString()} from ${contribution.user.firstName} ${contribution.user.lastName}`,
+      description: status === 'COMPLETED'
+        ? `Approved contribution of MWK ${contribution.amount.toLocaleString()} from ${contribution.user.firstName} ${contribution.user.lastName}. Applied: MWK ${penaltyPaid.toLocaleString()} to penalties, MWK ${balanceIncrement.toLocaleString()} to balance.`
+        : `Rejected contribution of MWK ${contribution.amount.toLocaleString()} from ${contribution.user.firstName} ${contribution.user.lastName}`,
       metadata: {
         contributionId: contribution.id,
         status,
         rejectionReason,
-        bulkOperation: true
+        bulkOperation: true,
+        penaltyPaid,
+        balanceIncrement
       },
     }))
 
-    const notifications = contributions.map(contribution => ({
+    const notificationData = contributions.map(contribution => ({
       userId: contribution.userId,
       title: `Contribution ${status === 'COMPLETED' ? 'Approved' : 'Rejected'}`,
       message: status === 'COMPLETED'
@@ -92,17 +181,17 @@ export async function POST(request: NextRequest) {
 
     // Create activity logs
     await prisma.activity.createMany({
-      data: activities
+      data: activityData
     })
 
     // Create notifications
     await prisma.notification.createMany({
-      data: notifications
+      data: notificationData
     })
 
     return NextResponse.json({
-      message: `Successfully ${status.toLowerCase()} ${updatedContributions.count} contributions`,
-      updatedCount: updatedContributions.count,
+      message: `Successfully ${status.toLowerCase()} ${reviewResults.length} contributions`,
+      updatedCount: reviewResults.length,
       contributions: contributions.map(c => ({
         id: c.id,
         amount: c.amount,

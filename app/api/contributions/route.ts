@@ -72,31 +72,6 @@ export async function POST(request: NextRequest) {
     const isLate = !existingContributionMonth && currentDay > groupMember.group.contributionDueDay
     const penaltyApplied = isLate ? groupMember.group.penaltyAmount : 0
 
-    // Apply Monthly Debt: If no contribution record exists for this month, subtract the monthlyContribution
-    let balanceAdjustment = 0
-    if (!existingContributionMonth) {
-      balanceAdjustment -= groupMember.group.monthlyContribution
-    }
-
-    let remainingAmount = validatedData.amount
-    let penaltyPaid = 0
-
-    // 1. Pay off unpaid penalties first
-    if (groupMember.unpaidPenalties > 0) {
-      penaltyPaid = Math.min(remainingAmount, groupMember.unpaidPenalties)
-      remainingAmount -= penaltyPaid
-    }
-
-    // 2. Increment balance with the remaining amount (minus any initial debt adjustment)
-    // Update GroupMember balance and penalties
-    const updatedMember = await prisma.groupMember.update({
-      where: { id: groupMember.id },
-      data: {
-        unpaidPenalties: { decrement: penaltyPaid },
-        balance: { increment: balanceAdjustment + remainingAmount }
-      }
-    })
-
     // Create contribution record
     const contribution = await prisma.contribution.create({
       data: {
@@ -120,27 +95,19 @@ export async function POST(request: NextRequest) {
       data: {
         userId: userId as string,
         groupId: validatedData.groupId,
-        actionType: isLate ? 'CONTRIBUTION_MADE_LATE' : 'CONTRIBUTION_MADE',
-        description: `Made payment of MWK ${validatedData.amount.toLocaleString()}. Applied: MWK ${penaltyPaid.toLocaleString()} to penalties, MWK ${remainingAmount.toLocaleString()} to balance.`,
+        actionType: 'CONTRIBUTION_SUBMITTED',
+        description: `Submitted contribution of MWK ${validatedData.amount.toLocaleString()} for review.`,
         metadata: {
           contributionId: contribution.id,
           amount: validatedData.amount,
-          penaltyPaid,
-          balanceIncrement: remainingAmount,
           isLate,
         },
       },
     })
 
     return NextResponse.json({
-      message: 'Contribution recorded successfully',
+      message: 'Contribution submitted for review successfully',
       contribution,
-      summary: {
-        penaltyPaid,
-        balanceIncrement: remainingAmount,
-        newBalance: updatedMember.balance,
-        remainingPenalties: updatedMember.unpaidPenalties
-      }
     })
 
   } catch (error) {

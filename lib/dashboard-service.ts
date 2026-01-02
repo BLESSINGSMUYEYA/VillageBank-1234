@@ -345,7 +345,10 @@ export async function getPendingApprovals() {
             },
             group: {
                 select: {
-                    name: true
+                    name: true,
+                    monthlyContribution: true,
+                    lateContributionFee: true,
+                    penaltyAmount: true
                 }
             }
         },
@@ -354,6 +357,27 @@ export async function getPendingApprovals() {
         }
     })
 
-    return pendingContributions
+    // Enrich with member balance and penalties
+    const enrichedPending = await Promise.all(pendingContributions.map(async (contribution) => {
+        const member = await prisma.groupMember.findUnique({
+            where: {
+                groupId_userId: {
+                    groupId: contribution.groupId,
+                    userId: contribution.userId
+                }
+            },
+            select: {
+                balance: true,
+                unpaidPenalties: true
+            }
+        })
+
+        return {
+            ...contribution,
+            member: member || { balance: 0, unpaidPenalties: 0 }
+        }
+    }))
+
+    return enrichedPending
 }
 
