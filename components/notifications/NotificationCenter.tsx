@@ -151,10 +151,14 @@ export function NotificationCenter() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ type: "spring", duration: 0.4, bounce: 0.3 }}
-            className="fixed inset-x-4 top-20 sm:absolute sm:inset-auto sm:right-0 sm:mt-4 w-auto sm:w-[400px] z-50"
+            className="fixed inset-x-4 top-20 sm:absolute sm:inset-auto sm:right-0 sm:mt-4 w-auto sm:w-[500px] max-w-[95vw] z-50 shadow-[0_20px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
           >
-            <GlassCard className="p-0 border-white/20 dark:border-white/10 shadow-2xl overflow-hidden" hover={false}>
-              <div className="p-4 sm:p-5 border-b border-border/50 bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl flex justify-between items-center">
+            <GlassCard
+              className="p-0 border-white/40 dark:border-white/20 bg-white/95 dark:bg-slate-900/98 backdrop-blur-3xl shadow-none overflow-hidden"
+              hover={false}
+              gradient={false}
+            >
+              <div className="p-4 sm:p-5 border-b border-border bg-white dark:bg-slate-900 flex justify-between items-center relative z-10">
                 <div>
                   <h3 className="text-lg font-black text-foreground">Notifications</h3>
                   <p className="text-xs font-bold text-muted-foreground mt-0.5">
@@ -212,8 +216,8 @@ export function NotificationCenter() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: idx * 0.05 }}
                         className={cn(
-                          "p-4 hover:bg-white/60 dark:hover:bg-white/5 transition-all relative group",
-                          !notification.read && "bg-blue-500/5 dark:bg-banana/5"
+                          "p-4 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all relative group",
+                          !notification.read && "bg-blue-50/50 dark:bg-banana/10"
                         )}
                       >
                         {!notification.read && (
@@ -289,9 +293,9 @@ export function NotificationCenter() {
               </div>
 
               {notifications.length > 0 && (
-                <div className="p-3 bg-white/20 dark:bg-slate-950/20 backdrop-blur-md border-t border-border/50">
+                <div className="p-3 bg-slate-50 dark:bg-slate-950/50 border-t border-border relative z-10">
                   <Link href="/profile" onClick={() => setIsOpen(false)}>
-                    <Button variant="ghost" className="w-full text-xs font-black uppercase tracking-widest h-10 rounded-xl hover:bg-white/50 dark:hover:bg-slate-800/50">
+                    <Button variant="ghost" className="w-full text-xs font-black uppercase tracking-widest h-10 rounded-xl hover:bg-white dark:hover:bg-slate-800">
                       View All Notifications
                     </Button>
                   </Link>
