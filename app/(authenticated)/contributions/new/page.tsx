@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { ArrowLeft, DollarSign, CheckCircle, Upload, ScanLine, Loader2, Info, Shield, TrendingUp, Zap } from 'lucide-react'
+import { ArrowLeft, DollarSign, CheckCircle, Upload, ScanLine, Loader2, Info, Shield, TrendingUp, Zap, AlertCircle, AlertTriangle } from 'lucide-react'
 import { CldUploadWidget } from 'next-cloudinary'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { SectionHeader } from '@/components/ui/section-header'
@@ -58,6 +58,7 @@ function NewContributionPageContent() {
   const [receiptUrl, setReceiptUrl] = useState('')
   const [shouldScan, setShouldScan] = useState(false)
   const [memberDetails, setMemberDetails] = useState<{ balance: number; unpaidPenalties: number } | null>(null)
+  const [showManualFallback, setShowManualFallback] = useState(false)
 
   useEffect(() => {
     // Ensure body scroll is restored when scanning is done
@@ -191,6 +192,7 @@ function NewContributionPageContent() {
     setIsScanning(true)
     setError('')
     setSuccess('')
+    setShowManualFallback(false)
 
     try {
       const response = await fetch('/api/ocr', {
@@ -233,15 +235,18 @@ function NewContributionPageContent() {
           setSuccess(`Receipt scanned successfully! Auto-filled: ${updatedFields.join(', ')}`)
         } else {
           setError('Receipt uploaded but couldn\'t extract specific details. Please fill the form manually.')
+          setShowManualFallback(true)
         }
       } else {
         // OCR failed
         const errorMessage = data.error || 'Failed to scan receipt'
-        setError(`${errorMessage}. Please fill the form manually or try uploading a clearer receipt.`)
+        setError(`${errorMessage}.`)
+        setShowManualFallback(true)
       }
     } catch (err) {
       console.error('OCR scanning error:', err)
-      setError('Network error while scanning receipt. Please fill the form manually.')
+      setError('Network error while scanning receipt.')
+      setShowManualFallback(true)
     } finally {
       setIsScanning(false)
     }
@@ -336,6 +341,8 @@ function NewContributionPageContent() {
   const amountToPay = parseFloat(formData.amount) || 0
   const remainingAfterPayment = Math.max(0, totalDue - amountToPay)
   const isOverpaying = amountToPay > totalDue && totalDue > 0
+  const isPartialMonthly = amountToPay < monthlyDue && monthlyDue > 0
+  const coversPenaltiesOnly = amountToPay <= (memberDetails?.unpaidPenalties || 0) && (memberDetails?.unpaidPenalties || 0) > 0
 
   return (
     <motion.div
@@ -361,9 +368,37 @@ function NewContributionPageContent() {
             <GlassCard className="p-8" hover={false}>
               <form onSubmit={handleSubmit} className="space-y-10">
                 {error && (
-                  <Alert variant="destructive" className="rounded-2xl">
-                    <AlertDescription className="font-bold">{error}</AlertDescription>
-                  </Alert>
+                  <div className="space-y-4">
+                    <Alert variant="destructive" className="rounded-2xl border-red-500/20 bg-red-500/5 backdrop-blur-sm">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription className="font-bold">{error}</AlertDescription>
+                    </Alert>
+
+                    {showManualFallback && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-muted/40 p-5 rounded-2xl border border-border flex items-center justify-between gap-4"
+                      >
+                        <div className="space-y-1">
+                          <p className="text-xs font-black uppercase tracking-wider">Manual Entry Protocol</p>
+                          <p className="text-[11px] text-muted-foreground leading-relaxed">The AI was unable to extract ledger data accurately. Please finalize the transmission details manually.</p>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="rounded-xl font-bold whitespace-nowrap"
+                          onClick={() => {
+                            setError('')
+                            setShowManualFallback(false)
+                          }}
+                        >
+                          Manual Input
+                        </Button>
+                      </motion.div>
+                    )}
+                  </div>
                 )}
 
                 {success && (
@@ -449,16 +484,49 @@ function NewContributionPageContent() {
                         value={formData.amount}
                         onChange={handleChange}
                       />
+
                       {selectedGroup && (
-                        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 px-1">
-                          <p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
-                            REMAINING AFTER: <span className={cn(remainingAfterPayment > 0 ? "text-orange-500" : "text-emerald-500")}>MWK {remainingAfterPayment.toLocaleString()}</span>
-                          </p>
-                          {isOverpaying && (
-                            <p className="text-[10px] font-black uppercase tracking-wider text-emerald-500 flex items-center gap-1">
-                              <CheckCircle className="w-3 h-3" /> CREDITED: MWK {(amountToPay - totalDue).toLocaleString()}
+                        <div className="space-y-3 mt-3">
+                          <div className="flex flex-wrap gap-x-4 gap-y-1 px-1">
+                            <p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
+                              REMAINING AFTER: <span className={cn(remainingAfterPayment > 0 ? "text-orange-500" : "text-emerald-500 font-black")}>MWK {remainingAfterPayment.toLocaleString()}</span>
                             </p>
-                          )}
+                            {isOverpaying && (
+                              <p className="text-[10px] font-black uppercase tracking-wider text-emerald-500 flex items-center gap-1">
+                                <CheckCircle className="w-3 h-3" /> CREDITED: MWK {(amountToPay - totalDue).toLocaleString()}
+                              </p>
+                            )}
+                          </div>
+
+                          <AnimatePresence>
+                            {isPartialMonthly && !coversPenaltiesOnly && (
+                              <motion.div
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: 10 }}
+                                className="bg-orange-500/10 border border-orange-500/20 p-3 rounded-xl flex items-start gap-3"
+                              >
+                                <AlertTriangle className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" />
+                                <p className="text-[11px] text-orange-700 dark:text-orange-400 font-bold leading-normal">
+                                  Partial Payment Alert: This amount is less than your MWK {monthlyDue.toLocaleString()} monthly target. Your standing will remain "Incomplete".
+                                </p>
+                              </motion.div>
+                            )}
+
+                            {coversPenaltiesOnly && (
+                              <motion.div
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: 10 }}
+                                className="bg-red-500/10 border border-red-500/20 p-3 rounded-xl flex items-start gap-3"
+                              >
+                                <Shield className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                                <p className="text-[11px] text-red-700 dark:text-red-400 font-bold leading-normal">
+                                  Priority Settlement: This payment will exclusively cover your outstanding penalties. MWK 0 will be added to your savings principal.
+                                </p>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                         </div>
                       )}
                     </FormGroup>
@@ -512,6 +580,9 @@ function NewContributionPageContent() {
                         value={formData.transactionRef}
                         onChange={handleChange}
                       />
+                      <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest mt-2 px-1 flex items-center gap-2">
+                        <Shield className="w-3 h-3" /> Provide the 10-12 digit network reference for verification
+                      </p>
                     </FormGroup>
 
                     <FormGroup label="Receipt Artifact (Optional)">
@@ -537,12 +608,25 @@ function NewContributionPageContent() {
                               {receiptUrl ? (
                                 <div className="relative w-full aspect-video rounded-2xl overflow-hidden border-2 border-dashed border-blue-500/20 bg-black/5">
                                   <img src={receiptUrl} alt="Receipt preview" className="w-full h-full object-contain" />
-                                  <div className="absolute top-4 right-4">
+                                  <div className="absolute top-4 right-4 flex gap-2">
                                     <Button
                                       type="button"
                                       variant="secondary"
                                       size="sm"
-                                      onClick={() => setReceiptUrl('')}
+                                      onClick={() => {
+                                        setReceiptUrl('')
+                                        setError('')
+                                        setShowManualFallback(false)
+                                      }}
+                                      className="rounded-xl font-bold backdrop-blur-md bg-white/50"
+                                    >
+                                      Remove
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant="secondary"
+                                      size="sm"
+                                      onClick={() => open?.()}
                                       className="rounded-xl font-bold backdrop-blur-md bg-white/50"
                                     >
                                       {t('contributions.re_upload')}
