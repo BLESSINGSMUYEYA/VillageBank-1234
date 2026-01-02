@@ -108,14 +108,9 @@ export async function POST(
 
       // Add "Village Banking" text branding at the bottom
       try {
-        // @ts-expect-error: Jimp dynamic import types
-        const { HorizontalAlign, VerticalAlign } = await import('jimp')
-
         try {
           // Try to import fonts safely
-          // @ts-expect-error: Jimp font import types
           const { SANS_32_BLACK } = await import('jimp/fonts')
-          // @ts-expect-error: Jimp loadFont dynamic import
           const { loadFont } = await import('jimp')
 
           if (loadFont && SANS_32_BLACK) {
