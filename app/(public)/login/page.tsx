@@ -14,6 +14,7 @@ import { Loader2, Zap, ArrowRight, ShieldCheck, Mail, Lock } from 'lucide-react'
 import { motion } from 'framer-motion';
 import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions';
 import { GlassCard } from '@/components/ui/GlassCard';
+import { useLanguage } from '@/components/providers/LanguageProvider';
 
 const loginSchema = z.object({
     email: z.string().email('Please enter a valid email address'),
@@ -24,6 +25,7 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
     const { login } = useAuth();
+    const { t } = useLanguage();
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
@@ -64,23 +66,23 @@ export default function LoginPage() {
                     <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">
                         VILLAGE<span className="text-blue-600">BANK</span>
                     </h1>
-                    <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest mt-1 opacity-50">Authorized Access Only</p>
+                    <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest mt-1 opacity-50">{t('auth.authorized_access')}</p>
                 </motion.div>
 
                 <motion.div variants={itemFadeIn}>
                     <GlassCard className="p-0 border-none overflow-hidden shadow-2xl" hover={false}>
                         <div className="h-1.5 bg-gradient-to-r from-blue-600 to-indigo-600" />
                         <CardHeader className="p-8 sm:p-10 text-center space-y-2">
-                            <CardTitle className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Welcome Back</CardTitle>
+                            <CardTitle className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{t('auth.welcome_back')}</CardTitle>
                             <CardDescription className="text-sm font-bold opacity-70">
-                                Synchronizing your community ledger...
+                                {t('auth.sync_ledger')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="px-8 sm:px-10 pb-8 sm:pb-10">
                             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                                 <div className="space-y-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Identity Email</Label>
+                                        <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">{t('auth.identity_email')}</Label>
                                         <div className="relative">
                                             <Input
                                                 id="email"
@@ -95,8 +97,8 @@ export default function LoginPage() {
                                     </div>
                                     <div className="space-y-2">
                                         <div className="flex items-center justify-between px-1">
-                                            <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Encryption Key</Label>
-                                            <Link href="#" className="text-[10px] font-black text-blue-600 dark:text-banana uppercase tracking-widest hover:underline opacity-80">Forgot?</Link>
+                                            <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{t('auth.encryption_key')}</Label>
+                                            <Link href="/forgot-password" className="text-[10px] font-black text-blue-600 dark:text-banana uppercase tracking-widest hover:underline opacity-80">{t('common.forgot_password')}</Link>
                                         </div>
                                         <div className="relative">
                                             <Input
@@ -119,7 +121,7 @@ export default function LoginPage() {
                                 <Button type="submit" className="w-full h-14 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-lg shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all group" disabled={loading}>
                                     {loading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : (
                                         <>
-                                            Sign In
+                                            {t('common.sign_in')}
                                             <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                                         </>
                                     )}
@@ -128,7 +130,7 @@ export default function LoginPage() {
                         </CardContent>
                         <CardFooter className="flex justify-center p-8 bg-blue-600/5 dark:bg-white/5 border-t border-white/10 dark:border-white/5">
                             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
-                                New to the ecosystem? <Link href="/register" className="text-blue-600 dark:text-banana hover:underline">Create ID</Link>
+                                {t('auth.new_to_ecosystem')} <Link href="/register" className="text-blue-600 dark:text-banana hover:underline">{t('auth.create_id')}</Link>
                             </p>
                         </CardFooter>
                     </GlassCard>
@@ -137,7 +139,7 @@ export default function LoginPage() {
                 {/* Secure Badge */}
                 <motion.div variants={fadeIn} className="mt-8 flex items-center justify-center gap-2 opacity-40">
                     <ShieldCheck className="w-4 h-4" />
-                    <span className="text-[9px] font-black uppercase tracking-[0.3em]">End-to-End Encryption Protocol Active</span>
+                    <span className="text-[9px] font-black uppercase tracking-[0.3em]">{t('auth.secure_badge')}</span>
                 </motion.div>
             </motion.div>
         </div>

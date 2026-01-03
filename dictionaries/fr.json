@@ -20,7 +20,8 @@
         "no_description": "Aucune description",
         "premium_member": "Membre Premium",
         "zen_edition": "Édition Zen",
-        "sign_in": "Se Connecter"
+        "sign_in": "Se Connecter",
+        "forgot_password": "Mot de passe oublié ?"
     },
     "dashboard": {
         "welcome": "Bon retour",

@@ -9,10 +9,12 @@ import { Users, DollarSign, TrendingUp, Shield, Clock, Award, ArrowRight, Zap, G
 import { motion } from 'framer-motion'
 import { staggerContainer, itemFadeIn, fadeIn, hoverScale } from '@/lib/motions'
 import { GlassCard } from '@/components/ui/GlassCard'
+import { useLanguage } from '@/components/providers/LanguageProvider'
 import { cn } from '@/lib/utils'
 
 export default function Home() {
     const { isAuthenticated, loading } = useAuth()
+    const { t } = useLanguage()
     const router = useRouter()
 
     useEffect(() => {
@@ -62,13 +64,13 @@ export default function Home() {
                         <nav className="flex items-center gap-6">
                             {['Ecosystem', 'Security', 'Features'].map((item) => (
                                 <Link key={item} href="#" className="text-sm font-black uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-banana transition-colors">
-                                    {item}
+                                    {t(`landing.${item.toLowerCase()}` as any) || item}
                                 </Link>
                             ))}
                         </nav>
                         <Link href="/login">
                             <Button className="bg-slate-950 dark:bg-white text-white dark:text-slate-950 font-black rounded-xl px-8 h-12 hover:scale-105 transition-all">
-                                Launch App
+                                {t('landing.launch_app')}
                             </Button>
                         </Link>
                     </div>
@@ -84,31 +86,33 @@ export default function Home() {
                         {/* Hero Badge */}
                         <motion.div variants={fadeIn} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-600/5 dark:bg-white/5 border border-blue-600/10 dark:border-white/10 backdrop-blur-md">
                             <Sparkles className="w-4 h-4 text-blue-600 dark:text-banana" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 dark:text-banana">The Future of Community Finance</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 dark:text-banana">{t('landing.hero_badge')}</span>
                         </motion.div>
 
                         {/* Main Title */}
                         <motion.h1 variants={fadeIn} className="text-5xl md:text-7xl lg:text-8xl font-black text-slate-900 dark:text-white tracking-tighter leading-[0.9] max-w-5xl mx-auto">
-                            Modern Banking, <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-600 bg-300% animate-shimmer">Localized Impact.</span>
+                            {t('landing.main_title').split(',')[0]}, <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-600 bg-300% animate-shimmer">
+                                {t('landing.main_title').split(',')[1] || ''}
+                            </span>
                         </motion.h1>
 
                         {/* Subtitle */}
                         <motion.p variants={fadeIn} className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto font-bold leading-relaxed">
-                            Empowering Malawian communities with a secure, transparent, and mobile-first ecosystem for village banking and collective growth.
+                            {t('landing.subtitle')}
                         </motion.p>
 
                         {/* CTA Buttons */}
                         <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                             <Link href="/register" className="w-full sm:w-auto">
                                 <Button className="w-full sm:w-auto h-16 px-12 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-lg shadow-2xl shadow-blue-500/20 hover:scale-105 active:scale-95 transition-all group">
-                                    Start Moving Forward
+                                    {t('landing.start_moving')}
                                     <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                                 </Button>
                             </Link>
                             <Link href="/login" className="w-full sm:w-auto">
                                 <Button variant="outline" className="w-full sm:w-auto h-16 px-12 rounded-2xl border-2 border-slate-200 dark:border-white/10 dark:bg-white/5 font-black text-lg hover:bg-slate-100 dark:hover:bg-white/10 transition-all">
-                                    Access Ledger
+                                    {t('landing.access_ledger')}
                                 </Button>
                             </Link>
                         </motion.div>
@@ -116,10 +120,10 @@ export default function Home() {
                         {/* Stats Preview */}
                         <motion.div variants={fadeIn} className="pt-20 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
                             {[
-                                { label: 'Active Members', value: '12K+' },
-                                { label: 'Managed Capital', value: '$2.4M' },
-                                { label: 'Success Rate', value: '99.8%' },
-                                { label: 'Community Groups', value: '450+' },
+                                { label: t('landing.active_members'), value: '12K+' },
+                                { label: t('landing.managed_capital'), value: '$2.4M' },
+                                { label: t('landing.success_rate'), value: '99.8%' },
+                                { label: t('landing.community_groups'), value: '450+' },
                             ].map((stat, i) => (
                                 <div key={i} className="space-y-1">
                                     <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">{stat.value}</p>
@@ -140,20 +144,20 @@ export default function Home() {
                         {[
                             {
                                 icon: Users,
-                                title: 'Circle Management',
-                                desc: 'Dynamic group creation with automated bylaws and role-based governance.',
+                                title: t('landing.circle_mgt'),
+                                desc: t('landing.circle_mgt_desc'),
                                 color: 'bg-blue-500'
                             },
                             {
                                 icon: DollarSign,
-                                title: 'Instant Liquidity',
-                                desc: 'Frictionless loan deployment with automated eligibility verification.',
+                                title: t('landing.liquidity'),
+                                desc: t('landing.liquidity_desc'),
                                 color: 'bg-emerald-500'
                             },
                             {
                                 icon: TrendingUp,
-                                title: 'Staking Protocol',
-                                desc: 'Track every contribution with immutable ledger accuracy and yield insights.',
+                                title: t('landing.staking'),
+                                desc: t('landing.staking_desc'),
                                 color: 'bg-indigo-500'
                             }
                         ].map((feature, i) => (
@@ -179,17 +183,17 @@ export default function Home() {
                         className="mt-40 space-y-16"
                     >
                         <div className="text-center space-y-4">
-                            <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight">Built on Absolute Trust.</h2>
+                            <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight">{t('landing.trust_title')}</h2>
                             <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto font-bold">
-                                We combine traditional communal values with state-of-the-art security protocols to protect your future.
+                                {t('landing.trust_desc')}
                             </p>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-5xl mx-auto">
                             {[
-                                { icon: Shield, title: 'Bank-Grade Security', desc: 'SHA-256 encryption for every transaction and data point.' },
-                                { icon: clock, title: 'Real-time Ledger', desc: 'Synchronized updates across all member devices instantly.' },
-                                { icon: Award, title: 'Elite Interface', desc: 'Crafted for performance and ease across all Malawian networks.' }
+                                { icon: Shield, title: t('landing.security_badge'), desc: t('landing.security_desc') },
+                                { icon: clock, title: t('landing.realtime_ledger'), desc: t('landing.realtime_desc') },
+                                { icon: Award, title: t('landing.elite_interface'), desc: t('landing.elite_interface_desc') }
                             ].map((item, i) => (
                                 <div key={i} className="flex flex-col items-center text-center space-y-4">
                                     <div className="w-12 h-12 bg-slate-900 dark:bg-white rounded-2xl flex items-center justify-center text-white dark:text-slate-950">
@@ -209,19 +213,19 @@ export default function Home() {
                             <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-600/20 rounded-full blur-[80px] -ml-32 -mb-32" />
 
                             <div className="relative z-10 flex flex-col items-center text-center space-y-8">
-                                <h2 className="text-4xl sm:text-6xl font-black text-white dark:text-slate-950 tracking-tighter">Ready to revolutionize <br /> your circle?</h2>
+                                <h2 className="text-4xl sm:text-6xl font-black text-white dark:text-slate-950 tracking-tighter">{t('landing.cta_title')}</h2>
                                 <p className="text-lg text-slate-400 dark:text-slate-600 max-w-xl font-bold">
-                                    Join thousands of Malawians managing their community wealth with unparalleled efficiency.
+                                    {t('landing.cta_desc')}
                                 </p>
                                 <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
                                     <Link href="/register" className="w-full sm:w-auto">
                                         <Button className="h-16 px-12 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-lg shadow-2xl hover:scale-105 transition-all w-full">
-                                            Create First Group
+                                            {t('landing.create_first_group')}
                                         </Button>
                                     </Link>
                                     <Link href="/login" className="w-full sm:w-auto">
                                         <Button variant="outline" className="h-16 px-12 rounded-2xl border-white/20 dark:border-slate-950/20 text-white dark:text-slate-950 font-black text-lg hover:bg-white/10 dark:hover:bg-slate-950/5 transition-all w-full">
-                                            Member Login
+                                            {t('landing.member_login')}
                                         </Button>
                                     </Link>
                                 </div>

@@ -20,7 +20,8 @@
         "no_description": "Palibe mafotokozedwe",
         "premium_member": "Membala Okhazikika",
         "zen_edition": "Zen Edition",
-        "sign_in": "Lowani"
+        "sign_in": "Lowani",
+        "forgot_password": "Mwayiwala?"
     },
     "admin": {
         "regional": "Oyang'anira Chigawo",
@@ -237,5 +238,82 @@
             "rising_star": "Nyenyezi Yooneka",
             "rising_star_desc": "Mtsogoleri wa kukula"
         }
+    },
+    "landing": {
+        "hero_badge": "Tsogolo la chuma m'madera athu",
+        "main_title": "Bungwe lamakono, lodziwa za kwathu.",
+        "subtitle": "Kupititsa patsogolo anthu a m'Malawi kudzera m'dongosolo la village banking pafoni yanu.",
+        "start_moving": "Yambani Tsopano",
+        "access_ledger": "Lowani mu Thumba",
+        "launch_app": "Lowani",
+        "ecosystem": "Dongosolo",
+        "security": "Chitetezo",
+        "features": "Zinthu Zapadera",
+        "active_members": "Mamembala Omwe Alipo",
+        "managed_capital": "Chuma Chomwe Chiripo",
+        "success_rate": "Mulingo wa Chipambano",
+        "community_groups": "Magulu a M'dera Athu",
+        "features_title": "Zinthu Zapadera",
+        "circle_mgt": "Kusamalira Gulu",
+        "circle_mgt_desc": "Pangani ndi kusamalira magulu anu osungitsira ndalama mosavuta.",
+        "liquidity": "Ngongole Zam'mwamsanga",
+        "liquidity_desc": "Pezani ngongole mwachangu kudzera m'ndondomeko yosavuta.",
+        "staking": "Kutsata Kukula kwa Chuma",
+        "staking_desc": "Yanganirani momwe chuma cha gulu lanu chikukulira nthawi yonse.",
+        "trust_title": "Zomangidwa pa Khulupirika.",
+        "trust_desc": "Timaphatikiza chikhalidwe chakwathu ndi chitetezo chamakono kusamalira tsogolo lanu.",
+        "security_badge": "Chitetezo Chokhazikika",
+        "security_desc": "Ndalama ndi zambiri zanu ndizosungika bwino kwambiri.",
+        "realtime_ledger": "Zambiri Zaposachedwa",
+        "realtime_desc": "Onani zosintha zonse m'gulu lanu nthawi yomweyo pafoni yanu.",
+        "elite_interface": "Yosavuta Kugwiritsa Ntchito",
+        "elite_interface_desc": "Yopangidwa kuti igwire bwino m'Malawi mwa liwiro pafoni iliyonse.",
+        "cta_title": "Mwakonzeka kukulitsa gulu lanu?",
+        "cta_desc": "Lowani nawo anthu ambiri a m’Malawi omwe akusamalira chuma chawo mosavuta.",
+        "create_first_group": "Pangani Gulu Lanu Loyamba",
+        "member_login": "Lowani"
+    },
+    "auth": {
+        "authorized_access": "Anthu Ololera Okha",
+        "welcome_back": "Takulandiraninso",
+        "sync_ledger": "Tikulunzanitsa mbiri ya gulu lanu...",
+        "identity_email": "Imelo Yanu",
+        "encryption_key": "Mawu Achinsinsi",
+        "secure_badge": "Kulumikizana kwanu kuli ndi chitetezo",
+        "new_to_ecosystem": "Ndinu watsopano?",
+        "create_id": "Pangani Akaunti"
+    },
+    "register": {
+        "join_ecosystem": "Lowani nawo m'derali",
+        "create_identity": "Pangani Mbiri Yanu",
+        "register_desc": "Dzilembetseni kuti muyambe kusunga ndi kukongola m'gulu lanu.",
+        "legal_name": "Dzina Loyamba",
+        "surname": "Dzina la Bambo",
+        "phone_protocol": "Nambala ya Foni",
+        "security_code": "Pangani Mawu Achinsinsi",
+        "verification": "Tsimikizirani Mawu Achinsinsi",
+        "deploy_profile": "Pangani Akaunti",
+        "existing_node": "Muli ndi akaunti kale?",
+        "return_to_access": "Lowani"
+    },
+    "forgot": {
+        "title": "Bwezeretsani Kufikira",
+        "subtitle": "Lembani imelo yanu kuti mulandire ulalo wotetezeka bwezeretsera.",
+        "email_label": "Imelo Yolembetsedwa",
+        "send_link": "Pemphani Ulalo Wabwezeretsera",
+        "back_to_login": "Bwererani Kuti Mulowe",
+        "success_title": "Ulalo Watumizidwa",
+        "success_desc": "Ngati akaunti ilipo ya {email}, mulandira ulalo wotumizidwa posachedwa.",
+        "error_user_not_found": "Palibe akaunti yomwe yapezeka ndi imeloyi."
+    },
+    "reset": {
+        "title": "Tetezani Mawu Achinsinsi Atsopano",
+        "subtitle": "Pangani mawu achinsinsi amphamvu a mbiri yanu ya village bank.",
+        "new_password": "Mawu Achinsinsi Atsopano",
+        "confirm_password": "Tsimikizirani Mawu Achinsinsi Atsopano",
+        "update_password": "Sinthani ndi Kulunzanitsa",
+        "success_title": "Mbiri Yanu Yatetezedwa",
+        "success_desc": "Mawu anu achinsinsi asinthidwa bwino. Mutha kulowa tsopano.",
+        "error_invalid_token": "Ulalo wabwezeretserawu ndi wolakwika kapena watha nthawi yake."
     }
 }
