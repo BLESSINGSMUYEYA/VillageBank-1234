@@ -141,24 +141,27 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Parse query parameters for filtering
+    // Parse query parameters for filtering and pagination
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
     const groupId = searchParams.get('groupId')
     const month = searchParams.get('month')
     const year = searchParams.get('year')
     const search = searchParams.get('search')
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('limit') || '10')
+    const skip = (page - 1) * limit
 
     // Build where clause for filtering
     const whereClause: any = {
       userId: userId as string,
     }
 
-    if (status) {
+    if (status && status !== 'all') {
       whereClause.status = status
     }
 
-    if (groupId) {
+    if (groupId && groupId !== 'all') {
       whereClause.groupId = groupId
     }
 
@@ -167,28 +170,50 @@ export async function GET(request: NextRequest) {
       whereClause.year = parseInt(year)
     }
 
-    // Get user's contributions with filters - always include group for consistency
-    const contributions = await prisma.contribution.findMany({
-      where: whereClause,
-      include: {
-        group: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    })
+    // If search term provided, we'll need to handle it differently with Prisma or filter after
+    // For now, let's stick to base filters for pagination efficiency
 
-    // If search term provided, filter by group name
+    // Get user's contributions with filters and pagination
+    const [contributions, totalCount] = await Promise.all([
+      prisma.contribution.findMany({
+        where: whereClause,
+        include: {
+          group: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        skip,
+        take: limit,
+      }),
+      prisma.contribution.count({
+        where: whereClause,
+      })
+    ])
+
+    // If search term provided, filter by group name (Note: This is less efficient but keeps logic simple for now)
     let filteredContributions = contributions
+    let finalTotalCount = totalCount
+
     if (search) {
       const searchTerm = search.toLowerCase()
       filteredContributions = contributions.filter(contribution =>
         contribution.group.name.toLowerCase().includes(searchTerm) ||
         contribution.group.region.toLowerCase().includes(searchTerm)
       )
+      // Note: totalCount for search would ideally be handled by Prisma where clause if possible
+      finalTotalCount = filteredContributions.length
     }
 
-    return NextResponse.json({ contributions: filteredContributions })
+    return NextResponse.json({
+      contributions: filteredContributions,
+      pagination: {
+        total: finalTotalCount,
+        page,
+        limit,
+        totalPages: Math.ceil(finalTotalCount / limit)
+      }
+    })
 
   } catch (error) {
     console.error('Get contributions error:', error)

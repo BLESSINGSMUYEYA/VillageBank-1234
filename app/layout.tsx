@@ -1,4 +1,4 @@
-import { type Metadata } from 'next'
+import { type Metadata, type Viewport } from 'next'
 
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
@@ -14,9 +14,18 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 })
 
+export const viewport: Viewport = {
+  themeColor: '#0F172A',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+}
+
 export const metadata: Metadata = {
   title: 'Village Banking System',
   description: 'Community banking management system for Malawi',
+  manifest: '/manifest.json',
 }
 
 import { AuthProvider } from '@/components/providers/AuthProvider'
@@ -33,6 +42,21 @@ export default function RootLayout({
         <AuthProvider>
           <LanguageProvider>
             {children}
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  if ('serviceWorker' in navigator) {
+                    window.addEventListener('load', function() {
+                      navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                      }, function(err) {
+                        console.log('ServiceWorker registration failed: ', err);
+                      });
+                    });
+                  }
+                `,
+              }}
+            />
           </LanguageProvider>
         </AuthProvider>
       </body>

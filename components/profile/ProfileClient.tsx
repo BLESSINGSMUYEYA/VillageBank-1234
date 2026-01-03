@@ -27,6 +27,7 @@ import { formatCurrency } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
 import { GlassCard } from '@/components/ui/GlassCard'
+import { EmptyState } from '@/components/ui/empty-state'
 
 interface ProfileData {
     id: string
@@ -335,9 +336,13 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                         </motion.div>
                                     ))
                                 ) : (
-                                    <div className="col-span-2 py-32 text-center opacity-20">
-                                        <Users className="w-20 h-20 mx-auto mb-6" />
-                                        <p className="zen-label uppercase">No active circles found</p>
+                                    <div className="col-span-2 p-8">
+                                        <EmptyState
+                                            icon={Users}
+                                            title="No Active Circles"
+                                            description="You haven't joined any groups yet. Start your journey by joining or creating a community circle."
+                                            variant="compact"
+                                        />
                                     </div>
                                 )}
                             </motion.div>
@@ -373,8 +378,13 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                         ))}
                                     </div>
                                     {(!financials.recentContributions || financials.recentContributions.length === 0) && (
-                                        <div className="py-32 text-center opacity-20">
-                                            <p className="zen-label">No ledger entries recorded</p>
+                                        <div className="p-12">
+                                            <EmptyState
+                                                icon={History}
+                                                title="Empty Ledger"
+                                                description="No recent ledger entries have been recorded in the unified history."
+                                                variant="compact"
+                                            />
                                         </div>
                                     )}
                                 </div>

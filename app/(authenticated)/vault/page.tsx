@@ -7,7 +7,12 @@ import { PaymentStatus } from '@prisma/client'
 export default async function VaultPage({
     searchParams,
 }: {
-    searchParams: Promise<{ status?: string; groupId?: string; search?: string }>
+    searchParams: Promise<{
+        status?: string;
+        groupId?: string;
+        search?: string;
+        page?: string;
+    }>
 }) {
     const session = await getSession()
     const userId = session?.userId
@@ -17,20 +22,35 @@ export default async function VaultPage({
         redirect('/sign-in')
     }
 
-    // 1. Fetch Contributions
-    const contributions = await prisma.contribution.findMany({
-        where: {
-            userId: userId as string,
-            ...(params.status && params.status !== 'all' ? { status: params.status as PaymentStatus } : {}),
-            ...(params.groupId && params.groupId !== 'all' ? { groupId: params.groupId } : {}),
-        },
-        include: {
-            group: true,
-        },
-        orderBy: {
-            createdAt: 'desc',
-        },
-    })
+    const page = parseInt(params.page || '1')
+    const limit = 10
+    const skip = (page - 1) * limit
+
+    // 1. Fetch Contributions with pagination
+    const [contributions, totalContributions] = await Promise.all([
+        prisma.contribution.findMany({
+            where: {
+                userId: userId as string,
+                ...(params.status && params.status !== 'all' ? { status: params.status as PaymentStatus } : {}),
+                ...(params.groupId && params.groupId !== 'all' ? { groupId: params.groupId } : {}),
+            },
+            include: {
+                group: true,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+            skip,
+            take: limit,
+        }),
+        prisma.contribution.count({
+            where: {
+                userId: userId as string,
+                ...(params.status && params.status !== 'all' ? { status: params.status as PaymentStatus } : {}),
+                ...(params.groupId && params.groupId !== 'all' ? { groupId: params.groupId } : {}),
+            }
+        })
+    ])
 
     // 2. Fetch Loans
     const loans = await prisma.loan.findMany({
@@ -115,6 +135,11 @@ export default async function VaultPage({
             userGroups={userGroups}
             eligibilityChecks={eligibilityChecks}
             params={params}
+            pagination={{
+                currentPage: page,
+                totalPages: Math.ceil(totalContributions / limit),
+                totalItems: totalContributions
+            }}
         />
     )
 }

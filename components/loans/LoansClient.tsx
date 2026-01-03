@@ -12,6 +12,7 @@ import { StatsCard } from '@/components/ui/stats-card'
 import { motion, AnimatePresence } from 'framer-motion'
 import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
 import { GlassCard } from '@/components/ui/GlassCard'
+import { EmptyState } from '@/components/ui/empty-state'
 import { Loan, Group, LoanRepayment } from '@prisma/client'
 
 type LoanWithGroupAndRepayments = Loan & {
@@ -262,34 +263,29 @@ export function LoansClient({ loans, eligibilityChecks }: LoansClientProps) {
                             </Table>
                         </div>
                     ) : (
-                        <div className="text-center py-24 px-4 relative overflow-hidden">
-                            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-500/5 to-transparent animate-pulse" />
-                            <div className="relative z-10 max-w-sm mx-auto space-y-8">
-                                <div className="w-20 h-20 rounded-[2rem] bg-blue-600/10 dark:bg-banana/10 flex items-center justify-center mx-auto shadow-inner">
-                                    <CreditCard className="w-10 h-10 text-blue-600 dark:text-banana" />
-                                </div>
-                                <div className="space-y-2">
-                                    <h3 className="text-2xl font-black text-foreground">{t('loans.no_loans')}</h3>
-                                    <p className="text-muted-foreground font-bold opacity-70 text-sm leading-relaxed">
-                                        {t('loans.no_loans_desc')}
-                                    </p>
-                                </div>
-                                {eligibilityChecks.some(check => check.eligible) ? (
-                                    <Link href="/loans/new">
-                                        <Button variant="banana" size="xl" className="shadow-yellow-500/20 px-10 group h-auto py-7">
-                                            <Plus className="w-5 h-5 mr-3 group-hover:rotate-90 transition-transform" />
-                                            {t('loans.apply_first')}
-                                        </Button>
-                                    </Link>
-                                ) : (
-                                    <Link href="/contributions">
-                                        <Button variant="outline" className="rounded-2xl font-black border-2 border-dashed border-blue-500/20 h-16 w-full hover:border-blue-500/40 hover:bg-blue-500/5 transition-all">
-                                            {t('loans.make_contributions_first')}
-                                            <ArrowRight className="w-5 h-5 ml-2" />
-                                        </Button>
-                                    </Link>
-                                )}
-                            </div>
+                        <div className="p-12">
+                            <EmptyState
+                                icon={CreditCard}
+                                title={t('loans.no_loans')}
+                                description={t('loans.no_loans_desc')}
+                                action={
+                                    eligibilityChecks.some(check => check.eligible) ? (
+                                        <Link href="/loans/new">
+                                            <Button variant="banana" size="xl" className="shadow-yellow-500/20 px-10 group h-auto py-7">
+                                                <Plus className="w-5 h-5 mr-3 group-hover:rotate-90 transition-transform" />
+                                                {t('loans.apply_first')}
+                                            </Button>
+                                        </Link>
+                                    ) : (
+                                        <Link href="/contributions">
+                                            <Button variant="outline" className="rounded-2xl font-black border-2 border-dashed border-blue-500/20 h-16 w-full hover:border-blue-500/40 hover:bg-blue-500/5 transition-all">
+                                                {t('loans.make_contributions_first')}
+                                                <ArrowRight className="w-5 h-5 ml-2" />
+                                            </Button>
+                                        </Link>
+                                    )
+                                }
+                            />
                         </div>
                     )}
                 </GlassCard>

@@ -122,25 +122,48 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Get user's loans
-    const loans = await prisma.loan.findMany({
-      where: {
-        userId: userId as string,
-      },
-      include: {
-        group: true,
-        repayments: {
-          orderBy: {
-            createdAt: 'desc',
+    // Parse query parameters for pagination
+    const { searchParams } = new URL(request.url)
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('limit') || '10')
+    const skip = (page - 1) * limit
+
+    const whereClause = {
+      userId: userId as string,
+    }
+
+    // Get user's loans with pagination
+    const [loans, totalCount] = await Promise.all([
+      prisma.loan.findMany({
+        where: whereClause,
+        include: {
+          group: true,
+          repayments: {
+            orderBy: {
+              createdAt: 'desc',
+            },
           },
         },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    })
+        orderBy: {
+          createdAt: 'desc',
+        },
+        skip,
+        take: limit,
+      }),
+      prisma.loan.count({
+        where: whereClause,
+      })
+    ])
 
-    return NextResponse.json({ loans })
+    return NextResponse.json({
+      loans,
+      pagination: {
+        total: totalCount,
+        page,
+        limit,
+        totalPages: Math.ceil(totalCount / limit)
+      }
+    })
 
   } catch (error) {
     console.error('Get loans error:', error)

@@ -15,6 +15,7 @@ import { Contribution, Group, GroupMember } from '@prisma/client'
 import { motion, AnimatePresence } from 'framer-motion'
 import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
 import { GlassCard } from '@/components/ui/GlassCard'
+import { EmptyState } from '@/components/ui/empty-state'
 
 type ContributionWithGroup = Contribution & { group: Group }
 type GroupMemberWithGroup = GroupMember & { group: Group }
@@ -309,34 +310,29 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                                 </Table>
                             </div>
                         ) : (
-                            <div className="text-center py-32 px-4 relative overflow-hidden">
-                                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-500/5 to-transparent animate-pulse" />
-                                <div className="relative z-10 max-w-sm mx-auto space-y-8">
-                                    <div className="w-24 h-24 rounded-[2.5rem] bg-blue-600/10 dark:bg-banana/10 flex items-center justify-center mx-auto shadow-inner animate-pulse-slow">
-                                        <History className="w-10 h-10 text-blue-600 dark:text-banana" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <h3 className="text-3xl font-black text-foreground leading-tight">{t('contributions.no_contributions')}</h3>
-                                        <p className="text-muted-foreground font-bold opacity-70 leading-relaxed text-sm">
-                                            {t('contributions.no_contributions_desc')}
-                                        </p>
-                                    </div>
-                                    {userGroups.length > 0 ? (
-                                        <Link href="/contributions/new">
-                                            <Button variant="banana" size="xl" className="shadow-yellow-500/20 px-12 group h-auto py-7 text-lg">
-                                                <Plus className="w-6 h-6 mr-3 group-hover:rotate-90 transition-transform" />
-                                                {t('contributions.first_contribution')}
-                                            </Button>
-                                        </Link>
-                                    ) : (
-                                        <Link href="/groups/new">
-                                            <Button variant="outline" className="rounded-2xl font-black border-2 border-dashed border-blue-500/20 h-16 w-full hover:border-blue-500/40 hover:bg-blue-500/5 transition-all">
-                                                {t('contributions.join_first')}
-                                                <ArrowRight className="w-5 h-5 ml-2" />
-                                            </Button>
-                                        </Link>
-                                    )}
-                                </div>
+                            <div className="p-12">
+                                <EmptyState
+                                    icon={History}
+                                    title={t('contributions.no_contributions')}
+                                    description={t('contributions.no_contributions_desc')}
+                                    action={
+                                        userGroups.length > 0 ? (
+                                            <Link href="/contributions/new">
+                                                <Button variant="banana" size="xl" className="shadow-yellow-500/20 px-12 group h-auto py-7">
+                                                    <Plus className="w-6 h-6 mr-3 group-hover:rotate-90 transition-transform" />
+                                                    {t('contributions.first_contribution')}
+                                                </Button>
+                                            </Link>
+                                        ) : (
+                                            <Link href="/groups/new">
+                                                <Button variant="outline" className="rounded-2xl font-black border-2 border-dashed border-blue-500/20 h-16 w-full hover:border-blue-500/40 hover:bg-blue-500/5 transition-all">
+                                                    {t('contributions.join_first')}
+                                                    <ArrowRight className="w-5 h-5 ml-2" />
+                                                </Button>
+                                            </Link>
+                                        )
+                                    }
+                                />
                             </div>
                         )}
                     </GlassCard>

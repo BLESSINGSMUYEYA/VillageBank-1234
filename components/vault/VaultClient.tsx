@@ -7,8 +7,9 @@ import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Plus, Calendar, Search, Filter, Wallet, AlertCircle, ArrowRight, History, Zap, CreditCard, CheckCircle, TrendingUp, Clock } from 'lucide-react'
+import { Plus, Calendar, Search, Filter, Wallet, AlertCircle, ArrowRight, History, Zap, CreditCard, CheckCircle, TrendingUp, Clock, ChevronLeft, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter, usePathname } from 'next/navigation'
 import { formatCurrency, formatDate, cn } from '@/lib/utils'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { PageHeader } from '@/components/layout/PageHeader'
@@ -16,6 +17,7 @@ import { StatsCard } from '@/components/ui/stats-card'
 import { motion, AnimatePresence } from 'framer-motion'
 import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
 import { GlassCard } from '@/components/ui/GlassCard'
+import { EmptyState } from '@/components/ui/empty-state'
 import { Contribution, Group, Loan, LoanRepayment, GroupMember } from '@prisma/client'
 
 type ContributionWithGroup = Contribution & { group: Group }
@@ -37,6 +39,11 @@ interface VaultClientProps {
     userGroups: any[]
     eligibilityChecks: EligibilityCheck[]
     params: any
+    pagination: {
+        currentPage: number
+        totalPages: number
+        totalItems: number
+    }
 }
 
 export function VaultClient({
@@ -44,7 +51,8 @@ export function VaultClient({
     loans,
     userGroups,
     eligibilityChecks,
-    params
+    params,
+    pagination
 }: VaultClientProps) {
     const langContext = useLanguage()
     const t = langContext.t
@@ -196,8 +204,42 @@ export function VaultClient({
                                         ))}
                                     </TableBody>
                                 </Table>
-                                {contributions.length === 0 && (
-                                    <div className="p-20 text-center opacity-50 font-bold uppercase tracking-widest text-xs">{t('vault.no_records')}</div>
+                                {pagination.totalPages > 1 && (
+                                    <div className="p-4 border-t border-white/10 dark:border-white/5 flex items-center justify-between">
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">
+                                            Page {pagination.currentPage} of {pagination.totalPages} ({pagination.totalItems} records)
+                                        </p>
+                                        <div className="flex gap-2">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                disabled={pagination.currentPage <= 1}
+                                                className="rounded-xl h-10 px-4 font-bold border-white/10"
+                                                onClick={() => {
+                                                    const newParams = new URLSearchParams(window.location.search)
+                                                    newParams.set('page', (pagination.currentPage - 1).toString())
+                                                    window.location.search = newParams.toString()
+                                                }}
+                                            >
+                                                <ChevronLeft className="w-4 h-4 mr-2" />
+                                                Previous
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                disabled={pagination.currentPage >= pagination.totalPages}
+                                                className="rounded-xl h-10 px-4 font-bold border-white/10"
+                                                onClick={() => {
+                                                    const newParams = new URLSearchParams(window.location.search)
+                                                    newParams.set('page', (pagination.currentPage + 1).toString())
+                                                    window.location.search = newParams.toString()
+                                                }}
+                                            >
+                                                Next
+                                                <ChevronRight className="w-4 h-4 ml-2" />
+                                            </Button>
+                                        </div>
+                                    </div>
                                 )}
                             </div>
                         </GlassCard>
@@ -283,7 +325,14 @@ export function VaultClient({
                                 </TableBody>
                             </Table>
                             {loans.length === 0 && (
-                                <div className="p-20 text-center opacity-50 font-bold uppercase tracking-widest text-xs">{t('vault.no_active_credit')}</div>
+                                <div className="p-8">
+                                    <EmptyState
+                                        icon={History}
+                                        title={t('vault.no_active_credit')}
+                                        description={t('loans.no_loans_desc')}
+                                        variant="compact"
+                                    />
+                                </div>
                             )}
                         </div>
                     </motion.div>
