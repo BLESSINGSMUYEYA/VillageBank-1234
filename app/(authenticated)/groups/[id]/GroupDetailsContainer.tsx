@@ -27,89 +27,101 @@ export default function GroupDetailsContainer({
     currentUserMember
 }: GroupDetailsContainerProps) {
     return (
-        <Tabs defaultValue="members" className="space-y-6 sm:space-y-8">
-            <div className="sticky top-0 z-20 pt-2 pointer-events-none">
-                <TabsList className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl p-1.5 rounded-2xl border border-white/40 dark:border-white/10 w-full justify-start h-14 sm:h-16 shadow-xl pointer-events-auto overflow-x-auto no-scrollbar">
+        <Tabs defaultValue="standings" className="space-y-6 sm:space-y-10">
+            <div className="flex items-center justify-between gap-4 overflow-x-auto no-scrollbar pb-2">
+                <TabsList className="bg-transparent p-0 h-auto gap-2 sm:gap-4 shrink-0">
                     <TabsTrigger
-                        value="members"
-                        className="rounded-xl px-4 sm:px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all flex items-center gap-2 whitespace-nowrap"
+                        value="standings"
+                        className="rounded-full px-6 h-10 font-bold text-xs uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 data-[state=active]:border-transparent"
                     >
-                        <Users className="w-4 h-4" />
-                        Members
+                        Standings
                     </TabsTrigger>
                     <TabsTrigger
-                        value="contributions"
-                        className="rounded-xl px-4 sm:px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all flex items-center gap-2 whitespace-nowrap"
+                        value="ledger"
+                        className="rounded-full px-6 h-10 font-bold text-xs uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 data-[state=active]:border-transparent"
                     >
-                        <Receipt className="w-4 h-4" />
-                        Contributions
-                    </TabsTrigger>
-                    <TabsTrigger
-                        value="loans"
-                        className="rounded-xl px-4 sm:px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all flex items-center gap-2 whitespace-nowrap"
-                    >
-                        <Landmark className="w-4 h-4" />
-                        Loans
+                        Ledger
                     </TabsTrigger>
                     <TabsTrigger
                         value="activities"
-                        className="rounded-xl px-4 sm:px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all flex items-center gap-2 whitespace-nowrap"
+                        className="rounded-full px-6 h-10 font-bold text-xs uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 data-[state=active]:border-transparent"
                     >
-                        <Activity className="w-4 h-4" />
-                        Activities
+                        Activity
                     </TabsTrigger>
-                    {isAdmin && (
-                        <TabsTrigger
-                            value="share"
-                            className="rounded-xl px-4 sm:px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all flex items-center gap-2 whitespace-nowrap"
-                        >
-                            <Share2 className="w-4 h-4" />
-                            Share
-                        </TabsTrigger>
-                    )}
                 </TabsList>
+
+                {isAdmin && (
+                    <div className="flex items-center gap-2 shrink-0">
+                        <TabsList className="bg-transparent p-0 h-auto gap-2">
+                            <TabsTrigger
+                                value="manage"
+                                className="rounded-full px-6 h-10 font-bold text-xs uppercase tracking-widest data-[state=active]:bg-indigo-600 data-[state=active]:text-white transition-all border border-border/50"
+                            >
+                                <Share2 className="w-4 h-4 mr-2" />
+                                Invite
+                            </TabsTrigger>
+                        </TabsList>
+                    </div>
+                )}
             </div>
 
             <motion.div variants={itemFadeIn}>
-                <GlassCard className="p-0 overflow-hidden border-white/20 dark:border-white/10" hover={false}>
-                    <TabsContent value="members" className="m-0 border-none outline-none focus-visible:ring-0">
-                        <GroupMembersList
-                            members={group.members}
-                            groupId={group.id}
-                            currentUserRole={currentUserMember?.role}
-                            currentUserId={userId}
-                        />
+                <GlassCard className="p-0 overflow-hidden border-none shadow-none bg-transparent" hover={false} gradient={false}>
+                    <TabsContent value="standings" className="m-0 border-none outline-none focus-visible:ring-0">
+                        <div className="bg-white/40 dark:bg-slate-950/40 rounded-[32px] overflow-hidden border border-white/20 dark:border-white/10 shadow-xl">
+                            <GroupMembersList
+                                members={group.members}
+                                groupId={group.id}
+                                currentUserRole={currentUserMember?.role}
+                                currentUserId={userId}
+                            />
+                        </div>
                     </TabsContent>
 
-                    <TabsContent value="contributions" className="m-0 border-none outline-none focus-visible:ring-0">
-                        <GroupContributions
-                            contributions={group.contributions}
-                            groupId={group.id}
-                            currentUserRole={currentUserMember?.role}
-                        />
-                    </TabsContent>
-
-                    <TabsContent value="loans" className="m-0 border-none outline-none focus-visible:ring-0">
-                        <GroupLoans
-                            loans={group.loans}
-                            groupId={group.id}
-                            currentUserRole={currentUserMember?.role}
-                            key={group.id}
-                        />
+                    <TabsContent value="ledger" className="m-0 border-none outline-none focus-visible:ring-0 space-y-8">
+                        <div className="bg-white/40 dark:bg-slate-950/40 rounded-[32px] overflow-hidden border border-white/20 dark:border-white/10 shadow-xl p-2">
+                            <Tabs defaultValue="contributions_sub" className="w-full">
+                                <TabsList className="bg-slate-100/50 dark:bg-slate-800/50 p-1 rounded-2xl mb-4 ml-4 mt-4">
+                                    <TabsTrigger value="contributions_sub" className="rounded-xl px-6 font-bold text-[10px] uppercase">Contributions</TabsTrigger>
+                                    <TabsTrigger value="loans_sub" className="rounded-xl px-6 font-bold text-[10px] uppercase">Loans</TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="contributions_sub" className="m-0">
+                                    <GroupContributions
+                                        contributions={group.contributions}
+                                        groupId={group.id}
+                                        currentUserRole={currentUserMember?.role}
+                                    />
+                                </TabsContent>
+                                <TabsContent value="loans_sub" className="m-0">
+                                    <GroupLoans
+                                        loans={group.loans}
+                                        groupId={group.id}
+                                        currentUserRole={currentUserMember?.role}
+                                        key={group.id}
+                                    />
+                                </TabsContent>
+                            </Tabs>
+                        </div>
                     </TabsContent>
 
                     <TabsContent value="activities" className="m-0 border-none outline-none focus-visible:ring-0">
-                        <GroupActivities
-                            activities={group.activities}
-                        />
+                        <div className="bg-white/40 dark:bg-slate-950/40 rounded-[32px] overflow-hidden border border-white/20 dark:border-white/10 shadow-xl">
+                            <GroupActivities
+                                activities={group.activities}
+                            />
+                        </div>
                     </TabsContent>
 
                     {isAdmin && (
-                        <TabsContent value="share" className="m-0 border-none outline-none focus-visible:ring-0 p-8 sm:p-12">
-                            <QRCodeShare
-                                groupId={group.id}
-                                groupName={group.name}
-                            />
+                        <TabsContent value="manage" className="m-0 border-none outline-none focus-visible:ring-0">
+                            <div className="bg-white/40 dark:bg-slate-950/40 rounded-[32px] overflow-hidden border border-white/20 dark:border-white/10 shadow-xl p-8 sm:p-16">
+                                <div className="max-w-md mx-auto">
+                                    <QRCodeShare
+                                        groupId={group.id}
+                                        groupName={group.name}
+                                    />
+                                </div>
+                            </div>
                         </TabsContent>
                     )}
                 </GlassCard>

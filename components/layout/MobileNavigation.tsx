@@ -8,14 +8,13 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import {
-  Home,
   Users,
-  DollarSign,
-  CreditCard,
+  Zap,
+  Landmark,
+  User,
   Shield,
   Settings,
-  LogOut,
-  User
+  LogOut
 } from 'lucide-react'
 import { NotificationCenter } from '@/components/notifications/NotificationCenter'
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher'
@@ -31,29 +30,13 @@ export function MobileNavigation() {
 
   // Define member-specific navigation
   const memberNavigation = [
-    { name: t('common.dashboard'), href: '/dashboard', icon: Home },
+    { name: t('common.pulse'), href: '/dashboard', icon: Zap },
+    { name: t('common.vault'), href: '/vault', icon: Landmark },
     { name: t('common.groups'), href: '/groups', icon: Users },
-    { name: t('common.contributions'), href: '/contributions', icon: DollarSign },
-    { name: t('common.loans'), href: '/loans', icon: CreditCard },
+    { name: t('common.profile'), href: '/profile', icon: User },
   ]
 
-  const adminNavigation = []
-
-  // Logic to determine which links to show
-  const displayedNavigation = memberNavigation
-
-  if (user?.role === 'REGIONAL_ADMIN') {
-    adminNavigation.push(
-      { name: t('admin.regional'), href: '/admin/regional', icon: Shield }
-    )
-  } else if (user?.role === 'SUPER_ADMIN') {
-    adminNavigation.push(
-      { name: t('admin.regional'), href: '/admin/regional', icon: Shield },
-      { name: t('admin.system'), href: '/admin/system', icon: Settings }
-    )
-  }
-
-  const allNavigation = [...displayedNavigation, ...adminNavigation]
+  const allNavigation = memberNavigation
 
   return (
     <div className="lg:hidden">
@@ -66,7 +49,7 @@ export function MobileNavigation() {
             </div>
             <div>
               <h1 className="text-lg font-black bg-gradient-to-r from-blue-900 via-indigo-800 to-blue-900 dark:from-white dark:to-blue-200 bg-clip-text text-transparent leading-none">Village Bank</h1>
-              <p className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 leading-none mt-1">Premium Member</p>
+              <p className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 leading-none mt-1">{t('common.premium_member')}</p>
             </div>
           </Link>
 
@@ -107,6 +90,27 @@ export function MobileNavigation() {
                       {t('common.settings')}
                     </Link>
                   </DropdownMenuItem>
+
+                  {/* Conditional Admin Links */}
+                  {(user?.role === 'REGIONAL_ADMIN' || user?.role === 'SUPER_ADMIN') && (
+                    <>
+                      <DropdownMenuSeparator className="bg-white/10" />
+                      <DropdownMenuItem asChild className="rounded-xl focus:bg-blue-600 focus:text-white dark:focus:bg-banana dark:focus:text-blue-900">
+                        <Link href="/admin/regional" className="flex items-center p-2 font-bold">
+                          <Shield className="mr-3 h-4 w-4" />
+                          {t('admin.regional')}
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  {user?.role === 'SUPER_ADMIN' && (
+                    <DropdownMenuItem asChild className="rounded-xl focus:bg-blue-600 focus:text-white dark:focus:bg-banana dark:focus:text-blue-900">
+                      <Link href="/admin/system" className="flex items-center p-2 font-bold">
+                        <Settings className="mr-3 h-4 w-4" />
+                        {t('admin.system')}
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator className="bg-white/10" />
                   <DropdownMenuItem asChild className="rounded-xl focus:bg-red-500 focus:text-white">
                     <button className="w-full text-left flex items-center p-2 font-bold text-red-500" onClick={() => logout()}>
@@ -118,7 +122,7 @@ export function MobileNavigation() {
               </DropdownMenu>
             ) : (
               <Link href="/login">
-                <Button size="sm" className="font-black rounded-xl bg-blue-600 text-white">Sign In</Button>
+                <Button size="sm" className="font-black rounded-xl bg-blue-600 text-white">{t('common.sign_in')}</Button>
               </Link>
             )}
           </div>
@@ -130,7 +134,7 @@ export function MobileNavigation() {
 
       {/* Mobile Bottom Navigation - Floating Glass Dock */}
       {user && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden px-4 pb-6 pointer-events-none">
+        <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden px-4 pb-8 sm:pb-10 pointer-events-none safe-area-bottom">
           <motion.div
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}

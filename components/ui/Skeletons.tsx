@@ -51,3 +51,25 @@ export function ContributionRowSkeleton() {
         </div>
     )
 }
+
+export function VaultCreditSkeleton() {
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+                <Card key={i} className="bg-card/50 backdrop-blur-md border-border/50 rounded-[32px] p-8 h-full border">
+                    <div className="flex justify-between items-start mb-8">
+                        <Skeleton className="w-14 h-14 rounded-2xl" />
+                        <Skeleton className="h-6 w-16" />
+                    </div>
+                    <div className="space-y-2 mb-8">
+                        <Skeleton className="h-6 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                    </div>
+                    <div className="pt-8 border-t border-border/10 mt-auto">
+                        <Skeleton className="h-14 w-full rounded-2xl" />
+                    </div>
+                </Card>
+            ))}
+        </div>
+    )
+}

@@ -508,7 +508,7 @@ function NewContributionPageContent() {
                               >
                                 <AlertTriangle className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" />
                                 <p className="text-[11px] text-orange-700 dark:text-orange-400 font-bold leading-normal">
-                                  Partial Payment Alert: This amount is less than your MWK {monthlyDue.toLocaleString()} monthly target. Your standing will remain "Incomplete".
+                                  Partial Payment Alert: This amount is less than your MWK {monthlyDue.toLocaleString()} monthly target. Your standing will remain &quot;Incomplete&quot;.
                                 </p>
                               </motion.div>
                             )}

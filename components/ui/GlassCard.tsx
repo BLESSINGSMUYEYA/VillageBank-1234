@@ -34,11 +34,11 @@ export function GlassCard({
             viewport={{ once: true }}
             whileHover={hover ? { y: -4, transition: { duration: 0.2 } } : undefined}
             className={cn(
-                "relative overflow-hidden rounded-3xl border border-white/10 shadow-2xl transition-all duration-300",
-                "bg-white/70 dark:bg-slate-900/40",
+                "relative overflow-hidden rounded-[32px] border border-white/20 dark:border-white/10 shadow-2xl transition-all duration-300",
+                "bg-white/60 dark:bg-slate-900/40",
                 blurClasses[blur],
-                gradient && "bg-gradient-to-br from-white/80 to-white/30 dark:from-slate-800/50 dark:to-slate-900/20",
-                hover && "hover:border-banana/30 hover:shadow-banana/5 hover:dark:shadow-banana/10",
+                gradient && "bg-gradient-to-br from-white/40 to-white/10 dark:from-white/5 dark:to-transparent",
+                hover && "hover:border-blue-500/30 hover:shadow-blue-500/5 hover:dark:shadow-banana/5",
                 className
             )}
             {...props}

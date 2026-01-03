@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Settings, LogOut, User } from 'lucide-react'
+import { Settings, LogOut, User, Shield } from 'lucide-react'
 
 interface DesktopUserMenuProps {
     user: any
@@ -52,6 +52,28 @@ export function DesktopUserMenu({ user }: DesktopUserMenuProps) {
                         {t('common.settings')}
                     </Link>
                 </DropdownMenuItem>
+
+                {/* Conditional Admin Links */}
+                {(user?.role === 'REGIONAL_ADMIN' || user?.role === 'SUPER_ADMIN') && (
+                    <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                            <Link href="/admin/regional" className="w-full cursor-pointer rounded-lg font-bold">
+                                <Shield className="mr-2 h-4 w-4" />
+                                Regional Admin
+                            </Link>
+                        </DropdownMenuItem>
+                    </>
+                )}
+                {user?.role === 'SUPER_ADMIN' && (
+                    <DropdownMenuItem asChild>
+                        <Link href="/admin/system" className="w-full cursor-pointer rounded-lg font-bold">
+                            <Settings className="mr-2 h-4 w-4" />
+                            System Admin
+                        </Link>
+                    </DropdownMenuItem>
+                )}
+
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                     <button className="w-full text-left flex items-center font-bold text-red-500" onClick={() => logout()}>

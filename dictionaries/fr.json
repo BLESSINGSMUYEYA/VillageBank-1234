@@ -17,7 +17,10 @@
         "delete": "Supprimer",
         "profile": "Profil",
         "logout": "Déconnexion",
-        "no_description": "Aucune description"
+        "no_description": "Aucune description",
+        "premium_member": "Membre Premium",
+        "zen_edition": "Édition Zen",
+        "sign_in": "Se Connecter"
     },
     "dashboard": {
         "welcome": "Bon retour",
@@ -37,7 +40,37 @@
         "manage_groups": "Gérer les Groupes",
         "pending_approvals": "Approbations en Attente",
         "pending_desc": "Il y a {count} contributions en attente de votre examen.",
-        "review_now": "Examiner Maintenant"
+        "review_now": "Examiner Maintenant",
+        "status_healthy": "État: Sain",
+        "hide_insights": "Masquer les Analyses",
+        "show_insights": "Afficher les Analyses Financières",
+        "growth_analytics": "Croissance et Analyses"
+    },
+    "vault": {
+        "title": "Coffre",
+        "net_savings": "Épargne Nette",
+        "active_liability": "Passif Actif",
+        "pending_review": "En Attente d'Examen",
+        "credit_strength": "Force du Crédit",
+        "verified": "Vérifié",
+        "building": "En Construction",
+        "optimal": "Optimal",
+        "credit_ledger": "Registre de Crédit",
+        "unified_history": "Historique Unifié",
+        "credit_hub": "Centre de Crédit",
+        "savings_ledger": "Registre d'Épargne",
+        "protocol_requirement_pending": "Exigence de protocole en attente",
+        "credit_line_active": "Ligne de crédit active",
+        "deploy_capital": "Déployer le Capital",
+        "staking_protocol": "Protocole de Staking",
+        "unified_community_hub": "Votre centre financier communautaire unifié.",
+        "zen_edition_lifecycle": "Zen Edition Lifecycle.",
+        "stakes": "{count} mises vérifiées",
+        "agreements": "{count} accords actifs",
+        "ledger_sync": "Attente de synchronisation du registre",
+        "portfolio_health": "Évaluation de la santé du portefeuille",
+        "no_records": "Aucun enregistrement trouvé",
+        "no_active_credit": "Aucun accord de crédit actif"
     },
     "groups": {
         "view_dashboard": "Voir le Tableau de Bord"

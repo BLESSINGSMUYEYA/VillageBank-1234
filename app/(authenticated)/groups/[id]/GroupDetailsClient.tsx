@@ -17,9 +17,10 @@ import Link from 'next/link'
 import { formatCurrency } from '@/lib/utils'
 import GroupDetailsContainer from './GroupDetailsContainer'
 import { PageHeader } from '@/components/layout/PageHeader'
-import { StatsCard } from '@/components/ui/stats-card'
 import { motion } from 'framer-motion'
 import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
+import { useLanguage } from '@/components/providers/LanguageProvider'
+import { GlassCard } from '@/components/ui/GlassCard'
 
 interface GroupDetailsClientProps {
     group: any
@@ -36,6 +37,7 @@ export default function GroupDetailsClient({
     isTreasurer,
     currentUserMember
 }: GroupDetailsClientProps) {
+    const { t } = useLanguage()
     return (
         <motion.div
             variants={staggerContainer}
@@ -81,48 +83,46 @@ export default function GroupDetailsClient({
                 />
             </motion.div>
 
-            {/* Group Stats */}
-            <div className="flex overflow-x-auto pb-4 -mx-4 px-4 gap-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-6 no-scrollbar">
-                <StatsCard
-                    index={1}
-                    label="Total Members"
-                    value={group._count.members}
-                    description={`${group.members.filter((m: any) => m.status === 'ACTIVE').length} active currently`}
-                    icon={Users}
-                    className="shrink-0 w-[280px] sm:w-auto"
-                />
+            {/* Zen Metric Bar */}
+            <motion.div variants={itemFadeIn}>
+                <GlassCard className="p-1 sm:p-2 border-white/40 dark:border-white/10" hover={false}>
+                    <div className="flex flex-wrap items-center justify-between gap-6 p-4 sm:p-6 bg-white/40 dark:bg-slate-900/40 rounded-[20px] backdrop-blur-3xl">
+                        <div className="flex items-center gap-4 sm:gap-8">
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('groups.monthly_share') || 'Monthly Share'}</p>
+                                <p className="text-xl font-black text-foreground">{formatCurrency(group.monthlyContribution)}</p>
+                            </div>
+                            <div className="w-px h-10 bg-border/50 hidden sm:block" />
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('groups.interest_rate') || 'Rate'}</p>
+                                <p className="text-xl font-black text-blue-600 dark:text-banana">{group.interestRate}%</p>
+                            </div>
+                            <div className="w-px h-10 bg-border/50 hidden sm:block" />
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('groups.members') || 'Members'}</p>
+                                <p className="text-xl font-black text-foreground">{group._count.members}</p>
+                            </div>
+                        </div>
 
-                <StatsCard
-                    index={2}
-                    variant="featured"
-                    label="Monthly Contribution"
-                    value={formatCurrency(group.monthlyContribution)}
-                    description="Requirement per member"
-                    icon={DollarSign}
-                    className="shrink-0 w-[280px] sm:w-auto"
-                />
-
-                <StatsCard
-                    index={3}
-                    variant="glass"
-                    label="Interest Rate"
-                    value={`${group.interestRate}%`}
-                    description="Annual percentage rate"
-                    icon={Percent}
-                    className="shrink-0 w-[280px] sm:w-auto"
-                />
-
-                <StatsCard
-                    index={4}
-                    variant="gradient"
-                    gradient="bg-gradient-to-br from-blue-600 to-indigo-700 shadow-blue-500/20"
-                    label="Loan Multiplier"
-                    value={`${group.maxLoanMultiplier}x`}
-                    description="Max loan calculation"
-                    icon={TrendingUp}
-                    className="shrink-0 w-[280px] sm:w-auto"
-                />
-            </div>
+                        <div className="flex items-center gap-3 w-full sm:w-auto">
+                            {isAdmin && (
+                                <Link href={`/groups/${group.id}/settings`} className="flex-1 sm:flex-initial">
+                                    <Button variant="outline" className="w-full h-12 px-6 rounded-xl font-black border-2 hover:bg-white/50 dark:hover:bg-slate-800/50 backdrop-blur-sm transition-all group">
+                                        <Settings className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform" />
+                                        Manage
+                                    </Button>
+                                </Link>
+                            )}
+                            <Link href="/contributions/new" className="flex-[2] sm:flex-initial">
+                                <Button variant="banana" className="w-full h-12 px-8 rounded-xl font-black shadow-lg shadow-yellow-500/20 active:scale-95 transition-all">
+                                    <DollarSign className="w-4 h-4 mr-2" />
+                                    {t('dashboard.make_contribution')}
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+                </GlassCard>
+            </motion.div>
 
             <motion.div variants={itemFadeIn}>
                 <GroupDetailsContainer

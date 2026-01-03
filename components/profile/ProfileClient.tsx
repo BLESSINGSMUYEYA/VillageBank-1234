@@ -115,50 +115,50 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                 {/* Left Column: Identity & Milestoness */}
                 <div className="lg:col-span-1 space-y-8">
                     <motion.div variants={itemFadeIn}>
-                        <GlassCard className="p-0 border-none overflow-hidden" hover={false}>
-                            {/* Banner */}
-                            <div className="h-32 bg-gradient-to-br from-blue-700 via-indigo-900 to-slate-900 relative">
-                                <div className="absolute inset-0 opacity-10 bg-[url('/grid-pattern.svg')]" />
-                                <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-background/80 to-transparent" />
+                        <div className="zen-card p-0 overflow-hidden border-none shadow-none">
+                            {/* Banner - Zen Style */}
+                            <div className="h-40 bg-gradient-to-br from-blue-900 via-slate-900 to-black relative">
+                                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.2),transparent)]" />
+                                <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-background to-transparent" />
                             </div>
 
-                            <CardContent className="relative pt-0 px-6 pb-8">
-                                {/* Avatar */}
-                                <div className="flex justify-center sm:justify-start -mt-16 mb-6">
-                                    <div className="p-1.5 rounded-[2.5rem] bg-background/50 backdrop-blur-3xl shadow-2xl">
-                                        <div className="w-28 h-28 rounded-[2.2rem] bg-gradient-to-br from-blue-600 via-indigo-500 to-blue-700 dark:from-banana dark:via-yellow-400 dark:to-yellow-600 flex items-center justify-center text-white dark:text-blue-950 text-4xl font-black shadow-inner rotate-3 hover:rotate-0 transition-transform duration-500">
+                            <CardContent className="relative pt-0 px-8 pb-10">
+                                {/* Avatar - Floating Zen */}
+                                <div className="flex justify-center -mt-20 mb-8">
+                                    <div className="p-2 rounded-[3rem] bg-background/80 backdrop-blur-3xl shadow-2xl border border-white/20">
+                                        <div className="w-32 h-32 rounded-[2.5rem] bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-800 dark:from-banana dark:via-yellow-400 dark:to-yellow-600 flex items-center justify-center text-white dark:text-blue-950 text-5xl font-black shadow-inner">
                                             {(profile?.firstName?.charAt(0) || '') + (profile?.lastName?.charAt(0) || '')}
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="space-y-6">
-                                    <div className="text-center sm:text-left">
-                                        <h2 className="text-3xl font-black text-foreground tracking-tight leading-none mb-3">
-                                            {profile?.firstName} {profile?.lastName}
+                                <div className="space-y-8">
+                                    <div className="text-center">
+                                        <h2 className="text-4xl font-black text-foreground tracking-tighter leading-none mb-4">
+                                            {profile?.firstName}
                                         </h2>
-                                        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                                            <Badge variant="info">
+                                        <div className="flex flex-wrap items-center justify-center gap-3">
+                                            <Badge variant="info" className="rounded-lg font-black text-[9px] tracking-widest uppercase px-3 py-1">
                                                 {profile?.role?.replace('_', ' ')}
                                             </Badge>
-                                            <Badge variant="success">
-                                                {t('profile.active_node')}
+                                            <Badge variant="success" className="rounded-lg font-black text-[9px] tracking-widest uppercase px-3 py-1">
+                                                Verified Node
                                             </Badge>
                                         </div>
                                     </div>
 
-                                    <div className="space-y-2 pt-2">
+                                    <div className="space-y-4 pt-4 border-t border-white/10 dark:border-white/5">
                                         {[
-                                            { icon: Mail, label: t('profile.transmission_code'), value: profile?.email },
-                                            { icon: MapPin, label: t('profile.regional_sector'), value: profile?.region || 'Central Domain' },
-                                            { icon: Calendar, label: t('profile.node_activated'), value: profile?.joinedAt ? new Date(profile.joinedAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) : '---' }
+                                            { icon: Mail, label: 'Auth Token', value: profile?.email },
+                                            { icon: MapPin, label: 'Home Sector', value: profile?.region || 'Central Domain' },
+                                            { icon: Calendar, label: 'Origin Point', value: profile?.joinedAt ? new Date(profile.joinedAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) : '---' }
                                         ].map((item, idx) => (
-                                            <div key={idx} className="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/40 dark:hover:bg-slate-800/40 transition-colors group/item">
-                                                <div className="p-2.5 rounded-xl bg-blue-600/10 dark:bg-banana/10 text-blue-600 dark:text-banana group-hover/item:scale-110 transition-transform">
+                                            <div key={idx} className="flex items-center gap-4 group/item">
+                                                <div className="p-3 rounded-2xl bg-blue-600/5 dark:bg-white/5 text-blue-600 dark:text-banana group-hover/item:scale-110 transition-transform">
                                                     <item.icon className="w-4 h-4" />
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <p className="text-[9px] uppercase font-black text-muted-foreground tracking-widest opacity-60 mb-0.5">{item.label}</p>
+                                                    <p className="zen-label lowercase opacity-40">{item.label}</p>
                                                     <p className="text-sm font-black text-foreground truncate">{item.value}</p>
                                                 </div>
                                             </div>
@@ -166,7 +166,7 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                     </div>
                                 </div>
                             </CardContent>
-                        </GlassCard>
+                        </div>
                     </motion.div>
 
                     {/* Milestone Card */}
@@ -202,120 +202,142 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                     <div className="flex overflow-x-auto pb-4 -mx-4 px-4 gap-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-2 no-scrollbar">
                         <StatsCard
                             index={1}
-                            variant="gradient"
-                            gradient="bg-gradient-to-br from-blue-600 to-indigo-800"
+                            variant="featured"
                             icon={Wallet}
-                            label={t('profile.net_capital')}
+                            label="Net Capital"
                             value={formatCurrency(financials?.totalContributions || 0)}
-                            description={t('profile.real_time_sync')}
+                            description="Real-time ledger sync"
                             className="shrink-0 w-[280px] sm:w-auto"
                         />
                         <StatsCard
                             index={2}
                             variant="glass"
                             icon={TrendingUp}
-                            label={t('profile.reliability_rating')}
+                            label="Reliability Rating"
                             value={`${financials?.eligibilityScore}%`}
-                            description={t('profile.trust_optimized')}
+                            description="Trust optimized profile"
                             className="shrink-0 w-[280px] sm:w-auto"
                         />
                     </div>
 
                     <Tabs defaultValue="overview" className="space-y-8">
-                        <div className="sticky top-0 z-20 pt-2 pointer-events-none">
-                            <TabsList className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-2xl p-1.5 rounded-2xl border border-white/40 dark:border-white/10 w-full justify-start h-14 shadow-xl pointer-events-auto no-scrollbar overflow-x-auto">
-                                <TabsTrigger value="overview" className="rounded-xl px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-950 dark:data-[state=active]:bg-blue-950 data-[state=active]:text-white dark:data-[state=active]:text-white">{t('profile.tabs.overview')}</TabsTrigger>
-                                <TabsTrigger value="groups" className="rounded-xl px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-950 dark:data-[state=active]:bg-blue-950 data-[state=active]:text-white dark:data-[state=active]:text-white">{t('profile.tabs.groups')}</TabsTrigger>
-                                <TabsTrigger value="history" className="rounded-xl px-8 h-full font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-950 dark:data-[state=active]:bg-blue-950 data-[state=active]:text-white dark:data-[state=active]:text-white">{t('profile.tabs.contributions')}</TabsTrigger>
+                        <div className="flex items-center justify-between gap-4 overflow-x-auto no-scrollbar pb-2">
+                            <TabsList className="bg-transparent p-0 h-auto gap-2 shrink-0">
+                                <TabsTrigger
+                                    value="overview"
+                                    className="rounded-full px-8 h-12 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 shadow-sm"
+                                >
+                                    Overview
+                                </TabsTrigger>
+                                <TabsTrigger
+                                    value="groups"
+                                    className="rounded-full px-8 h-12 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 shadow-sm"
+                                >
+                                    Nodes
+                                </TabsTrigger>
+                                <TabsTrigger
+                                    value="history"
+                                    className="rounded-full px-8 h-12 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 shadow-sm"
+                                >
+                                    Ledger
+                                </TabsTrigger>
                             </TabsList>
                         </div>
 
                         <TabsContent value="overview" className="space-y-6 mt-0 outline-none">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <motion.div variants={itemFadeIn}>
-                                    <GlassCard className="p-8 h-full" hover={false}>
-                                        <h3 className="text-lg font-black text-foreground mb-6 uppercase tracking-wider flex items-center gap-2">
-                                            <Shield className="w-5 h-5 text-blue-600" />
-                                            {t('profile.credit_protocol')}
+                                    <div className="zen-card p-8 h-full">
+                                        <h3 className="text-lg font-black text-foreground mb-6 flex items-center gap-3">
+                                            <Shield className="w-5 h-5 text-blue-600 dark:text-banana" />
+                                            Credit Matrix
                                         </h3>
-                                        <div className="space-y-6">
-                                            <div className="flex justify-between items-center bg-white/40 dark:bg-slate-900/40 p-5 rounded-2xl">
+                                        <div className="space-y-8">
+                                            <div className="flex justify-between items-center bg-blue-600/5 dark:bg-white/5 p-6 rounded-2xl shadow-inner border border-white/10">
                                                 <div>
-                                                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">Status</p>
-                                                    <p className="text-lg font-black text-emerald-500">OPTIMAL</p>
+                                                    <p className="zen-label lowercase opacity-40">Standing</p>
+                                                    <p className="text-xl font-black text-emerald-500">EXCELLENT</p>
                                                 </div>
-                                                <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+                                                <CheckCircle2 className="w-10 h-10 text-emerald-500" />
                                             </div>
-                                            <div className="space-y-2">
-                                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
-                                                    <span>Eligibility Strength</span>
+                                            <div className="space-y-4">
+                                                <div className="flex justify-between zen-label">
+                                                    <span>Protocol Compliance</span>
                                                     <span>{financials.eligibilityScore}%</span>
                                                 </div>
-                                                <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-blue-600 dark:bg-banana rounded-full" style={{ width: `${financials.eligibilityScore}%` }} />
+                                                <div className="w-full bg-slate-100 dark:bg-slate-800/50 h-2 rounded-full overflow-hidden">
+                                                    <motion.div
+                                                        initial={{ width: 0 }}
+                                                        animate={{ width: `${financials.eligibilityScore}%` }}
+                                                        className="h-full bg-blue-600 dark:bg-banana rounded-full"
+                                                    />
                                                 </div>
                                             </div>
                                         </div>
-                                    </GlassCard>
+                                    </div>
                                 </motion.div>
 
                                 <motion.div variants={itemFadeIn}>
-                                    <GlassCard className="p-8 h-full" hover={false}>
-                                        <h3 className="text-lg font-black text-foreground mb-6 uppercase tracking-wider flex items-center gap-2">
+                                    <div className="zen-card p-8 h-full flex flex-col">
+                                        <h3 className="text-lg font-black text-foreground mb-6 flex items-center gap-3">
                                             <Zap className="w-5 h-5 text-banana" />
-                                            {t('profile.active_liabilities')}
+                                            Liabilities
                                         </h3>
-                                        <div className="space-y-4">
-                                            <div className="p-4 rounded-2xl bg-red-500/5 border border-red-500/10 flex justify-between items-center">
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-red-500">{t('profile.outstanding')}</span>
-                                                <span className="text-xl font-black text-red-500">{formatCurrency(financials.outstandingLoanBalance)}</span>
+                                        <div className="space-y-6 flex-1">
+                                            <div className="p-6 rounded-2xl bg-red-500/5 border border-red-500/10 flex justify-between items-center shadow-inner">
+                                                <div>
+                                                    <p className="zen-label lowercase text-red-500 italic">Net Due</p>
+                                                    <span className="text-2xl font-black text-red-500">{formatCurrency(financials.outstandingLoanBalance)}</span>
+                                                </div>
                                             </div>
-                                            <p className="text-[10px] font-bold text-muted-foreground opacity-70 leading-relaxed uppercase tracking-widest">
-                                                You have {financials.recentLoans?.filter(l => l.status === 'ACTIVE').length || 0} active borrowing cycles in progress.
+                                            <p className="zen-label lowercase opacity-40 leading-relaxed pt-2">
+                                                {financials.recentLoans?.filter(l => l.status === 'ACTIVE').length || 0} active borrowing cycles in deployment.
                                             </p>
-                                            <Button className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-black h-12 mt-2">
-                                                {t('profile.view_repayment')}
-                                            </Button>
+                                            <div className="mt-auto pt-6">
+                                                <Link href="/vault" className="block">
+                                                    <Button className="w-full h-14 rounded-2xl font-black bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-xl transition-all hover:scale-105 active:scale-95">
+                                                        Manage Agreements
+                                                    </Button>
+                                                </Link>
+                                            </div>
                                         </div>
-                                    </GlassCard>
+                                    </div>
                                 </motion.div>
                             </div>
                         </TabsContent>
 
                         <TabsContent value="groups" className="mt-0 outline-none">
-                            <motion.div variants={fadeIn} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <motion.div variants={fadeIn} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {memberships.length > 0 ? (
                                     memberships.map((group) => (
                                         <motion.div key={group.id} variants={itemFadeIn}>
-                                            <GlassCard className="p-6 relative group" hover={true}>
-                                                <div className="flex justify-between items-start mb-4">
-                                                    <div className="w-12 h-12 rounded-2xl bg-blue-600/10 flex items-center justify-center text-blue-600 font-black text-xl">
+                                            <div className="zen-card p-8 group hover:border-blue-500/30 transition-all cursor-pointer">
+                                                <div className="flex justify-between items-start mb-6">
+                                                    <div className="w-16 h-16 rounded-[1.5rem] bg-blue-600/5 flex items-center justify-center text-blue-600 dark:text-banana font-black text-3xl shadow-inner group-hover:scale-110 transition-transform">
                                                         {group.name.charAt(0)}
                                                     </div>
-                                                    <Badge variant="info">
+                                                    <Badge variant="outline" className="zen-label border-none">
                                                         {group.role}
                                                     </Badge>
                                                 </div>
-                                                <h4 className="text-xl font-black text-foreground truncate mb-1">{group.name}</h4>
-                                                <div className="flex items-center gap-2 text-muted-foreground mb-4">
-                                                    <Users className="w-3.5 h-3.5" />
-                                                    <span className="text-[10px] font-bold uppercase tracking-widest">{group.memberCount} {t('groups.members')}</span>
+                                                <h4 className="text-2xl font-black text-foreground truncate mb-2">{group.name}</h4>
+                                                <div className="flex items-center gap-2 text-muted-foreground mb-8">
+                                                    <Users className="w-4 h-4 opacity-40" />
+                                                    <span className="zen-label lowercase">{group.memberCount} active nodes</span>
                                                 </div>
-                                                <div className="pt-4 border-t border-white/10 flex justify-between items-center">
-                                                    <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">
-                                                        {t('dashboard.monthly_contribution')}
-                                                    </div>
-                                                    <div className="text-sm font-black text-blue-600 dark:text-banana">
+                                                <div className="pt-8 border-t border-white/10 dark:border-white/5 flex justify-between items-center">
+                                                    <div className="zen-label lowercase opacity-40">Monthly Stake</div>
+                                                    <div className="text-lg font-black text-blue-600 dark:text-banana">
                                                         {formatCurrency(group.monthlyContribution)}
                                                     </div>
                                                 </div>
-                                            </GlassCard>
+                                            </div>
                                         </motion.div>
                                     ))
                                 ) : (
-                                    <div className="col-span-2 text-center py-20 opacity-40">
-                                        <Users className="w-16 h-16 mx-auto mb-4" />
-                                        <p className="font-black uppercase tracking-widest">{t('groups.no_groups')}</p>
+                                    <div className="col-span-2 py-32 text-center opacity-20">
+                                        <Users className="w-20 h-20 mx-auto mb-6" />
+                                        <p className="zen-label uppercase">No active circles found</p>
                                     </div>
                                 )}
                             </motion.div>
@@ -323,31 +345,39 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
 
                         <TabsContent value="history" className="mt-0 outline-none">
                             <motion.div variants={fadeIn}>
-                                <GlassCard className="p-0 overflow-hidden" hover={false}>
-                                    <div className="p-8 border-b border-white/10 flex justify-between items-center">
-                                        <h3 className="font-black uppercase tracking-widest text-sm">{t('profile.ledger_events')}</h3>
-                                        <History className="w-4 h-4 opacity-40" />
+                                <div className="zen-card overflow-hidden">
+                                    <div className="p-8 border-b border-white/10 flex justify-between items-center bg-blue-600/5 dark:bg-white/5">
+                                        <h3 className="text-lg font-black flex items-center gap-3">
+                                            <History className="w-5 h-5 text-blue-600 dark:text-banana" />
+                                            Ledger Events
+                                        </h3>
+                                        <Badge variant="outline" className="zen-label border-none uppercase">Immutable Record</Badge>
                                     </div>
-                                    <div className="divide-y divide-white/10">
+                                    <div className="divide-y divide-white/5">
                                         {financials.recentContributions?.map((item, i) => (
-                                            <div key={i} className="p-6 flex items-center justify-between hover:bg-white/5 transition-colors">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-black">
+                                            <div key={i} className="p-8 flex items-center justify-between hover:bg-blue-600/5 dark:hover:bg-white/5 transition-all">
+                                                <div className="flex items-center gap-6">
+                                                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-black text-xl shadow-inner">
                                                         +
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-black">{t('profile.deposits')}</p>
-                                                        <p className="text-[10px] font-bold text-muted-foreground uppercase">{new Date(item.date).toLocaleDateString()}</p>
+                                                        <p className="text-lg font-black leading-none mb-1">Capital Stake</p>
+                                                        <p className="zen-label lowercase opacity-40">{new Date(item.date).toLocaleDateString()}</p>
                                                     </div>
                                                 </div>
                                                 <div className="text-right">
-                                                    <p className="text-sm font-black text-emerald-500">+{formatCurrency(item.amount)}</p>
-                                                    <p className="text-[9px] font-black text-muted-foreground uppercase opacity-60">COMPLETED</p>
+                                                    <p className="text-xl font-black text-emerald-500">+{formatCurrency(item.amount)}</p>
+                                                    <p className="zen-label lowercase text-emerald-500/60 font-black">Success</p>
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
-                                </GlassCard>
+                                    {(!financials.recentContributions || financials.recentContributions.length === 0) && (
+                                        <div className="py-32 text-center opacity-20">
+                                            <p className="zen-label">No ledger entries recorded</p>
+                                        </div>
+                                    )}
+                                </div>
                             </motion.div>
                         </TabsContent>
                     </Tabs>

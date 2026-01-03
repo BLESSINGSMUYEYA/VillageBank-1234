@@ -1,6 +1,8 @@
 {
     "common": {
         "dashboard": "Dashboard",
+        "pulse": "Pulse",
+        "vault": "Vault",
         "groups": "Amabungwe",
         "contributions": "Imisangulo",
         "loans": "Inkongole",
@@ -17,7 +19,10 @@
         "delete": "Fufuteni",
         "profile": "Imisango Yenu",
         "logout": "Fumunimo",
-        "no_description": "Takwaba ubulondoloshi"
+        "no_description": "Takwaba ubulondoloshi",
+        "premium_member": "Membala Wasuma",
+        "zen_edition": "Zen Edition",
+        "sign_in": "İngileni"
     },
     "dashboard": {
         "welcome": "Mwaiseni kabili",
@@ -37,7 +42,37 @@
         "manage_groups": "Sungani Amabungwe",
         "pending_approvals": "Filepembelela Ukusuminishiwa",
         "pending_desc": "Kuli imisangulo {count} ilepembelela ukusuminishiwa.",
-        "review_now": "Moneni Nomba"
+        "review_now": "Moneni Nomba",
+        "status_healthy": "Ubusuma: Musuma",
+        "hide_insights": "Fisheni Analytics",
+        "show_insights": "Moneni Analytics ya Ndalama",
+        "growth_analytics": "Ukukula ne Mifwaikwa"
+    },
+    "vault": {
+        "title": "Vault",
+        "net_savings": "Imisangulo Yonse",
+        "active_liability": "Inkongole Shilipo",
+        "pending_review": "Filepembelela",
+        "credit_strength": "Amaka ya Inkongole",
+        "verified": "Fisuminishiwe",
+        "building": "Filekuulwa",
+        "optimal": "Chisuma Sana",
+        "credit_ledger": "Ifya Inkongole",
+        "unified_history": "Fyalachitika Fyonse",
+        "credit_hub": "Mubanda wa Inkongole",
+        "savings_ledger": "Ifya Imisangulo",
+        "protocol_requirement_pending": "Filepembelela Ififwaikwa",
+        "credit_line_active": "Inkongole Naishuka",
+        "deploy_capital": "Lombeni Inkongole",
+        "staking_protocol": "Ifya Imisangulo",
+        "unified_community_hub": "Inchito yenu ya ndalama payeka.",
+        "zen_edition_lifecycle": "Zen Edition Lifecycle.",
+        "stakes": "{count} fisuminishiwe",
+        "agreements": "{count} filipo",
+        "ledger_sync": "Ilepembelela ukulundanya",
+        "portfolio_health": "Ifyo ndalama shenu shili",
+        "no_records": "Tapali ifyasangwa",
+        "no_active_credit": "Tapali inkongole shilipo"
     },
     "groups": {
         "my_groups": "Amabungwe Yandi",
@@ -50,6 +85,8 @@
         "view_dashboard": "Moneni Dashboard",
         "no_groups": "Tamulaba Muli Ibungwe",
         "no_groups_desc": "Tamulaingila muli ibungwe lyalili lilyonse ilya village banking.",
+        "standings": "Ifilundwa",
+        "ledger": "Ifya Ndalama",
         "back_to_pulse": "Bwelelamo ku Pulse",
         "re_upload": "Sanguleni Kabili",
         "deploy_receipt": "Pangani Receipt Artifact",

@@ -1,6 +1,8 @@
 {
   "common": {
     "dashboard": "Dashboard",
+    "pulse": "Pulse",
+    "vault": "Vault",
     "groups": "Groups",
     "contributions": "Contributions",
     "loans": "Loans",
@@ -17,7 +19,10 @@
     "delete": "Delete",
     "profile": "Profile",
     "logout": "Log Out",
-    "no_description": "No description"
+    "no_description": "No description",
+    "premium_member": "Premium Member",
+    "zen_edition": "Zen Edition",
+    "sign_in": "Sign In"
   },
   "admin": {
     "regional": "Regional Admin",
@@ -55,7 +60,11 @@
     "this_month": "This month's contribution",
     "pending_approvals": "Pending Approvals",
     "pending_desc": "There are {count} contributions waiting for your review.",
-    "review_now": "View Now"
+    "review_now": "View Now",
+    "status_healthy": "Status: Healthy",
+    "hide_insights": "Hide Insights",
+    "show_insights": "Show Financial Insights",
+    "growth_analytics": "Growth & Analytics"
   },
   "groups": {
     "my_groups": "My Groups",
@@ -103,10 +112,38 @@
     "discard_changes": "Discard Changes",
     "maintenance": "Maintenance",
     "audit_penalty": "Audit Penalty Sync",
+    "standings": "Member Standings",
+    "ledger": "Group Ledger",
     "access_restricted": "Access Restricted",
     "admin_only_desc": "Only administrators are authorized to modify group parameters and settings.",
     "return_to_group": "Return to Group",
     "config_updated": "Configuration updated successfully."
+  },
+  "vault": {
+    "title": "Vault",
+    "net_savings": "Net Savings",
+    "active_liability": "Active Liability",
+    "pending_review": "Pending Review",
+    "credit_strength": "Credit Strength",
+    "verified": "Verified",
+    "building": "Building",
+    "optimal": "Optimal",
+    "credit_ledger": "Credit Ledger",
+    "unified_history": "Unified History",
+    "credit_hub": "Credit Hub",
+    "savings_ledger": "Savings Ledger",
+    "protocol_requirement_pending": "Protocol requirement pending",
+    "credit_line_active": "Credit line active",
+    "deploy_capital": "Deploy Capital",
+    "staking_protocol": "Staking Protocol",
+    "unified_community_hub": "Your unified community financial hub.",
+    "zen_edition_lifecycle": "Zen Edition Lifecycle.",
+    "stakes": "{count} verified stakes",
+    "agreements": "{count} active agreements",
+    "ledger_sync": "Awaiting ledger sync",
+    "portfolio_health": "Portfolio health rating",
+    "no_records": "No records found",
+    "no_active_credit": "No active credit agreements"
   },
   "contributions": {
     "title": "Contributions",

@@ -49,7 +49,7 @@ export function StatsCard({
             variants={itemFadeIn}
             initial="initial"
             animate="animate"
-            whileHover={variant !== 'glass' ? hoverScale.whileHover : undefined}
+            whileHover={variant === 'glass' ? {} : hoverScale.whileHover}
             whileTap={hoverScale.whileTap}
             transition={{ ...itemFadeIn.animate.transition, delay: index * 0.1 }}
             className="w-full"

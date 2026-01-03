@@ -1,4 +1,5 @@
 'use client'
+import { useState } from 'react'
 
 import { Alert } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -20,7 +21,7 @@ import { useLanguage } from '@/components/providers/LanguageProvider'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { StatsCard } from '@/components/ui/stats-card'
 import { SectionHeader } from '@/components/ui/section-header'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { staggerContainer, fadeIn, itemFadeIn } from '@/lib/motions'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { cn } from '@/lib/utils'
@@ -40,7 +41,9 @@ export function DashboardContent({
     pendingApprovals,
     charts
 }: DashboardContentProps) {
-    const { t } = useLanguage()
+    const langContext = useLanguage()
+    const t = langContext.t
+    const [showInsights, setShowInsights] = useState(false)
 
     return (
         <motion.div
@@ -112,198 +115,179 @@ export function DashboardContent({
             )}
 
 
-            {/* Stats Grid */}
-            <div className="flex overflow-x-auto pb-4 -mx-4 px-4 gap-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-6 no-scrollbar">
-                <StatsCard
-                    index={1}
-                    label={t('dashboard.total_groups')}
-                    value={stats.totalGroups}
-                    description={t('dashboard.active_groups_desc')}
-                    icon={Users}
-                    className="shrink-0 w-[280px] sm:w-auto"
-                />
+            {/* Wallet Hero - The Zen Core */}
+            <motion.div variants={itemFadeIn}>
+                <GlassCard
+                    className="relative overflow-hidden p-8 sm:p-12 border-white/40 dark:border-white/10 bg-gradient-to-br from-blue-600 to-indigo-800 dark:from-slate-800 dark:to-slate-900 shadow-2xl shadow-blue-500/20"
+                    hover={false}
+                    gradient={false}
+                >
+                    {/* Background Decorative Element */}
+                    <div className="absolute top-[-20%] right-[-10%] w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+                    <div className="absolute bottom-[-20%] left-[-10%] w-48 h-48 bg-blue-400/20 rounded-full blur-3xl pointer-events-none" />
 
-                <StatsCard
-                    index={2}
-                    variant="featured"
-                    label={t('dashboard.total_contributions')}
-                    value={formatCurrency(stats.totalContributions)}
-                    icon={Wallet}
-                    trend={{
-                        value: `+12.5%`,
-                        positive: true,
-                        icon: TrendingUp
-                    }}
-                    className="shrink-0 w-[280px] sm:w-auto"
-                />
+                    <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-8">
+                        <div className="space-y-4">
+                            <p className="text-white/60 font-black uppercase tracking-[0.2em] text-xs sm:text-sm">
+                                {t('profile.total_contributions') || 'Total Savings'}
+                            </p>
+                            <h2 className="text-4xl sm:text-6xl font-black text-white tracking-tight">
+                                {formatCurrency(stats.totalContributions)}
+                            </h2>
+                            <div className="flex flex-wrap gap-3 pt-2">
+                                <div className="px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                                    <span className="text-[10px] sm:text-xs font-black text-white uppercase tracking-widest">
+                                        {t('dashboard.status_healthy')}
+                                    </span>
+                                </div>
+                                <div className="px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center gap-2">
+                                    <Users className="w-3 h-3 text-blue-200" />
+                                    <span className="text-[10px] sm:text-xs font-black text-white uppercase tracking-widest">
+                                        {stats.totalGroups} Groups
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
 
-                <StatsCard
-                    index={3}
-                    variant="glass"
-                    label={t('dashboard.active_loans')}
-                    value={stats.totalLoans}
-                    description={stats.pendingLoans > 0 ? t('dashboard.pending_count', { count: stats.pendingLoans }) : t('dashboard.all_healthy')}
-                    icon={PiggyBank}
-                    className="shrink-0 w-[280px] sm:w-auto"
-                />
+                        <div className="flex gap-4">
+                            <Link href="/contributions/new">
+                                <Button variant="banana" size="xl" className="h-16 px-8 rounded-2xl text-lg shadow-xl shadow-black/20 group">
+                                    <DollarSign className="w-6 h-6 mr-3 group-hover:rotate-12 transition-transform" />
+                                    {t('dashboard.make_contribution')}
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+                </GlassCard>
+            </motion.div>
 
-                <StatsCard
-                    index={4}
-                    label={t('dashboard.monthly_avg')}
-                    value={formatCurrency(stats.monthlyContribution)}
-                    description={t('dashboard.this_month')}
-                    icon={Calendar}
-                    variant="gradient"
-                    gradient="bg-gradient-to-br from-blue-600 to-indigo-700 shadow-blue-500/20"
-                    className="shrink-0 w-[280px] sm:w-auto"
-                />
-            </div>
+            {/* Insights Drawer / Toggle Section */}
+            <AnimatePresence>
+                {showInsights && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="overflow-hidden"
+                    >
+                        <GlassCard className="p-1 sm:p-2 mb-8 sm:mb-12" hover={false}>
+                            <div className="rounded-2xl overflow-hidden bg-card/10 backdrop-blur-3xl min-h-[400px]">
+                                {charts}
+                            </div>
+                        </GlassCard>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
-            {/* Main Content Split */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8 min-h-[500px]">
-                {/* Left Column: Charts */}
-                <motion.div variants={itemFadeIn} className="xl:col-span-2 space-y-6 sm:space-y-8">
-                    <GlassCard className="p-1 sm:p-2" hover={false}>
-                        <div className="rounded-2xl overflow-hidden bg-card/30">
-                            {charts}
+            {/* Main Content Split: Activity & Quick Actions Only (Zen) */}
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 min-h-[400px]">
+                {/* Left Area: Activity Feed (Widened) */}
+                <motion.div variants={itemFadeIn} className="xl:col-span-2 space-y-6">
+                    <GlassCard className="h-full flex flex-col p-0 overflow-hidden" hover={false}>
+                        <div className="p-5 sm:p-7 border-b border-border/50 flex items-center justify-between bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 bg-blue-500/10 rounded-xl">
+                                    <TrendingUp className="w-5 h-5 text-blue-500" />
+                                </div>
+                                <h2 className="text-xl sm:text-2xl font-black text-foreground">
+                                    {t('dashboard.recent_activity')}
+                                </h2>
+                            </div>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto max-h-[600px] scrollbar-thin">
+                            {recentActivity.length > 0 ? (
+                                <div className="divide-y divide-border/20">
+                                    {recentActivity.map((activity, i) => (
+                                        <motion.div
+                                            key={activity.id}
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            transition={{ delay: i * 0.03 }}
+                                            className="p-5 hover:bg-white/50 dark:hover:bg-slate-800/50 transition-colors flex items-center gap-5 group cursor-pointer"
+                                        >
+                                            <div className={cn(
+                                                "w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm transition-all group-hover:scale-105",
+                                                activity.type.includes('LOAN') ? 'bg-blue-600 text-white' :
+                                                    activity.type.includes('CONTRIBUTION') ? 'bg-emerald-600 text-white' :
+                                                        'bg-slate-600 text-white'
+                                            )}>
+                                                <span className="font-black text-lg">{activity.groupName.charAt(0)}</span>
+                                            </div>
+
+                                            <div className="flex-1 min-w-0 flex items-center justify-between">
+                                                <div>
+                                                    <p className="text-base font-black text-foreground truncate">{activity.description}</p>
+                                                    <p className="text-xs font-bold text-muted-foreground opacity-60 mt-0.5">{activity.groupName}</p>
+                                                </div>
+                                                <div className="text-right">
+                                                    {activity.amount && (
+                                                        <p className="text-sm font-black text-blue-600 dark:text-banana mb-1">
+                                                            {formatCurrency(activity.amount)}
+                                                        </p>
+                                                    )}
+                                                    <p className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-widest">{new Date(activity.createdAt).toLocaleDateString()}</p>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center py-32 opacity-40">
+                                    <Zap size={48} className="mb-4" />
+                                    <p className="text-sm font-black uppercase tracking-widest">{t('dashboard.no_activity_detected')}</p>
+                                </div>
+                            )}
                         </div>
                     </GlassCard>
-
-                    {/* Quick Access Mobile */}
-                    <div className="grid grid-cols-2 gap-3 xl:hidden">
-                        <Link href="/contributions/new" className="col-span-2">
-                            <Button variant="banana" size="xl" className="w-full text-lg shadow-blue-500/20">
-                                <DollarSign className="w-6 h-6 mr-2" />
-                                {t('dashboard.make_contribution')}
-                            </Button>
-                        </Link>
-                        <Link href="/loans/new">
-                            <Button variant="outline" className="w-full h-14 font-black border-2 rounded-2xl hover:bg-white/50 dark:hover:bg-slate-800/50 backdrop-blur-sm">
-                                {t('dashboard.apply_loan')}
-                            </Button>
-                        </Link>
-                        <Link href="/groups">
-                            <Button variant="outline" className="w-full h-14 font-black border-2 rounded-2xl hover:bg-white/50 dark:hover:bg-slate-800/50 backdrop-blur-sm">
-                                {t('dashboard.manage_groups')}
-                            </Button>
-                        </Link>
-                    </div>
                 </motion.div>
 
-                {/* Right Column: Activity & Quick Actions */}
-                <div className="space-y-6 sm:space-y-8 flex flex-col">
-                    {/* Desktop Quick Actions */}
-                    <motion.div variants={itemFadeIn} className="hidden xl:grid grid-cols-1 gap-4">
-                        <SectionHeader
-                            title={t('dashboard.quick_actions')}
-                            icon={Zap}
-                            iconColor="text-blue-500"
-                        />
-                        <Link href="/contributions/new">
-                            <GlassCard className="p-6 group cursor-pointer border-blue-500/20 hover:border-blue-500/40" gradient={false}>
-                                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-transparent group-hover:from-blue-600/10 transition-colors" />
-                                <div className="relative z-10 flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <div className="bg-blue-600 w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform">
-                                            <DollarSign className="w-7 h-7 text-white" />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-lg font-black leading-tight">{t('dashboard.make_contribution')}</h3>
-                                            <p className="text-muted-foreground text-xs font-bold mt-1">{t('dashboard.instant_record')}</p>
-                                        </div>
+                {/* Right Area: Insights & Secondary Actions */}
+                <div className="space-y-6">
+                    {/* Insights Toggle Card */}
+                    <motion.div variants={itemFadeIn}>
+                        <GlassCard
+                            className="p-6 cursor-pointer border-blue-500/20 hover:border-blue-500/40 group transition-all"
+                            onClick={() => setShowInsights(!showInsights)}
+                        >
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-2xl text-blue-600">
+                                        <TrendingUp className="w-6 h-6" />
                                     </div>
-                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                    <div>
+                                        <h3 className="font-black">{showInsights ? t('dashboard.hide_insights') : t('dashboard.show_insights')}</h3>
+                                        <p className="text-[10px] font-bold text-muted-foreground uppercase mt-1">{t('dashboard.growth_analytics')}</p>
+                                    </div>
+                                </div>
+                                <ArrowRight className={cn("w-5 h-5 transition-transform", showInsights ? "rotate-90" : "")} />
+                            </div>
+                        </GlassCard>
+                    </motion.div>
+
+                    {/* Secondary Actions */}
+                    <motion.div variants={itemFadeIn} className="grid grid-cols-1 gap-4">
+                        <Link href="/loans/new">
+                            <GlassCard className="p-6 group cursor-pointer hover:bg-white/40">
+                                <div className="flex items-center gap-4">
+                                    <div className="bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl group-hover:scale-110 transition-transform">
+                                        <PiggyBank className="w-5 h-5 text-indigo-600" />
+                                    </div>
+                                    <h3 className="font-black text-sm">{t('dashboard.apply_loan')}</h3>
                                 </div>
                             </GlassCard>
                         </Link>
-
-                        <div className="grid grid-cols-2 gap-3">
-                            <Link href="/loans/new">
-                                <GlassCard className="p-4" blur="sm">
-                                    <div className="p-2 bg-pink-500/10 rounded-xl w-fit mb-3">
-                                        <Wallet className="w-5 h-5 text-pink-500" />
+                        <Link href="/groups">
+                            <GlassCard className="p-6 group cursor-pointer hover:bg-white/40">
+                                <div className="flex items-center gap-4">
+                                    <div className="bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl group-hover:scale-110 transition-transform">
+                                        <Users className="w-5 h-5 text-emerald-600" />
                                     </div>
-                                    <h3 className="font-black text-sm leading-tight">{t('dashboard.apply_loan')}</h3>
-                                </GlassCard>
-                            </Link>
-
-                            <Link href="/groups">
-                                <GlassCard className="p-4" blur="sm">
-                                    <div className="p-2 bg-purple-500/10 rounded-xl w-fit mb-3">
-                                        <Users className="w-5 h-5 text-purple-600" />
-                                    </div>
-                                    <h3 className="font-black text-sm leading-tight">{t('dashboard.manage_groups')}</h3>
-                                </GlassCard>
-                            </Link>
-                        </div>
-                    </motion.div>
-
-                    {/* Recent Activity Feed */}
-                    <motion.div variants={itemFadeIn} className="flex-1 min-h-0">
-                        <GlassCard className="h-full flex flex-col p-0 overflow-hidden" hover={false}>
-                            <div className="p-5 border-b border-border/50 flex items-center justify-between bg-white/30 dark:bg-slate-900/30 backdrop-blur-xl">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-blue-500/10 rounded-lg">
-                                        <TrendingUp className="w-5 h-5 text-blue-500" />
-                                    </div>
-                                    <h2 className="text-lg sm:text-xl font-black text-foreground">
-                                        {t('dashboard.recent_activity')}
-                                    </h2>
+                                    <h3 className="font-black text-sm">{t('dashboard.manage_groups')}</h3>
                                 </div>
-                                <Link href="/groups">
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-blue-500/10 hover:text-blue-500">
-                                        <ArrowUpRight className="w-4 h-4" />
-                                    </Button>
-                                </Link>
-                            </div>
-
-                            <div className="flex-1 overflow-y-auto max-h-[500px] xl:max-h-none scrollbar-thin scrollbar-thumb-muted-foreground/10">
-                                {recentActivity.length > 0 ? (
-                                    <div className="divide-y divide-border/30">
-                                        {recentActivity.map((activity, i) => (
-                                            <motion.div
-                                                key={activity.id}
-                                                initial={{ opacity: 0, x: -10 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                transition={{ delay: i * 0.05 }}
-                                                className="p-4 hover:bg-white/40 dark:hover:bg-slate-800/40 transition-colors flex items-center gap-4 group cursor-pointer"
-                                            >
-                                                <div className={cn(
-                                                    "w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-110",
-                                                    activity.type.includes('LOAN') ? 'bg-blue-500 text-white' :
-                                                        activity.type.includes('CONTRIBUTION') ? 'bg-emerald-500 text-white' :
-                                                            'bg-slate-500 text-white'
-                                                )}>
-                                                    <span className="font-black text-lg">{activity.groupName.charAt(0)}</span>
-                                                </div>
-
-                                                <div className="flex-1 min-w-0 grid gap-1">
-                                                    <div className="flex items-center justify-between">
-                                                        <p className="text-sm font-black text-foreground truncate">{activity.description}</p>
-                                                        {activity.amount && (
-                                                            <span className="text-[10px] font-black text-blue-600 dark:text-banana bg-blue-500/10 dark:bg-banana/10 px-2.5 py-1 rounded-full whitespace-nowrap">
-                                                                {formatCurrency(activity.amount)}
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                    <div className="flex items-center justify-between text-[11px] text-muted-foreground font-bold">
-                                                        <span className="truncate pr-2 opacity-70">{activity.groupName}</span>
-                                                        <span className="opacity-60">{new Date(activity.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
-                                                    </div>
-                                                </div>
-                                            </motion.div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className="flex flex-col items-center justify-center py-20 text-center px-4">
-                                        <div className="w-16 h-16 bg-muted/30 rounded-full flex items-center justify-center mb-4 backdrop-blur-md">
-                                            <Calendar className="w-8 h-8 text-muted-foreground/30" />
-                                        </div>
-                                        <p className="text-sm font-black text-muted-foreground">{t('dashboard.no_activity_detected')}</p>
-                                    </div>
-                                )}
-                            </div>
-                        </GlassCard>
+                            </GlassCard>
+                        </Link>
                     </motion.div>
                 </div>
             </div>

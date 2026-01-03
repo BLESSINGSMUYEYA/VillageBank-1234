@@ -17,7 +17,10 @@
         "delete": "Chotsani",
         "profile": "Mbiri Zanu",
         "logout": "Tulukani",
-        "no_description": "Palibe mafotokozedwe"
+        "no_description": "Palibe mafotokozedwe",
+        "premium_member": "Membala Okhazikika",
+        "zen_edition": "Zen Edition",
+        "sign_in": "Lowani"
     },
     "admin": {
         "regional": "Oyang'anira Chigawo",
@@ -55,7 +58,11 @@
         "this_month": "Chopereka cha mwezi uno",
         "pending_approvals": "Zodikira Kuvomerezedwa",
         "pending_desc": "Pali zopereka {count} zomwe zikudikira kuwonedwa.",
-        "review_now": "Onani Tsopano"
+        "review_now": "Onani Tsopano",
+        "status_healthy": "M'mene Zilili: Bwino",
+        "hide_insights": "Bisani Analytics",
+        "show_insights": "Onani Analytics a Zachuma",
+        "growth_analytics": "Kukula ndi Kusanthula"
     },
     "groups": {
         "my_groups": "Magulu Anga",
@@ -106,6 +113,32 @@
         "admin_only_desc": "Oyang'anira okha ndi omwe amaloledwa kusintha dongosolo la gululi.",
         "return_to_group": "Bwererani ku Gulu",
         "config_updated": "Masinthidwe asungidwa bwino."
+    },
+    "vault": {
+        "title": "Vault",
+        "net_savings": "Zopereka Zonse",
+        "active_liability": "Ngongole Zomwe Zilipo",
+        "pending_review": "Zodikira Kuwonedwa",
+        "credit_strength": "Mlingo wa Ngongole",
+        "verified": "Zotsimikizidwa",
+        "building": "Zikumangidwa",
+        "optimal": "Bwino Kwambiri",
+        "credit_ledger": "Mbiri ya Ngongole",
+        "unified_history": "Mbiri Yonse",
+        "credit_hub": "Malo a Ngongole",
+        "savings_ledger": "Mbiri ya Zosungitsa",
+        "protocol_requirement_pending": "Zodikira Kutsatira Ndondomeko",
+        "credit_line_active": "Mwayi wa Ngongole Ulipo",
+        "deploy_capital": "Tenga Ngongole",
+        "staking_protocol": "Ndondomeko ya Zosungitsa",
+        "unified_community_hub": "Malo anu amodzi owonetsera chuma.",
+        "zen_edition_lifecycle": "Zen Edition Lifecycle.",
+        "stakes": "{count} zotsimikizidwa",
+        "agreements": "{count} zomwe zilipo",
+        "ledger_sync": "Kodikira kuphatikiza mbiri",
+        "portfolio_health": "M'mene chuma chanu chilili",
+        "no_records": "Palibe mbiri yomwe yapezeka",
+        "no_active_credit": "Palibe ngongole zomwe zilipo"
     },
     "contributions": {
         "title": "Zopereka",

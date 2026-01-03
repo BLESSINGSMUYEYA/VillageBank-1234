@@ -30,29 +30,32 @@ export default function AuthenticatedLayout({
                 {/* Mobile Navigation */}
                 <MobileNavigation />
 
-                {/* Desktop Header */}
+                {/* Desktop Header (now Sidebar) */}
                 <DesktopNavigation />
 
-                {/* Main Content with Transition */}
-                <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:pt-8 pb-24 lg:pb-8 relative z-10 w-full">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={pathname}
-                            initial={{ opacity: 0, y: 10, scale: 0.99 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: -10, scale: 1.01 }}
-                            transition={{
-                                duration: 0.3,
-                                ease: [0.22, 1, 0.36, 1]
-                            }}
-                        >
-                            {children}
-                        </motion.div>
-                    </AnimatePresence>
-                </main>
+                {/* Content Area with Sidebar Offset */}
+                <div className="flex-1 lg:pl-64 transition-all duration-300 flex flex-col">
+                    {/* Main Content with Transition */}
+                    <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:pt-10 pb-24 lg:pb-12 relative z-10 w-full flex-1">
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={pathname}
+                                initial={{ opacity: 0, y: 10, scale: 0.99 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: -10, scale: 1.01 }}
+                                transition={{
+                                    duration: 0.3,
+                                    ease: [0.22, 1, 0.36, 1]
+                                }}
+                            >
+                                {children}
+                            </motion.div>
+                        </AnimatePresence>
+                    </main>
 
-                {/* Footer */}
-                <Footer />
+                    {/* Footer */}
+                    <Footer />
+                </div>
             </div>
         </div>
     )
