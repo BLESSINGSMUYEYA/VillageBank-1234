@@ -1,9 +1,17 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY
+    ? new Resend(process.env.RESEND_API_KEY)
+    : null;
 
 export async function sendPasswordResetEmail(email: string, token: string) {
     const resetLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
+
+
+    if (!resend) {
+        console.warn("RESEND_API_KEY is missing. Email sending skipped.");
+        return { success: false, error: "Missing RESEND_API_KEY" };
+    }
 
     try {
         await resend.emails.send({
