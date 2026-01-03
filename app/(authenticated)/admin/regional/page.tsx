@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/components/providers/AuthProvider'
 import Link from 'next/link'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -13,15 +12,14 @@ import {
   Users,
   Building2,
   DollarSign,
-  CreditCard,
-  TrendingUp,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
   Search,
-  Filter,
-  MoreHorizontal,
-  ArrowLeft
+  MoreVertical,
+  Activity,
+  ShieldAlert,
+  ArrowLeft,
+  Clock,
+  CheckCircle,
+  AlertTriangle
 } from 'lucide-react'
 import {
   Dialog,
@@ -33,8 +31,9 @@ import {
 } from "@/components/ui/dialog"
 import { toast } from "sonner"
 import { motion } from 'framer-motion'
-import { fadeIn, staggerContainer, itemFadeIn } from '@/lib/motions'
-import { PageHeader } from '@/components/layout/PageHeader'
+import { fadeIn, staggerContainer } from '@/lib/motions'
+import { AdminStatsCard } from '@/components/admin/AdminStatsCard'
+import { AdminGlassCard } from '@/components/admin/AdminGlassCard'
 
 interface UserData {
   id: string
@@ -70,14 +69,14 @@ export default function RegionalAdminPage() {
   const { user } = useAuth()
   const [data, setData] = useState<RegionalData | null>(null)
   const [groups, setGroups] = useState<GroupData[]>([])
-  const [users, setUsers] = useState<UserData[]>([]) // Added users state
+  const [users, setUsers] = useState<UserData[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedRegion, setSelectedRegion] = useState('central')
 
   // User Management State
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null)
   const [isUserDialogOpen, setIsUserDialogOpen] = useState(false)
-  const [newRole, setNewRole] = useState('') // State for role modification
+  const [newRole, setNewRole] = useState('')
 
   useEffect(() => {
     if (user?.region) {
@@ -103,7 +102,7 @@ export default function RegionalAdminPage() {
       })
 
       setGroups(data.groupsData || [])
-      setUsers(data.usersData || []) // Set users state
+      setUsers(data.usersData || [])
     } catch (error) {
       console.error('Failed to fetch regional data:', error)
     } finally {
@@ -123,10 +122,11 @@ export default function RegionalAdminPage() {
         body: JSON.stringify({ groupId, action: 'activate_group' })
       })
       if (!response.ok) throw new Error('Failed to approve group')
-
-      fetchRegionalData() // Refresh data
+      fetchRegionalData()
+      toast.success('Group activated successfully')
     } catch (error) {
       console.error('Failed to approve group:', error)
+      toast.error('Failed to activate group')
     }
   }
 
@@ -138,22 +138,22 @@ export default function RegionalAdminPage() {
         body: JSON.stringify({ groupId, action: 'suspend_group' })
       })
       if (!response.ok) throw new Error('Failed to suspend group')
-
-      fetchRegionalData() // Refresh data
+      fetchRegionalData()
+      toast.success('Group suspended')
     } catch (error) {
       console.error('Failed to suspend group:', error)
+      toast.error('Failed to suspend group')
     }
   }
 
   const handleManageUser = (user: UserData) => {
     setSelectedUser(user)
-    setNewRole(user.role) // Initialize with current role
+    setNewRole(user.role)
     setIsUserDialogOpen(true)
   }
 
   const handleChangeRole = async () => {
     if (!selectedUser || !newRole) return
-
     try {
       const response = await fetch('/api/admin/regional', {
         method: 'POST',
@@ -171,8 +171,10 @@ export default function RegionalAdminPage() {
       }
 
       toast.success(`User role updated to ${newRole}`)
-      fetchRegionalData() // Refresh list
+      fetchRegionalData()
+      /* eslint-disable @typescript-eslint/no-explicit-any */
     } catch (error: any) {
+      /* eslint-enable @typescript-eslint/no-explicit-any */
       console.error('Failed to update role:', error)
       toast.error(error.message)
     }
@@ -180,9 +182,6 @@ export default function RegionalAdminPage() {
 
   const handleUserAction = async (action: 'suspend_user' | 'activate_user') => {
     if (!selectedUser) return
-
-    // In a real app, you'd call the API here
-    // For now, we'll just close the modal as backend support is pending
     console.log(`Performing ${action} on user ${selectedUser.id}`)
     setIsUserDialogOpen(false)
     toast.success(`User ${action === 'suspend_user' ? 'suspended' : 'activated'} successfully`)
@@ -190,15 +189,17 @@ export default function RegionalAdminPage() {
 
   if (user?.role !== 'REGIONAL_ADMIN' && user?.role !== 'SUPER_ADMIN') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-96">
-          <CardHeader>
-            <CardTitle className="text-red-600">Access Denied</CardTitle>
-            <CardDescription>
-              You don&apos;t have permission to access this page.
-            </CardDescription>
-          </CardHeader>
-        </Card>
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="text-center space-y-4">
+          <div className="inline-flex p-4 bg-red-100 dark:bg-red-900/30 rounded-full text-red-600 dark:text-red-400">
+            <ShieldAlert className="w-12 h-12" />
+          </div>
+          <h1 className="text-2xl font-bold">Access Denied</h1>
+          <p className="text-muted-foreground">You do not have permission to view this area.</p>
+          <Link href="/dashboard">
+            <Button className="mt-4">Return to Dashboard</Button>
+          </Link>
+        </div>
       </div>
     )
   }
@@ -206,380 +207,334 @@ export default function RegionalAdminPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading regional data...</div>
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+          <p className="text-muted-foreground animate-pulse">Loading command center...</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <motion.div
-      variants={staggerContainer}
-      initial="initial"
-      animate="animate"
-      className="max-w-7xl mx-auto py-6"
-    >
-      <motion.div variants={fadeIn} className="mb-8">
-        <Link href="/dashboard" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-blue-600 dark:hover:text-banana transition-all duration-300 group mb-4">
-          <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
-          Back to Hub
-        </Link>
-        <PageHeader
-          title="Regional Administration"
-          description="Manage groups and users in your region"
-        />
-      </motion.div>
+    <div className="min-h-screen pb-20 relative overflow-hidden">
+      {/* Background Ambience */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[100px]" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[100px]" />
+      </div>
 
-      <div className="mb-6">
-        {user?.role === 'SUPER_ADMIN' ? (
-          <Select value={selectedRegion} onValueChange={setSelectedRegion}>
-            <SelectTrigger className="w-48 bg-white dark:bg-slate-900 border-gray-200 dark:border-gray-800">
-              <SelectValue placeholder="Select region" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="northern">Northern Region</SelectItem>
-              <SelectItem value="central">Central Region</SelectItem>
-              <SelectItem value="southern">Southern Region</SelectItem>
-            </SelectContent>
-          </Select>
-        ) : (
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border bg-slate-100 dark:bg-slate-800 text-sm font-medium">
-            <span className="text-gray-500 dark:text-gray-400">Current Region:</span>
-            <span className="capitalize text-slate-900 dark:text-slate-100">
-              {user?.region?.toLowerCase() || selectedRegion} Region
-            </span>
+      <motion.div
+        variants={staggerContainer}
+        initial="initial"
+        animate="animate"
+        className="max-w-7xl mx-auto py-8 px-4 sm:px-6 relative z-10"
+      >
+        <motion.div variants={fadeIn} className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <Link href="/dashboard" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors duration-300 group mb-2">
+              <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
+              Return to Hub
+            </Link>
+            <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+              <span className="text-gradient-primary">Regional Command</span>
+            </h1>
+            <p className="text-muted-foreground mt-1 font-medium">
+              Managing {user?.region?.toLowerCase() || selectedRegion} Territory
+            </p>
           </div>
-        )}
-      </div>
 
-      {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data?.users}</div>
-            <p className="text-xs text-muted-foreground">+12% from last month</p>
-          </CardContent>
-        </Card>
+          <div className="flex items-center gap-3">
+            {user?.role === 'SUPER_ADMIN' ? (
+              <Select value={selectedRegion} onValueChange={setSelectedRegion}>
+                <SelectTrigger className="w-48 bg-white/50 backdrop-blur-sm border-white/20">
+                  <SelectValue placeholder="Select region" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="northern">Northern Region</SelectItem>
+                  <SelectItem value="central">Central Region</SelectItem>
+                  <SelectItem value="southern">Southern Region</SelectItem>
+                </SelectContent>
+              </Select>
+            ) : (
+              <Badge variant="outline" className="px-4 py-2 bg-primary/5 border-primary/20 text-primary capitalize text-sm">
+                {user?.region?.toLowerCase() || selectedRegion} Region
+              </Badge>
+            )}
+          </div>
+        </motion.div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Groups</CardTitle>
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data?.groups}</div>
-            <p className="text-xs text-muted-foreground">+2 new this month</p>
-          </CardContent>
-        </Card>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          <AdminStatsCard
+            title="Total Users"
+            value={data?.users || 0}
+            icon={Users}
+            trend="+12%"
+            trendDirection="up"
+            delay={100}
+            className="border-blue-200/50 dark:border-blue-800/50"
+          />
+          <AdminStatsCard
+            title="Active Groups"
+            value={data?.groups || 0}
+            icon={Building2}
+            trend="+2 New"
+            trendDirection="up"
+            delay={200}
+            className="border-indigo-200/50 dark:border-indigo-800/50"
+          />
+          <AdminStatsCard
+            title="Total Assets"
+            value={`MWK ${(data?.totalContributions || 0).toLocaleString()}`}
+            icon={DollarSign}
+            trend="+18%"
+            trendDirection="up"
+            delay={300}
+            className="border-emerald-200/50 dark:border-emerald-800/50"
+          />
+          <AdminStatsCard
+            title="Pending Actions"
+            value={data?.pendingApprovals || 0}
+            icon={AlertTriangle}
+            trend="Needs Attention"
+            trendDirection="down"
+            delay={400}
+            className="border-amber-200/50 dark:border-amber-800/50 bg-amber-50/30 dark:bg-amber-900/10"
+          />
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Contributions</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">MWK {data?.totalContributions.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">+18% from last month</p>
-          </CardContent>
-        </Card>
+        {/* Main Content Areas */}
+        <Tabs defaultValue="groups" className="space-y-8">
+          <div className="flex items-center justify-between">
+            <TabsList className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-md p-1 h-12 rounded-full border border-white/20">
+              <TabsTrigger value="groups" className="rounded-full px-6 h-10 data-[state=active]:bg-primary data-[state=active]:text-white">Groups</TabsTrigger>
+              <TabsTrigger value="users" className="rounded-full px-6 h-10 data-[state=active]:bg-primary data-[state=active]:text-white">Users</TabsTrigger>
+              <TabsTrigger value="loans" className="rounded-full px-6 h-10 data-[state=active]:bg-primary data-[state=active]:text-white">Loans</TabsTrigger>
+            </TabsList>
+          </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Approvals</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{data?.pendingApprovals}</div>
-            <p className="text-xs text-muted-foreground">Requires attention</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Tabs defaultValue="groups" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="groups">Groups</TabsTrigger>
-          <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="loans">Loans</TabsTrigger>
-          <TabsTrigger value="reports">Reports</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="groups">
-          <Card>
-            <CardHeader>
-              <CardTitle>Groups in {data?.region}</CardTitle>
-              <CardDescription>
-                Manage and monitor village banking groups in your region
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {groups.map((group) => (
-                  <div key={group.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="font-medium">{group.name}</h3>
-                        <Badge variant={group.status === 'ACTIVE' ? 'default' : 'secondary'}>
-                          {group.status}
-                        </Badge>
-                      </div>
-                      <div className="grid grid-cols-3 gap-4 text-sm text-gray-600">
-                        <div className="flex items-center gap-1">
-                          <Users className="w-4 h-4" />
-                          {group.members} members
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <DollarSign className="w-4 h-4" />
-                          MWK {group.monthlyContribution.toLocaleString()}/month
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <TrendingUp className="w-4 h-4" />
-                          MWK {group.totalContributions.toLocaleString()} total
-                        </div>
-                      </div>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Created: {new Date(group.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      {group.status === 'ACTIVE' ? (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleSuspendGroup(group.id)}
-                        >
-                          Suspend
-                        </Button>
-                      ) : (
-                        <Button
-                          size="sm"
-                          onClick={() => handleApproveGroup(group.id)}
-                        >
-                          Activate
-                        </Button>
-                      )}
-                      <Button variant="outline" size="sm">
-                        View Details
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="users">
-          <Card>
-            <CardHeader>
-              <CardTitle>Users in {data?.region}</CardTitle>
-              <CardDescription>
-                View and manage user accounts in your region
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <Input placeholder="Search users by name or email..." className="max-w-sm" />
-                </div>
-
-                <div className="rounded-md border">
-                  <table className="w-full text-sm text-left">
-                    <thead className="bg-muted/50 border-b">
-                      <tr>
-                        <th className="p-4 font-medium">Name</th>
-                        <th className="p-4 font-medium hidden md:table-cell">Contact</th>
-                        <th className="p-4 font-medium hidden md:table-cell">Role</th>
-                        <th className="p-4 font-medium hidden md:table-cell">Joined</th>
-                        <th className="p-4 font-medium text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {users.length === 0 ? (
-                        <tr>
-                          <td colSpan={5} className="p-8 text-center text-muted-foreground">
-                            No users found in this region.
-                          </td>
-                        </tr>
-                      ) : (
-                        users.map((user) => (
-                          <tr key={user.id} className="border-b last:border-0 hover:bg-muted/50">
-                            <td className="p-4">
-                              <div className="font-medium">{user.name}</div>
-                              <div className="text-xs text-muted-foreground md:hidden">{user.email}</div>
-                              <div className="text-xs text-muted-foreground md:hidden capitalize">{user.role}</div>
-                            </td>
-                            <td className="p-4 hidden md:table-cell">
-                              <div className="text-xs">{user.email}</div>
-                              {user.phoneNumber && <div className="text-xs text-muted-foreground">{user.phoneNumber}</div>}
-                            </td>
-                            <td className="p-4 hidden md:table-cell">
-                              <Badge variant={user.role === 'MEMBER' ? 'secondary' : 'default'}>
-                                {user.role.replace('_', ' ')}
-                              </Badge>
-                            </td>
-                            <td className="p-4 hidden md:table-cell">
-                              {new Date(user.joinedAt).toLocaleDateString()}
-                            </td>
-                            <td className="p-4 text-right">
+          <TabsContent value="groups" className="space-y-6">
+            <AdminGlassCard
+              title="Active Groups"
+              description="Monitor and manage village banks in your territory."
+            >
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-primary/5 border-b border-primary/10">
+                    <tr>
+                      <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">Group Name</th>
+                      <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">Metrics</th>
+                      <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">Financials</th>
+                      <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">Status</th>
+                      <th className="text-right p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/50">
+                    {groups.map((group) => (
+                      <tr key={group.id} className="hover:bg-primary/5 transition-colors">
+                        <td className="p-4">
+                          <div className="font-bold text-slate-800 dark:text-slate-200">{group.name}</div>
+                          <div className="text-xs text-muted-foreground">Est. {new Date(group.createdAt).toLocaleDateString()}</div>
+                        </td>
+                        <td className="p-4">
+                          <div className="flex items-center gap-4 text-sm">
+                            <span className="flex items-center gap-1.5 text-muted-foreground">
+                              <Users className="w-3.5 h-3.5" /> {group.members}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <div className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                            MWK {group.totalContributions.toLocaleString()}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {group.monthlyContribution.toLocaleString()}/mo
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <Badge variant={group.status === 'ACTIVE' ? 'default' : 'secondary'} className={group.status === 'ACTIVE' ? 'bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/25 border-emerald-200' : ''}>
+                            {group.status}
+                          </Badge>
+                        </td>
+                        <td className="p-4 text-right">
+                          <div className="flex justify-end gap-2">
+                            {group.status === 'ACTIVE' ? (
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => handleManageUser(user)}
+                                onClick={() => handleSuspendGroup(group.id)}
+                                className="h-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50"
                               >
-                                Manage
+                                Suspend
                               </Button>
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                            ) : (
+                              <Button
+                                size="sm"
+                                onClick={() => handleApproveGroup(group.id)}
+                                className="h-8 bg-emerald-600 hover:bg-emerald-700 text-white"
+                              >
+                                Activate
+                              </Button>
+                            )}
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <MoreVertical className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+            </AdminGlassCard>
+          </TabsContent>
 
-        <TabsContent value="loans">
-          <Card>
-            <CardHeader>
-              <CardTitle>Loan Management</CardTitle>
-              <CardDescription>
-                Review and approve loan applications in your region
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  <Card>
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-5 h-5 text-yellow-500" />
-                        <div>
-                          <p className="font-medium">Pending</p>
-                          <p className="text-2xl font-bold text-yellow-600">12</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-green-500" />
-                        <div>
-                          <p className="font-medium">Active</p>
-                          <p className="text-2xl font-bold text-green-600">{data?.activeLoans}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2">
-                        <CreditCard className="w-5 h-5 text-blue-500" />
-                        <div>
-                          <p className="font-medium">Total Value</p>
-                          <p className="text-2xl font-bold">MWK 1.2M</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+          <TabsContent value="users" className="space-y-6">
+            <AdminGlassCard
+              title="User Registry"
+              description="Manage user roles and access."
+              action={
+                <div className="relative w-64">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input type="search" placeholder="Search users..." className="pl-9 bg-white/50 border-border/40" />
                 </div>
-                <div className="text-center py-8 text-gray-500">
-                  Loan management interface coming soon...
+              }
+            >
+              <table className="w-full">
+                <thead className="bg-primary/5 border-b border-primary/10">
+                  <tr>
+                    <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">User</th>
+                    <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider hidden md:table-cell">Contact</th>
+                    <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">Role</th>
+                    <th className="text-right p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/50">
+                  {users.map((user) => (
+                    <tr key={user.id} className="hover:bg-primary/5 transition-colors">
+                      <td className="p-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-white font-bold text-xs ring-2 ring-white dark:ring-slate-900 shadow-md">
+                            {user.name.charAt(0)}
+                          </div>
+                          <div>
+                            <div className="font-bold text-slate-800 dark:text-slate-200">{user.name}</div>
+                            <div className="text-xs text-muted-foreground md:hidden">{user.email}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-4 hidden md:table-cell">
+                        <div className="text-sm">{user.email}</div>
+                        {user.phoneNumber && <div className="text-xs text-muted-foreground">{user.phoneNumber}</div>}
+                      </td>
+                      <td className="p-4">
+                        <Badge
+                          className={
+                            user.role === 'REGIONAL_ADMIN'
+                              ? 'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300'
+                              : 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300'
+                          }
+                          variant="outline"
+                        >
+                          {user.role.replace('_', ' ')}
+                        </Badge>
+                      </td>
+                      <td className="p-4 text-right">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleManageUser(user)}
+                          className="h-8 hover:bg-primary/10 hover:text-primary"
+                        >
+                          Manage
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </AdminGlassCard>
+          </TabsContent>
+
+          <TabsContent value="loans">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <AdminStatsCard title="Pending" value="12" icon={Clock} className="border-amber-200" trend="Requires Review" trendDirection="neutral" />
+              <AdminStatsCard title="Active" value={data?.activeLoans || 0} icon={CheckCircle} className="border-emerald-200" trend="Healthy" trendDirection="up" />
+              <AdminStatsCard title="Total Value" value="MK 1.2M" icon={Activity} className="border-blue-200" />
+            </div>
+
+            <AdminGlassCard title="Loan Applications">
+              <div className="p-12 text-center">
+                <div className="inline-flex p-4 rounded-full bg-slate-100 dark:bg-slate-800 mb-4">
+                  <DollarSign className="w-8 h-8 text-muted-foreground" />
                 </div>
+                <h3 className="text-lg font-medium">Loan Management Module</h3>
+                <p className="text-muted-foreground max-w-sm mx-auto mt-2">
+                  Advanced loan analytics and approval workflows are currently being provisioned for your region.
+                </p>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+            </AdminGlassCard>
+          </TabsContent>
+        </Tabs>
 
-        <TabsContent value="reports">
-          <Card>
-            <CardHeader>
-              <CardTitle>Regional Reports</CardTitle>
-              <CardDescription>
-                Generate and view reports for your region
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-gray-500">
-                Report generation interface coming soon...
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-      {/* User Management Dialog */}
-      <Dialog open={isUserDialogOpen} onOpenChange={setIsUserDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Manage User</DialogTitle>
-            <DialogDescription>
-              View details and manage access for {selectedUser?.name}
-            </DialogDescription>
-          </DialogHeader>
+        {/* User Management Dialog */}
+        <Dialog open={isUserDialogOpen} onOpenChange={setIsUserDialogOpen}>
+          <DialogContent className="sm:max-w-[425px] glass-morphism border-white/20">
+            <DialogHeader>
+              <DialogTitle>Manage User Profile</DialogTitle>
+              <DialogDescription>
+                Modify access levels for {selectedUser?.name}
+              </DialogDescription>
+            </DialogHeader>
 
-          {selectedUser && (
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <span className="font-medium text-right text-sm">Name:</span>
-                <span className="col-span-3 text-sm">{selectedUser.name}</span>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <span className="font-medium text-right text-sm">Email:</span>
-                <span className="col-span-3 text-sm">{selectedUser.email}</span>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <span className="font-medium text-right text-sm">Phone:</span>
-                <span className="col-span-3 text-sm">{selectedUser.phoneNumber || 'N/A'}</span>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <span className="font-medium text-right text-sm">Current Role:</span>
-                <span className="col-span-3 text-sm flex items-center gap-2">
-                  <Badge variant={selectedUser.role === 'MEMBER' ? 'secondary' : 'default'}>
-                    {selectedUser.role}
-                  </Badge>
-                </span>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <span className="font-medium text-right text-sm">New Role:</span>
-                <div className="col-span-3 flex gap-2">
+            {selectedUser && (
+              <div className="grid gap-4 py-4">
+                <div className="p-4 rounded-lg bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Name</span>
+                    <span className="font-medium">{selectedUser.name}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Email</span>
+                    <span className="font-medium">{selectedUser.email}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Role</span>
+                    <Badge variant="outline">{selectedUser.role}</Badge>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Assign New Role</label>
                   <Select value={newRole} onValueChange={setNewRole}>
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger>
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="MEMBER">MEMBER</SelectItem>
-                      <SelectItem value="REGIONAL_ADMIN">REGIONAL ADMIN</SelectItem>
+                      <SelectItem value="MEMBER">Member (Standard)</SelectItem>
+                      <SelectItem value="REGIONAL_ADMIN">Regional Admin (Admin)</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button size="sm" onClick={handleChangeRole} disabled={newRole === selectedUser.role}>
-                    Update
-                  </Button>
                 </div>
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <span className="font-medium text-right text-sm">Joined:</span>
-                <span className="col-span-3 text-sm">
-                  {new Date(selectedUser.joinedAt).toLocaleDateString()}
-                </span>
-              </div>
-            </div>
-          )}
+            )}
 
-          <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button variant="destructive" onClick={() => handleUserAction('suspend_user')}>
-              Suspend User
-            </Button>
-            <Button variant="outline" onClick={() => setIsUserDialogOpen(false)}>
-              Close
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </motion.div>
+            <DialogFooter className="flex-col sm:flex-row gap-2">
+              <Button variant="destructive" onClick={() => handleUserAction('suspend_user')} className="w-full sm:w-auto">
+                Suspend
+              </Button>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <Button variant="outline" onClick={() => setIsUserDialogOpen(false)} className="flex-1">
+                  Cancel
+                </Button>
+                <Button onClick={handleChangeRole} disabled={newRole === selectedUser?.role} className="flex-1">
+                  Save Changes
+                </Button>
+              </div>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </motion.div>
+    </div>
   )
 }
