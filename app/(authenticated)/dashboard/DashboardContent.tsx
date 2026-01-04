@@ -129,7 +129,7 @@ export function DashboardContent({
                     <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-8">
                         <div className="space-y-4">
                             <p className="text-white/60 font-black uppercase tracking-[0.2em] text-xs sm:text-sm">
-                                {t('profile.total_contributions') || 'Total Savings'}
+                                {t('dashboard.total_contributions') || 'Total Savings'}
                             </p>
                             <h2 className="text-4xl sm:text-6xl font-black text-white tracking-tight">
                                 {formatCurrency(stats.totalContributions)}

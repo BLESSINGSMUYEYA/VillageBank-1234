@@ -22,7 +22,17 @@ interface Notification {
   actionText?: string
 }
 
-export function NotificationCenter() {
+
+interface NotificationCenterProps {
+  align?: 'left' | 'right'
+  side?: 'top' | 'bottom'
+}
+
+export function NotificationCenter({
+  align = 'right',
+  side = 'bottom'
+}: NotificationCenterProps) {
+
   const { user } = useAuth()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [isOpen, setIsOpen] = useState(false)
@@ -151,7 +161,13 @@ export function NotificationCenter() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ type: "spring", duration: 0.4, bounce: 0.3 }}
-            className="fixed inset-x-4 top-20 sm:absolute sm:inset-auto sm:right-0 sm:mt-4 w-auto sm:w-[500px] max-w-[95vw] z-50 shadow-[0_20px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+            className={cn(
+              "fixed inset-x-4 top-20 sm:fixed sm:inset-auto w-auto sm:w-[500px] max-w-[95vw] z-50 shadow-[0_20px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)]",
+              side === 'bottom' ? "sm:mt-4" : "sm:bottom-full sm:mb-4",
+              align === 'right' ? "sm:right-0" : "sm:left-0",
+              // Mobile specific overrides or keep fixed top
+              "sm:absolute"
+            )}
           >
             <GlassCard
               className="p-0 border-white/40 dark:border-white/20 bg-white/95 dark:bg-slate-900/98 backdrop-blur-3xl shadow-none overflow-hidden"

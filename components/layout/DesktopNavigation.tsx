@@ -94,7 +94,7 @@ export function DesktopNavigation() {
         <div className="pt-6 border-t border-border/50 space-y-6">
           <div className="flex items-center justify-between px-2">
             <LanguageSwitcher />
-            <NotificationCenter />
+            <NotificationCenter align="left" side="top" />
           </div>
           {user && (
             <div className="flex items-center gap-3 p-2 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-white/20 dark:border-white/10 overflow-hidden">
