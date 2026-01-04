@@ -13,7 +13,8 @@ import {
     Wallet,
     PiggyBank,
     ArrowRight,
-    Eye
+    Eye,
+    EyeOff
 } from 'lucide-react'
 import Link from 'next/link'
 import { formatCurrency } from '@/lib/utils'
@@ -25,6 +26,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { staggerContainer, fadeIn, itemFadeIn } from '@/lib/motions'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { cn } from '@/lib/utils'
+import { SecurityVerificationModal } from './SecurityVerificationModal'
 
 interface DashboardContentProps {
     user: any
@@ -44,6 +46,23 @@ export function DashboardContent({
     const langContext = useLanguage()
     const t = langContext.t
     const [showInsights, setShowInsights] = useState(false)
+
+    // Secure View State
+    // Secure View State
+    const [isContributionsVisible, setIsContributionsVisible] = useState(false)
+    const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false)
+
+    const handleToggleVisibility = () => {
+        if (isContributionsVisible) {
+            setIsContributionsVisible(false)
+        } else {
+            setIsVerificationModalOpen(true)
+        }
+    }
+
+    const handleVerificationSuccess = () => {
+        setIsContributionsVisible(true)
+    }
 
     return (
         <motion.div
@@ -131,9 +150,21 @@ export function DashboardContent({
                             <p className="text-white/60 font-black uppercase tracking-[0.2em] text-xs sm:text-sm">
                                 {t('dashboard.total_contributions') || 'Total Savings'}
                             </p>
-                            <h2 className="text-4xl sm:text-6xl font-black text-white tracking-tight">
-                                {formatCurrency(stats.totalContributions)}
-                            </h2>
+                            <div className="flex items-center gap-4">
+                                <h2 className="text-4xl sm:text-6xl font-black text-white tracking-tight">
+                                    {isContributionsVisible ? formatCurrency(stats.totalContributions) : '••••••'}
+                                </h2>
+                                <button
+                                    onClick={handleToggleVisibility}
+                                    className="text-white/60 hover:text-white transition-colors focus:outline-none pt-2"
+                                >
+                                    {isContributionsVisible ? (
+                                        <EyeOff className="w-6 h-6 sm:w-8 sm:h-8" />
+                                    ) : (
+                                        <Eye className="w-6 h-6 sm:w-8 sm:h-8" />
+                                    )}
+                                </button>
+                            </div>
                             <div className="flex flex-wrap gap-3 pt-2">
                                 <div className="px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -291,6 +322,13 @@ export function DashboardContent({
                     </motion.div>
                 </div>
             </div>
+            {/* Password Verification Dialog */}
+            {/* Password Verification Dialog */}
+            <SecurityVerificationModal
+                open={isVerificationModalOpen}
+                onOpenChange={setIsVerificationModalOpen}
+                onVerified={handleVerificationSuccess}
+            />
         </motion.div>
     )
 }
