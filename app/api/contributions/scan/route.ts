@@ -29,8 +29,9 @@ export async function POST(request: NextRequest) {
         const buffer = Buffer.from(bytes)
         const base64Image = buffer.toString('base64')
 
-        // Use Gemini 1.5 Flash for speed
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+        // Use Gemini 1.5 Flash (updated model name)
+        // Use Gemini 2.0 Flash (confirmed available)
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
 
         const prompt = `
       Analyze this image of a payment receipt (likely mobile money like Airtel Money, Mpamba/TNM, or a bank transfer).

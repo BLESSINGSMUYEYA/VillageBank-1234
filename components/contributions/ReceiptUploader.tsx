@@ -18,9 +18,10 @@ interface ReceiptUploaderProps {
     onScanComplete: (data: ScannedData) => void
     onScanStart?: () => void
     onError?: (error: string) => void
+    onFileSelect?: (file: File | null) => void
 }
 
-export default function ReceiptUploader({ onScanComplete, onScanStart, onError }: ReceiptUploaderProps) {
+export default function ReceiptUploader({ onScanComplete, onScanStart, onError, onFileSelect }: ReceiptUploaderProps) {
     const [file, setFile] = useState<File | null>(null)
     const [preview, setPreview] = useState<string | null>(null)
     const [isScanning, setIsScanning] = useState(false)
@@ -34,6 +35,7 @@ export default function ReceiptUploader({ onScanComplete, onScanStart, onError }
         }
 
         setFile(selectedFile)
+        onFileSelect?.(selectedFile)
         const objectUrl = URL.createObjectURL(selectedFile)
         setPreview(objectUrl)
 
@@ -65,6 +67,7 @@ export default function ReceiptUploader({ onScanComplete, onScanStart, onError }
             onError?.(err.message || 'Scanning failed')
             setFile(null)
             setPreview(null)
+            onFileSelect?.(null)
         } finally {
             setIsScanning(false)
         }
@@ -93,6 +96,7 @@ export default function ReceiptUploader({ onScanComplete, onScanStart, onError }
     const clearFile = () => {
         setFile(null)
         setPreview(null)
+        onFileSelect?.(null)
         if (inputRef.current) inputRef.current.value = ''
     }
 
@@ -156,9 +160,15 @@ export default function ReceiptUploader({ onScanComplete, onScanStart, onError }
                             />
 
                             {isScanning && (
-                                <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center text-white space-y-4">
-                                    <ScanLine className="w-10 h-10 animate-pulse text-blue-400" />
-                                    <p className="font-bold tracking-widest text-xs uppercase animate-pulse">Analyzing Artifact...</p>
+                                <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center text-white space-y-4 overflow-hidden">
+                                    <motion.div
+                                        initial={{ top: '-10%' }}
+                                        animate={{ top: '110%' }}
+                                        transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+                                        className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-blue-400 to-transparent shadow-[0_0_15px_rgba(96,165,250,0.8)] z-10"
+                                    />
+                                    <ScanLine className="w-12 h-12 animate-pulse text-blue-400" />
+                                    <p className="font-black tracking-[0.2em] text-[10px] uppercase animate-pulse text-blue-400">Magic Scan in Progress...</p>
                                 </div>
                             )}
 

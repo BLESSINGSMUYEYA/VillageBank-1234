@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import ReceiptUploader from './ReceiptUploader'
 import { Button } from '@/components/ui/button'
@@ -9,9 +9,10 @@ import { FormGroup } from '@/components/ui/form-group'
 import { PremiumInput } from '@/components/ui/premium-input'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { SectionHeader } from '@/components/ui/section-header'
+import { Badge } from '@/components/ui/badge'
 import { motion, AnimatePresence } from 'framer-motion'
-import { fadeIn, itemFadeIn } from '@/lib/motions'
-import { Loader2, DollarSign, Calculator, ArrowRight, Shield, TrendingUp, CheckCircle, AlertTriangle } from 'lucide-react'
+import { fadeIn, itemFadeIn, staggerContainer } from '@/lib/motions'
+import { Loader2, DollarSign, Calculator, ArrowRight, Shield, TrendingUp, CheckCircle, AlertTriangle, Sparkles, Receipt, ArrowLeft, Send } from 'lucide-react'
 import { cn, formatCurrency } from '@/lib/utils'
 import { toast } from 'sonner'
 
@@ -22,13 +23,6 @@ interface Group {
     monthlyContribution: number
     penaltyAmount: number
     contributionDueDay: number
-}
-
-interface UserContribution {
-    amount: number
-    month: number
-    year: number
-    status: string
 }
 
 export default function SmartContributionForm() {
@@ -43,8 +37,10 @@ export default function SmartContributionForm() {
     const [transactionRef, setTransactionRef] = useState<string>('')
     const [paymentMethod, setPaymentMethod] = useState<string>('')
 
+    // Receipt File State
+    const [receiptFile, setReceiptFile] = useState<File | null>(null)
+
     // Member State (Mocked or Fetched)
-    const [memberBalance, setMemberBalance] = useState<number>(0)
     const [unpaidPenalties, setUnpaidPenalties] = useState<number>(0)
 
     const [loading, setLoading] = useState(false)
@@ -57,10 +53,15 @@ export default function SmartContributionForm() {
                 const res = await fetch('/api/groups')
                 if (res.ok) {
                     const data = await res.json()
-                    // Filter groups where user is active
-                    setGroups(data.groups.filter((g: any) =>
+                    const activeGroups = data.groups.filter((g: any) =>
                         g.members.some((m: any) => m.status === 'ACTIVE')
-                    ))
+                    )
+                    setGroups(activeGroups)
+
+                    // UX Improvement: Auto-select if only 1 group
+                    if (activeGroups.length === 1) {
+                        setSelectedGroupId(activeGroups[0].id)
+                    }
                 }
             } catch (e) {
                 console.error("Failed to fetch groups", e)
@@ -69,40 +70,26 @@ export default function SmartContributionForm() {
         fetchGroups()
     }, [])
 
-    // When Group is selected, fetch member specifics (mock logic for now or fetched)
-    useEffect(() => {
-        if (selectedGroupId) {
-            const group = groups.find(g => g.id === selectedGroupId)
-            if (group) {
-                // In a real app, we'd fetch specific member debts here.
-                // For demonstration, let's assume random simulate or just 0 if clean.
-                // We'll stick to 0 for now unless we have an endpoint for user-group-status.
-                // If the user has access to `memberDetails` from previous context, use that.
-                // For now, we will simulate or just use the passed logic.
-            }
-        }
-    }, [selectedGroupId, groups])
-
     const handleScanComplete = (data: any) => {
+        setScanning(false)
         if (data.amount) setAmount(parseFloat(data.amount))
         if (data.transactionRef) setTransactionRef(data.transactionRef)
         if (data.paymentMethod) setPaymentMethod(data.paymentMethod)
         if (data.date) {
-            // Try to keep time if today, else just date at noon
             setPaymentDate(new Date(data.date).toISOString().slice(0, 16))
         }
 
-        // Auto-advance if we have amount
-        if (data.amount) {
-            toast.success('Receipt details extracted successfully!')
-        }
+        toast.success('Magic Scan Complete!')
+
+        // UX Improvement: Auto-advance to Step 2
+        setTimeout(() => setStep(2), 800)
     }
 
     const selectedGroup = groups.find(g => g.id === selectedGroupId)
 
     // Smart Calculation Logic
-    const calculateBreakdown = () => {
-        if (!selectedGroup) return null
+    const breakdown = useMemo(() => {
+        if (!selectedGroup || amount <= 0) return null
 
         let remaining = amount
         let appliedPenalty = 0
@@ -114,14 +101,10 @@ export default function SmartContributionForm() {
             remaining -= appliedPenalty
         }
 
-        // 2. Deduct Monthly Fee (Logic: Check if paid this month? 
-        // For simplicity in this form, assuming not paid or just showing potential allocation)
-        // We will assume the goal is to pay the fee.
+        // 2. Deduct Monthly Fee
         const monthlyFee = selectedGroup.monthlyContribution
         if (remaining > 0) {
-            // Simple logic: If remaining covers fee, allocate it. 
-            // Real logic handles partials, but let's show "To Monthly Fee".
-            appliedFee = remaining >= monthlyFee ? monthlyFee : remaining
+            appliedFee = Math.min(remaining, monthlyFee)
             remaining -= appliedFee
         }
 
@@ -131,21 +114,47 @@ export default function SmartContributionForm() {
             appliedPenalty,
             appliedFee,
             toBalance,
-            isPartial: appliedFee < monthlyFee && appliedPenalty === 0 // Basic check
+            isPartial: appliedFee < monthlyFee && appliedPenalty === 0
         }
+    }, [selectedGroup, amount, unpaidPenalties])
+
+    // Helper: Upload to Cloudinary
+    const uploadReceipt = async (file: File): Promise<string> => {
+        const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+        const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'ml_default'
+
+        if (!cloudName) throw new Error("Cloudinary configuration missing")
+
+        const formData = new FormData()
+        formData.append('file', file)
+        formData.append('upload_preset', uploadPreset)
+        formData.append('folder', 'receipts')
+
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+            method: 'POST',
+            body: formData
+        })
+
+        if (!res.ok) throw new Error('Image upload failed')
+        const data = await res.json()
+        return data.secure_url
     }
 
-    const breakdown = calculateBreakdown()
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
+    const handleSubmit = async () => {
         if (!selectedGroupId || amount <= 0) {
-            toast.error("Please select a group and ensure amount is valid.")
+            toast.error("Please ensure group and amount are valid.")
             return
         }
 
         setLoading(true)
         try {
+            let receiptUrl = ''
+            if (receiptFile) {
+                toast.loading("Uploading secure proof...")
+                receiptUrl = await uploadReceipt(receiptFile)
+                toast.dismiss()
+            }
+
             const res = await fetch('/api/contributions', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -155,160 +164,226 @@ export default function SmartContributionForm() {
                     paymentMethod: paymentMethod || 'OTHER',
                     transactionRef,
                     paymentDate: new Date(paymentDate).toISOString(),
-                    // receiptUrl passed if we saved it in uploader (todo: pass url back from uploader)
+                    receiptUrl: receiptUrl || undefined,
                 })
             })
 
             if (!res.ok) throw new Error("Submission failed")
 
-            const data = await res.json()
             toast.success("Contribution recorded successfully!")
-            router.push('/contributions')
-        } catch (error) {
-            toast.error("Failed to submit contribution.")
+            router.push('/dashboard')
+        } catch (error: any) {
+            toast.dismiss()
+            toast.error(error.message || "Failed to submit contribution.")
         } finally {
             setLoading(false)
         }
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8">
-            {/* Receipts Section */}
-            <motion.div variants={itemFadeIn}>
-                <SectionHeader title="Receipt Artifact" icon={Calculator} />
-                <div className="mt-4">
-                    <ReceiptUploader
-                        onScanComplete={handleScanComplete}
-                        onScanStart={() => setScanning(true)}
-                        onError={(msg) => toast.error(msg)}
-                    />
+        <div className="max-w-4xl mx-auto px-4">
+            {/* Step Indicator */}
+            <div className="flex items-center justify-center mb-12 gap-4">
+                <div className={cn(
+                    "w-10 h-10 rounded-full flex items-center justify-center font-black transition-all duration-500",
+                    step === 1 ? "bg-blue-600 text-white scale-110 shadow-lg shadow-blue-500/20" : "bg-emerald-500 text-white"
+                )}>
+                    {step > 1 ? <CheckCircle className="w-6 h-6" /> : "1"}
                 </div>
-            </motion.div>
+                <div className={cn("h-1 w-16 rounded-full transition-colors duration-500", step === 2 ? "bg-emerald-100 dark:bg-emerald-900/40" : "bg-muted")} />
+                <div className={cn(
+                    "w-10 h-10 rounded-full flex items-center justify-center font-black transition-all duration-500",
+                    step === 2 ? "bg-blue-600 text-white scale-110 shadow-lg shadow-blue-500/20" : "bg-muted text-muted-foreground"
+                )}>
+                    2
+                </div>
+            </div>
 
-            {/* Details Section */}
-            <motion.div variants={itemFadeIn} className="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-                {/* Left: Input Form */}
-                <div className="space-y-6">
-                    <GlassCard className="p-6">
-                        <div className="space-y-6">
-                            <FormGroup label="Target Group *">
-                                <Select value={selectedGroupId} onValueChange={setSelectedGroupId}>
-                                    <SelectTrigger className="h-12 bg-muted/20 border-white/10">
-                                        <SelectValue placeholder="Select Group" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {groups.map(g => (
-                                            <SelectItem key={g.id} value={g.id}>
-                                                {g.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </FormGroup>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <FormGroup label="Amount (MWK) *">
-                                    <PremiumInput
-                                        value={amount}
-                                        onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
-                                        type="number"
-                                        prefix="MWK"
-                                    />
-                                </FormGroup>
-                                <FormGroup label="Date">
-                                    <PremiumInput
-                                        value={paymentDate}
-                                        onChange={(e) => setPaymentDate(e.target.value)}
-                                        type="datetime-local"
-                                    />
-                                </FormGroup>
-                            </div>
-
-                            <FormGroup label="Transaction Ref">
-                                <PremiumInput
-                                    value={transactionRef}
-                                    onChange={(e) => setTransactionRef(e.target.value)}
-                                    placeholder="e.g. CI240..."
-                                />
-                            </FormGroup>
+            <AnimatePresence mode="wait">
+                {step === 1 ? (
+                    <motion.div
+                        key="step1"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        className="space-y-8"
+                    >
+                        <div className="text-center space-y-2">
+                            <h2 className="text-3xl font-black text-foreground">Magic Receipt Scan</h2>
+                            <p className="text-muted-foreground font-medium">Upload your proof of payment and let AI handle the heavy lifting.</p>
                         </div>
-                    </GlassCard>
-                </div>
 
-                {/* Right: Smart Breakdown */}
-                <div className="space-y-6">
-                    {selectedGroup ? (
-                        <GlassCard className="p-6 h-full flex flex-col justify-between border-blue-500/20 bg-blue-500/5">
-                            <div>
-                                <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground mb-6 flex items-center gap-2">
-                                    <Calculator className="w-4 h-4" /> Smart Allocation
-                                </h3>
+                        <GlassCard className="p-2 overflow-hidden border-white/20 shadow-2xl" hover={false}>
+                            <ReceiptUploader
+                                onScanComplete={handleScanComplete}
+                                onScanStart={() => setScanning(true)}
+                                onError={(msg) => toast.error(msg)}
+                                onFileSelect={setReceiptFile}
+                            />
+                        </GlassCard>
 
-                                <div className="space-y-4">
-                                    {/* Total Input */}
-                                    <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/10">
-                                        <span className="text-sm font-bold text-foreground">Total Input</span>
-                                        <span className="text-lg font-black text-blue-500">{formatCurrency(amount)}</span>
+                        <div className="flex justify-center">
+                            <Button
+                                variant="ghost"
+                                className="text-muted-foreground font-bold hover:text-foreground"
+                                onClick={() => setStep(2)}
+                            >
+                                Skip to manual entry <ArrowRight className="ml-2 w-4 h-4" />
+                            </Button>
+                        </div>
+                    </motion.div>
+                ) : (
+                    <motion.div
+                        key="step2"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        className="space-y-8"
+                    >
+                        <div className="text-center space-y-2">
+                            <h2 className="text-3xl font-black text-foreground uppercase tracking-tight">Review & Allocate</h2>
+                            <p className="text-muted-foreground font-medium">Verify your details and see how your funds are distributed.</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-[1fr,340px] gap-8">
+                            {/* Left: Refined Form */}
+                            <div className="space-y-6">
+                                <GlassCard className="p-6 border-white/10" hover={false}>
+                                    <div className="space-y-6">
+                                        <FormGroup label="Target Group *">
+                                            <Select value={selectedGroupId} onValueChange={setSelectedGroupId} disabled={scanning}>
+                                                <SelectTrigger className="h-12 bg-muted/20 border-white/10 rounded-xl">
+                                                    <SelectValue placeholder="Select Group" />
+                                                </SelectTrigger>
+                                                <SelectContent className="rounded-2xl">
+                                                    {groups.map(g => (
+                                                        <SelectItem key={g.id} value={g.id} className="font-bold">
+                                                            {g.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </FormGroup>
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <FormGroup label="Amount (MWK) *">
+                                                <PremiumInput
+                                                    value={amount}
+                                                    onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
+                                                    type="number"
+                                                    prefix="MWK"
+                                                    disabled={scanning}
+                                                />
+                                            </FormGroup>
+                                            <FormGroup label="Payment Date">
+                                                <PremiumInput
+                                                    value={paymentDate}
+                                                    onChange={(e) => setPaymentDate(e.target.value)}
+                                                    type="datetime-local"
+                                                    disabled={scanning}
+                                                />
+                                            </FormGroup>
+                                        </div>
+
+                                        <FormGroup label="Transaction Reference">
+                                            <PremiumInput
+                                                value={transactionRef}
+                                                onChange={(e) => setTransactionRef(e.target.value)}
+                                                placeholder="e.g. CI2409822..."
+                                                disabled={scanning}
+                                            />
+                                        </FormGroup>
                                     </div>
+                                </GlassCard>
 
-                                    {/* Waterfall Breakdown */}
-                                    <div className="space-y-2 pl-4 border-l-2 border-dashed border-white/10 ml-2">
-
-                                        {/* Penalty */}
-                                        <div className="flex justify-between items-center text-sm">
-                                            <span className="text-muted-foreground flex items-center gap-2">
-                                                <div className="w-2 h-2 rounded-full bg-red-500" />
-                                                Penalty Coverage
-                                            </span>
-                                            <span className="font-bold text-red-400">
-                                                - {formatCurrency(breakdown?.appliedPenalty || 0)}
-                                            </span>
-                                        </div>
-
-                                        {/* Fee */}
-                                        <div className="flex justify-between items-center text-sm">
-                                            <span className="text-muted-foreground flex items-center gap-2">
-                                                <div className="w-2 h-2 rounded-full bg-orange-500" />
-                                                Monthly Fee
-                                            </span>
-                                            <span className="font-bold text-orange-400">
-                                                - {formatCurrency(breakdown?.appliedFee || 0)}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    {/* Final Balance */}
-                                    <div className="pt-4 mt-4 border-t border-white/10">
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-sm font-black uppercase tracking-wider text-muted-foreground">Net to Balance</span>
-                                            <span className="text-xl font-black text-emerald-500">
-                                                + {formatCurrency(breakdown?.toBalance || 0)}
-                                            </span>
-                                        </div>
+                                <div className="flex justify-between items-center">
+                                    <Button variant="ghost" className="font-bold text-muted-foreground hover:text-foreground" onClick={() => setStep(1)}>
+                                        <ArrowLeft className="mr-2 w-4 h-4" /> Back to Scanner
+                                    </Button>
+                                    <div className="flex gap-2">
+                                        {receiptFile && <Badge variant="secondary" className="h-8 rounded-full border-blue-500/20 px-3 flex items-center gap-1.5 font-bold">
+                                            <Receipt className="w-3.5 h-3.5 text-blue-500" /> Receipt Attached
+                                        </Badge>}
                                     </div>
                                 </div>
                             </div>
 
-                            <Button
-                                size="xl"
-                                variant="banana"
-                                className="w-full mt-6 shadow-xl shadow-yellow-500/10"
-                                onClick={handleSubmit}
-                                disabled={loading || amount <= 0}
-                            >
-                                {loading ? <Loader2 className="animate-spin" /> : "Confirm & Submit"}
-                            </Button>
+                            {/* Right: Premium Breakdown Summary */}
+                            <div className="space-y-6">
+                                <GlassCard className="p-6 h-full flex flex-col justify-between border-blue-500/20 bg-blue-500/5 relative overflow-hidden" hover={false}>
+                                    <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                                        <Sparkles className="w-20 h-20 text-blue-500" />
+                                    </div>
 
-                        </GlassCard>
-                    ) : (
-                        <div className="h-full flex items-center justify-center p-6 border-2 border-dashed border-white/10 rounded-3xl text-muted-foreground text-sm font-bold opacity-50">
-                            Select a group to see financial breakdown
+                                    <div>
+                                        <h3 className="text-xs font-black uppercase tracking-widest text-blue-600/60 dark:text-blue-400/60 mb-6 flex items-center gap-2">
+                                            <Shield className="w-3 h-3" /> Intelligent Ledgering
+                                        </h3>
+
+                                        {breakdown ? (
+                                            <div className="space-y-6">
+                                                <div className="space-y-1">
+                                                    <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Total Proof</p>
+                                                    <p className="text-3xl font-black text-foreground">{formatCurrency(amount)}</p>
+                                                </div>
+
+                                                <div className="space-y-4 border-l-2 border-muted pl-4 py-1">
+                                                    <div className="flex justify-between items-center text-sm">
+                                                        <span className="text-muted-foreground font-bold flex items-center gap-2">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
+                                                            Penalties
+                                                        </span>
+                                                        <span className="font-black text-red-500">-{formatCurrency(breakdown.appliedPenalty)}</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center text-sm">
+                                                        <span className="text-muted-foreground font-bold flex items-center gap-2">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-orange-400 shadow-[0_0_8px_rgba(251,146,60,0.5)]" />
+                                                            Monthly Fee
+                                                        </span>
+                                                        <span className="font-black text-orange-400">-{formatCurrency(breakdown.appliedFee)}</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="pt-4 border-t border-muted">
+                                                    <div className="flex justify-between items-end">
+                                                        <div>
+                                                            <p className="text-[10px] font-black uppercase text-emerald-600 tracking-widest mb-1">Net Stake</p>
+                                                            <p className="text-2xl font-black text-emerald-500 leading-none">+{formatCurrency(breakdown.toBalance)}</p>
+                                                        </div>
+                                                        <div className="bg-emerald-500/10 p-2 rounded-lg">
+                                                            <TrendingUp className="w-5 h-5 text-emerald-500" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="text-center py-12 space-y-4">
+                                                <Calculator className="w-8 h-8 mx-auto text-muted-foreground opacity-20" />
+                                                <p className="text-xs font-bold text-muted-foreground leading-relaxed">Select a group to see how your funds will be intelligently allocated.</p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <Button
+                                        size="xl"
+                                        variant="banana"
+                                        className="w-full mt-8 shadow-xl shadow-yellow-500/20 font-black h-16 rounded-2xl group"
+                                        onClick={handleSubmit}
+                                        disabled={loading || amount <= 0 || !selectedGroupId}
+                                    >
+                                        {loading ? <Loader2 className="animate-spin" /> : (
+                                            <>
+                                                Secure Confirm
+                                                <Send className="ml-2 w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                            </>
+                                        )}
+                                    </Button>
+                                </GlassCard>
+                            </div>
                         </div>
-                    )}
-                </div>
-
-            </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }
