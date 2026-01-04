@@ -97,6 +97,18 @@ export function NotificationCenter({
     }
   }
 
+  const clearAll = async () => {
+    try {
+      await fetch('/api/notifications/clear-all', {
+        method: 'DELETE'
+      })
+
+      setNotifications([])
+    } catch (error) {
+      console.error('Failed to clear all notifications:', error)
+    }
+  }
+
   const deleteNotification = async (notificationId: string) => {
     try {
       await fetch(`/api/notifications/${notificationId}`, {
@@ -192,6 +204,17 @@ export function NotificationCenter({
                       Mark all read
                     </Button>
                   )}
+                  {notifications.length > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={clearAll}
+                      className="text-[10px] uppercase tracking-widest font-black h-8 px-3 hover:bg-red-500/10 hover:text-red-600"
+                    >
+                      <Trash2 className="w-3 h-3 mr-1.5" />
+                      Clear All
+                    </Button>
+                  )}
                   <Button
                     variant="ghost"
                     size="icon"
@@ -232,9 +255,24 @@ export function NotificationCenter({
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: idx * 0.05 }}
                         className={cn(
-                          "p-4 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-all relative group",
+                          "p-4 transition-all relative group",
+                          notification.actionUrl && "cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/80",
+                          !notification.actionUrl && "hover:bg-slate-50/50 dark:hover:bg-slate-800/50",
                           !notification.read && "bg-blue-50/50 dark:bg-banana/10"
                         )}
+                        onClick={(e) => {
+                          if (notification.actionUrl) {
+                            // Only navigate if not clicking on action buttons
+                            const target = e.target as HTMLElement
+                            if (!target.closest('button')) {
+                              if (!notification.read) {
+                                markAsRead(notification.id)
+                              }
+                              window.location.href = notification.actionUrl
+                              setIsOpen(false)
+                            }
+                          }
+                        }}
                       >
                         {!notification.read && (
                           <div className="absolute left-1 top-4 bottom-4 w-1 bg-blue-600 dark:bg-banana rounded-full shadow-[0_0_10px_rgba(37,99,235,0.5)]" />
@@ -259,7 +297,7 @@ export function NotificationCenter({
                                   {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                                 </p>
                               </div>
-                              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
                                 {!notification.read && (
                                   <Button
                                     variant="ghost"
@@ -284,20 +322,9 @@ export function NotificationCenter({
                             </div>
 
                             {notification.actionUrl && (
-                              <div className="mt-3">
-                                <Link
-                                  href={notification.actionUrl}
-                                  onClick={() => setIsOpen(false)}
-                                >
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="text-[10px] h-8 px-4 font-black uppercase tracking-widest border-2 rounded-xl group/btn"
-                                  >
-                                    {notification.actionText || 'View Details'}
-                                    <ExternalLink className="w-3 h-3 ml-2 group-hover/btn:translate-x-0.5 transition-transform" />
-                                  </Button>
-                                </Link>
+                              <div className="mt-3 flex items-center gap-2 text-[10px] font-bold text-blue-600 dark:text-blue-400">
+                                <ExternalLink className="w-3 h-3" />
+                                <span className="uppercase tracking-widest">{notification.actionText || 'Click to view'}</span>
                               </div>
                             )}
                           </div>
