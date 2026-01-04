@@ -81,8 +81,8 @@ export default function SmartContributionForm() {
 
         toast.success('Magic Scan Complete!')
 
-        // UX Improvement: Auto-advance to Step 2
-        setTimeout(() => setStep(2), 800)
+        // Auto-advance removed - manual entry required
+        // setTimeout(() => setStep(2), 800)
     }
 
     const selectedGroup = groups.find(g => g.id === selectedGroupId)
@@ -209,8 +209,9 @@ export default function SmartContributionForm() {
                         className="space-y-8"
                     >
                         <div className="text-center space-y-2">
-                            <h2 className="text-3xl font-black text-foreground">Magic Receipt Scan</h2>
-                            <p className="text-muted-foreground font-medium">Upload your proof of payment and let AI handle the heavy lifting.</p>
+                            <h2 className="text-3xl font-black text-foreground">Upload Receipt</h2>
+                            <p className="text-muted-foreground font-medium">Upload your proof of payment for treasurer verification.</p>
+                            <p className="text-sm text-yellow-600 dark:text-yellow-500 font-bold">Note: Auto-scan temporarily unavailable. Please enter details manually in Step 2.</p>
                         </div>
 
                         <GlassCard className="p-2 overflow-hidden border-white/20 shadow-2xl" hover={false}>
@@ -228,7 +229,7 @@ export default function SmartContributionForm() {
                                 className="text-muted-foreground font-bold hover:text-foreground"
                                 onClick={() => setStep(2)}
                             >
-                                Skip to manual entry <ArrowRight className="ml-2 w-4 h-4" />
+                                Continue to manual entry <ArrowRight className="ml-2 w-4 h-4" />
                             </Button>
                         </div>
                     </motion.div>

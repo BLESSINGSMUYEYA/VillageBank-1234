@@ -1,17 +1,18 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useState, useEffect, useRef } from 'react'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Check, X, Eye, ArrowLeft, Loader2, Image as ImageIcon, AlertTriangle, User, History, Wallet } from 'lucide-react'
+import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import { Check, X, Eye, ArrowLeft, Loader2, Image as ImageIcon, AlertTriangle, Wallet, History, Maximize2, ZoomIn, ZoomOut, RotateCw } from 'lucide-react'
 import Link from 'next/link'
 import { formatCurrency } from '@/lib/utils'
 import { toast } from 'sonner'
-
-import { useOptimistic, useTransition, useActionState } from 'react'
+import { useOptimistic, useTransition } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { cn } from '@/lib/utils'
 
 export default function TreasurerApprovalsPage() {
     const [pending, setPending] = useState<any[]>([])
@@ -22,13 +23,17 @@ export default function TreasurerApprovalsPage() {
     )
     const [isPending, startTransition] = useTransition()
 
-    const [reviewingId, setReviewingId] = useState<string | null>(null)
-    const [rejectionReason, setRejectionReason] = useState('')
-    const [showRejectForm, setShowRejectForm] = useState<string | null>(null)
-    const [isSubmitting, setIsSubmitting] = useState(false)
+    // Selection & Bulk
     const [selectedContributions, setSelectedContributions] = useState<string[]>([])
-    const [bulkAction, setBulkAction] = useState<'approve' | 'reject' | null>(null)
-    const [bulkRejectionReason, setBulkRejectionReason] = useState('')
+
+    // Detailed Review Modal State
+    const [reviewItem, setReviewItem] = useState<any | null>(null)
+    const [rejectionReason, setRejectionReason] = useState('')
+    const [isSubmitting, setIsSubmitting] = useState(false)
+
+    // Zoom State
+    const [zoomLevel, setZoomLevel] = useState(1)
+    const [rotation, setRotation] = useState(0)
 
     useEffect(() => {
         fetchPending()
@@ -47,55 +52,6 @@ export default function TreasurerApprovalsPage() {
         }
     }
 
-    const handleBulkReview = async () => {
-        if (selectedContributions.length === 0) {
-            toast.error('Please select at least one contribution')
-            return
-        }
-
-        if (bulkAction === 'reject' && !bulkRejectionReason) {
-            toast.error('Please provide a reason for rejection')
-            return
-        }
-
-        setIsSubmitting(true)
-        try {
-            const response = await fetch('/api/contributions/bulk-review', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contributionIds: selectedContributions,
-                    status: bulkAction === 'approve' ? 'COMPLETED' : 'REJECTED',
-                    rejectionReason: bulkRejectionReason
-                }),
-            })
-
-            if (response.ok) {
-                const data = await response.json()
-                toast.success(data.message)
-                fetchPending()
-                setSelectedContributions([])
-                setBulkAction(null)
-                setBulkRejectionReason('')
-            } else {
-                const error = await response.json()
-                toast.error(error.error || 'Failed to process bulk action')
-            }
-        } catch (error) {
-            toast.error('Error processing bulk action')
-        } finally {
-            setIsSubmitting(false)
-        }
-    }
-
-    const handleSelectAll = (checked: boolean) => {
-        if (checked) {
-            setSelectedContributions(pending.map(c => c.id))
-        } else {
-            setSelectedContributions([])
-        }
-    }
-
     const handleSelectContribution = (id: string, checked: boolean) => {
         if (checked) {
             setSelectedContributions(prev => [...prev, id])
@@ -104,13 +60,16 @@ export default function TreasurerApprovalsPage() {
         }
     }
 
-    const handleReview = async (id: string, status: 'COMPLETED' | 'REJECTED') => {
+    const handleReviewAction = async (status: 'COMPLETED' | 'REJECTED') => {
+        if (!reviewItem) return
+
         if (status === 'REJECTED' && !rejectionReason) {
             toast.error('Please provide a reason for rejection')
             return
         }
 
-        setReviewingId(id)
+        setIsSubmitting(true)
+        const id = reviewItem.id
 
         startTransition(async () => {
             addOptimisticPending(id)
@@ -125,8 +84,10 @@ export default function TreasurerApprovalsPage() {
                 if (response.ok) {
                     toast.success(`Contribution ${status.toLowerCase()} successfully`)
                     setPending(prev => prev.filter(p => p.id !== id))
-                    setShowRejectForm(null)
+                    setReviewItem(null)
                     setRejectionReason('')
+                    setZoomLevel(1)
+                    setRotation(0)
                 } else {
                     const data = await response.json()
                     toast.error(data.error || 'Failed to update status')
@@ -134,21 +95,9 @@ export default function TreasurerApprovalsPage() {
             } catch (error) {
                 toast.error('An error occurred during review')
             } finally {
-                setReviewingId(null)
+                setIsSubmitting(false)
             }
         })
-    }
-
-    const handleBulkApproval = async () => {
-        if (bulkAction === 'approve') {
-            handleBulkReview()
-        } else if (bulkAction === 'reject') {
-            if (!bulkRejectionReason) {
-                toast.error('Please provide a reason for rejection')
-                return
-            }
-            handleBulkReview()
-        }
     }
 
     if (loading) {
@@ -175,52 +124,11 @@ export default function TreasurerApprovalsPage() {
                     <p className="text-muted-foreground text-body max-w-lg">Review pending member contributions and verify payments before updating group balances.</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    {selectedContributions.length > 0 && (
-                        <div className="flex items-center gap-2 mr-4 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-full border border-blue-100 dark:border-blue-800">
-                            <span className="text-xs font-bold text-blue-700 dark:text-blue-300">{selectedContributions.length} selected</span>
-                            <Button size="sm" variant="ghost" className="h-6 px-1.5 text-xs text-blue-700 hover:bg-blue-100 dark:hover:bg-blue-800" onClick={() => setBulkAction('approve')}>Approve All</Button>
-                            <Button size="sm" variant="ghost" className="h-6 px-1.5 text-xs text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30" onClick={() => setBulkAction('reject')}>Reject All</Button>
-                        </div>
-                    )}
                     <Badge variant="outline" className="text-sm px-4 py-1.5 rounded-full font-bold bg-muted/30 border-border">
                         {optimisticPending.length} Remaining
                     </Badge>
                 </div>
             </div>
-
-            {bulkAction && (
-                <Card className="border-blue-200 dark:border-blue-900/50 bg-blue-50/50 dark:bg-blue-900/10 backdrop-blur-sm">
-                    <CardContent className="p-4 flex flex-col md:flex-row items-center gap-4">
-                        <div className="flex-1">
-                            <h4 className="font-bold text-blue-900 dark:text-blue-100 flex items-center gap-2">
-                                {bulkAction === 'approve' ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
-                                Bulk {bulkAction === 'approve' ? 'Approval' : 'Rejection'}
-                            </h4>
-                            <p className="text-xs text-blue-700 dark:text-blue-400">Processing {selectedContributions.length} contributions at once.</p>
-                        </div>
-                        {bulkAction === 'reject' && (
-                            <textarea
-                                className="flex-1 min-h-[40px] p-2 bg-background border rounded text-sm"
-                                placeholder="Reason for bulk rejection..."
-                                value={bulkRejectionReason}
-                                onChange={(e) => setBulkRejectionReason(e.target.value)}
-                            />
-                        )}
-                        <div className="flex gap-2">
-                            <Button size="sm" variant="ghost" onClick={() => setBulkAction(null)}>Cancel</Button>
-                            <Button
-                                size="sm"
-                                variant={bulkAction === 'approve' ? 'default' : 'destructive'}
-                                className={bulkAction === 'approve' ? 'bg-blue-600 hover:bg-blue-700' : ''}
-                                onClick={handleBulkApproval}
-                                disabled={isSubmitting}
-                            >
-                                {isSubmitting ? 'Processing...' : 'Confirm Bulk Action'}
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
 
             {optimisticPending.length === 0 ? (
                 <Card className="bg-card border-border shadow-sm border-dashed">
@@ -229,190 +137,213 @@ export default function TreasurerApprovalsPage() {
                             <Check className="w-8 h-8 text-green-600 dark:text-green-400" />
                         </div>
                         <h3 className="text-2xl font-black text-foreground mb-2">Queue Clear!</h3>
-                        <p className="text-muted-foreground text-body max-w-sm">There are no pending contributions that require your attention at the moment.</p>
-                        <Button variant="outline" className="mt-8" asChild>
-                            <Link href="/dashboard">Return to Dashboard</Link>
-                        </Button>
+                        <p className="text-muted-foreground text-body max-w-sm">No pending contributions. Great job keeping up!</p>
                     </CardContent>
                 </Card>
             ) : (
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-4">
                     {optimisticPending.map((item) => (
                         <Card key={item.id} className="overflow-hidden bg-card border-border shadow-sm hover:shadow-md transition-shadow group">
-                            <div className="grid md:grid-cols-[auto,1fr,240px] gap-0">
-                                {/* Selection Column */}
-                                <div className="hidden md:flex items-center px-4 bg-muted/10 border-r border-border">
-                                    <Checkbox
-                                        checked={selectedContributions.includes(item.id)}
-                                        onCheckedChange={(checked) => handleSelectContribution(item.id, checked as boolean)}
-                                    />
-                                </div>
-
-                                {/* Main Info Column */}
-                                <CardContent className="p-5 md:p-6">
-                                    <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-black text-xl">
-                                                {item.user.firstName[0]}{item.user.lastName[0]}
+                            <CardContent className="p-0">
+                                <div className="flex flex-col sm:flex-row">
+                                    {/* Receipt Teaser */}
+                                    <div className="w-full sm:w-[120px] bg-muted/30 border-r border-border h-[120px] sm:h-auto flex items-center justify-center relative overflow-hidden group-hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => setReviewItem(item)}>
+                                        {item.receiptUrl ? (
+                                            <>
+                                                <img src={item.receiptUrl} alt="Receipt" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                                                <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors">
+                                                    <Maximize2 className="w-6 h-6 text-white drop-shadow-md" />
+                                                </div>
+                                                <Badge className="absolute bottom-2 right-2 text-[8px] bg-black/60 pointer-events-none">PROOF</Badge>
+                                            </>
+                                        ) : (
+                                            <div className="text-center p-2 opacity-50">
+                                                <ImageIcon className="w-8 h-8 mx-auto mb-1 text-muted-foreground" />
+                                                <span className="text-[9px] font-bold uppercase text-muted-foreground">No Image</span>
                                             </div>
+                                        )}
+                                    </div>
+
+                                    {/* Main Content */}
+                                    <div className="flex-1 p-5 flex flex-col justify-between">
+                                        <div className="flex justify-between items-start mb-4">
                                             <div>
-                                                <h3 className="text-xl font-black text-foreground group-hover:text-blue-600 transition-colors">
-                                                    {item.user.firstName} {item.user.lastName}
-                                                </h3>
-                                                <div className="flex flex-wrap items-center gap-2 mt-1">
-                                                    <Badge variant="secondary" className="text-[10px] font-bold uppercase tracking-wider h-5">
-                                                        {item.group.name}
-                                                    </Badge>
+                                                <h3 className="text-lg font-black text-foreground">{item.user.firstName} {item.user.lastName}</h3>
+                                                <div className="flex items-center gap-2 mt-1">
+                                                    <Badge variant="secondary" className="text-[10px] font-bold uppercase tracking-wider">{item.group.name}</Badge>
                                                     <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                                        <History className="w-3 h-3" />
-                                                        {new Date(item.createdAt).toLocaleDateString()}
+                                                        <History className="w-3 h-3" /> {new Date(item.paymentDate || item.createdAt).toLocaleDateString()}
                                                     </span>
                                                 </div>
                                             </div>
+                                            <div className="text-right">
+                                                <div className="text-xl font-black text-blue-600 dark:text-blue-400">{formatCurrency(item.amount)}</div>
+                                            </div>
                                         </div>
 
-                                        <div className="text-right">
-                                            <div className="text-2xl font-black text-blue-600 dark:text-blue-400 leading-none mb-1">
-                                                {formatCurrency(item.amount)}
+                                        <div className="flex items-center justify-between mt-auto pt-4 border-t border-border/50">
+                                            <div className="flex gap-4 text-xs font-medium text-muted-foreground">
+                                                <span className="flex items-center gap-1.5"><Wallet className="w-3.5 h-3.5" /> Bal: {formatCurrency(item.member.balance)}</span>
+                                                {item.member.unpaidPenalties > 0 && <span className="flex items-center gap-1.5 text-red-500"><AlertTriangle className="w-3.5 h-3.5" /> Penalties: {formatCurrency(item.member.unpaidPenalties)}</span>}
                                             </div>
-                                            <div className="flex items-center justify-end gap-2">
-                                                {item.isLate && (
-                                                    <Badge variant="destructive" className="bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 border-none flex items-center gap-1 px-2 h-5">
-                                                        <AlertTriangle className="w-3 h-3" />
-                                                        Late (+{formatCurrency(item.penaltyApplied)})
-                                                    </Badge>
-                                                )}
-                                                <Badge variant="outline" className="text-[10px] uppercase font-bold h-5 border-border">
-                                                    {item.paymentMethod.replace('_', ' ')}
-                                                </Badge>
-                                            </div>
-                                        </div>
-                                    </div>
 
-                                    {/* Member Financial Context Stats */}
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
-                                        <div className="p-3 bg-muted/30 rounded-xl border border-border/50">
-                                            <div className="flex items-center justify-between mb-1">
-                                                <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">Current Balance</span>
-                                                <Wallet className="w-3 h-3 text-muted-foreground opacity-50" />
-                                            </div>
-                                            <div className={`text-sm font-black ${item.member.balance < 0 ? 'text-red-500' : 'text-green-600 dark:text-green-500'}`}>
-                                                {formatCurrency(item.member.balance)}
-                                            </div>
-                                        </div>
-                                        <div className="p-3 bg-muted/30 rounded-xl border border-border/50">
-                                            <div className="flex items-center justify-between mb-1">
-                                                <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">Unpaid Penalties</span>
-                                                <AlertTriangle className="w-3 h-3 text-red-500" />
-                                            </div>
-                                            <div className={`text-sm font-black ${item.member.unpaidPenalties > 0 ? 'text-red-600' : 'text-foreground'}`}>
-                                                {formatCurrency(item.member.unpaidPenalties)}
-                                            </div>
-                                        </div>
-                                        <div className="p-3 bg-muted/30 rounded-xl border border-border/50">
-                                            <div className="flex items-center justify-between mb-1">
-                                                <span className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">Reference</span>
-                                                <History className="w-3 h-3 text-muted-foreground opacity-50" />
-                                            </div>
-                                            <div className="text-sm font-black truncate text-foreground">
-                                                {item.transactionRef || 'No Reference'}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {showRejectForm === item.id ? (
-                                        <div className="space-y-4 pt-4 border-t border-border mt-2 animate-in slide-in-from-top-2 duration-300">
-                                            <div>
-                                                <label className="text-xs font-black uppercase tracking-wider text-muted-foreground mb-1 block">Reason for rejection</label>
-                                                <textarea
-                                                    className="w-full min-h-[80px] p-3 border border-input rounded-xl text-sm bg-background/50 placeholder:text-muted-foreground focus:ring-2 focus:ring-blue-500 transition-all outline-none"
-                                                    placeholder="e.g. Reference number doesn't match receipt"
-                                                    value={rejectionReason}
-                                                    onChange={(e) => setRejectionReason(e.target.value)}
-                                                />
-                                            </div>
-                                            <div className="flex justify-end gap-2">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => {
-                                                        setShowRejectForm(null)
-                                                        setRejectionReason('')
-                                                    }}
-                                                    className="rounded-full"
-                                                >
-                                                    Cancel
-                                                </Button>
-                                                <Button
-                                                    variant="destructive"
-                                                    size="sm"
-                                                    disabled={isSubmitting || isPending}
-                                                    onClick={() => handleReview(item.id, 'REJECTED')}
-                                                    className="rounded-full px-6"
-                                                >
-                                                    {isSubmitting ? 'Processing...' : 'Confirm Rejection'}
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="flex justify-end gap-3 pt-4 border-t border-border mt-2">
                                             <Button
-                                                variant="outline"
                                                 size="sm"
-                                                className="rounded-full border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 px-6 transition-all"
-                                                onClick={() => setShowRejectForm(item.id)}
+                                                className="rounded-full font-bold px-6 bg-blue-600 hover:bg-blue-700 text-white"
+                                                onClick={() => setReviewItem(item)}
                                             >
-                                                <X className="w-4 h-4 mr-2" />
-                                                Reject
-                                            </Button>
-                                            <Button
-                                                variant="default"
-                                                size="sm"
-                                                className="rounded-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 px-8 shadow-sm hover:shadow-blue-200 dark:hover:shadow-none transition-all"
-                                                disabled={isSubmitting || isPending}
-                                                onClick={() => handleReview(item.id, 'COMPLETED')}
-                                            >
-                                                {reviewingId === item.id ? (
-                                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                                ) : (
-                                                    <><Check className="w-4 h-4 mr-2" /> Approve Payment</>
-                                                )}
+                                                Start Review
                                             </Button>
                                         </div>
-                                    )}
-                                </CardContent>
-
-                                {/* Receipt Column */}
-                                <div className="bg-muted/30 border-l border-border relative overflow-hidden group/receipt min-h-[200px] md:min-h-0">
-                                    {item.receiptUrl ? (
-                                        <>
-                                            <div className="h-full w-full flex items-center justify-center p-2">
-                                                <img
-                                                    src={item.receiptUrl}
-                                                    alt="Receipt Preview"
-                                                    className="w-full h-full object-cover rounded-md transition-transform duration-500 group-hover/receipt:scale-110"
-                                                />
-                                            </div>
-                                            <button
-                                                onClick={() => window.open(item.receiptUrl, '_blank')}
-                                                className="absolute inset-0 bg-blue-900/60 opacity-0 group-hover/receipt:opacity-100 transition-opacity flex flex-col items-center justify-center text-white backdrop-blur-[2px]"
-                                            >
-                                                <Eye className="w-10 h-10 mb-2 scale-50 group-hover/receipt:scale-100 transition-transform duration-300" />
-                                                <span className="text-[10px] font-black uppercase tracking-widest">View Full Receipt</span>
-                                            </button>
-                                        </>
-                                    ) : (
-                                        <div className="h-full w-full flex flex-col items-center justify-center text-muted-foreground p-8 text-center opacity-40">
-                                            <ImageIcon className="w-10 h-10 mb-2" />
-                                            <p className="text-[10px] uppercase font-bold tracking-wider">No Receipt Attached</p>
-                                        </div>
-                                    )}
+                                    </div>
                                 </div>
-                            </div>
+                            </CardContent>
                         </Card>
                     ))}
                 </div>
             )}
+
+            {/* Side-by-Side Review Modal */}
+            <Dialog open={!!reviewItem} onOpenChange={(open) => !open && setReviewItem(null)}>
+                <DialogContent className="max-w-[95vw] w-[1400px] h-[90vh] p-0 gap-0 overflow-hidden rounded-2xl border-none outline-none bg-background flex">
+                    <DialogTitle className="sr-only">Contribution Review</DialogTitle>
+                    <DialogDescription className="sr-only">
+                        Review and verify contribution for {reviewItem?.user?.firstName} {reviewItem?.user?.lastName}
+                    </DialogDescription>
+                    {reviewItem && (
+                        <>
+                            {/* Left Panel: Evidence (Zoomable Receipt) */}
+                            <div className="flex-1 bg-black/5 dark:bg-black/40 relative flex items-center justify-center overflow-hidden border-r border-border">
+                                {reviewItem.receiptUrl ? (
+                                    <>
+                                        <div className="absolute top-4 left-4 z-10 flex gap-2">
+                                            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-white/90 shadow-sm hover:bg-white" onClick={() => setZoomLevel(prev => Math.min(prev + 0.5, 3))}>
+                                                <ZoomIn className="w-4 h-4 text-black" />
+                                            </Button>
+                                            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-white/90 shadow-sm hover:bg-white" onClick={() => setZoomLevel(prev => Math.max(prev - 0.5, 0.5))}>
+                                                <ZoomOut className="w-4 h-4 text-black" />
+                                            </Button>
+                                            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-white/90 shadow-sm hover:bg-white" onClick={() => setRotation(prev => prev + 90)}>
+                                                <RotateCw className="w-4 h-4 text-black" />
+                                            </Button>
+                                            <div className="bg-black/60 text-white text-[10px] font-bold px-3 py-1.5 rounded-full backdrop-blur-sm self-center">
+                                                {Math.round(zoomLevel * 100)}%
+                                            </div>
+                                        </div>
+
+                                        <div className="w-full h-full overflow-auto flex items-center justify-center p-8 cursor-grab active:cursor-grabbing">
+                                            <motion.img
+                                                src={reviewItem.receiptUrl}
+                                                alt="Evidence"
+                                                animate={{ scale: zoomLevel, rotate: rotation }}
+                                                className="max-w-none shadow-2xl rounded-sm"
+                                                style={{ maxHeight: '80vh' }}
+                                            />
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="flex flex-col items-center opacity-40">
+                                        <ImageIcon className="w-16 h-16 mb-4" />
+                                        <p className="font-bold text-xl uppercase">No Receipt Attached</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Right Panel: Ledger / Action */}
+                            <div className="w-[400px] md:w-[480px] bg-background flex flex-col h-full border-l border-border shadow-xl z-20">
+                                <div className="p-6 border-b border-border bg-muted/10">
+                                    <h2 className="text-xl font-black text-foreground mb-1">Verification</h2>
+                                    <p className="text-sm text-muted-foreground">Compare the proof on the left with the claim below.</p>
+                                </div>
+
+                                <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                                    {/* Amount Section */}
+                                    <div className="space-y-2">
+                                        <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Claimed Amount</p>
+                                        <div className="text-4xl font-black text-blue-600 dark:text-blue-400">
+                                            {formatCurrency(reviewItem.amount)}
+                                        </div>
+                                    </div>
+
+                                    {/* Meta Data */}
+                                    <div className="grid grid-cols-1 gap-4 p-4 rounded-xl bg-muted/30 border border-border">
+                                        <div>
+                                            <p className="text-[10px] font-bold uppercase text-muted-foreground">Contributor</p>
+                                            <p className="font-bold text-foreground">{reviewItem.user.firstName} {reviewItem.user.lastName}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-bold uppercase text-muted-foreground">Transaction Ref</p>
+                                            <p className="font-mono text-xs font-bold text-foreground break-all">{reviewItem.transactionRef || 'N/A'}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-bold uppercase text-muted-foreground">Date</p>
+                                            <p className="font-bold text-foreground">{new Date(reviewItem.paymentDate || reviewItem.createdAt).toLocaleDateString()} {new Date(reviewItem.paymentDate || reviewItem.createdAt).toLocaleTimeString()}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Financial Context */}
+                                    <div className="space-y-3">
+                                        <h3 className="text-xs font-black uppercase text-muted-foreground tracking-widest flex items-center gap-2">
+                                            <Wallet className="w-3 h-3" /> Member Standing
+                                        </h3>
+                                        <div className="flex items-center justify-between p-3 rounded-lg border border-border">
+                                            <span className="text-sm font-medium">Unpaid Penalties</span>
+                                            <span className={cn("font-bold text-sm", reviewItem.member.unpaidPenalties > 0 ? "text-red-500" : "text-muted-foreground")}>
+                                                {formatCurrency(reviewItem.member.unpaidPenalties)}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center justify-between p-3 rounded-lg border border-border">
+                                            <span className="text-sm font-medium">Current Balance</span>
+                                            <span className="font-bold text-sm text-green-600 dark:text-green-500">
+                                                {formatCurrency(reviewItem.member.balance)}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Rejection Form */}
+                                    <div className="pt-4 border-t border-border">
+                                        <p className="text-xs font-bold mb-2 text-muted-foreground">Notes / Rejection Reason</p>
+                                        <textarea
+                                            className="w-full min-h-[80px] p-3 rounded-lg border border-input bg-background text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                                            placeholder="Optional: Leave a reason if rejecting..."
+                                            value={rejectionReason}
+                                            onChange={(e) => setRejectionReason(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Footer Actions */}
+                                <div className="p-6 border-t border-border bg-muted/10">
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <Button
+                                            variant="destructive"
+                                            className="h-12 font-bold rounded-xl"
+                                            onClick={() => handleReviewAction('REJECTED')}
+                                            disabled={isSubmitting}
+                                        >
+                                            Reject
+                                        </Button>
+                                        <Button
+                                            variant="default"
+                                            className="h-12 font-bold rounded-xl bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/20 transition-all"
+                                            onClick={() => handleReviewAction('COMPLETED')}
+                                            disabled={isSubmitting}
+                                        >
+                                            {isSubmitting ? (
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                            ) : (
+                                                <>
+                                                    <Check className="w-4 h-4 mr-2" /> Approve
+                                                </>
+                                            )}
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

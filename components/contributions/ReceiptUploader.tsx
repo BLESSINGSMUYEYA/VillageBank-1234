@@ -39,8 +39,12 @@ export default function ReceiptUploader({ onScanComplete, onScanStart, onError, 
         const objectUrl = URL.createObjectURL(selectedFile)
         setPreview(objectUrl)
 
-        // Auto-scan on upload
-        await scanReceipt(selectedFile)
+        // TEMPORARILY DISABLED: Auto-scan on upload
+        // Gemini API quota exceeded - users will enter data manually
+        // await scanReceipt(selectedFile)
+
+        // Notify user that manual entry is needed
+        onError?.('Auto-scan temporarily unavailable. Please enter details manually.')
     }
 
     const scanReceipt = async (imageFile: File) => {
@@ -64,10 +68,11 @@ export default function ReceiptUploader({ onScanComplete, onScanStart, onError, 
 
             onScanComplete(data)
         } catch (err: any) {
-            onError?.(err.message || 'Scanning failed')
-            setFile(null)
-            setPreview(null)
-            onFileSelect?.(null)
+            const errorMessage = err.message || 'Scanning failed'
+            onError?.(errorMessage)
+
+            // Critical Fix: Do NOT clear the file. currently we want to allow manual entry if AI fails.
+            // We just stop the scanning loading state.
         } finally {
             setIsScanning(false)
         }

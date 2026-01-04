@@ -76,8 +76,17 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json(data)
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Receipt scan error:', error)
+
+        // Handle Rate Limiting
+        if (error.status === 429 || error.message?.includes('429') || error.message?.includes('Quota exceeded')) {
+            return NextResponse.json(
+                { error: 'AI Service busy (Rate Limit). Please wait a minute and try again.' },
+                { status: 429 }
+            )
+        }
+
         return NextResponse.json(
             { error: 'Internal server error during scanning' },
             { status: 500 }
