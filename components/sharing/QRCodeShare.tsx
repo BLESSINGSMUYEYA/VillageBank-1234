@@ -97,7 +97,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
         ctx.fillStyle = '#1e293b'
         ctx.font = 'bold 52px Inter, system-ui, sans-serif'
         ctx.textAlign = 'center'
-        ctx.fillText('Village Banking Group', width / 2, padding + 20)
+        ctx.fillText('uBank Group', width / 2, padding + 20)
 
         ctx.shadowColor = 'rgba(0, 0, 0, 0.1)'
         ctx.shadowBlur = 40
@@ -142,7 +142,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
 
         canvas.toBlob((blob) => {
           if (blob) {
-            resolve(new File([blob], 'village-banking-invite.png', { type: 'image/png' }))
+            resolve(new File([blob], 'ubank-invite.png', { type: 'image/png' }))
           } else {
             reject(new Error('Canvas to Blob failed'))
           }
@@ -166,7 +166,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
         shareData.customMessage
       )
 
-      const message = `*Village Banking Group Invitation*\n\n` +
+      const message = `*uBank Group Invitation*\n\n` +
         `Group: ${groupName}\n` +
         (shareData.customMessage ? `_"${shareData.customMessage}"_\n\n` : '') +
         `Scan the QR code or click the link to join:\n${shareData.shareUrl}`

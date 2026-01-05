@@ -70,11 +70,11 @@ export function DesktopNavigation() {
         <div className="mb-10">
           <Link href="/dashboard" className="flex items-center gap-3 group">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-500/20 transform group-hover:rotate-6 group-hover:scale-105 transition-all duration-300">
-              <span className="text-white font-black text-xl">V</span>
+              <span className="text-white font-black text-xl">u</span>
             </div>
             <div className="flex flex-col">
               <h1 className="text-lg font-black bg-gradient-to-r from-blue-900 via-indigo-800 to-blue-900 dark:from-white dark:to-blue-100 bg-clip-text text-transparent leading-none">
-                Village Bank
+                uBank
               </h1>
               <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 leading-none mt-1">
                 {t('common.zen_edition')}

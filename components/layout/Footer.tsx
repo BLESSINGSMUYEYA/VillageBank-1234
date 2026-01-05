@@ -9,7 +9,7 @@ export function Footer() {
           <div className="col-span-1 md:col-span-2">
             <Link href="/" className="inline-block mb-4">
               <h3 className="text-xl font-black bg-gradient-to-r from-blue-900 to-indigo-800 dark:from-white dark:to-blue-200 bg-clip-text text-transparent">
-                Village Banking System
+                uBank Platform
               </h3>
             </Link>
             <p className="text-muted-foreground text-sm mb-6 max-w-sm leading-relaxed">
@@ -71,7 +71,7 @@ export function Footer() {
 
         <div className="border-t border-border/50 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-muted-foreground text-xs font-medium">
-            © {new Date().getFullYear()} Village Banking System. All rights reserved.
+            © {new Date().getFullYear()} uBank. All rights reserved.
           </p>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />

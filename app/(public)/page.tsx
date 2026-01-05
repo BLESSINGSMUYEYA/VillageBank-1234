@@ -57,7 +57,7 @@ export default function Home() {
                             <Zap className="w-6 h-6 text-white" fill="currentColor" />
                         </div>
                         <span className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">
-                            VILLAGE<span className="text-blue-600">BANK</span>
+                            u<span className="text-blue-600">BANK</span>
                         </span>
                     </div>
                     <div className="hidden md:flex items-center gap-8">
@@ -237,7 +237,7 @@ export default function Home() {
                 <footer className="container mx-auto px-6 py-12 border-t border-slate-200 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
                     <div className="flex items-center gap-2">
                         <Zap className="w-6 h-6 text-blue-600" fill="currentColor" />
-                        <span className="font-black text-slate-900 dark:text-white tracking-tighter">VILLAGE BANK</span>
+                        <span className="font-black text-slate-900 dark:text-white tracking-tighter">uBANK</span>
                     </div>
                     <p className="text-slate-500 text-sm font-black uppercase tracking-widest">
                         © {new Date().getFullYear()} Malawian Financial Technologies.

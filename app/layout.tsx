@@ -22,8 +22,8 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'Village Banking System',
-  description: 'Community banking management system for Malawi',
+  title: 'uBank - Your Personal & Group Wealth Manager',
+  description: 'The modern way to save together. Personal wallets and village banking groups in one app.',
   manifest: '/manifest.json',
 }
 

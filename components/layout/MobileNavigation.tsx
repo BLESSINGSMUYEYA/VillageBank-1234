@@ -45,10 +45,10 @@ export function MobileNavigation() {
         <div className="flex items-center justify-between p-4 px-4">
           <Link href="/dashboard" className="flex items-center space-x-3 group">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-500/20 group-active:scale-95 transition-transform">
-              <span className="text-white font-black text-sm">V</span>
+              <span className="text-white font-black text-sm">u</span>
             </div>
             <div>
-              <h1 className="text-lg font-black bg-gradient-to-r from-blue-900 via-indigo-800 to-blue-900 dark:from-white dark:to-blue-200 bg-clip-text text-transparent leading-none">Village Bank</h1>
+              <h1 className="text-lg font-black bg-gradient-to-r from-blue-900 via-indigo-800 to-blue-900 dark:from-white dark:to-blue-200 bg-clip-text text-transparent leading-none">uBank</h1>
               <p className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 leading-none mt-1">{t('common.premium_member')}</p>
             </div>
           </Link>
