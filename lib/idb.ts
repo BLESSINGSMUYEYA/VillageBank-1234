@@ -19,6 +19,9 @@ function openDB(): Promise<IDBDatabase> {
             if (!db.objectStoreNames.contains(STORE_NAME)) {
                 db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
             }
+            if (!db.objectStoreNames.contains('shared-files')) {
+                db.createObjectStore('shared-files', { keyPath: 'id', autoIncrement: true });
+            }
         };
 
         request.onsuccess = (event) => {
@@ -66,6 +69,43 @@ export async function deleteContribution(id: number): Promise<void> {
         const request = store.delete(id);
 
         request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+    });
+}
+
+export async function saveSharedFile(file: File): Promise<void> {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction('shared-files', 'readwrite');
+        const store = transaction.objectStore('shared-files');
+        store.clear(); // Keep only the latest
+        const request = store.add({
+            file,
+            createdAt: Date.now(),
+        });
+
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+    });
+}
+
+export async function getSharedFile(): Promise<File | undefined> {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction('shared-files', 'readwrite');
+        const store = transaction.objectStore('shared-files');
+        const request = store.openCursor(null, 'prev');
+
+        request.onsuccess = (event) => {
+            const cursor = (event.target as IDBRequest).result as IDBCursorWithValue;
+            if (cursor) {
+                const file = cursor.value.file;
+                store.delete(cursor.primaryKey); // Consume/delete after reading
+                resolve(file);
+            } else {
+                resolve(undefined);
+            }
+        };
         request.onerror = () => reject(request.error);
     });
 }

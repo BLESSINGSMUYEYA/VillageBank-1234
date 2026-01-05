@@ -2,7 +2,7 @@
 import { defaultCache } from "@serwist/next/worker";
 import type { PrecacheEntry } from "@serwist/precaching";
 import { installSerwist } from "@serwist/sw";
-import { getPendingContributions, deleteContribution } from "../lib/idb";
+import { getPendingContributions, deleteContribution, saveSharedFile } from "../lib/idb";
 import { uploadReceipt } from "../lib/upload";
 
 declare global {
@@ -98,3 +98,27 @@ async function syncContributions() {
         console.error('Sync failed', err);
     }
 }
+
+self.addEventListener('fetch', (event: any) => {
+    const url = new URL(event.request.url);
+
+    if (url.pathname === '/share-target' && event.request.method === 'POST') {
+        event.respondWith(
+            (async () => {
+                try {
+                    const formData = await event.request.formData();
+                    const file = formData.get('file');
+
+                    if (file && file instanceof File) {
+                        await saveSharedFile(file);
+                    }
+
+                    return Response.redirect('/contributions/new?shared=true', 303);
+                } catch (err) {
+                    console.error('Share target failed', err);
+                    return Response.redirect('/contributions/new?error=share_failed', 303);
+                }
+            })()
+        );
+    }
+});

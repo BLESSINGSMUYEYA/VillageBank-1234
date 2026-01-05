@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import ReceiptUploader from './ReceiptUploader'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -15,7 +15,7 @@ import { fadeIn, itemFadeIn, staggerContainer } from '@/lib/motions'
 import { Loader2, DollarSign, Calculator, ArrowRight, Shield, TrendingUp, CheckCircle, AlertTriangle, Sparkles, Receipt, ArrowLeft, Send } from 'lucide-react'
 import { cn, formatCurrency } from '@/lib/utils'
 import { toast } from 'sonner'
-import { saveContribution } from '@/lib/idb'
+import { saveContribution, getSharedFile } from '@/lib/idb'
 import { uploadReceipt } from '@/lib/upload'
 
 interface Group {
@@ -29,6 +29,7 @@ interface Group {
 
 export default function SmartContributionForm() {
     const router = useRouter()
+    const searchParams = useSearchParams()
     const [step, setStep] = useState<1 | 2>(1)
     const [groups, setGroups] = useState<Group[]>([])
 
@@ -47,6 +48,27 @@ export default function SmartContributionForm() {
 
     const [loading, setLoading] = useState(false)
     const [scanning, setScanning] = useState(false)
+
+    // Check for shared file
+    useEffect(() => {
+        const checkShared = async () => {
+            const isShared = searchParams?.get('shared') === 'true'
+            if (isShared) {
+                try {
+                    const file = await getSharedFile()
+                    if (file) {
+                        setReceiptFile(file)
+                        toast.success('Receipt loaded from share!')
+                    }
+                } catch (e) {
+                    console.error("Failed to load shared file", e)
+                }
+                // Clean up URL
+                router.replace('/contributions/new')
+            }
+        }
+        checkShared()
+    }, [searchParams, router])
 
     // Fetch Groups on Mount
     useEffect(() => {
