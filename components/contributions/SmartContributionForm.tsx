@@ -198,8 +198,10 @@ export default function SmartContributionForm() {
 
                 if (!res.ok) throw new Error("Submission failed")
 
-                toast.success("Contribution recorded successfully!")
-                router.push('/dashboard')
+                toast.success("Contribution sent successfully!", {
+                    description: "Your contribution has been submitted for treasurer verification."
+                })
+                router.push('/contributions')
             } else {
                 throw new Error("Offline")
             }
@@ -222,10 +224,10 @@ export default function SmartContributionForm() {
                     }
 
                     toast.dismiss()
-                    toast.success("Saved offline! Will sync when online.", {
-                        description: "Your contribution has been securely stored locally."
+                    toast.success("Contribution saved offline!", {
+                        description: "Will sync automatically when you're back online."
                     })
-                    router.push('/dashboard')
+                    router.push('/contributions')
                 } catch (saveErr) {
                     console.error(saveErr)
                     toast.dismiss()
