@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
+import { PushManager } from '@/components/pwa/PushManager'
 
 interface Notification {
   id: string
@@ -189,11 +190,16 @@ export function NotificationCenter({
               <div className="p-4 sm:p-5 border-b border-border bg-white dark:bg-slate-900 flex justify-between items-center relative z-10">
                 <div>
                   <h3 className="text-lg font-black text-foreground">Notifications</h3>
-                  <p className="text-xs font-bold text-muted-foreground mt-0.5">
-                    {unreadCount} unread message{unreadCount !== 1 ? 's' : ''}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-bold text-muted-foreground mt-0.5">
+                      {unreadCount} unread message{unreadCount !== 1 ? 's' : ''}
+                    </p>
+                  </div>
                 </div>
                 <div className="flex gap-2">
+                  <div className="hidden sm:block">
+                    <PushManager />
+                  </div>
                   {unreadCount > 0 && (
                     <Button
                       variant="ghost"
