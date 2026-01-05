@@ -11,6 +11,7 @@ import { staggerContainer, itemFadeIn, fadeIn, hoverScale } from '@/lib/motions'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { cn } from '@/lib/utils'
+import { UBankLogo } from '@/components/ui/Logo'
 
 export default function Home() {
     const { isAuthenticated, loading } = useAuth()
@@ -52,12 +53,12 @@ export default function Home() {
             <div className="relative z-10">
                 {/* Navbar */}
                 <header className="container mx-auto px-6 py-8 flex items-center justify-between">
-                    <div className="flex items-center gap-2 group cursor-pointer">
-                        <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform">
-                            <Zap className="w-6 h-6 text-white" fill="currentColor" />
+                    <div className="flex items-center gap-3 group cursor-pointer">
+                        <div className="w-10 h-10 bg-slate-900 dark:bg-white/10 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform border border-white/5">
+                            <UBankLogo className="w-6 h-6" />
                         </div>
                         <span className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">
-                            u<span className="text-blue-600">BANK</span>
+                            uBank
                         </span>
                     </div>
                     <div className="hidden md:flex items-center gap-8">
@@ -236,8 +237,8 @@ export default function Home() {
 
                 <footer className="container mx-auto px-6 py-12 border-t border-slate-200 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
                     <div className="flex items-center gap-2">
-                        <Zap className="w-6 h-6 text-blue-600" fill="currentColor" />
-                        <span className="font-black text-slate-900 dark:text-white tracking-tighter">uBANK</span>
+                        <UBankLogo className="w-6 h-6" />
+                        <span className="font-black text-slate-900 dark:text-white tracking-tighter">uBank</span>
                     </div>
                     <p className="text-slate-500 text-sm font-black uppercase tracking-widest">
                         © {new Date().getFullYear()} Malawian Financial Technologies.

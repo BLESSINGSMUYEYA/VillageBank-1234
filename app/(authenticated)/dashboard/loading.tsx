@@ -1,8 +1,7 @@
-import { Card, CardHeader, CardContent } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+'use client'
 
-import { DashboardSkeleton } from "./DashboardSkeleton"
+import { PageLoader } from "@/components/ui/LogoLoader"
 
 export default function DashboardLoading() {
-    return <DashboardSkeleton />
+    return <PageLoader text="Loading Dashboard" />
 }

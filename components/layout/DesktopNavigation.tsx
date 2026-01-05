@@ -15,6 +15,7 @@ import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher'
 import { DesktopUserMenu } from './DesktopUserMenu'
 import { motion } from 'framer-motion'
 import { itemFadeIn, staggerContainer } from '@/lib/motions'
+import { UBankLogo } from '@/components/ui/Logo'
 import { cn } from '@/lib/utils'
 
 const NavigationLink = ({ item, isActive }: { item: any; isActive: boolean }) => (
@@ -69,11 +70,11 @@ export function DesktopNavigation() {
         {/* Logo Section */}
         <div className="mb-10">
           <Link href="/dashboard" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-500/20 transform group-hover:rotate-6 group-hover:scale-105 transition-all duration-300">
-              <span className="text-white font-black text-xl">u</span>
+            <div className="w-10 h-10 rounded-2xl bg-slate-950 dark:bg-white/5 flex items-center justify-center shadow-lg shadow-yellow-500/10 group-hover:scale-105 transition-all duration-300 border border-white/5">
+              <UBankLogo className="w-6 h-6" />
             </div>
             <div className="flex flex-col">
-              <h1 className="text-lg font-black bg-gradient-to-r from-blue-900 via-indigo-800 to-blue-900 dark:from-white dark:to-blue-100 bg-clip-text text-transparent leading-none">
+              <h1 className="text-lg font-black bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent leading-none">
                 uBank
               </h1>
               <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 leading-none mt-1">

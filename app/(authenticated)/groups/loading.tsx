@@ -1,8 +1,7 @@
-import { Card, CardHeader, CardContent } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+'use client'
 
-import { GroupsSkeleton } from "./GroupsSkeleton"
+import { PageLoader } from "@/components/ui/LogoLoader"
 
 export default function GroupsLoading() {
-    return <GroupsSkeleton />
+    return <PageLoader text="Loading Groups" />
 }

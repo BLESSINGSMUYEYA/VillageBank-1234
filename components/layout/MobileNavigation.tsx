@@ -19,7 +19,9 @@ import {
 import { NotificationCenter } from '@/components/notifications/NotificationCenter'
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher'
 import { motion, AnimatePresence } from 'framer-motion'
+
 import { cn } from '@/lib/utils'
+import { UBankLogo } from '@/components/ui/Logo'
 
 // Interface for MobileNavigationProps removed as unreadNotifications was unused
 
@@ -44,11 +46,11 @@ export function MobileNavigation() {
       <div className="fixed top-0 left-0 right-0 z-40 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl border-b border-white/20 dark:border-white/10 shadow-sm transition-all duration-300">
         <div className="flex items-center justify-between p-4 px-4">
           <Link href="/dashboard" className="flex items-center space-x-3 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-500/20 group-active:scale-95 transition-transform">
-              <span className="text-white font-black text-sm">u</span>
+            <div className="w-9 h-9 rounded-xl bg-slate-950 dark:bg-white/5 flex items-center justify-center shadow-lg shadow-yellow-500/10 group-active:scale-95 transition-transform border border-white/5">
+              <UBankLogo className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-lg font-black bg-gradient-to-r from-blue-900 via-indigo-800 to-blue-900 dark:from-white dark:to-blue-200 bg-clip-text text-transparent leading-none">uBank</h1>
+              <h1 className="text-lg font-black bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent leading-none">uBank</h1>
               <p className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 leading-none mt-1">{t('common.premium_member')}</p>
             </div>
           </Link>
