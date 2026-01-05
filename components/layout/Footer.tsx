@@ -1,7 +1,13 @@
+'use client'
+
 import Link from 'next/link'
-import { Github, Mail, Phone, ExternalLink } from 'lucide-react'
+import { Github, Mail, Download } from 'lucide-react'
+import { useInstallPrompt } from '@/hooks/useInstallPrompt'
+import { Button } from '@/components/ui/button'
 
 export function Footer() {
+  const { showInstallPrompt, promptToInstall } = useInstallPrompt()
+
   return (
     <footer className="border-t border-border/50 bg-background/50 backdrop-blur-xl mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -15,13 +21,25 @@ export function Footer() {
             <p className="text-muted-foreground text-sm mb-6 max-w-sm leading-relaxed">
               Empowering communities with transparent, accessible, and modern financial tools. Built for the future of Malawi.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex items-center gap-3">
               <a href="#" className="p-2 rounded-full bg-muted/50 hover:bg-banana/10 text-muted-foreground hover:text-banana transition-colors">
                 <Github className="w-5 h-5" />
               </a>
               <a href="#" className="p-2 rounded-full bg-muted/50 hover:bg-banana/10 text-muted-foreground hover:text-banana transition-colors">
                 <Mail className="w-5 h-5" />
               </a>
+
+              {/* Install App Button */}
+              {showInstallPrompt && (
+                <Button
+                  onClick={promptToInstall}
+                  size="sm"
+                  className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold shadow-lg shadow-amber-500/25 ml-2"
+                >
+                  <Download className="w-4 h-4 mr-1.5" />
+                  Install App
+                </Button>
+              )}
             </div>
           </div>
 
@@ -29,9 +47,8 @@ export function Footer() {
             <h4 className="text-sm font-black text-foreground mb-4 uppercase tracking-widest">Platform</h4>
             <ul className="space-y-3">
               <li>
-                <Link href="/dashboard" className="text-muted-foreground hover:text-banana text-sm font-medium transition-colors inline-flex items-center group">
+                <Link href="/dashboard" className="text-muted-foreground hover:text-banana text-sm font-medium transition-colors">
                   Dashboard
-                  <ExternalLink className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Link>
               </li>
               <li>
@@ -73,9 +90,21 @@ export function Footer() {
           <p className="text-muted-foreground text-xs font-medium">
             © {new Date().getFullYear()} uBank. All rights reserved.
           </p>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Systems Operational</span>
+          <div className="flex items-center gap-4">
+            {/* Install button for bottom section (alternative placement) */}
+            {showInstallPrompt && (
+              <button
+                onClick={promptToInstall}
+                className="text-xs font-bold text-amber-500 hover:text-amber-400 transition-colors flex items-center gap-1.5 uppercase tracking-wider"
+              >
+                <Download className="w-3.5 h-3.5" />
+                Install App
+              </button>
+            )}
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Systems Operational</span>
+            </div>
           </div>
         </div>
       </div>
