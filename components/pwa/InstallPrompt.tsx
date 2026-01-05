@@ -47,7 +47,7 @@ export function InstallPrompt() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 50, scale: 0.9 }}
                 transition={{ type: "spring", duration: 0.5 }}
-                className="fixed bottom-4 right-4 z-50 w-full max-w-sm px-4 sm:px-0"
+                className="fixed bottom-28 lg:bottom-4 right-4 z-[60] w-full max-w-sm px-4 sm:px-0"
             >
                 <GlassCard
                     className="relative overflow-hidden border-blue-500/30 dark:border-banana/30 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)]"
