@@ -3,11 +3,14 @@ export function validateEnvironment() {
   const requiredEnvVars = [
     'DATABASE_URL',
     'JWT_SECRET',
+    'GEMINI_API_KEY', // Critical for OCR
+    'RESEND_API_KEY', // Critical for Emails
+    'NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY', // Critical for Auth
+    'CLERK_SECRET_KEY', // Critical for Auth
   ]
 
   const optionalEnvVars = [
     'NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME',
-    'GEMINI_API_KEY',
     'NEXT_PUBLIC_APP_URL',
   ]
 

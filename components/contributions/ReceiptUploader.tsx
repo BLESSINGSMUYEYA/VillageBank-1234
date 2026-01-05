@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Upload, X, Loader2, ScanLine, FileCheck } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -19,14 +19,24 @@ interface ReceiptUploaderProps {
     onScanStart?: () => void
     onError?: (error: string) => void
     onFileSelect?: (file: File | null) => void
+    initialFile?: File | null
 }
 
-export default function ReceiptUploader({ onScanComplete, onScanStart, onError, onFileSelect }: ReceiptUploaderProps) {
+export default function ReceiptUploader({ onScanComplete, onScanStart, onError, onFileSelect, initialFile }: ReceiptUploaderProps) {
     const [file, setFile] = useState<File | null>(null)
     const [preview, setPreview] = useState<string | null>(null)
     const [isScanning, setIsScanning] = useState(false)
     const [dragActive, setDragActive] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
+    const initialProcessed = useRef(false)
+
+    // Handle Initial File (e.g. from Share Target)
+    useEffect(() => {
+        if (initialFile && !initialProcessed.current) {
+            handleFile(initialFile)
+            initialProcessed.current = true
+        }
+    }, [initialFile])
 
     const handleFile = async (selectedFile: File) => {
         if (!selectedFile.type.startsWith('image/')) {

@@ -606,28 +606,33 @@ export default function SystemAdminPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <Select defaultValue="today">
-                    <SelectTrigger className="w-40">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="today">Today</SelectItem>
-                      <SelectItem value="week">This Week</SelectItem>
-                      <SelectItem value="month">This Month</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select defaultValue="all">
-                    <SelectTrigger className="w-40">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Activities</SelectItem>
-                      <SelectItem value="auth">Authentication</SelectItem>
-                      <SelectItem value="loans">Loans</SelectItem>
-                      <SelectItem value="contributions">Contributions</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <Select defaultValue="today">
+                      <SelectTrigger className="w-40">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="today">Today</SelectItem>
+                        <SelectItem value="week">This Week</SelectItem>
+                        <SelectItem value="month">This Month</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select defaultValue="all">
+                      <SelectTrigger className="w-40">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Activities</SelectItem>
+                        <SelectItem value="auth">Authentication</SelectItem>
+                        <SelectItem value="loans">Loans</SelectItem>
+                        <SelectItem value="contributions">Contributions</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={() => router.push('/admin/system/audit')}>
+                    View Full History
+                  </Button>
                 </div>
                 <div className="rounded-md border">
                   <table className="w-full text-sm text-left">

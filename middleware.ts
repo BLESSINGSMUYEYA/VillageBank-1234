@@ -24,7 +24,8 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith('/api/auth') ||
     pathname.startsWith('/shared') ||  // Allow public shared links
     pathname.startsWith('/_next') ||   // Allow Next.js internals
-    pathname.startsWith('/api/shared')  // Allow shared API endpoints
+    pathname.startsWith('/api/shared') ||  // Allow shared API endpoints
+    pathname.startsWith('/share-target')   // Allow PWA Share Target to receive files
   ) {
     return NextResponse.next();
   }

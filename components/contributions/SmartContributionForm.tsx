@@ -49,11 +49,30 @@ export default function SmartContributionForm() {
     const [loading, setLoading] = useState(false)
     const [scanning, setScanning] = useState(false)
 
-    // Check for shared file
+    // Check for shared file or URL
     useEffect(() => {
         const checkShared = async () => {
             const isShared = searchParams?.get('shared') === 'true'
-            if (isShared) {
+            const receiptUrl = searchParams?.get('receiptUrl')
+
+            if (receiptUrl) {
+                try {
+                    toast.loading("Loading shared receipt...")
+                    const res = await fetch(receiptUrl)
+                    const blob = await res.blob()
+                    // Extract filename from URL or default
+                    const filename = receiptUrl.split('/').pop() || 'shared-receipt.jpg'
+                    const file = new File([blob], filename, { type: blob.type })
+                    setReceiptFile(file)
+                    toast.success('Shared receipt ready!')
+                } catch (e) {
+                    console.error("Failed to load receipt from URL", e)
+                    toast.error("Failed to load shared receipt")
+                } finally {
+                    toast.dismiss()
+                    router.replace('/contributions/new')
+                }
+            } else if (isShared) {
                 try {
                     const file = await getSharedFile()
                     if (file) {
@@ -63,7 +82,6 @@ export default function SmartContributionForm() {
                 } catch (e) {
                     console.error("Failed to load shared file", e)
                 }
-                // Clean up URL
                 router.replace('/contributions/new')
             }
         }
@@ -262,6 +280,7 @@ export default function SmartContributionForm() {
                                 onScanStart={() => setScanning(true)}
                                 onError={(msg) => toast.error(msg)}
                                 onFileSelect={setReceiptFile}
+                                initialFile={receiptFile}
                             />
                         </GlassCard>
 
