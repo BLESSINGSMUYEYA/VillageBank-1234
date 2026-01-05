@@ -15,6 +15,8 @@ import { fadeIn, itemFadeIn, staggerContainer } from '@/lib/motions'
 import { Loader2, DollarSign, Calculator, ArrowRight, Shield, TrendingUp, CheckCircle, AlertTriangle, Sparkles, Receipt, ArrowLeft, Send } from 'lucide-react'
 import { cn, formatCurrency } from '@/lib/utils'
 import { toast } from 'sonner'
+import { saveContribution } from '@/lib/idb'
+import { uploadReceipt } from '@/lib/upload'
 
 interface Group {
     id: string
@@ -118,27 +120,6 @@ export default function SmartContributionForm() {
         }
     }, [selectedGroup, amount, unpaidPenalties])
 
-    // Helper: Upload to Cloudinary
-    const uploadReceipt = async (file: File): Promise<string> => {
-        const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-        const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'ml_default'
-
-        if (!cloudName) throw new Error("Cloudinary configuration missing")
-
-        const formData = new FormData()
-        formData.append('file', file)
-        formData.append('upload_preset', uploadPreset)
-        formData.append('folder', 'receipts')
-
-        const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-            method: 'POST',
-            body: formData
-        })
-
-        if (!res.ok) throw new Error('Image upload failed')
-        const data = await res.json()
-        return data.secure_url
-    }
 
     const handleSubmit = async () => {
         if (!selectedGroupId || amount <= 0) {
@@ -147,34 +128,73 @@ export default function SmartContributionForm() {
         }
 
         setLoading(true)
+
+        // Prepare payload for both online and offline use
+        const payload = {
+            groupId: selectedGroupId,
+            amount,
+            paymentMethod: paymentMethod || 'OTHER',
+            transactionRef,
+            paymentDate: new Date(paymentDate).toISOString(),
+        }
+
         try {
-            let receiptUrl = ''
-            if (receiptFile) {
-                toast.loading("Uploading secure proof...")
-                receiptUrl = await uploadReceipt(receiptFile)
-                toast.dismiss()
-            }
+            if (navigator.onLine) {
+                let receiptUrl = ''
+                if (receiptFile) {
+                    toast.loading("Uploading secure proof...")
+                    receiptUrl = await uploadReceipt(receiptFile)
+                    toast.dismiss()
+                }
 
-            const res = await fetch('/api/contributions', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    groupId: selectedGroupId,
-                    amount,
-                    paymentMethod: paymentMethod || 'OTHER',
-                    transactionRef,
-                    paymentDate: new Date(paymentDate).toISOString(),
-                    receiptUrl: receiptUrl || undefined,
+                const res = await fetch('/api/contributions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ...payload,
+                        receiptUrl: receiptUrl || undefined,
+                    })
                 })
-            })
 
-            if (!res.ok) throw new Error("Submission failed")
+                if (!res.ok) throw new Error("Submission failed")
 
-            toast.success("Contribution recorded successfully!")
-            router.push('/dashboard')
+                toast.success("Contribution recorded successfully!")
+                router.push('/dashboard')
+            } else {
+                throw new Error("Offline")
+            }
         } catch (error: any) {
-            toast.dismiss()
-            toast.error(error.message || "Failed to submit contribution.")
+            // Handle Offline / Network Errors
+            if (!navigator.onLine || error.message === 'Offline' || error.message.includes('fetch')) {
+                toast.dismiss()
+                toast.loading("Saving offline...")
+                try {
+                    await saveContribution({
+                        payload,
+                        file: receiptFile
+                    })
+
+                    // Register Background Sync if available
+                    if ('serviceWorker' in navigator && 'SyncManager' in window) {
+                        const registration = await navigator.serviceWorker.ready
+                        // @ts-ignore
+                        await registration.sync.register('sync-contributions')
+                    }
+
+                    toast.dismiss()
+                    toast.success("Saved offline! Will sync when online.", {
+                        description: "Your contribution has been securely stored locally."
+                    })
+                    router.push('/dashboard')
+                } catch (saveErr) {
+                    console.error(saveErr)
+                    toast.dismiss()
+                    toast.error("Failed to save offline. Please try again.")
+                }
+            } else {
+                toast.dismiss()
+                toast.error(error.message || "Failed to submit contribution.")
+            }
         } finally {
             setLoading(false)
         }
