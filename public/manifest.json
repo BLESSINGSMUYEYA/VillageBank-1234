@@ -3,15 +3,27 @@
     "short_name": "VillageBank",
     "description": "Secure community-backed financial platform for Malawi.",
     "start_url": "/",
+    "id": "/",
     "display": "standalone",
+    "orientation": "portrait-primary",
     "background_color": "#0F172A",
     "theme_color": "#0F172A",
+    "categories": [
+        "finance",
+        "productivity"
+    ],
     "icons": [
         {
             "src": "/icon-512x512.png",
             "sizes": "512x512",
             "type": "image/png",
-            "purpose": "any maskable"
+            "purpose": "any"
+        },
+        {
+            "src": "/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
         }
     ]
 }

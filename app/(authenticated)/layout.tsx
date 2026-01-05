@@ -5,6 +5,7 @@ import { DesktopNavigation } from '@/components/layout/DesktopNavigation'
 import { Footer } from '@/components/layout/Footer'
 import { motion, AnimatePresence } from 'framer-motion'
 import { usePathname } from 'next/navigation'
+import { InstallPrompt } from '@/components/pwa/InstallPrompt'
 
 export default function AuthenticatedLayout({
     children,
@@ -51,6 +52,7 @@ export default function AuthenticatedLayout({
                                 {children}
                             </motion.div>
                         </AnimatePresence>
+                        <InstallPrompt />
                     </main>
 
                     {/* Footer */}

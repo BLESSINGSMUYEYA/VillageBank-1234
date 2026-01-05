@@ -48,3 +48,7 @@ next-env.d.ts
 /lib/generated/prisma
 
 .vercel
+
+# Serwist
+public/sw.js
+public/swe-worker-*.js
