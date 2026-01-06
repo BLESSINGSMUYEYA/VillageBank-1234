@@ -67,20 +67,21 @@ export function DesktopNavigation() {
       <div className="absolute inset-0 bg-white/70 dark:bg-slate-950/60 backdrop-blur-2xl border-r border-white/20 dark:border-white/10 shadow-2xl" />
 
       <div className="relative z-10 flex flex-col h-full p-6">
-        {/* Logo Section */}
+        {/* Logo Section - Integrated Design */}
         <div className="mb-10">
-          <Link href="/dashboard" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-2xl bg-slate-950 dark:bg-white/5 flex items-center justify-center shadow-lg shadow-yellow-500/10 group-hover:scale-105 transition-all duration-300 border border-white/5">
-              <UBankLogo className="w-6 h-6" />
-            </div>
-            <div className="flex flex-col">
+          <Link href="/dashboard" className="group">
+            {/* Logo and text as one unified word */}
+            <div className="flex items-end gap-0.5">
+              <div className="flex items-center justify-center group-hover:scale-110 transition-all duration-300">
+                <UBankLogo className="w-7 h-7" />
+              </div>
               <h1 className="text-lg font-black bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent leading-none">
-                uBank
+                Bank
               </h1>
-              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 leading-none mt-1">
-                {t('common.zen_edition')}
-              </span>
             </div>
+            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 leading-none mt-1 block">
+              {t('common.zen_edition')}
+            </span>
           </Link>
         </div>
 

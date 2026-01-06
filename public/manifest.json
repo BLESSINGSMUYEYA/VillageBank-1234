@@ -1,6 +1,6 @@
 {
-    "name": "Village Banking",
-    "short_name": "VillageBank",
+    "name": "uBank",
+    "short_name": "uBank",
     "description": "Secure community-backed financial platform for Malawi.",
     "start_url": "/",
     "id": "/",
@@ -13,6 +13,12 @@
         "productivity"
     ],
     "icons": [
+        {
+            "src": "/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
         {
             "src": "/icon-512x512.png",
             "sizes": "512x512",

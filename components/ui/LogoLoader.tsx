@@ -22,10 +22,10 @@ export function GrowthLoader({
     showText = false,
 }: LoaderProps) {
     const sizeMap = {
-        sm: { width: 60, height: 40 },
-        md: { width: 90, height: 60 },
-        lg: { width: 120, height: 80 },
-        xl: { width: 160, height: 100 }
+        sm: { width: 90, height: 60 },
+        md: { width: 135, height: 90 },
+        lg: { width: 180, height: 120 },
+        xl: { width: 240, height: 160 }
     }
 
     const dimensions = sizeMap[size]
