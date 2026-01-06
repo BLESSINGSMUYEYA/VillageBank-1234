@@ -31,6 +31,7 @@ import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { cn } from '@/lib/utils'
+import { MemberBankDetails } from '@/components/settings/MemberBankDetails'
 
 interface UserProfile {
   firstName: string
@@ -403,74 +404,17 @@ export default function SettingsPage() {
                 <CardHeader className="p-8 sm:p-10">
                   <CardTitle className="text-2xl font-black text-foreground">Liquidity Channels</CardTitle>
                   <CardDescription className="text-sm font-bold opacity-70 italic">
-                    Connected mobile money and bank accounts for instant settlement.
+                    Manage your payment methods for receiving loan disbursements and making contributions.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="p-8 sm:p-10 space-y-10">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {[
-                      { type: 'Airtel Money', number: '265 99 123 456', initial: 'A', color: 'bg-red-500', isDefault: true },
-                      { type: 'TNM Mpamba', number: '265 88 987 654', initial: 'M', color: 'bg-emerald-500', isDefault: false }
-                    ].map((method, idx) => (
-                      <div key={idx} className="relative group">
-                        <div className={cn(
-                          "p-6 rounded-[2rem] border transition-all duration-300 flex flex-col gap-6",
-                          method.isDefault
-                            ? "bg-white/60 dark:bg-slate-900/60 border-blue-500/30 shadow-xl"
-                            : "bg-white/30 dark:bg-slate-900/30 border-white/20 dark:border-white/5"
-                        )}>
-                          <div className="flex justify-between items-start">
-                            <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-lg", method.color)}>
-                              {method.initial}
-                            </div>
-                            {method.isDefault && (
-                              <Badge className="bg-blue-600 text-white rounded-full px-3 py-1 font-black text-[9px] uppercase tracking-widest border-none">Active</Badge>
-                            )}
-                          </div>
-                          <div>
-                            <h4 className="font-black text-lg text-foreground mb-1">{method.type}</h4>
-                            <p className="text-sm font-bold text-muted-foreground opacity-60 tracking-wider">+{method.number}</p>
-                          </div>
-                          <div className="flex gap-2">
-                            {!method.isDefault && (
-                              <Button variant="ghost" className="flex-1 rounded-xl text-xs font-black text-red-500 hover:bg-red-500/5 hover:text-red-400">Remove</Button>
-                            )}
-                            <Button variant="ghost" className="flex-1 rounded-xl text-xs font-black hover:bg-blue-600/5">Details</Button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-
-                    <div className="relative group">
-                      <div className="p-6 rounded-[2rem] border bg-white/30 dark:bg-slate-900/30 border-white/20 dark:border-white/5 space-y-4">
-                        <div className="flex justify-between items-center">
-                          <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Primary Settlement Currency</Label>
-                          <Badge className="bg-emerald-500/10 text-emerald-600 font-black text-[9px] uppercase tracking-widest border-none px-2 py-0.5">Verified</Badge>
-                        </div>
-                        <Select defaultValue="MWK">
-                          <SelectTrigger className="rounded-xl bg-white/40 dark:bg-slate-900/40 border-none h-12 font-black text-xs tracking-widest shadow-inner px-4">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="rounded-2xl dark:bg-slate-950/90 backdrop-blur-xl">
-                            <SelectItem value="MWK" className="font-bold text-xs uppercase tracking-wider">Malawian Kwacha (MWK)</SelectItem>
-                            <SelectItem value="USD" className="font-bold text-xs uppercase tracking-wider">United States Dollar (USD)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <button className="border-2 border-dashed border-white/30 dark:border-white/10 rounded-[2rem] p-8 flex flex-col items-center justify-center gap-4 hover:bg-white/20 dark:hover:bg-slate-900/20 transition-all group">
-                      <div className="w-14 h-14 rounded-2xl bg-muted/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Plus className="w-8 h-8 text-muted-foreground" />
-                      </div>
-                      <span className="font-black text-xs uppercase tracking-[0.2em] text-muted-foreground">Add New Channel</span>
-                    </button>
-                  </div>
+                  {/* Member Bank Details Component */}
+                  <MemberBankDetails />
 
                   <div className="bg-blue-600/5 border border-blue-500/10 rounded-2xl p-6 flex items-start gap-4">
                     <Shield className="w-6 h-6 text-blue-600 shrink-0 mt-1" />
                     <p className="text-xs font-bold text-muted-foreground leading-relaxed">
-                      Secure Settlement: All payment data is hashed via SHA-256 and never stored directly on Village Bank servers.
+                      Secure Settlement: All payment data is encrypted and stored securely.
                       Transactions are processed via authorized bank gateways.
                     </p>
                   </div>

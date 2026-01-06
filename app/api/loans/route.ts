@@ -9,6 +9,11 @@ const createLoanSchema = z.object({
   amountRequested: z.number().positive('Amount must be positive'),
   repaymentPeriodMonths: z.number().min(1).max(24),
   purpose: z.string().optional(),
+  // Disbursement account details - where to send loan funds
+  disbursementMethod: z.enum(['AIRTEL_MONEY', 'MPAMBA', 'BANK_CARD']),
+  disbursementAccountName: z.string().min(2, 'Account name must be at least 2 characters'),
+  disbursementAccountNumber: z.string().min(8, 'Account number must be at least 8 characters'),
+  disbursementBankName: z.string().optional(), // Required for BANK_CARD
 })
 
 export async function POST(request: NextRequest) {
@@ -25,6 +30,14 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     const validatedData = createLoanSchema.parse(body)
+
+    // Require bank name for bank card type
+    if (validatedData.disbursementMethod === 'BANK_CARD' && !validatedData.disbursementBankName) {
+      return NextResponse.json(
+        { error: 'Bank name is required for bank account disbursement' },
+        { status: 400 }
+      )
+    }
 
     // Check if user is an active member of the group
     const groupMember = await prisma.groupMember.findFirst({
@@ -62,7 +75,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create loan
+    // Create loan with disbursement details
     const loan = await prisma.loan.create({
       data: {
         groupId: validatedData.groupId,
@@ -71,6 +84,11 @@ export async function POST(request: NextRequest) {
         repaymentPeriodMonths: validatedData.repaymentPeriodMonths,
         interestRate: groupMember.group.interestRate,
         status: 'PENDING', // Requires treasurer approval
+        // Disbursement details
+        disbursementMethod: validatedData.disbursementMethod,
+        disbursementAccountName: validatedData.disbursementAccountName,
+        disbursementAccountNumber: validatedData.disbursementAccountNumber,
+        disbursementBankName: validatedData.disbursementBankName,
       },
     })
 

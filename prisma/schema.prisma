@@ -25,14 +25,15 @@ model User {
   resetToken    String?   @unique
   resetTokenExpiry DateTime?
   
-  groupMembers    GroupMember[]
-  contributions    Contribution[]
-  loans           Loan[]
-  loanRepayments  LoanRepayment[]
-  activities      Activity[]
-  notifications   Notification[]
-  groupShares     GroupShare[]
+  groupMembers      GroupMember[]
+  contributions     Contribution[]
+  loans             Loan[]
+  loanRepayments    LoanRepayment[]
+  activities        Activity[]
+  notifications     Notification[]
+  groupShares       GroupShare[]
   pushSubscriptions PushSubscription[]
+  memberBankDetails MemberBankDetail[]
 }
 
 enum UserRole {
@@ -166,9 +167,15 @@ model Loan {
   approvedAt            DateTime?
   rejectedById          String?
   rejectedAt            DateTime?
-  rejectionReason       String?
-  createdAt             DateTime     @default(now())
-  updatedAt             DateTime     @updatedAt
+  rejectionReason           String?
+  createdAt                 DateTime     @default(now())
+  updatedAt                 DateTime     @updatedAt
+  
+  // Disbursement account details - where to send the loan funds
+  disbursementMethod        PaymentMethodType?
+  disbursementAccountName   String?
+  disbursementAccountNumber String?
+  disbursementBankName      String?       // Only for BANK_CARD type
   
   group                 Group          @relation(fields: [groupId], references: [id])
   user                  User           @relation(fields: [userId], references: [id])
@@ -305,6 +312,22 @@ model PushSubscription {
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
+}
+
+model MemberBankDetail {
+  id            String            @id @default(cuid())
+  userId        String
+  type          PaymentMethodType
+  bankName      String?           // Only required for BANK_CARD type
+  accountNumber String
+  accountName   String
+  isPrimary     Boolean           @default(false)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
   @@index([userId])
 }
 

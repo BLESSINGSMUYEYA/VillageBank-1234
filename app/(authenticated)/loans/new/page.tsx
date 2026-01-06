@@ -6,8 +6,10 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { ArrowLeft, CreditCard, TrendingUp, AlertCircle, CheckCircle2, DollarSign, Loader2, Info } from 'lucide-react'
+import { ArrowLeft, CreditCard, TrendingUp, AlertCircle, CheckCircle2, DollarSign, Loader2, Phone, Building2, Wallet } from 'lucide-react'
 import { formatCurrency, cn } from '@/lib/utils'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { PageHeader } from '@/components/layout/PageHeader'
@@ -35,6 +37,15 @@ interface EligibilityInfo {
   totalContributions?: number
 }
 
+interface BankDetail {
+  id: string
+  type: 'AIRTEL_MONEY' | 'MPAMBA' | 'BANK_CARD'
+  bankName?: string
+  accountNumber: string
+  accountName: string
+  isPrimary: boolean
+}
+
 function NewLoanPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -42,10 +53,18 @@ function NewLoanPageContent() {
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null)
   const [eligibility, setEligibility] = useState<EligibilityInfo | null>(null)
   const [groups, setGroups] = useState<Group[]>([])
+  const [savedBankDetails, setSavedBankDetails] = useState<BankDetail[]>([])
+  const [useNewAccount, setUseNewAccount] = useState(false)
   const [formData, setFormData] = useState({
     amountRequested: '',
     repaymentPeriodMonths: '6',
     purpose: '',
+    // Disbursement account details
+    selectedBankDetailId: '',
+    disbursementMethod: 'AIRTEL_MONEY' as 'AIRTEL_MONEY' | 'MPAMBA' | 'BANK_CARD',
+    disbursementAccountName: '',
+    disbursementAccountNumber: '',
+    disbursementBankName: '',
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -53,6 +72,7 @@ function NewLoanPageContent() {
   useEffect(() => {
     const fetchData = async () => {
       await fetchGroups()
+      await fetchSavedBankDetails()
 
       // Pre-select group if provided in URL
       const groupId = searchParams.get('groupId')
@@ -65,6 +85,23 @@ function NewLoanPageContent() {
 
     fetchData()
   }, [searchParams])
+
+  const fetchSavedBankDetails = async () => {
+    try {
+      const response = await fetch('/api/member/bank-details')
+      if (response.ok) {
+        const data = await response.json()
+        setSavedBankDetails(data.bankDetails)
+        // Auto-select primary account if available
+        const primary = data.bankDetails.find((d: BankDetail) => d.isPrimary)
+        if (primary) {
+          setFormData(prev => ({ ...prev, selectedBankDetailId: primary.id }))
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching bank details:', error)
+    }
+  }
 
   const fetchGroups = async () => {
     try {
@@ -160,6 +197,27 @@ function NewLoanPageContent() {
       return false
     }
 
+    // Validate disbursement account
+    if (!useNewAccount && !formData.selectedBankDetailId) {
+      setError('Please select a disbursement account or add a new one')
+      return false
+    }
+
+    if (useNewAccount) {
+      if (!formData.disbursementAccountName || formData.disbursementAccountName.length < 2) {
+        setError('Account name must be at least 2 characters')
+        return false
+      }
+      if (!formData.disbursementAccountNumber || formData.disbursementAccountNumber.length < 8) {
+        setError('Account number must be at least 8 characters')
+        return false
+      }
+      if (formData.disbursementMethod === 'BANK_CARD' && !formData.disbursementBankName) {
+        setError('Bank name is required for bank accounts')
+        return false
+      }
+    }
+
     return true
   }
 
@@ -174,6 +232,27 @@ function NewLoanPageContent() {
     setLoading(true)
 
     try {
+      // Prepare disbursement data
+      let disbursementData;
+      if (useNewAccount) {
+        disbursementData = {
+          disbursementMethod: formData.disbursementMethod,
+          disbursementAccountName: formData.disbursementAccountName,
+          disbursementAccountNumber: formData.disbursementAccountNumber,
+          disbursementBankName: formData.disbursementBankName || undefined,
+        }
+      } else {
+        const selectedDetail = savedBankDetails.find(d => d.id === formData.selectedBankDetailId)
+        if (selectedDetail) {
+          disbursementData = {
+            disbursementMethod: selectedDetail.type,
+            disbursementAccountName: selectedDetail.accountName,
+            disbursementAccountNumber: selectedDetail.accountNumber,
+            disbursementBankName: selectedDetail.bankName || undefined,
+          }
+        }
+      }
+
       const response = await fetch('/api/loans', {
         method: 'POST',
         headers: {
@@ -184,6 +263,7 @@ function NewLoanPageContent() {
           amountRequested: parseFloat(formData.amountRequested),
           repaymentPeriodMonths: parseInt(formData.repaymentPeriodMonths),
           purpose: formData.purpose,
+          ...disbursementData,
         }),
       })
 
@@ -368,6 +448,135 @@ function NewLoanPageContent() {
               onChange={handleChange}
             />
           </FormGroup>
+
+          {/* Disbursement Account Section */}
+          <div className="space-y-6 pt-6 border-t border-white/10">
+            <SectionHeader title="Disbursement Account" icon={Wallet} />
+            <p className="text-sm text-muted-foreground -mt-4">
+              Select where you want to receive the loan funds
+            </p>
+
+            {savedBankDetails.length > 0 && !useNewAccount ? (
+              <div className="space-y-4">
+                <div className="grid gap-3">
+                  {savedBankDetails.map((detail) => (
+                    <div
+                      key={detail.id}
+                      onClick={() => setFormData(prev => ({ ...prev, selectedBankDetailId: detail.id }))}
+                      className={cn(
+                        "p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center gap-4",
+                        formData.selectedBankDetailId === detail.id
+                          ? "border-blue-500 bg-blue-500/10"
+                          : "border-white/10 bg-white/5 hover:bg-white/10"
+                      )}
+                    >
+                      <div className={cn(
+                        "p-2 rounded-xl",
+                        detail.type === 'AIRTEL_MONEY' ? "bg-red-500/10 text-red-500" :
+                          detail.type === 'MPAMBA' ? "bg-yellow-500/10 text-yellow-500" :
+                            "bg-blue-500/10 text-blue-500"
+                      )}>
+                        {detail.type === 'BANK_CARD' ? <Building2 className="w-5 h-5" /> : <Phone className="w-5 h-5" />}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-bold text-foreground">{detail.accountName}</p>
+                        <p className="text-sm text-muted-foreground font-mono">{detail.accountNumber}</p>
+                      </div>
+                      {detail.isPrimary && (
+                        <span className="text-[10px] font-black uppercase tracking-widest text-blue-500 bg-blue-500/10 px-2 py-1 rounded-lg">Primary</span>
+                      )}
+                      {formData.selectedBankDetailId === detail.id && (
+                        <CheckCircle2 className="w-5 h-5 text-blue-500" />
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setUseNewAccount(true)}
+                  className="w-full rounded-xl"
+                >
+                  + Use Different Account
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {savedBankDetails.length > 0 && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setUseNewAccount(false)}
+                    className="text-sm text-muted-foreground"
+                  >
+                    ← Select from saved accounts
+                  </Button>
+                )}
+
+                <FormGroup label="Payment Method *">
+                  <Select
+                    value={formData.disbursementMethod}
+                    onValueChange={(value: 'AIRTEL_MONEY' | 'MPAMBA' | 'BANK_CARD') =>
+                      setFormData(prev => ({ ...prev, disbursementMethod: value }))
+                    }
+                  >
+                    <SelectTrigger className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-bold px-6">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl border-white/10 backdrop-blur-3xl">
+                      <SelectItem value="AIRTEL_MONEY" className="font-bold">
+                        <div className="flex items-center gap-2">
+                          <Phone className="w-4 h-4 text-red-500" />
+                          Airtel Money
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="MPAMBA" className="font-bold">
+                        <div className="flex items-center gap-2">
+                          <Phone className="w-4 h-4 text-yellow-500" />
+                          Mpamba
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="BANK_CARD" className="font-bold">
+                        <div className="flex items-center gap-2">
+                          <Building2 className="w-4 h-4 text-blue-500" />
+                          Bank Account
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormGroup>
+
+                <FormGroup label="Account Name *">
+                  <Input
+                    placeholder="John Banda"
+                    value={formData.disbursementAccountName}
+                    onChange={(e) => setFormData(prev => ({ ...prev, disbursementAccountName: e.target.value }))}
+                    className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-bold px-6"
+                  />
+                </FormGroup>
+
+                <FormGroup label={formData.disbursementMethod === 'BANK_CARD' ? 'Account Number *' : 'Phone Number *'}>
+                  <Input
+                    placeholder={formData.disbursementMethod === 'BANK_CARD' ? '1234567890' : '0999123456'}
+                    value={formData.disbursementAccountNumber}
+                    onChange={(e) => setFormData(prev => ({ ...prev, disbursementAccountNumber: e.target.value }))}
+                    className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-bold px-6"
+                  />
+                </FormGroup>
+
+                {formData.disbursementMethod === 'BANK_CARD' && (
+                  <FormGroup label="Bank Name *">
+                    <Input
+                      placeholder="National Bank of Malawi"
+                      value={formData.disbursementBankName}
+                      onChange={(e) => setFormData(prev => ({ ...prev, disbursementBankName: e.target.value }))}
+                      className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-bold px-6"
+                    />
+                  </FormGroup>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         <AnimatePresence>
