@@ -137,7 +137,7 @@ export function MobileNavigation() {
 
       {/* Mobile Bottom Navigation - Floating Glass Dock */}
       {user && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden px-4 pb-8 sm:pb-10 pointer-events-none safe-area-bottom">
+        <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden px-4 pb-2 sm:pb-3 pointer-events-none safe-area-bottom">
           <motion.div
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
