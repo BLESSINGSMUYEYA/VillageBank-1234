@@ -22,10 +22,10 @@ export function GrowthLoader({
     showText = false,
 }: LoaderProps) {
     const sizeMap = {
-        sm: { width: 90, height: 60 },
-        md: { width: 135, height: 90 },
-        lg: { width: 180, height: 120 },
-        xl: { width: 240, height: 160 }
+        sm: { width: 60, height: 40 },
+        md: { width: 100, height: 67 },
+        lg: { width: 150, height: 100 },
+        xl: { width: 200, height: 133 }
     }
 
     const dimensions = sizeMap[size]
@@ -33,7 +33,7 @@ export function GrowthLoader({
     return (
         <motion.div
             className={cn(
-                'flex flex-col items-center justify-center gap-4',
+                'flex flex-col items-center justify-center gap-3',
                 className
             )}
             initial={{ opacity: 0 }}
@@ -319,8 +319,8 @@ export function LogoLoader(props: LoaderProps) {
 // Full page loader variant
 export function PageLoader({ text = 'Loading' }: { text?: string }) {
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-amber-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-amber-950/20">
-            <GrowthLoader size="xl" text={text} />
+        <div className="h-[100dvh] w-full flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-amber-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-amber-950/20">
+            <GrowthLoader size="lg" text={text} />
         </div>
     )
 }
