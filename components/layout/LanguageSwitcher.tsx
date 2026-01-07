@@ -16,9 +16,7 @@ export function LanguageSwitcher() {
 
     const languages = [
         { id: 'en', label: 'English', region: 'Global', flag: '🇬🇧' },
-        { id: 'ny', label: 'Chichewa', region: 'Malawi / Zambia', flag: '🇲🇼' },
-        { id: 'bem', label: 'Bemba', region: 'Zambia / DRC', flag: '🇿🇲' },
-        { id: 'fr', label: 'Français', region: 'DRC / Rwanda', flag: '🇫🇷' }
+        { id: 'ny', label: 'Chichewa', region: 'Malawi / Zambia', flag: '🇲🇼' }
     ] as const
 
     const currentLang = languages.find(l => l.id === language) || languages[0]

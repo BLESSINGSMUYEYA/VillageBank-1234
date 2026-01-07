@@ -3,17 +3,13 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import en from '../../dictionaries/en.json'
 import ny from '../../dictionaries/ny.json'
-import bem from '../../dictionaries/bem.json'
-import fr from '../../dictionaries/fr.json'
 
-type Language = 'en' | 'ny' | 'bem' | 'fr'
+type Language = 'en' | 'ny'
 type Dictionary = typeof en
 
 const dictionaries: Record<Language, any> = {
     en,
-    ny,
-    bem,
-    fr
+    ny
 }
 
 interface LanguageContextType {
@@ -30,12 +26,12 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         const savedLang = localStorage.getItem('app-language') as Language
-        if (savedLang && ['en', 'ny', 'bem', 'fr'].includes(savedLang)) {
+        if (savedLang && ['en', 'ny'].includes(savedLang)) {
             setLanguageState(savedLang)
         } else {
             // Detect browser language
             const browserLang = navigator.language.split('-')[0]
-            if (['en', 'ny', 'bem', 'fr'].includes(browserLang)) {
+            if (['en', 'ny'].includes(browserLang)) {
                 setLanguageState(browserLang as Language)
             }
         }

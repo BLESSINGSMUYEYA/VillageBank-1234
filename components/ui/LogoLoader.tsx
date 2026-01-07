@@ -22,13 +22,14 @@ export function GrowthLoader({
     showText = false,
 }: LoaderProps) {
     const sizeMap = {
+        xs: { width: 45, height: 30 },
         sm: { width: 60, height: 40 },
         md: { width: 100, height: 67 },
         lg: { width: 150, height: 100 },
         xl: { width: 200, height: 133 }
     }
 
-    const dimensions = sizeMap[size]
+    const dimensions = sizeMap[size as keyof typeof sizeMap] || sizeMap.lg
 
     return (
         <motion.div
@@ -221,94 +222,9 @@ export function GrowthLoader({
     )
 }
 
-// Animated dots loader (alternative simpler version)
-export function DotsLoader({
-    size = 'lg',
-    text = 'Loading...',
-    className,
-    showText = true,
-}: LoaderProps) {
-    const dotSizes = {
-        sm: 'w-2 h-2',
-        md: 'w-3 h-3',
-        lg: 'w-4 h-4',
-        xl: 'w-5 h-5'
-    }
-
-    const gapSizes = {
-        sm: 'gap-1',
-        md: 'gap-2',
-        lg: 'gap-3',
-        xl: 'gap-4'
-    }
-
-    return (
-        <motion.div
-            className={cn(
-                'flex flex-col items-center justify-center gap-4',
-                className
-            )}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-        >
-            {/* Animated bouncing dots */}
-            <div className={cn("flex items-center", gapSizes[size])}>
-                {[0, 1, 2, 3, 4].map((i) => (
-                    <motion.div
-                        key={i}
-                        className={cn(
-                            "rounded-full bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500",
-                            dotSizes[size]
-                        )}
-                        initial={{ y: 0, opacity: 0.5 }}
-                        animate={{
-                            y: [-8, 0, -8],
-                            opacity: [0.5, 1, 0.5],
-                            scale: [0.8, 1.1, 0.8]
-                        }}
-                        transition={{
-                            duration: 1,
-                            repeat: Infinity,
-                            delay: i * 0.15,
-                            ease: "easeInOut"
-                        }}
-                        style={{
-                            boxShadow: '0 4px 12px rgba(251, 191, 36, 0.4)'
-                        }}
-                    />
-                ))}
-            </div>
-
-            {/* Loading text */}
-            {showText && (
-                <motion.div
-                    className="flex items-center gap-0.5 text-gray-600 dark:text-gray-300 font-medium text-sm"
-                    initial={{ opacity: 0.5 }}
-                    animate={{ opacity: 1 }}
-                >
-                    <span>{text.replace('...', '')}</span>
-                    <span className="flex">
-                        {[0, 1, 2].map((i) => (
-                            <motion.span
-                                key={i}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: [0, 1, 0] }}
-                                transition={{
-                                    duration: 1.2,
-                                    repeat: Infinity,
-                                    delay: i * 0.2,
-                                    ease: "easeInOut"
-                                }}
-                                className="text-amber-500"
-                            >
-                                .
-                            </motion.span>
-                        ))}
-                    </span>
-                </motion.div>
-            )}
-        </motion.div>
-    )
+// Replaced DotsLoader with GrowthLoader for consistent styling
+export function DotsLoader(props: LoaderProps) {
+    return <GrowthLoader {...props} />
 }
 
 // Legacy export - now uses GrowthLoader
@@ -326,8 +242,8 @@ export function PageLoader({ text = 'Loading' }: { text?: string }) {
 }
 
 // Inline loader for buttons and smaller areas
-export function InlineLogoLoader({ size = 'sm' }: { size?: 'sm' | 'md' }) {
-    return <DotsLoader size={size} showText={false} />
+export function InlineLogoLoader({ size = 'xs' }: { size?: 'xs' | 'sm' | 'md' }) {
+    return <GrowthLoader size={size as any} showText={false} />
 }
 
 // Card loader
