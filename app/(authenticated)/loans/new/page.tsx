@@ -309,7 +309,7 @@ function NewLoanPageContent() {
             value={selectedGroup?.id || ''}
             onValueChange={handleGroupChange}
           >
-            <SelectTrigger className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-bold px-6">
+            <SelectTrigger className="bg-white/50 dark:bg-black/20 border-white/20 dark:border-white/10 rounded-xl h-14 font-bold px-6 transition-all focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-black/40">
               <SelectValue placeholder="Select a collective" />
             </SelectTrigger>
             <SelectContent className="rounded-2xl border-white/10 backdrop-blur-3xl">
@@ -442,7 +442,7 @@ function NewLoanPageContent() {
             <Textarea
               id="purpose"
               name="purpose"
-              className="bg-white/50 dark:bg-black/20 border-white/20 rounded-2xl min-h-[120px] font-bold py-4 px-6 focus:ring-blue-500"
+              className="bg-white/50 dark:bg-black/20 border-white/20 dark:border-white/10 rounded-2xl min-h-[120px] font-bold py-4 px-6 transition-all focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-black/40"
               placeholder="Briefly describe the objective for this credit injection..."
               value={formData.purpose}
               onChange={handleChange}
@@ -551,7 +551,7 @@ function NewLoanPageContent() {
                     placeholder="John Banda"
                     value={formData.disbursementAccountName}
                     onChange={(e) => setFormData(prev => ({ ...prev, disbursementAccountName: e.target.value }))}
-                    className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-bold px-6"
+                    className="bg-white/50 dark:bg-black/20 border-white/20 dark:border-white/10 rounded-xl h-14 font-bold px-6 transition-all focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-black/40"
                   />
                 </FormGroup>
 
@@ -560,7 +560,7 @@ function NewLoanPageContent() {
                     placeholder={formData.disbursementMethod === 'BANK_CARD' ? '1234567890' : '0999123456'}
                     value={formData.disbursementAccountNumber}
                     onChange={(e) => setFormData(prev => ({ ...prev, disbursementAccountNumber: e.target.value }))}
-                    className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-bold px-6"
+                    className="bg-white/50 dark:bg-black/20 border-white/20 dark:border-white/10 rounded-xl h-14 font-bold px-6 transition-all focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-black/40"
                   />
                 </FormGroup>
 
@@ -570,7 +570,7 @@ function NewLoanPageContent() {
                       placeholder="National Bank of Malawi"
                       value={formData.disbursementBankName}
                       onChange={(e) => setFormData(prev => ({ ...prev, disbursementBankName: e.target.value }))}
-                      className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-bold px-6"
+                      className="bg-white/50 dark:bg-black/20 border-white/20 dark:border-white/10 rounded-xl h-14 font-bold px-6 transition-all focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-black/40"
                     />
                   </FormGroup>
                 )}
@@ -653,7 +653,7 @@ function NewLoanPageContent() {
 
       <div className="max-w-4xl mx-auto w-full">
         <motion.div variants={itemFadeIn}>
-          <GlassCard className="p-10 border-white/10 shadow-2xl" hover={false}>
+          <GlassCard className="p-5 sm:p-8 md:p-10 border-white/10 shadow-2xl" hover={false}>
             <form onSubmit={handleSubmit} className="space-y-10">
               {error && (
                 <Alert variant="destructive" className="rounded-2xl">
