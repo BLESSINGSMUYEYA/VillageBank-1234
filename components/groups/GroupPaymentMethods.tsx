@@ -36,12 +36,12 @@ import {
     Building2,
     Plus,
     Trash2,
-    Loader2,
     CheckCircle2,
     AlertCircle,
     Copy,
     CreditCard,
 } from 'lucide-react'
+import { InlineLogoLoader } from '@/components/ui/LogoLoader'
 import { cn } from '@/lib/utils'
 import { itemFadeIn } from '@/lib/motions'
 
@@ -188,7 +188,7 @@ export function GroupPaymentMethods({
     if (loading) {
         return (
             <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                <InlineLogoLoader size="md" />
             </div>
         )
     }
@@ -394,7 +394,7 @@ export function GroupPaymentMethods({
                                 Cancel
                             </Button>
                             <Button type="submit" disabled={submitting}>
-                                {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {submitting && <div className="mr-2"><InlineLogoLoader size="xs" /></div>}
                                 Add Account
                             </Button>
                         </div>

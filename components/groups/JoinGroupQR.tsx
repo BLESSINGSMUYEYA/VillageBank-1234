@@ -10,7 +10,8 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog'
-import { ScanLine, Camera, XCircle, Loader2 } from 'lucide-react'
+import { ScanLine, Camera, XCircle } from 'lucide-react'
+import { InlineLogoLoader } from '@/components/ui/LogoLoader'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
@@ -163,7 +164,7 @@ export function JoinGroupQR() {
                                 {/* LOADER / INITIALIZING UI (MANAGED BY REACT SEPARATELY) */}
                                 {!isCameraReady && (
                                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-900 rounded-2xl z-30">
-                                        <div className="w-12 h-12 border-4 border-blue-600/20 dark:border-banana/20 border-t-blue-600 dark:border-t-banana rounded-full animate-spin" />
+                                        <InlineLogoLoader size="md" />
                                         <p className="text-sm font-black text-muted-foreground mt-4 uppercase tracking-widest opacity-60">Initializing...</p>
                                     </div>
                                 )}

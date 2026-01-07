@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Download, FileText, Table, FileSpreadsheet, Loader2 } from 'lucide-react'
+import { Download, FileText, Table, FileSpreadsheet } from 'lucide-react'
+import { InlineLogoLoader } from '@/components/ui/LogoLoader'
 import { DataExporter, ExportData } from '@/lib/export'
 
 interface ExportButtonProps {
@@ -17,13 +18,13 @@ interface ExportButtonProps {
   elementId?: string // For PDF export
 }
 
-export function ExportButton({ 
-  data, 
-  type, 
-  title, 
-  dateRange, 
+export function ExportButton({
+  data,
+  type,
+  title,
+  dateRange,
   disabled = false,
-  elementId 
+  elementId
 }: ExportButtonProps) {
   const [exportFormat, setExportFormat] = useState<'excel' | 'csv' | 'pdf'>('excel')
   const [isExporting, setIsExporting] = useState(false)
@@ -132,9 +133,9 @@ export function ExportButton({
                     <div key={key} className="flex justify-between">
                       <span className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}:</span>
                       <span className="font-medium">
-                        {typeof value === 'number' && value > 1000 
-                          ? (value !== null && value !== undefined ? value.toLocaleString() : '0') 
-                          : typeof value === 'string' || typeof value === 'number' 
+                        {typeof value === 'number' && value > 1000
+                          ? (value !== null && value !== undefined ? value.toLocaleString() : '0')
+                          : typeof value === 'string' || typeof value === 'number'
                             ? value.toString()
                             : JSON.stringify(value)}
                       </span>
@@ -207,7 +208,7 @@ export function ExportButton({
                 >
                   {isExporting ? (
                     <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      <InlineLogoLoader size="xs" />
                       Exporting...
                     </>
                   ) : (

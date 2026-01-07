@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Copy, Download, Share2, Users, Clock, Shield, QrCode, Loader2 } from 'lucide-react'
+import { Copy, Download, Share2, Users, Clock, Shield, QrCode } from 'lucide-react'
+import { InlineLogoLoader } from '@/components/ui/LogoLoader'
 import { toast } from 'sonner'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { PremiumInput } from '@/components/ui/premium-input'
@@ -307,7 +308,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
           >
             {loading ? (
               <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                <InlineLogoLoader size="sm" />
                 Processing...
               </>
             ) : (

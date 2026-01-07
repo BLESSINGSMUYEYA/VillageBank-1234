@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { Upload, X, Loader2, ScanLine, FileCheck } from 'lucide-react'
+import { Upload, X, ScanLine, FileCheck } from 'lucide-react'
+import { InlineLogoLoader } from '@/components/ui/LogoLoader'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
@@ -182,7 +183,7 @@ export default function ReceiptUploader({ onScanComplete, onScanStart, onError, 
                                         transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
                                         className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-blue-400 to-transparent shadow-[0_0_15px_rgba(96,165,250,0.8)] z-10"
                                     />
-                                    <ScanLine className="w-12 h-12 animate-pulse text-blue-400" />
+                                    <InlineLogoLoader size="sm" />
                                     <p className="font-black tracking-[0.2em] text-[10px] uppercase animate-pulse text-blue-400">Magic Scan in Progress...</p>
                                 </div>
                             )}

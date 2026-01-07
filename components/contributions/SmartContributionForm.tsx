@@ -12,7 +12,8 @@ import { SectionHeader } from '@/components/ui/section-header'
 import { Badge } from '@/components/ui/badge'
 import { motion, AnimatePresence } from 'framer-motion'
 import { fadeIn, itemFadeIn, staggerContainer } from '@/lib/motions'
-import { Loader2, DollarSign, Calculator, ArrowRight, Shield, TrendingUp, CheckCircle, AlertTriangle, Sparkles, Receipt, ArrowLeft, Send } from 'lucide-react'
+import { DollarSign, Calculator, ArrowRight, Shield, TrendingUp, CheckCircle, AlertTriangle, Sparkles, Receipt, ArrowLeft, Send } from 'lucide-react'
+import { InlineLogoLoader } from '@/components/ui/LogoLoader'
 import { cn, formatCurrency } from '@/lib/utils'
 import { toast } from 'sonner'
 import { saveContribution, getSharedFile } from '@/lib/idb'
@@ -435,7 +436,7 @@ export default function SmartContributionForm() {
                                         onClick={handleSubmit}
                                         disabled={loading || amount <= 0 || !selectedGroupId}
                                     >
-                                        {loading ? <Loader2 className="animate-spin" /> : (
+                                        {loading ? <InlineLogoLoader size="sm" /> : (
                                             <>
                                                 Secure Confirm
                                                 <Send className="ml-2 w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
