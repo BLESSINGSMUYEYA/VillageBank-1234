@@ -8,7 +8,10 @@ export function UBankLogo({ className }: { className?: string }) {
             alt="uBank Logo"
             width={40}
             height={40}
-            className={cn("object-contain", className)}
+            className={cn("object-contain mix-blend-multiply dark:mix-blend-screen", className)}
+            style={{
+                filter: 'drop-shadow(0 2px 6px rgba(251, 191, 36, 0.3))'
+            }}
             priority
         />
     )
