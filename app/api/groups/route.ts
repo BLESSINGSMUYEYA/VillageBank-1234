@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { generateUniqueGroupTag } from '@/lib/tag-generator'
 import { z } from 'zod'
 
 const createGroupSchema = z.object({
@@ -51,9 +52,12 @@ export async function POST(request: NextRequest) {
     // Create group and add creator as admin in a single transaction
     const group = await prisma.$transaction(async (tx) => {
 
+      const groupTag = await generateUniqueGroupTag(validatedData.name)
+
       const newGroup = await tx.group.create({
         data: {
           name: validatedData.name,
+          ubankTag: groupTag,
           description: validatedData.description,
           region: validatedData.region,
           meetingFrequency: validatedData.meetingFrequency as any,

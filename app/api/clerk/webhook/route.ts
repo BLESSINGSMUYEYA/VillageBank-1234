@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { generateUniqueUserTag } from '@/lib/tag-generator'
 import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 
@@ -60,9 +61,11 @@ export async function POST(req: NextRequest) {
 
 async function handleUserCreated(data: any) {
   const { id, email_addresses, first_name, last_name, phone_numbers, public_metadata } = data
-  
+
   const primaryEmail = email_addresses[0]?.email_address
   const primaryPhone = phone_numbers[0]?.phone_number
+
+  const ubankTag = await generateUniqueUserTag(first_name || 'User', last_name || 'Member')
 
   await prisma.user.create({
     data: {
@@ -73,13 +76,14 @@ async function handleUserCreated(data: any) {
       phoneNumber: primaryPhone || '',
       role: public_metadata?.role || 'MEMBER',
       region: public_metadata?.region || 'CENTRAL',
+      ubankTag,
     },
   })
 }
 
 async function handleUserUpdated(data: any) {
   const { id, email_addresses, first_name, last_name, phone_numbers, public_metadata } = data
-  
+
   const primaryEmail = email_addresses[0]?.email_address
   const primaryPhone = phone_numbers[0]?.phone_number
 
@@ -99,7 +103,7 @@ async function handleUserUpdated(data: any) {
 
 async function handleUserDeleted(data: any) {
   const { id } = data
-  
+
   await prisma.user.update({
     where: { id },
     data: {

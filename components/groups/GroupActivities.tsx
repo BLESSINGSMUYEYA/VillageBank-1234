@@ -65,7 +65,7 @@ export default function GroupActivities({ activities }: GroupActivitiesProps) {
                                         <div className="flex flex-wrap items-center gap-4 text-[11px] font-bold text-muted-foreground pt-1">
                                             <div className="flex items-center gap-1.5">
                                                 <User className="w-3.5 h-3.5" />
-                                                {activity.user.firstName} {activity.user.lastName}
+                                                {activity.user.ubankTag ? `@${activity.user.ubankTag}` : `${activity.user.firstName} ${activity.user.lastName}`}
                                             </div>
                                             <div className="flex items-center gap-1.5">
                                                 <Calendar className="w-3.5 h-3.5" />

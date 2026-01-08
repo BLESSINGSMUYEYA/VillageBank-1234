@@ -244,13 +244,15 @@ export function DashboardContent({
                                                     activity.type.includes('CONTRIBUTION') ? 'bg-emerald-600 text-white' :
                                                         'bg-slate-600 text-white'
                                             )}>
-                                                <span className="font-black text-lg">{activity.groupName.charAt(0)}</span>
+                                                <span className="font-black text-lg">{(activity.groupTag || activity.groupName).charAt(0).toUpperCase()}</span>
                                             </div>
 
                                             <div className="flex-1 min-w-0 flex items-center justify-between">
                                                 <div>
                                                     <p className="text-base font-black text-foreground truncate">{activity.description}</p>
-                                                    <p className="text-xs font-bold text-muted-foreground opacity-60 mt-0.5">{activity.groupName}</p>
+                                                    <p className="text-xs font-bold text-muted-foreground opacity-60 mt-0.5">
+                                                        {activity.groupTag ? `@${activity.groupTag}` : activity.groupName}
+                                                    </p>
                                                 </div>
                                                 <div className="text-right">
                                                     {activity.amount && (

@@ -149,13 +149,23 @@ export async function POST(
 
         const { updatedContribution, penaltyPaid, balanceIncrement } = result
 
+        // Fetch user details for the description
+        const contributionUser = await prisma.user.findUnique({
+            where: { id: contribution.userId },
+            select: { firstName: true, lastName: true, ubankTag: true }
+        })
+
+        const userDisplayName = contributionUser
+            ? (contributionUser.ubankTag ? `@${contributionUser.ubankTag}` : `${contributionUser.firstName} ${contributionUser.lastName}`)
+            : 'Unknown User'
+
         // Create activity log
         await prisma.activity.create({
             data: {
                 userId: userId,
                 groupId: contribution.groupId,
                 actionType: `CONTRIBUTION_${status}`,
-                description: `${status === 'COMPLETED' ? 'Approved' : 'Rejected'} contribution of MWK ${contribution.amount.toLocaleString()} from userId ${contribution.userId}`,
+                description: `${status === 'COMPLETED' ? 'Approved' : 'Rejected'} contribution of MWK ${contribution.amount.toLocaleString()} from ${userDisplayName}`,
                 metadata: {
                     contributionId: id,
                     status,

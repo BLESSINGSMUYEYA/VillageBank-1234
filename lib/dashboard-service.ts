@@ -17,6 +17,7 @@ export interface RecentActivity {
     amount?: number
     createdAt: Date
     groupName: string
+    groupTag?: string
 }
 
 export interface ChartData {
@@ -129,6 +130,7 @@ export async function getRecentActivity(): Promise<RecentActivity[]> {
             group: {
                 select: {
                     name: true,
+                    ubankTag: true,
                 },
             },
         },
@@ -146,6 +148,7 @@ export async function getRecentActivity(): Promise<RecentActivity[]> {
         amount: (activity.metadata as any)?.amount as number | undefined,
         createdAt: activity.createdAt,
         groupName: activity.group?.name || 'Unknown Group',
+        groupTag: activity.group?.ubankTag || undefined,
     }))
 }
 
