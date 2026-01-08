@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { ArrowLeft, AlertCircle, Save, Landmark, ShieldQuestion, Loader2, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, AlertCircle, Save, Landmark, ShieldQuestion, Loader2, CheckCircle2, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { formatCurrency, cn } from '@/lib/utils'
 import { PageHeader } from '@/components/layout/PageHeader'
@@ -19,6 +19,16 @@ import { GlassCard } from '@/components/ui/GlassCard'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { motion, AnimatePresence } from 'framer-motion'
 import { fadeIn, staggerContainer, itemFadeIn } from '@/lib/motions'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 
 interface Group {
   id: string
@@ -72,6 +82,8 @@ export default function GroupSettingsPage() {
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   // Form state
   const [formData, setFormData] = useState({
@@ -195,6 +207,28 @@ export default function GroupSettingsPage() {
       setError(error instanceof Error ? error.message : 'Failed to save settings')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!group) return
+
+    try {
+      setIsDeleting(true)
+      const response = await fetch(`/api/groups/${group.id}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || 'Failed to delete group')
+      }
+
+      router.push('/dashboard')
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Failed to delete group')
+      setIsDeleting(false)
+      setDeleteDialogOpen(false)
     }
   }
 
@@ -523,8 +557,55 @@ export default function GroupSettingsPage() {
               </div>
             </GlassCard>
           </motion.div>
+
+          {/* Danger Zone */}
+          <motion.div variants={itemFadeIn}>
+            <GlassCard className="p-6 border-red-500/20 bg-red-500/5" hover={false}>
+              <h4 className="font-black text-xs uppercase tracking-widest text-red-600 mb-4">{t('groups.danger_zone')}</h4>
+              <div className="space-y-4">
+                <p className="text-[10px] text-red-600/80 font-bold leading-relaxed">
+                  {t('groups.delete_warning_desc')}
+                </p>
+                <Button
+                  variant="outline"
+                  className="w-full border-2 border-red-500/20 hover:border-red-600 hover:bg-red-600 hover:text-white text-red-600 font-bold rounded-xl h-12 transition-all duration-300"
+                  onClick={() => setDeleteDialogOpen(true)}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  {t('groups.delete_group')}
+                </Button>
+              </div>
+            </GlassCard>
+          </motion.div>
         </div>
       </div>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="bg-white/90 dark:bg-black/90 backdrop-blur-xl border-white/20 rounded-3xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-black text-xl">{t('groups.delete_confirm_title')}</AlertDialogTitle>
+            <AlertDialogDescription className="font-medium text-muted-foreground">
+              {t('groups.delete_confirm_desc')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl font-bold border-0 bg-secondary/50 hover:bg-secondary">
+              {t('common.cancel')}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault()
+                handleDelete()
+              }}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold"
+            >
+              {isDeleting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Trash2 className="w-4 h-4 mr-2" />}
+              {t('common.confirm_delete')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </motion.div>
   )
 }

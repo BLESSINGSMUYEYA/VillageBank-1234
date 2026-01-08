@@ -21,7 +21,8 @@
         "premium_member": "Membala Okhazikika",
         "zen_edition": "Zen Edition",
         "sign_in": "Lowani",
-        "forgot_password": "Mwayiwala?"
+        "forgot_password": "Mwayiwala?",
+        "confirm_delete": "Chotsani Gulu"
     },
     "admin": {
         "regional": "Oyang'anira Chigawo",
@@ -113,7 +114,11 @@
         "access_restricted": "Malo Osaloledwa",
         "admin_only_desc": "Oyang'anira okha ndi omwe amaloledwa kusintha dongosolo la gululi.",
         "return_to_group": "Bwererani ku Gulu",
-        "config_updated": "Masinthidwe asungidwa bwino."
+        "config_updated": "Masinthidwe asungidwa bwino.",
+        "delete_group": "Chotsani Gulu",
+        "delete_warning_desc": "Izi sizingathe kusinthidwa. Izi zichotsa gulu ndi deta yake yonse.",
+        "delete_confirm_title": "Muli otsimikiza?",
+        "delete_confirm_desc": "Izi sizingathe kusinthidwa. Izi zichotsa gulu ndi deta yake yonse."
     },
     "vault": {
         "title": "Thumba",

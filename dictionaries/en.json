@@ -23,7 +23,8 @@
     "premium_member": "Premium Member",
     "zen_edition": "Zen Edition",
     "sign_in": "Sign In",
-    "forgot_password": "Forgot Password?"
+    "forgot_password": "Forgot Password?",
+    "confirm_delete": "Delete Group"
   },
   "admin": {
     "regional": "Regional Admin",
@@ -118,7 +119,11 @@
     "access_restricted": "Access Restricted",
     "admin_only_desc": "Only administrators are authorized to modify group parameters and settings.",
     "return_to_group": "Return to Group",
-    "config_updated": "Configuration updated successfully."
+    "config_updated": "Configuration updated successfully.",
+    "delete_group": "Delete Group",
+    "delete_warning_desc": "This action cannot be undone. This will permanently delete the group and all associated data.",
+    "delete_confirm_title": "Are you absolutely sure?",
+    "delete_confirm_desc": "This action cannot be undone. This will permanently delete the group and remove all data from our servers."
   },
   "vault": {
     "title": "Vault",
