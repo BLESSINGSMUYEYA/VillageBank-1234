@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -18,8 +19,15 @@ import {
     Zap,
     CheckCircle2,
     History,
-    ArrowLeft
+    ArrowLeft,
+    AtSign,
+    Edit2,
+    Check,
+    X as XIcon,
+    Loader2
 } from 'lucide-react'
+import { toast } from 'sonner'
+import { Input } from '@/components/ui/input'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { StatsCard } from '@/components/ui/stats-card'
 import { PageHeader } from '@/components/layout/PageHeader'
@@ -37,6 +45,7 @@ interface ProfileData {
     phoneNumber: string | null
     role: string
     region: string | null
+    ubankTag: string | null
     joinedAt: Date
     isActive: boolean
 }
@@ -79,6 +88,38 @@ interface ProfileClientProps {
 
 export function ProfileClient({ profile, memberships, financials }: ProfileClientProps) {
     const { t } = useLanguage()
+    const [isEditingTag, setIsEditingTag] = useState(false)
+    const [tagValue, setTagValue] = useState(profile.ubankTag || '')
+    const [isSavingTag, setIsSavingTag] = useState(false)
+
+    const handleSaveTag = async () => {
+        if (!tagValue) return
+
+        setIsSavingTag(true)
+        try {
+            const res = await fetch('/api/user/tag', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tag: tagValue }),
+            })
+
+            const data = await res.json()
+
+            if (!res.ok) {
+                toast.error(data.error || 'Failed to update tag')
+                return
+            }
+
+            toast.success('uBank Tag updated successfully')
+            setIsEditingTag(false)
+            // Ideally we'd update the local profile state here or trigger a revalidate
+            profile.ubankTag = data.tag
+        } catch (error) {
+            toast.error('Something went wrong')
+        } finally {
+            setIsSavingTag(false)
+        }
+    }
 
     return (
         <motion.div
@@ -135,9 +176,58 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
 
                                 <div className="space-y-8">
                                     <div className="text-center">
-                                        <h2 className="text-4xl font-black text-foreground tracking-tighter leading-none mb-4">
+                                        <h2 className="text-4xl font-black text-foreground tracking-tighter leading-none mb-2">
                                             {profile?.firstName}
                                         </h2>
+
+                                        {/* uBank Tag Section */}
+                                        <div className="flex items-center justify-center gap-2 mb-4 h-8">
+                                            {isEditingTag ? (
+                                                <div className="flex items-center gap-2 animate-in fade-in zoom-in duration-200">
+                                                    <div className="relative">
+                                                        <AtSign className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                                                        <Input
+                                                            value={tagValue}
+                                                            onChange={(e) => setTagValue(e.target.value)}
+                                                            className="h-8 w-40 pl-8 text-xs font-bold bg-white/10 border-white/10"
+                                                            placeholder="your.handle"
+                                                            autoFocus
+                                                        />
+                                                    </div>
+                                                    <Button
+                                                        size="icon"
+                                                        className="h-8 w-8 bg-green-500 hover:bg-green-600 text-white rounded-full"
+                                                        onClick={handleSaveTag}
+                                                        disabled={isSavingTag}
+                                                    >
+                                                        {isSavingTag ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
+                                                    </Button>
+                                                    <Button
+                                                        size="icon"
+                                                        variant="ghost"
+                                                        className="h-8 w-8 rounded-full hover:bg-white/10"
+                                                        onClick={() => {
+                                                            setIsEditingTag(false)
+                                                            setTagValue(profile.ubankTag || '')
+                                                        }}
+                                                    >
+                                                        <XIcon className="w-3 h-3" />
+                                                    </Button>
+                                                </div>
+                                            ) : (
+                                                <div
+                                                    className="group flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 dark:bg-white/5 border border-transparent hover:border-blue-500/30 transition-all cursor-pointer"
+                                                    onClick={() => setIsEditingTag(true)}
+                                                >
+                                                    <AtSign className="w-3.5 h-3.5 text-blue-500 dark:text-banana opacity-70" />
+                                                    <span className="text-sm font-bold text-muted-foreground group-hover:text-foreground transition-colors">
+                                                        {profile.ubankTag || 'Claim your tag'}
+                                                    </span>
+                                                    <Edit2 className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-50 transition-opacity ml-1" />
+                                                </div>
+                                            )}
+                                        </div>
+
                                         <div className="flex flex-wrap items-center justify-center gap-3">
                                             <Badge variant="info" className="rounded-lg font-black text-[9px] tracking-widest uppercase px-3 py-1">
                                                 {profile?.role?.replace('_', ' ')}

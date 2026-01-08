@@ -13,6 +13,7 @@ datasource db {
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
+  ubankTag      String?   @unique // UPI-like unique ID (e.g. @john.doe)
   firstName     String?
   lastName      String?
   phoneNumber   String?
@@ -62,6 +63,7 @@ enum InterestType {
 model Group {
   id                      String   @id @default(cuid())
   name                    String
+  ubankTag                String?  @unique // UPI-like unique ID (e.g. @my.group)
   description             String?
   region                  Region
   meetingFrequency        MeetingFrequency @default(MONTHLY)
