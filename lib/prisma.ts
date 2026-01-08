@@ -20,7 +20,8 @@ const getDatabaseUrl = () => {
     let changed = false
 
     if (!urlObj.searchParams.has('connection_limit')) {
-      urlObj.searchParams.set('connection_limit', '10')
+      // Increased from 10 to 50 to prevent timeouts in development
+      urlObj.searchParams.set('connection_limit', '50')
       changed = true
     }
     if (!urlObj.searchParams.has('pool_timeout')) {

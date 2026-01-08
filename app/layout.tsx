@@ -29,6 +29,7 @@ export const metadata: Metadata = {
 
 import { AuthProvider } from '@/components/providers/AuthProvider'
 import { LanguageProvider } from '@/components/providers/LanguageProvider'
+import { Toaster } from 'sonner'
 
 export default function RootLayout({
   children,
@@ -41,6 +42,7 @@ export default function RootLayout({
         <AuthProvider>
           <LanguageProvider>
             {children}
+            <Toaster richColors position="top-center" closeButton />
             <script
               dangerouslySetInnerHTML={{
                 __html: `

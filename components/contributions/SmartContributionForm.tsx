@@ -164,11 +164,15 @@ export default function SmartContributionForm() {
 
 
     const handleSubmit = async () => {
+        // [DEBUG] Explicit alert for debugging
         if (!selectedGroupId || amount <= 0) {
+            console.log("Validation failed", { selectedGroupId, amount })
             toast.error("Please ensure group and amount are valid.")
+            // alert("Validation Failed: Check Group and Amount")
             return
         }
 
+        console.log("Submitting contribution...")
         setLoading(true)
 
         // Prepare payload for both online and offline use

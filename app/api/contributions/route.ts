@@ -170,8 +170,15 @@ export async function GET(request: NextRequest) {
       whereClause.year = parseInt(year)
     }
 
-    // If search term provided, we'll need to handle it differently with Prisma or filter after
-    // For now, let's stick to base filters for pagination efficiency
+    // If search term provided, add to where clause
+    if (search) {
+      whereClause.group = {
+        name: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      }
+    }
 
     // Get user's contributions with filters and pagination
     const [contributions, totalCount] = await Promise.all([
@@ -191,27 +198,13 @@ export async function GET(request: NextRequest) {
       })
     ])
 
-    // If search term provided, filter by group name (Note: This is less efficient but keeps logic simple for now)
-    let filteredContributions = contributions
-    let finalTotalCount = totalCount
-
-    if (search) {
-      const searchTerm = search.toLowerCase()
-      filteredContributions = contributions.filter(contribution =>
-        contribution.group.name.toLowerCase().includes(searchTerm) ||
-        contribution.group.region.toLowerCase().includes(searchTerm)
-      )
-      // Note: totalCount for search would ideally be handled by Prisma where clause if possible
-      finalTotalCount = filteredContributions.length
-    }
-
     return NextResponse.json({
-      contributions: filteredContributions,
+      contributions,
       pagination: {
-        total: finalTotalCount,
+        total: totalCount,
         page,
         limit,
-        totalPages: Math.ceil(finalTotalCount / limit)
+        totalPages: Math.ceil(totalCount / limit)
       }
     })
 
