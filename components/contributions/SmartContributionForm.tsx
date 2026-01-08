@@ -31,7 +31,8 @@ interface Group {
 export default function SmartContributionForm() {
     const router = useRouter()
     const searchParams = useSearchParams()
-    const [step, setStep] = useState<1 | 2>(1)
+    // [MODIFIED] Added step 3 to type
+    const [step, setStep] = useState<1 | 2 | 3>(1)
     const [groups, setGroups] = useState<Group[]>([])
 
     // Form State
@@ -199,10 +200,12 @@ export default function SmartContributionForm() {
 
                 if (!res.ok) throw new Error("Submission failed")
 
-                toast.success("Contribution sent successfully!", {
-                    description: "Your contribution has been submitted for treasurer verification."
-                })
-                router.push('/contributions')
+                // [MODIFIED] Success Handler: Set step 3 and delay redirect
+                setStep(3)
+                setTimeout(() => {
+                    router.push('/contributions')
+                }, 2500)
+
             } else {
                 throw new Error("Offline")
             }
@@ -228,7 +231,13 @@ export default function SmartContributionForm() {
                     toast.success("Contribution saved offline!", {
                         description: "Will sync automatically when you're back online."
                     })
-                    router.push('/contributions')
+
+                    // [MODIFIED] Offline Success also shows success screen
+                    setStep(3)
+                    setTimeout(() => {
+                        router.push('/contributions')
+                    }, 2500)
+
                 } catch (saveErr) {
                     console.error(saveErr)
                     toast.dismiss()
@@ -245,22 +254,24 @@ export default function SmartContributionForm() {
 
     return (
         <div className="max-w-4xl mx-auto px-4">
-            {/* Step Indicator */}
-            <div className="flex items-center justify-center mb-12 gap-4">
-                <div className={cn(
-                    "w-10 h-10 rounded-full flex items-center justify-center font-black transition-all duration-500",
-                    step === 1 ? "bg-blue-600 text-white scale-110 shadow-lg shadow-blue-500/20" : "bg-emerald-500 text-white"
-                )}>
-                    {step > 1 ? <CheckCircle className="w-6 h-6" /> : "1"}
+            {/* Step Indicator - Hidden on Success Step for cleaner look */}
+            {step < 3 && (
+                <div className="flex items-center justify-center mb-12 gap-4">
+                    <div className={cn(
+                        "w-10 h-10 rounded-full flex items-center justify-center font-black transition-all duration-500",
+                        step === 1 ? "bg-blue-600 text-white scale-110 shadow-lg shadow-blue-500/20" : "bg-emerald-500 text-white"
+                    )}>
+                        {step > 1 ? <CheckCircle className="w-6 h-6" /> : "1"}
+                    </div>
+                    <div className={cn("h-1 w-16 rounded-full transition-colors duration-500", step === 2 ? "bg-emerald-100 dark:bg-emerald-900/40" : "bg-muted")} />
+                    <div className={cn(
+                        "w-10 h-10 rounded-full flex items-center justify-center font-black transition-all duration-500",
+                        step === 2 ? "bg-blue-600 text-white scale-110 shadow-lg shadow-blue-500/20" : "bg-muted text-muted-foreground"
+                    )}>
+                        2
+                    </div>
                 </div>
-                <div className={cn("h-1 w-16 rounded-full transition-colors duration-500", step === 2 ? "bg-emerald-100 dark:bg-emerald-900/40" : "bg-muted")} />
-                <div className={cn(
-                    "w-10 h-10 rounded-full flex items-center justify-center font-black transition-all duration-500",
-                    step === 2 ? "bg-blue-600 text-white scale-110 shadow-lg shadow-blue-500/20" : "bg-muted text-muted-foreground"
-                )}>
-                    2
-                </div>
-            </div>
+            )}
 
             <AnimatePresence mode="wait">
                 {step === 1 ? (
@@ -297,7 +308,7 @@ export default function SmartContributionForm() {
                             </Button>
                         </div>
                     </motion.div>
-                ) : (
+                ) : step === 2 ? (
                     <motion.div
                         key="step2"
                         initial={{ opacity: 0, x: 20 }}
@@ -446,6 +457,23 @@ export default function SmartContributionForm() {
                                 </GlassCard>
                             </div>
                         </div>
+                    </motion.div>
+                ) : (
+                    // [MODIFIED] Step 3: Success Screen
+                    <motion.div
+                        key="step3"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="flex flex-col items-center justify-center py-12 space-y-6"
+                    >
+                        <div className="w-24 h-24 bg-green-500 text-white rounded-full flex items-center justify-center shadow-2xl shadow-green-500/40">
+                            <CheckCircle className="w-12 h-12" />
+                        </div>
+                        <div className="text-center space-y-2">
+                            <h2 className="text-3xl font-black text-foreground">Success!</h2>
+                            <p className="text-muted-foreground font-medium">Your contribution has been securely sent.</p>
+                        </div>
+                        <p className="text-sm text-muted-foreground animate-pulse">Redirecting you to contributions...</p>
                     </motion.div>
                 )}
             </AnimatePresence>
