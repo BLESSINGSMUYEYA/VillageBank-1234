@@ -6,13 +6,14 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from '@/components/ui/dialog'
-import { Check, X, Eye, ArrowLeft, Loader2, Image as ImageIcon, AlertTriangle, Wallet, History, Maximize2, ZoomIn, ZoomOut, RotateCw } from 'lucide-react'
+import { Check, X, Eye, ArrowLeft, Image as ImageIcon, AlertTriangle, Wallet, History, Maximize2, ZoomIn, ZoomOut, RotateCw } from 'lucide-react'
 import Link from 'next/link'
 import { formatCurrency } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useOptimistic, useTransition } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { GrowthLoader, InlineLogoLoader } from '@/components/ui/LogoLoader'
 
 export default function TreasurerApprovalsPage() {
     const [pending, setPending] = useState<any[]>([])
@@ -104,7 +105,7 @@ export default function TreasurerApprovalsPage() {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
                 <div className="text-center">
-                    <Loader2 className="w-10 h-10 animate-spin text-blue-600 mx-auto mb-4" />
+                    <GrowthLoader size="sm" className="mb-4" showText={false} />
                     <p className="text-muted-foreground animate-pulse">Loading pending approvals...</p>
                 </div>
             </div>
@@ -330,7 +331,7 @@ export default function TreasurerApprovalsPage() {
                                             disabled={isSubmitting}
                                         >
                                             {isSubmitting ? (
-                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                <InlineLogoLoader size="xs" />
                                             ) : (
                                                 <>
                                                     <Check className="w-4 h-4 mr-2" /> Approve

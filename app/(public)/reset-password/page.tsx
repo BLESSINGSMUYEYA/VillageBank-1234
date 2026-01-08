@@ -10,11 +10,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Zap, ArrowRight, ShieldCheck, Lock, CheckCircle2 } from 'lucide-react';
+import { Zap, ArrowRight, ShieldCheck, Lock, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { useLanguage } from '@/components/providers/LanguageProvider';
+import { InlineLogoLoader } from '@/components/ui/LogoLoader';
 
 const resetSchema = z.object({
     password: z.string().min(6, 'Password must be at least 6 characters'),
@@ -150,7 +151,7 @@ function ResetPasswordForm() {
                         className="w-full h-14 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-lg shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all group"
                         disabled={status === 'loading' || !token}
                     >
-                        {status === 'loading' ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : (
+                        {status === 'loading' ? <InlineLogoLoader size="sm" /> : (
                             <>
                                 {t('reset.update_password')}
                                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -188,7 +189,7 @@ export default function ResetPasswordPage() {
                         <div className="h-1.5 bg-gradient-to-r from-blue-600 to-indigo-600" />
                         <Suspense fallback={
                             <div className="p-20 flex justify-center">
-                                <Loader2 className="w-10 h-10 animate-spin text-blue-600" />
+                                <InlineLogoLoader size="md" />
                             </div>
                         }>
                             <ResetPasswordForm />
