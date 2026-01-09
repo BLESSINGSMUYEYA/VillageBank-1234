@@ -46,7 +46,7 @@ export function GrowthLoader({
                 <motion.div
                     className="absolute inset-0 blur-xl"
                     style={{
-                        background: 'radial-gradient(circle, rgba(251, 191, 36, 0.4) 0%, transparent 70%)',
+                        background: 'radial-gradient(circle, rgba(59, 130, 246, 0.4) 0%, transparent 70%)',
                         transform: 'scale(1.5)',
                     }}
                     animate={{
@@ -65,18 +65,18 @@ export function GrowthLoader({
                     height={dimensions.height}
                     viewBox="0 0 100 100"
                     className="relative z-10"
-                    style={{ filter: "drop-shadow(0 2px 8px rgba(251, 191, 36, 0.3))" }}
+                    style={{ filter: "drop-shadow(0 2px 8px rgba(59, 130, 246, 0.3))" }}
                 >
                     {/* Definitions for gradients and effects */}
                     <defs>
                         <linearGradient id="growthGradient" x1="0%" y1="100%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.9" />
-                            <stop offset="50%" stopColor="#FBBF24" stopOpacity="1" />
-                            <stop offset="100%" stopColor="#FCD34D" stopOpacity="1" />
+                            <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.9" />
+                            <stop offset="50%" stopColor="#60A5FA" stopOpacity="1" />
+                            <stop offset="100%" stopColor="#93C5FD" stopOpacity="1" />
                         </linearGradient>
                         <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#FBBF24" />
-                            <stop offset="100%" stopColor="#FCD34D" />
+                            <stop offset="0%" stopColor="#60A5FA" />
+                            <stop offset="100%" stopColor="#93C5FD" />
                         </linearGradient>
                         <filter id="glow">
                             <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
@@ -99,7 +99,7 @@ export function GrowthLoader({
                     <motion.path
                         d={growthPath}
                         fill="none"
-                        stroke="rgba(251, 191, 36, 0.2)"
+                        stroke="rgba(59, 130, 246, 0.2)"
                         strokeWidth="6"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -210,7 +210,7 @@ export function GrowthLoader({
                                     delay: i * 0.2,
                                     ease: "easeInOut"
                                 }}
-                                className="text-amber-500"
+                                className="text-blue-500"
                             >
                                 .
                             </motion.span>
@@ -235,7 +235,7 @@ export function LogoLoader(props: LoaderProps) {
 // Full page loader variant
 export function PageLoader({ text = 'Loading' }: { text?: string }) {
     return (
-        <div className="h-[100dvh] w-full flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-amber-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-amber-950/20">
+        <div className="h-[100dvh] w-full flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-blue-950/20">
             <GrowthLoader size="lg" text={text} />
         </div>
     )

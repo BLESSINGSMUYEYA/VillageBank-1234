@@ -22,7 +22,8 @@
         "zen_edition": "Zen Edition",
         "sign_in": "Lowani",
         "forgot_password": "Mwayiwala?",
-        "confirm_delete": "Chotsani Gulu"
+        "confirm_delete": "Chotsani Gulu",
+        "workspace": "Malo a Ntchito"
     },
     "admin": {
         "regional": "Oyang'anira Chigawo",
@@ -64,9 +65,11 @@
         "status_healthy": "M'mene Zilili: Bwino",
         "hide_insights": "Bisani Analytics",
         "show_insights": "Onani Analytics a Zachuma",
-        "growth_analytics": "Kukula ndi Kusanthula"
+        "growth_analytics": "Kukula ndi Kusanthula",
+        "growth_and_analytics": "Kukula ndi Kusanthula"
     },
     "groups": {
+        "details_title": "Malo Oyang'anira",
         "my_groups": "Magulu Anga",
         "manage_desc": "Samalirani magulu anu a village banking",
         "manage_circles_desc": "Samalirani magulu anu osungitsa ndalama.",

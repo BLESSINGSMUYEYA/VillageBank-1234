@@ -12,8 +12,6 @@ import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { formatCurrency, formatDate, cn } from '@/lib/utils'
 import { useLanguage } from '@/components/providers/LanguageProvider'
-import { PageHeader } from '@/components/layout/PageHeader'
-import { StatsCard } from '@/components/ui/stats-card'
 import { motion, AnimatePresence } from 'framer-motion'
 import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
 import { GlassCard } from '@/components/ui/GlassCard'
@@ -81,71 +79,82 @@ export function VaultClient({
             animate="animate"
             className="space-y-8 sm:space-y-12 pb-20"
         >
-            {/* Zen Header */}
-            <motion.div variants={fadeIn}>
-                <PageHeader
-                    title={t('common.vault')}
-                    description={
-                        <span className="flex flex-wrap items-center gap-1.5 opacity-80">
-                            {t('vault.unified_community_hub')}
-                            <span className="text-blue-600 dark:text-banana font-bold">{t('vault.zen_edition_lifecycle')}</span>
-                        </span>
-                    }
-                    action={
-                        <div className="flex gap-3">
-                            <Link href="/contributions/new">
-                                <Button variant="outline" className="rounded-xl font-black border-2 h-12">
-                                    <Plus className="w-4 h-4 mr-2" />
-                                    {t('common.contributions')}
-                                </Button>
-                            </Link>
-                            {eligibilityChecks.some(c => c.eligible) && (
-                                <Link href="/loans/new">
-                                    <Button variant="banana" className="rounded-xl font-black shadow-lg shadow-yellow-500/20 h-12">
-                                        <Zap className="w-4 h-4 mr-2" />
-                                        {t('common.loans')}
+            {/* Hero Card - Vault Command Center */}
+            <motion.div variants={itemFadeIn}>
+                <div className="zen-card overflow-hidden">
+                    {/* Top Identity Section */}
+                    <div className="relative p-6 sm:p-10">
+                        <div className="flex flex-col md:flex-row justify-between items-start gap-6">
+                            <div className="space-y-4">
+                                <div>
+                                    <h1 className="text-3xl sm:text-4xl font-black text-foreground tracking-tighter leading-tight mb-2">
+                                        {t('common.vault')}
+                                    </h1>
+                                    <p className="text-sm font-medium text-muted-foreground line-clamp-2 max-w-xl leading-relaxed flex flex-wrap items-center gap-1.5 opacity-80">
+                                        {t('vault.unified_community_hub')}
+                                        <span className="text-blue-600 dark:text-banana font-bold">{t('vault.zen_edition_lifecycle')}</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3 shrink-0">
+                                <Link href="/contributions/new">
+                                    <Button variant="outline" className="rounded-xl font-black border-2 h-12">
+                                        <Plus className="w-4 h-4 mr-2" />
+                                        {t('common.contributions')}
                                     </Button>
                                 </Link>
-                            )}
+                                {eligibilityChecks.some(c => c.eligible) && (
+                                    <Link href="/loans/new">
+                                        <Button variant="banana" className="rounded-xl font-black shadow-lg shadow-yellow-500/20 h-12">
+                                            <Zap className="w-4 h-4 mr-2" />
+                                            {t('common.loans')}
+                                        </Button>
+                                    </Link>
+                                )}
+                            </div>
                         </div>
-                    }
-                />
-            </motion.div>
+                    </div>
 
-            {/* Unified Quick Stats */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                <StatsCard
-                    index={1}
-                    label={t('vault.net_savings')}
-                    value={formatCurrency(totalSaved)}
-                    description={t('vault.stakes', { count: contributions.filter(c => c.status === 'COMPLETED').length })}
-                    icon={Wallet}
-                    variant="featured"
-                />
-                <StatsCard
-                    index={2}
-                    label={t('vault.active_liability')}
-                    value={formatCurrency(activeDebt)}
-                    description={t('vault.agreements', { count: loans.filter(l => l.status === 'ACTIVE').length })}
-                    icon={CreditCard}
-                    variant="gradient"
-                    gradient="bg-gradient-to-br from-red-600/10 to-orange-600/10 dark:from-red-500/5 dark:to-orange-500/5 border-red-500/20"
-                />
-                <StatsCard
-                    index={3}
-                    label={t('vault.pending_review')}
-                    value={pendingReview}
-                    description={t('vault.ledger_sync')}
-                    icon={Clock}
-                />
-                <StatsCard
-                    index={4}
-                    label={t('vault.credit_strength')}
-                    value={eligibilityChecks.filter(c => c.eligible).length > 0 ? t('vault.optimal') : t('vault.building')}
-                    description={t('vault.portfolio_health')}
-                    icon={TrendingUp}
-                />
-            </div>
+                    {/* Stats Grid Divider */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-white/10 border-t border-white/10 bg-white/5 dark:bg-black/20">
+                        <div className="p-6 space-y-1">
+                            <p className="zen-label opacity-50 flex items-center gap-2">
+                                <Wallet className="w-3 h-3" />
+                                {t('vault.net_savings')}
+                            </p>
+                            <p className="text-xl sm:text-2xl font-black text-foreground">{formatCurrency(totalSaved)}</p>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('vault.stakes', { count: contributions.filter(c => c.status === 'COMPLETED').length })}</p>
+                        </div>
+                        <div className="p-6 space-y-1">
+                            <p className="zen-label opacity-50 flex items-center gap-2">
+                                <CreditCard className="w-3 h-3" />
+                                {t('vault.active_liability')}
+                            </p>
+                            <p className="text-xl sm:text-2xl font-black text-blue-600 dark:text-banana">{formatCurrency(activeDebt)}</p>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('vault.agreements', { count: loans.filter(l => l.status === 'ACTIVE').length })}</p>
+                        </div>
+                        <div className="p-6 space-y-1">
+                            <p className="zen-label opacity-50 flex items-center gap-2">
+                                <Clock className="w-3 h-3" />
+                                {t('vault.pending_review')}
+                            </p>
+                            <p className="text-xl sm:text-2xl font-black text-foreground">{pendingReview}</p>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('vault.ledger_sync')}</p>
+                        </div>
+                        <div className="p-6 space-y-1">
+                            <p className="zen-label opacity-50 flex items-center gap-2">
+                                <TrendingUp className="w-3 h-3" />
+                                {t('vault.credit_strength')}
+                            </p>
+                            <p className="text-xl sm:text-2xl font-black text-emerald-500">
+                                {eligibilityChecks.filter(c => c.eligible).length > 0 ? t('vault.optimal') : t('vault.building')}
+                            </p>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('vault.portfolio_health')}</p>
+                        </div>
+                    </div>
+                </div>
+            </motion.div>
 
             {/* Main Content Area */}
             <Tabs defaultValue="savings" onValueChange={setActiveTab} className="space-y-8">
@@ -251,7 +260,7 @@ export function VaultClient({
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {eligibilityChecks.map((check) => (
                             <motion.div key={check.group.id} variants={itemFadeIn}>
-                                <div className={cn("zen-card p-8 group", check.eligible ? "border-banana/30 ring-4 ring-banana/5" : "opacity-60")}>
+                                <div className={cn("zen-card p-8 group h-full flex flex-col", check.eligible ? "border-banana/30 ring-4 ring-banana/5" : "opacity-60")}>
                                     <div className="flex justify-between items-start mb-8">
                                         <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 shadow-inner", check.eligible ? "bg-banana/20 text-yellow-600 dark:text-banana" : "bg-muted/20 text-muted-foreground")}>
                                             <Zap className="w-7 h-7" fill={check.eligible ? "currentColor" : "none"} />
@@ -341,4 +350,3 @@ export function VaultClient({
         </motion.div>
     )
 }
-

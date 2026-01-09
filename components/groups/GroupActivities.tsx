@@ -33,14 +33,6 @@ export default function GroupActivities({ activities }: GroupActivitiesProps) {
             animate="animate"
             className="space-y-6 p-6 sm:p-10"
         >
-            <div className="flex items-center justify-between mb-2">
-                <div>
-                    <h3 className="text-2xl font-black text-foreground">Recent Activity</h3>
-                    <p className="text-sm text-muted-foreground font-bold">Latest events and changes in the group</p>
-                </div>
-                <Activity className="w-8 h-8 text-blue-500/20" />
-            </div>
-
             <div className="space-y-4">
                 {activities.map((activity, index) => (
                     <motion.div key={activity.id} variants={itemFadeIn}>

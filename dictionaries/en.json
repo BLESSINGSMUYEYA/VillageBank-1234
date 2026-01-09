@@ -24,7 +24,8 @@
     "zen_edition": "Zen Edition",
     "sign_in": "Sign In",
     "forgot_password": "Forgot Password?",
-    "confirm_delete": "Delete Group"
+    "confirm_delete": "Delete Group",
+    "workspace": "Workspace"
   },
   "admin": {
     "regional": "Regional Admin",
@@ -59,16 +60,18 @@
     "active_groups_desc": "Active groups you're a member of",
     "all_healthy": "All healthy",
     "pending_count": "{count} pending",
-    "this_month": "This month's contribution",
+    "this_month": "This month",
     "pending_approvals": "Pending Approvals",
     "pending_desc": "There are {count} contributions waiting for your review.",
     "review_now": "View Now",
     "status_healthy": "Status: Healthy",
     "hide_insights": "Hide Insights",
     "show_insights": "Show Financial Insights",
-    "growth_analytics": "Growth & Analytics"
+    "growth_analytics": "Growth & Analytics",
+    "growth_and_analytics": "Growth & Analytics"
   },
   "groups": {
+    "details_title": "Command Center",
     "my_groups": "My Groups",
     "manage_desc": "Manage your village banking groups",
     "manage_circles_desc": "Manage your savings circles.",

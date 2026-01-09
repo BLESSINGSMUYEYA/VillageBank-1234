@@ -3,15 +3,16 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
-    Users,
-    DollarSign,
-    CreditCard,
     Settings,
     ArrowLeft,
     TrendingUp,
     MapPin,
     Calendar,
-    Percent
+    Users,
+    Shield,
+    DollarSign,
+    Share2,
+    Info
 } from 'lucide-react'
 import Link from 'next/link'
 import { formatCurrency } from '@/lib/utils'
@@ -21,6 +22,12 @@ import { motion } from 'framer-motion'
 import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { GlassCard } from '@/components/ui/GlassCard'
+import { QRCodeShare } from '@/components/sharing/QRCodeShare'
+import {
+    Dialog,
+    DialogContent,
+    DialogTrigger,
+} from "@/components/ui/dialog"
 
 interface GroupDetailsClientProps {
     group: any
@@ -38,92 +45,142 @@ export default function GroupDetailsClient({
     currentUserMember
 }: GroupDetailsClientProps) {
     const { t } = useLanguage()
+
     return (
         <motion.div
             variants={staggerContainer}
             initial="initial"
             animate="animate"
-            className="space-y-6 sm:space-y-10 pb-10"
+            className="space-y-8 sm:space-y-10 pb-20"
         >
-            {/* Header */}
+            {/* Header Section */}
             <motion.div variants={fadeIn}>
                 <Link href="/groups" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-blue-600 dark:hover:text-banana transition-all duration-300 group mb-4">
                     <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
-                    Back to Groups
+                    {t('common.back') || 'Back'}
                 </Link>
                 <PageHeader
-                    title={group.name}
+                    title={t('groups.details_title') || 'Command Center'}
                     description={
-                        <div className="flex flex-col gap-2">
-                            <span className="flex flex-wrap items-center gap-1.5 opacity-80 font-medium">
-                                {group.description || 'Village banking savings circle.'}
-                            </span>
-                            <div className="flex flex-wrap gap-2 mt-1">
-                                <Badge variant="outline" className="rounded-lg border-blue-500/20 text-blue-600 dark:text-banana bg-blue-500/5 dark:bg-banana/5 font-black px-3 py-1 flex items-center gap-1.5">
-                                    <MapPin className="w-3.5 h-3.5" />
-                                    {group.region}
-                                </Badge>
-                                <Badge variant="outline" className="rounded-lg border-emerald-500/20 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 dark:bg-emerald-950/20 font-black px-3 py-1 flex items-center gap-1.5">
-                                    <Calendar className="w-3.5 h-3.5" />
-                                    Active Cycle
-                                </Badge>
-                            </div>
-                        </div>
-                    }
-                    action={
-                        isAdmin && (
-                            <Link href={`/groups/${group.id}/settings`} className="w-full sm:w-auto">
-                                <Button size="lg" className="w-full sm:w-auto bg-banana hover:bg-yellow-400 text-banana-foreground font-black rounded-xl shadow-lg hover:shadow-yellow-500/20 transition-all hover:scale-105 active:scale-95 group px-6">
-                                    <Settings className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform" />
-                                    Settings
-                                </Button>
-                            </Link>
-                        )
+                        <span className="flex flex-wrap items-center gap-1.5 opacity-80">
+                            <Shield className="w-4 h-4 text-blue-600 dark:text-banana" />
+                            Group Terminal & Ledger
+                        </span>
                     }
                 />
             </motion.div>
 
-            {/* Zen Metric Bar */}
+            {/* Hero Card - The Command Center */}
             <motion.div variants={itemFadeIn}>
-                <GlassCard className="p-1 sm:p-2 border-white/40 dark:border-white/10" hover={false}>
-                    <div className="flex flex-wrap items-center justify-between gap-6 p-4 sm:p-6 bg-white/40 dark:bg-slate-900/40 rounded-[20px] backdrop-blur-3xl">
-                        <div className="flex items-center gap-4 sm:gap-8">
-                            <div className="space-y-1">
-                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('groups.monthly_share') || 'Monthly Share'}</p>
-                                <p className="text-xl font-black text-foreground">{formatCurrency(group.monthlyContribution)}</p>
-                            </div>
-                            <div className="w-px h-10 bg-border/50 hidden sm:block" />
-                            <div className="space-y-1">
-                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('groups.interest_rate') || 'Rate'}</p>
-                                <p className="text-xl font-black text-blue-600 dark:text-banana">{group.interestRate}%</p>
-                            </div>
-                            <div className="w-px h-10 bg-border/50 hidden sm:block" />
-                            <div className="space-y-1">
-                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('groups.members') || 'Members'}</p>
-                                <p className="text-xl font-black text-foreground">{group._count.members}</p>
-                            </div>
-                        </div>
+                <div className="zen-card overflow-hidden">
+                    {/* Top Identity Section */}
+                    {/* Top Identity Section */}
+                    <div className="relative p-6 sm:p-10">
+                        <div className="flex flex-col xl:flex-row justify-between items-start gap-6">
+                            {/* Group Info Wrapper */}
+                            <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start min-w-0">
+                                {/* Avatar */}
+                                <div className="w-24 h-24 sm:w-32 sm:h-32 shrink-0 rounded-[2rem] bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-banana dark:to-yellow-500 flex items-center justify-center text-white dark:text-blue-950 text-4xl sm:text-5xl font-black shadow-inner">
+                                    {group.name.substring(0, 2).toUpperCase()}
+                                </div>
 
-                        <div className="flex items-center gap-3 w-full sm:w-auto">
-                            {isAdmin && (
-                                <Link href={`/groups/${group.id}/settings`} className="flex-1 sm:flex-initial">
-                                    <Button variant="outline" className="w-full h-12 px-6 rounded-xl font-black border-2 hover:bg-white/50 dark:hover:bg-slate-800/50 backdrop-blur-sm transition-all group">
-                                        <Settings className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform" />
-                                        Manage
+                                {/* Info */}
+                                <div className="space-y-4 pt-2">
+                                    <div>
+                                        <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-tighter leading-tight mb-2">
+                                            {group.name}
+                                        </h2>
+                                        <p className="text-sm font-medium text-muted-foreground line-clamp-2 max-w-xl leading-relaxed">
+                                            {group.description || 'A community focused savings circle dedicated to mutual growth and financial stability.'}
+                                        </p>
+                                    </div>
+
+                                    <div className="flex flex-wrap gap-2">
+                                        <Badge variant="outline" className="rounded-lg border-blue-500/20 text-blue-600 dark:text-banana bg-blue-500/5 dark:bg-banana/5 font-black text-[10px] uppercase tracking-wider px-3 py-1 flex items-center gap-1.5">
+                                            <MapPin className="w-3 h-3" />
+                                            {group.region}
+                                        </Badge>
+                                        <Badge variant="outline" className="rounded-lg border-emerald-500/20 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 dark:bg-emerald-950/20 font-black text-[10px] uppercase tracking-wider px-3 py-1 flex items-center gap-1.5">
+                                            <Calendar className="w-3 h-3" />
+                                            Cycle {new Date().getFullYear()}
+                                        </Badge>
+                                        <Badge variant="outline" className="rounded-lg border-purple-500/20 text-purple-600 dark:text-purple-400 bg-purple-500/5 dark:bg-purple-950/20 font-black text-[10px] uppercase tracking-wider px-3 py-1 flex items-center gap-1.5">
+                                            <Shield className="w-3 h-3" />
+                                            Verified
+                                        </Badge>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex gap-3 shrink-0 w-full xl:w-auto mt-4 xl:mt-0">
+                                {isAdmin && (
+                                    <Link href={`/groups/${group.id}/settings`}>
+                                        <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl border-white/20 hover:bg-white/10">
+                                            <Settings className="w-5 h-5 text-muted-foreground" />
+                                        </Button>
+                                    </Link>
+                                )}
+                                {isAdmin && (
+                                    <Dialog>
+                                        <DialogTrigger asChild>
+                                            <Button variant="outline" className="hidden sm:flex h-11 rounded-xl px-5 border-white/20 hover:bg-white/10 font-bold text-xs gap-2">
+                                                <Share2 className="w-4 h-4" />
+                                                Invite
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent className="sm:max-w-md border-none bg-transparent p-0 shadow-none">
+                                            <div className="zen-card p-8">
+                                                <QRCodeShare groupId={group.id} groupName={group.name} />
+                                            </div>
+                                        </DialogContent>
+                                    </Dialog>
+                                )}
+                                <Link href="/contributions/new" className="flex-1 xl:flex-none">
+                                    <Button variant="banana" className="w-full xl:w-auto h-11 rounded-xl px-8 font-black text-xs gap-2 shadow-lg shadow-yellow-500/20 active:scale-95 transition-all">
+                                        <DollarSign className="w-4 h-4" />
+                                        Contribute
                                     </Button>
                                 </Link>
-                            )}
-                            <Link href="/contributions/new" className="flex-[2] sm:flex-initial">
-                                <Button variant="banana" className="w-full h-12 px-8 rounded-xl font-black shadow-lg shadow-yellow-500/20 active:scale-95 transition-all">
-                                    <DollarSign className="w-4 h-4 mr-2" />
-                                    {t('dashboard.make_contribution')}
-                                </Button>
-                            </Link>
+                            </div>
                         </div>
                     </div>
-                </GlassCard>
+
+                    {/* Stats Grid Divider */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-white/10 border-t border-white/10 bg-white/5 dark:bg-black/20">
+                        <div className="p-6 space-y-1">
+                            <p className="zen-label opacity-50 flex items-center gap-2">
+                                <DollarSign className="w-3 h-3" />
+                                Share
+                            </p>
+                            <p className="text-xl sm:text-2xl font-black text-foreground">{formatCurrency(group.monthlyContribution)}</p>
+                        </div>
+                        <div className="p-6 space-y-1">
+                            <p className="zen-label opacity-50 flex items-center gap-2">
+                                <TrendingUp className="w-3 h-3" />
+                                Interest
+                            </p>
+                            <p className="text-xl sm:text-2xl font-black text-blue-600 dark:text-banana">{group.interestRate}%</p>
+                        </div>
+                        <div className="p-6 space-y-1">
+                            <p className="zen-label opacity-50 flex items-center gap-2">
+                                <Users className="w-3 h-3" />
+                                Nodes
+                            </p>
+                            <p className="text-xl sm:text-2xl font-black text-foreground">{group._count.members}</p>
+                        </div>
+                        <div className="p-6 space-y-1">
+                            <p className="zen-label opacity-50 flex items-center gap-2">
+                                <Info className="w-3 h-3 text-emerald-500" />
+                                Status
+                            </p>
+                            <p className="text-xl sm:text-2xl font-black text-emerald-500">Healthy</p>
+                        </div>
+                    </div>
+                </div>
             </motion.div>
 
+            {/* Main Content Areas (Tabs) */}
             <motion.div variants={itemFadeIn}>
                 <GroupDetailsContainer
                     group={group}

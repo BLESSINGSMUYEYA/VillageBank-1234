@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { MoreHorizontal, Shield, MessageSquare, UserX, Users, Clock } from 'lucide-react'
@@ -102,156 +102,128 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
           </h2>
         </div>
 
-        <div className="overflow-x-auto scrollbar-premium">
-          <Table>
-            <TableHeader className="bg-white/30 dark:bg-slate-900/30">
-              <TableRow className="hover:bg-transparent border-b border-white/20 dark:border-white/10">
-                <TableHead className="font-black text-[10px] uppercase tracking-widest pl-6">Member</TableHead>
-                <TableHead className="font-black text-[10px] uppercase tracking-widest">Role</TableHead>
-                <TableHead className="font-black text-[10px] uppercase tracking-widest">Joined</TableHead>
-                <TableHead className="text-right font-black text-[10px] uppercase tracking-widest pr-6">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {activeMembers.map((member) => (
-                <TableRow key={member.id} className="border-b border-white/10 dark:border-white/5 hover:bg-white/40 dark:hover:bg-slate-800/40 transition-colors group">
-                  <TableCell className="py-4 pl-6">
-                    <div className="flex items-center space-x-3">
-                      <Avatar className="w-10 h-10 border-2 border-white/50 dark:border-white/10 shadow-sm group-hover:scale-110 transition-transform">
-                        <AvatarFallback className="font-black text-blue-900 bg-blue-50 dark:text-blue-100 dark:bg-blue-900">
-                          {(member.user?.firstName?.charAt(0) || '') + (member.user?.lastName?.charAt(0) || '')}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-black text-sm text-foreground">
-                          {member.user?.firstName || ''} {member.user?.lastName || ''}
-                        </p>
-                        <p className="text-[11px] text-muted-foreground font-bold opacity-70 truncate max-w-[150px] sm:max-w-none">
-                          {member.user?.email || 'No email'}
-                        </p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
+        <div className="space-y-1">
+          {activeMembers.map((member) => (
+            <div
+              key={member.id}
+              className="group flex flex-col sm:flex-row sm:items-center justify-between p-4 hover:bg-white/5 transition-colors border-b border-border/10 last:border-0 gap-4"
+            >
+              <div className="flex items-center gap-4">
+                <Avatar className="w-10 h-10 border-2 border-white/10 shadow-sm group-hover:scale-105 transition-transform">
+                  <AvatarFallback className="font-black text-xs text-blue-600 bg-blue-50 dark:text-blue-100 dark:bg-blue-900/50">
+                    {(member.user?.firstName?.charAt(0) || '') + (member.user?.lastName?.charAt(0) || '')}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="font-black text-sm text-foreground tracking-tight">
+                      {member.user?.firstName || ''} {member.user?.lastName || ''}
+                    </p>
                     <Badge
                       className={cn(
-                        "font-black uppercase tracking-wider text-[9px] px-2.5 py-0.5 rounded-lg",
-                        member.role === 'ADMIN' ? 'bg-blue-600 text-white shadow-sm' :
-                          member.role === 'TREASURER' ? 'bg-banana text-banana-foreground shadow-sm' :
-                            'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                        "font-black uppercase tracking-widest text-[9px] px-2 py-0 border-0",
+                        member.role === 'ADMIN' ? 'bg-blue-600 text-white' :
+                          member.role === 'TREASURER' ? 'bg-banana text-yellow-950' :
+                            'bg-slate-100 dark:bg-slate-800 text-slate-500'
                       )}
                     >
                       {member.role}
                     </Badge>
-                  </TableCell>
-                  <TableCell className="text-sm font-bold text-muted-foreground italic">
-                    {new Date(member.joinedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                  </TableCell>
-                  <TableCell className="text-right pr-6">
-                    {currentUserRole === 'ADMIN' && member.userId !== currentUserId && (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-9 w-9 p-0 rounded-xl hover:bg-blue-500/10 hover:text-blue-600">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-white/20 dark:border-white/10 rounded-2xl p-1.5 shadow-2xl">
-                          <DropdownMenuItem onClick={() => handleRoleChange(member.id, 'TREASURER')} className="rounded-xl font-black text-xs gap-2 focus:bg-blue-500/10 focus:text-blue-600">
-                            <Shield className="h-3.5 w-3.5" /> Make Treasurer
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleRoleChange(member.id, 'SECRETARY')} className="rounded-xl font-black text-xs gap-2 focus:bg-blue-500/10 focus:text-blue-600">
-                            <MessageSquare className="h-3.5 w-3.5" /> Make Secretary
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleRoleChange(member.id, 'MEMBER')} className="rounded-xl font-black text-xs gap-2 focus:bg-blue-500/10 focus:text-blue-600">
-                            <UserX className="h-3.5 w-3.5" /> Make Member
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator className="bg-white/10" />
-                          <DropdownMenuItem onClick={() => handleRemoveMember(member.id)} className="rounded-xl font-black text-xs gap-2 text-red-600 focus:bg-red-500/10 focus:text-red-600">
-                            <UserX className="h-3.5 w-3.5" /> Remove from Group
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                  </div>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider opacity-70">
+                    {member.user?.email || 'No email'} • Joined {new Date(member.joinedAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4 pl-14 sm:pl-0">
+                {currentUserRole === 'ADMIN' && member.userId !== currentUserId && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-white/10">
+                        <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="bg-slate-900/90 backdrop-blur-xl border-white/10 rounded-xl p-1 shadow-2xl">
+                      <DropdownMenuItem onClick={() => handleRoleChange(member.id, 'TREASURER')} className="rounded-lg font-bold text-xs gap-2 text-slate-300 focus:text-white focus:bg-white/10">
+                        <Shield className="h-3.5 w-3.5" /> Make Treasurer
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleRoleChange(member.id, 'SECRETARY')} className="rounded-lg font-bold text-xs gap-2 text-slate-300 focus:text-white focus:bg-white/10">
+                        <MessageSquare className="h-3.5 w-3.5" /> Make Secretary
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleRoleChange(member.id, 'MEMBER')} className="rounded-lg font-bold text-xs gap-2 text-slate-300 focus:text-white focus:bg-white/10">
+                        <UserX className="h-3.5 w-3.5" /> Make Member
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator className="bg-white/10" />
+                      <DropdownMenuItem onClick={() => handleRemoveMember(member.id)} className="rounded-lg font-bold text-xs gap-2 text-red-400 focus:text-red-300 focus:bg-red-500/10">
+                        <UserX className="h-3.5 w-3.5" /> Remove
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Pending Members */}
       {pendingMembers.length > 0 && (
-        <div className="space-y-4 pt-4 border-t border-white/10 dark:border-white/5">
+        <div className="space-y-4 pt-4 border-t border-dashed border-white/10">
           <div className="px-6 flex items-center justify-between">
-            <h2 className="text-xl font-black text-orange-600 dark:text-banana flex items-center gap-2">
-              <Clock className="w-5 h-5" />
+            <h2 className="text-sm font-black uppercase tracking-widest text-orange-500 flex items-center gap-2">
+              <Clock className="w-4 h-4" />
               Pending Requests
-              <span className="text-sm font-bold bg-orange-500/10 text-orange-600 dark:text-banana dark:bg-banana/10 px-2.5 py-0.5 rounded-full">
-                {pendingMembers.length}
-              </span>
             </h2>
+            <span className="text-[10px] font-black bg-orange-500/10 text-orange-500 px-2 py-0.5 rounded-full">
+              {pendingMembers.length}
+            </span>
           </div>
 
-          <div className="overflow-x-auto scrollbar-premium">
-            <Table>
-              <TableHeader className="bg-orange-500/5 dark:bg-banana/5">
-                <TableRow className="hover:bg-transparent border-b border-white/20 dark:border-white/10">
-                  <TableHead className="font-black text-[10px] uppercase tracking-widest pl-6">Person</TableHead>
-                  <TableHead className="font-black text-[10px] uppercase tracking-widest">Requested</TableHead>
-                  <TableHead className="text-right font-black text-[10px] uppercase tracking-widest pr-6">Decision</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {pendingMembers.map((member) => (
-                  <TableRow key={member.id} className="border-b border-white/10 dark:border-white/5 hover:bg-orange-500/5 transition-colors group">
-                    <TableCell className="py-4 pl-6">
-                      <div className="flex items-center space-x-3">
-                        <Avatar className="w-10 h-10 border-2 border-orange-200 dark:border-banana/20 shadow-sm">
-                          <AvatarFallback className="font-black text-orange-700 bg-orange-50 dark:text-banana dark:bg-banana/10">
-                            {(member.user?.firstName?.charAt(0) || '') + (member.user?.lastName?.charAt(0) || '')}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-black text-sm text-foreground">
-                            {member.user?.firstName || ''} {member.user?.lastName || ''}
-                          </p>
-                          <p className="text-[11px] text-muted-foreground font-bold opacity-70">
-                            {member.user?.email || 'No email'}
-                          </p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-sm font-bold text-muted-foreground italic">
-                      {new Date(member.joinedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                    </TableCell>
-                    <TableCell className="text-right pr-6">
-                      {currentUserRole === 'ADMIN' && (
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            size="sm"
-                            onClick={() => handleRoleChange(member.id, 'MEMBER')}
-                            disabled={loading}
-                            className="bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl px-4"
-                          >
-                            Approve
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleRemoveMember(member.id)}
-                            disabled={loading}
-                            className="rounded-xl font-black border-2 border-border hover:border-red-500 hover:text-red-600 transition-colors px-4"
-                          >
-                            Reject
-                          </Button>
-                        </div>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+          <div className="space-y-1">
+            {pendingMembers.map((member) => (
+              <div key={member.id} className="group flex flex-col sm:flex-row sm:items-center justify-between p-4 hover:bg-orange-500/5 transition-colors border-b border-white/5 last:border-0 gap-4">
+                <div className="flex items-center gap-4">
+                  <Avatar className="w-10 h-10 border-2 border-orange-500/20 shadow-sm">
+                    <AvatarFallback className="font-black text-xs text-orange-600 bg-orange-50 dark:bg-orange-900/20">
+                      {(member.user?.firstName?.charAt(0) || '') + (member.user?.lastName?.charAt(0) || '')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-black text-sm text-foreground tracking-tight">
+                      {member.user?.firstName || ''} {member.user?.lastName || ''}
+                    </p>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider opacity-70">
+                      Requested {new Date(member.joinedAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 pl-14 sm:pl-0">
+                  {currentUserRole === 'ADMIN' && (
+                    <>
+                      <Button
+                        size="sm"
+                        onClick={() => handleRoleChange(member.id, 'MEMBER')}
+                        disabled={loading}
+                        className="h-8 bg-blue-600 hover:bg-blue-700 text-white font-black uppercase text-[10px] tracking-wider rounded-lg px-4"
+                      >
+                        Approve
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleRemoveMember(member.id)}
+                        disabled={loading}
+                        className="h-8 text-red-500 hover:text-red-400 hover:bg-red-500/10 font-black uppercase text-[10px] tracking-wider rounded-lg px-3"
+                      >
+                        Reject
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

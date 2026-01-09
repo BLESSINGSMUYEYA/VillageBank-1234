@@ -6,10 +6,11 @@ import GroupContributions from '@/components/groups/GroupContributions'
 import GroupLoans from '@/components/groups/GroupLoans'
 import GroupActivities from '@/components/groups/GroupActivities'
 import { QRCodeShare } from '@/components/sharing/QRCodeShare'
-import { GlassCard } from '@/components/ui/GlassCard'
 import { motion } from 'framer-motion'
+
 import { itemFadeIn } from '@/lib/motions'
-import { Activity, Share2, Users, Receipt, Landmark } from 'lucide-react'
+import { Share2, Users, Wallet, Activity } from 'lucide-react'
+import { GlassCard } from '@/components/ui/GlassCard'
 
 interface GroupDetailsContainerProps {
     group: any
@@ -29,22 +30,22 @@ export default function GroupDetailsContainer({
     return (
         <Tabs defaultValue="standings" className="space-y-6 sm:space-y-10">
             <div className="flex items-center justify-between gap-4 overflow-x-auto no-scrollbar pb-2">
-                <TabsList className="bg-transparent p-0 h-auto gap-2 sm:gap-4 shrink-0">
+                <TabsList className="bg-transparent p-0 h-auto gap-2 shrink-0">
                     <TabsTrigger
                         value="standings"
-                        className="rounded-full px-6 h-10 font-bold text-xs uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 data-[state=active]:border-transparent"
+                        className="rounded-full px-8 h-11 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 shadow-sm"
                     >
                         Standings
                     </TabsTrigger>
                     <TabsTrigger
                         value="ledger"
-                        className="rounded-full px-6 h-10 font-bold text-xs uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 data-[state=active]:border-transparent"
+                        className="rounded-full px-8 h-11 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 shadow-sm"
                     >
                         Ledger
                     </TabsTrigger>
                     <TabsTrigger
                         value="activities"
-                        className="rounded-full px-6 h-10 font-bold text-xs uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 data-[state=active]:border-transparent"
+                        className="rounded-full px-8 h-11 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 shadow-sm"
                     >
                         Activity
                     </TabsTrigger>
@@ -55,7 +56,7 @@ export default function GroupDetailsContainer({
                         <TabsList className="bg-transparent p-0 h-auto gap-2">
                             <TabsTrigger
                                 value="manage"
-                                className="rounded-full px-6 h-10 font-bold text-xs uppercase tracking-widest data-[state=active]:bg-indigo-600 data-[state=active]:text-white transition-all border border-border/50"
+                                className="rounded-full px-8 h-11 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-indigo-600 data-[state=active]:text-white transition-all border border-border/50 shadow-sm"
                             >
                                 <Share2 className="w-4 h-4 mr-2" />
                                 Invite
@@ -66,9 +67,27 @@ export default function GroupDetailsContainer({
             </div>
 
             <motion.div variants={itemFadeIn}>
-                <GlassCard className="p-0 overflow-hidden border-none shadow-none bg-transparent" hover={false} gradient={false}>
-                    <TabsContent value="standings" className="m-0 border-none outline-none focus-visible:ring-0">
-                        <div className="bg-white/40 dark:bg-slate-950/40 rounded-[32px] overflow-hidden border border-white/20 dark:border-white/10 shadow-xl">
+                <TabsContent value="standings" className="mt-0 border-none outline-none focus-visible:ring-0">
+                    <GlassCard className="flex flex-col p-0 overflow-hidden" hover={false}>
+                        <div className="p-5 sm:p-7 border-b border-border/50 flex items-center justify-between bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 bg-blue-500/10 rounded-xl">
+                                    <Users className="w-5 h-5 text-blue-500" />
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-black text-foreground">
+                                        Member Standings
+                                    </h2>
+                                    <p className="text-xs font-medium text-muted-foreground">
+                                        Full roster and role management
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                {group.members.length} Active
+                            </div>
+                        </div>
+                        <div className="p-0">
                             <GroupMembersList
                                 members={group.members}
                                 groupId={group.id}
@@ -76,10 +95,30 @@ export default function GroupDetailsContainer({
                                 currentUserId={userId}
                             />
                         </div>
-                    </TabsContent>
+                    </GlassCard>
+                </TabsContent>
 
-                    <TabsContent value="ledger" className="m-0 border-none outline-none focus-visible:ring-0 space-y-8">
-                        <div className="bg-white/40 dark:bg-slate-950/40 rounded-[32px] overflow-hidden border border-white/20 dark:border-white/10 shadow-xl p-2">
+                <TabsContent value="ledger" className="mt-0 border-none outline-none focus-visible:ring-0 space-y-8">
+                    <GlassCard className="flex flex-col p-0 overflow-hidden" hover={false}>
+                        <div className="p-5 sm:p-7 border-b border-border/50 flex items-center justify-between bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 bg-emerald-500/10 rounded-xl">
+                                    <Wallet className="w-5 h-5 text-emerald-500" />
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-black text-foreground">
+                                        Financial Ledger
+                                    </h2>
+                                    <p className="text-xs font-medium text-muted-foreground">
+                                        Contributions and credit records
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                Synced
+                            </div>
+                        </div>
+                        <div className="p-2">
                             <Tabs defaultValue="contributions_sub" className="w-full">
                                 <TabsList className="bg-slate-100/50 dark:bg-slate-800/50 p-1 rounded-2xl mb-4 ml-4 mt-4">
                                     <TabsTrigger value="contributions_sub" className="rounded-xl px-6 font-bold text-[10px] uppercase">Contributions</TabsTrigger>
@@ -102,19 +141,59 @@ export default function GroupDetailsContainer({
                                 </TabsContent>
                             </Tabs>
                         </div>
-                    </TabsContent>
+                    </GlassCard>
+                </TabsContent>
 
-                    <TabsContent value="activities" className="m-0 border-none outline-none focus-visible:ring-0">
-                        <div className="bg-white/40 dark:bg-slate-950/40 rounded-[32px] overflow-hidden border border-white/20 dark:border-white/10 shadow-xl">
+                <TabsContent value="activities" className="mt-0 border-none outline-none focus-visible:ring-0">
+                    <GlassCard className="flex flex-col p-0 overflow-hidden" hover={false}>
+                        <div className="p-5 sm:p-7 border-b border-border/50 flex items-center justify-between bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 bg-purple-500/10 rounded-xl">
+                                    <Activity className="w-5 h-5 text-purple-500" />
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-black text-foreground">
+                                        Group Activity
+                                    </h2>
+                                    <p className="text-xs font-medium text-muted-foreground">
+                                        Recent events and updates
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                Real-time
+                            </div>
+                        </div>
+                        <div className="p-0">
                             <GroupActivities
                                 activities={group.activities}
                             />
                         </div>
-                    </TabsContent>
+                    </GlassCard>
+                </TabsContent>
 
-                    {isAdmin && (
-                        <TabsContent value="manage" className="m-0 border-none outline-none focus-visible:ring-0">
-                            <div className="bg-white/40 dark:bg-slate-950/40 rounded-[32px] overflow-hidden border border-white/20 dark:border-white/10 shadow-xl p-8 sm:p-16">
+                {isAdmin && (
+                    <TabsContent value="manage" className="mt-0 border-none outline-none focus-visible:ring-0">
+                        <GlassCard className="flex flex-col p-0 overflow-hidden" hover={false}>
+                            <div className="p-5 sm:p-7 border-b border-border/50 flex items-center justify-between bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2.5 bg-indigo-500/10 rounded-xl">
+                                        <Share2 className="w-5 h-5 text-indigo-500" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-lg font-black text-foreground">
+                                            Manage Group
+                                        </h2>
+                                        <p className="text-xs font-medium text-muted-foreground">
+                                            Admin controls and sharing
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                    Admin
+                                </div>
+                            </div>
+                            <div className="p-8 sm:p-16">
                                 <div className="max-w-md mx-auto">
                                     <QRCodeShare
                                         groupId={group.id}
@@ -122,9 +201,9 @@ export default function GroupDetailsContainer({
                                     />
                                 </div>
                             </div>
-                        </TabsContent>
-                    )}
-                </GlassCard>
+                        </GlassCard>
+                    </TabsContent>
+                )}
             </motion.div>
         </Tabs>
     )
