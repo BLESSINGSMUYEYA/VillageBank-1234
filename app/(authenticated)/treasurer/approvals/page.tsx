@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from '@/components/ui/dialog'
-import { Check, X, Eye, ArrowLeft, Image as ImageIcon, AlertTriangle, Wallet, History, Maximize2, ZoomIn, ZoomOut, RotateCw, CheckSquare } from 'lucide-react'
+import { Check, X, Eye, ArrowLeft, Image as ImageIcon, AlertTriangle, Wallet, History, Maximize2, ZoomIn, ZoomOut, RotateCw } from 'lucide-react'
 import Link from 'next/link'
 import { formatCurrency } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -14,7 +14,6 @@ import { useOptimistic, useTransition } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { GrowthLoader, InlineLogoLoader } from '@/components/ui/LogoLoader'
-import { GlassCard } from '@/components/ui/GlassCard'
 
 export default function TreasurerApprovalsPage() {
     const [pending, setPending] = useState<any[]>([])
@@ -40,6 +39,14 @@ export default function TreasurerApprovalsPage() {
     useEffect(() => {
         fetchPending()
     }, [])
+
+    // Reset zoom and rotation when opening a new review item
+    useEffect(() => {
+        if (reviewItem) {
+            setZoomLevel(1)
+            setRotation(0)
+        }
+    }, [reviewItem])
 
     const fetchPending = async () => {
         try {
@@ -205,131 +212,120 @@ export default function TreasurerApprovalsPage() {
                 </div>
             )}
 
-            {/* Immersive Review Modal */}
+            {/* Side-by-Side Review Modal */}
             <Dialog open={!!reviewItem} onOpenChange={(open) => !open && setReviewItem(null)}>
-                <DialogContent className="max-w-[95vw] w-full h-[95vh] p-0 gap-0 overflow-hidden rounded-[32px] border-none outline-none bg-black/90 shadow-2xl relative group/modal">
+                <DialogContent className="max-w-[95vw] w-[600px] max-h-[85vh] p-0 gap-0 overflow-y-auto rounded-2xl border-none outline-none bg-background flex flex-col">
                     <DialogTitle className="sr-only">Contribution Review</DialogTitle>
                     <DialogDescription className="sr-only">
                         Review and verify contribution for {reviewItem?.user?.firstName} {reviewItem?.user?.lastName}
                     </DialogDescription>
                     {reviewItem && (
                         <>
-                            {/* Full Screen Image Layer */}
-                            <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden bg-black/50 backdrop-blur-3xl">
+                            {/* Left Panel: Evidence (Zoomable Receipt) */}
+                            <div className="h-[500px] shrink-0 bg-black/5 dark:bg-black/40 relative flex items-center justify-center overflow-hidden border-b border-border">
                                 {reviewItem.receiptUrl ? (
-                                    <motion.div
-                                        className="relative w-full h-full flex items-center justify-center cursor-grab active:cursor-grabbing"
-                                        drag
-                                        dragConstraints={{ left: -500, right: 500, top: -500, bottom: 500 }}
-                                    >
-                                        <motion.img
-                                            src={reviewItem.receiptUrl}
-                                            alt="Evidence"
-                                            animate={{ scale: zoomLevel, rotate: rotation }}
-                                            className="max-w-none max-h-[90vh] object-contain shadow-2xl rounded-sm ring-1 ring-white/10"
-                                            draggable={false}
-                                        />
-                                    </motion.div>
+                                    <>
+                                        <div className="absolute top-4 left-4 z-10 flex gap-2">
+                                            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-white/90 shadow-sm hover:bg-white" onClick={() => setZoomLevel(prev => Math.min(prev + 0.5, 3))}>
+                                                <ZoomIn className="w-4 h-4 text-black" />
+                                            </Button>
+                                            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-white/90 shadow-sm hover:bg-white" onClick={() => setZoomLevel(prev => Math.max(prev - 0.5, 0.5))}>
+                                                <ZoomOut className="w-4 h-4 text-black" />
+                                            </Button>
+                                            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-white/90 shadow-sm hover:bg-white" onClick={() => setRotation(prev => prev + 90)}>
+                                                <RotateCw className="w-4 h-4 text-black" />
+                                            </Button>
+                                            <div className="bg-black/60 text-white text-[10px] font-bold px-3 py-1.5 rounded-full backdrop-blur-sm self-center">
+                                                {Math.round(zoomLevel * 100)}%
+                                            </div>
+                                        </div>
+
+                                        <div className="w-full h-full overflow-auto flex items-center justify-center p-8 cursor-grab active:cursor-grabbing">
+                                            <motion.img
+                                                src={reviewItem.receiptUrl}
+                                                alt="Evidence"
+                                                animate={{ scale: zoomLevel, rotate: rotation }}
+                                                className="w-auto h-auto max-w-full max-h-full object-contain shadow-2xl rounded-sm"
+                                            />
+                                        </div>
+                                    </>
                                 ) : (
-                                    <div className="flex flex-col items-center opacity-30 text-white">
-                                        <ImageIcon className="w-32 h-32 mb-6 stroke-[0.5]" />
-                                        <p className="font-black text-4xl uppercase tracking-[0.5em]">No Receipt</p>
+                                    <div className="flex flex-col items-center opacity-40">
+                                        <ImageIcon className="w-16 h-16 mb-4" />
+                                        <p className="font-bold text-xl uppercase">No Receipt Attached</p>
                                     </div>
                                 )}
-
-                                {/* Overlay Gradient for text readability if needed */}
-                                <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/60 via-transparent to-black/30" />
                             </div>
 
-                            {/* Floating Controls */}
-                            <div className="absolute top-6 left-6 z-20 flex gap-2">
-                                <GlassCard className="p-1.5 flex gap-2 rounded-full border-white/10 bg-black/40 backdrop-blur-md shadow-xl" hover={false}>
-                                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-white hover:bg-white/20 hover:scale-110 transition-all" onClick={() => setZoomLevel(prev => Math.min(prev + 0.5, 4))}>
-                                        <ZoomIn className="w-5 h-5" />
-                                    </Button>
-                                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-white hover:bg-white/20 hover:scale-110 transition-all" onClick={() => setZoomLevel(prev => Math.max(prev - 0.5, 0.5))}>
-                                        <ZoomOut className="w-5 h-5" />
-                                    </Button>
-                                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-white hover:bg-white/20 hover:scale-110 transition-all" onClick={() => setRotation(prev => prev + 90)}>
-                                        <RotateCw className="w-5 h-5" />
-                                    </Button>
-                                    <div className="h-10 px-4 flex items-center justify-center border-l border-white/10 text-xs font-black text-white/90 tabular-nums">
-                                        {Math.round(zoomLevel * 100)}%
-                                    </div>
-                                </GlassCard>
-                            </div>
-
-                            <div className="absolute top-6 right-6 z-20 md:hidden">
-                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-black/40 text-white backdrop-blur-md" onClick={() => setReviewItem(null)}>
-                                    <X className="w-6 h-6" />
-                                </Button>
-                            </div>
-
-
-                            {/* Floating Details Panel */}
-                            <GlassCard
-                                className="absolute right-0 bottom-0 md:top-4 md:bottom-4 md:right-4 w-full md:w-[420px] rounded-t-[32px] md:rounded-[32px] border-white/10 bg-black/60 dark:bg-black/80 backdrop-blur-xl shadow-2xl z-20 flex flex-col overflow-hidden max-h-[85vh] md:max-h-full transition-transform duration-500 ease-out translate-y-0"
-                                hover={false}
-                            >
-                                {/* Header */}
-                                <div className="p-6 md:p-8 pb-4 border-b border-white/10 shrink-0">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center text-blue-400 border border-white/5 shadow-inner">
-                                            <CheckSquare className="w-6 h-6" />
-                                        </div>
-                                        <div>
-                                            <h2 className="text-2xl font-black text-white tracking-tight">Verify</h2>
-                                            <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">Transaction Review</p>
-                                        </div>
-                                    </div>
+                            {/* Right Panel: Ledger / Action */}
+                            <div className="w-full h-auto bg-background flex flex-col border-t border-border shadow-xl z-20">
+                                <div className="p-6 border-b border-border bg-muted/10">
+                                    <h2 className="text-xl font-black text-foreground mb-1">Verification</h2>
+                                    <p className="text-sm text-muted-foreground">Compare the proof on the left with the claim below.</p>
                                 </div>
 
-                                {/* Scrollable Content */}
-                                <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 custom-scrollbar">
-                                    {/* Main Amount */}
-                                    <div className="text-center space-y-2">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Amount Declared</p>
-                                        <div className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60 tracking-tighter">
+                                <div className="p-6 space-y-8">
+                                    {/* Amount Section */}
+                                    <div className="space-y-2">
+                                        <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Claimed Amount</p>
+                                        <div className="text-4xl font-black text-blue-600 dark:text-blue-400">
                                             {formatCurrency(reviewItem.amount)}
                                         </div>
                                     </div>
 
-                                    {/* Details Grid */}
-                                    <div className="grid grid-cols-1 gap-1 bg-white/5 rounded-2xl p-1 border border-white/5">
-                                        <div className="flex justify-between items-center p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
-                                            <span className="text-xs font-bold text-white/50 uppercase tracking-wider">Contributor</span>
-                                            <span className="text-sm font-black text-white">{reviewItem.user.firstName} {reviewItem.user.lastName}</span>
+                                    {/* Meta Data */}
+                                    <div className="grid grid-cols-1 gap-4 p-4 rounded-xl bg-muted/30 border border-border">
+                                        <div>
+                                            <p className="text-[10px] font-bold uppercase text-muted-foreground">Contributor</p>
+                                            <p className="font-bold text-foreground">{reviewItem.user.firstName} {reviewItem.user.lastName}</p>
                                         </div>
-                                        <div className="flex justify-between items-center p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
-                                            <span className="text-xs font-bold text-white/50 uppercase tracking-wider">Group</span>
-                                            <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/20 font-bold">{reviewItem.group.name}</Badge>
+                                        <div>
+                                            <p className="text-[10px] font-bold uppercase text-muted-foreground">Transaction Ref</p>
+                                            <p className="font-mono text-xs font-bold text-foreground break-all">{reviewItem.transactionRef || 'N/A'}</p>
                                         </div>
-                                        <div className="flex justify-between items-center p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
-                                            <span className="text-xs font-bold text-white/50 uppercase tracking-wider">Date</span>
-                                            <span className="text-sm font-bold text-white font-mono">{new Date(reviewItem.paymentDate || reviewItem.createdAt).toLocaleDateString()}</span>
+                                        <div>
+                                            <p className="text-[10px] font-bold uppercase text-muted-foreground">Date</p>
+                                            <p className="font-bold text-foreground">{new Date(reviewItem.paymentDate || reviewItem.createdAt).toLocaleDateString()} {new Date(reviewItem.paymentDate || reviewItem.createdAt).toLocaleTimeString()}</p>
                                         </div>
                                     </div>
 
-                                    {/* Rejection Input */}
-                                    {reviewItem.status !== 'COMPLETED' && (
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 pl-1">Rejection Notes</label>
-                                            <textarea
-                                                className="w-full min-h-[80px] p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-white/20 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none transition-all"
-                                                placeholder="Required if rejecting..."
-                                                value={rejectionReason}
-                                                onChange={(e) => setRejectionReason(e.target.value)}
-                                            />
+                                    {/* Financial Context */}
+                                    <div className="space-y-3">
+                                        <h3 className="text-xs font-black uppercase text-muted-foreground tracking-widest flex items-center gap-2">
+                                            <Wallet className="w-3 h-3" /> Member Standing
+                                        </h3>
+                                        <div className="flex items-center justify-between p-3 rounded-lg border border-border">
+                                            <span className="text-sm font-medium">Unpaid Penalties</span>
+                                            <span className={cn("font-bold text-sm", reviewItem.member.unpaidPenalties > 0 ? "text-red-500" : "text-muted-foreground")}>
+                                                {formatCurrency(reviewItem.member.unpaidPenalties)}
+                                            </span>
                                         </div>
-                                    )}
+                                        <div className="flex items-center justify-between p-3 rounded-lg border border-border">
+                                            <span className="text-sm font-medium">Current Balance</span>
+                                            <span className="font-bold text-sm text-green-600 dark:text-green-500">
+                                                {formatCurrency(reviewItem.member.balance)}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Rejection Form */}
+                                    <div className="pt-4 border-t border-border">
+                                        <p className="text-xs font-bold mb-2 text-muted-foreground">Notes / Rejection Reason</p>
+                                        <textarea
+                                            className="w-full min-h-[80px] p-3 rounded-lg border border-input bg-background text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                                            placeholder="Optional: Leave a reason if rejecting..."
+                                            value={rejectionReason}
+                                            onChange={(e) => setRejectionReason(e.target.value)}
+                                        />
+                                    </div>
                                 </div>
 
-                                {/* Actions Footer */}
-                                <div className="p-6 md:p-8 pt-4 shrink-0 bg-gradient-to-t from-black/80 to-transparent">
-                                    <div className="grid grid-cols-2 gap-4">
+                                {/* Footer Actions */}
+                                <div className="p-6 border-t border-border bg-muted/10">
+                                    <div className="grid grid-cols-2 gap-3">
                                         <Button
-                                            variant="outline"
-                                            className="h-14 rounded-2xl border-white/10 bg-white/5 hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-400 text-white font-black uppercase tracking-widest text-xs transition-all"
+                                            variant="destructive"
+                                            className="h-12 font-bold rounded-xl"
                                             onClick={() => handleReviewAction('REJECTED')}
                                             disabled={isSubmitting}
                                         >
@@ -337,7 +333,7 @@ export default function TreasurerApprovalsPage() {
                                         </Button>
                                         <Button
                                             variant="default"
-                                            className="h-14 rounded-2xl bg-white text-black hover:bg-blue-400 hover:text-white border-none font-black uppercase tracking-widest text-xs transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(59,130,246,0.4)]"
+                                            className="h-12 font-bold rounded-xl bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/20 transition-all"
                                             onClick={() => handleReviewAction('COMPLETED')}
                                             disabled={isSubmitting}
                                         >
@@ -345,13 +341,13 @@ export default function TreasurerApprovalsPage() {
                                                 <InlineLogoLoader size="xs" />
                                             ) : (
                                                 <>
-                                                    <Check className="w-5 h-5 mr-2" /> Approve
+                                                    <Check className="w-4 h-4 mr-2" /> Approve
                                                 </>
                                             )}
                                         </Button>
                                     </div>
                                 </div>
-                            </GlassCard>
+                            </div>
                         </>
                     )}
                 </DialogContent>
