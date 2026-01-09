@@ -11,6 +11,7 @@ import { motion } from 'framer-motion'
 import { itemFadeIn } from '@/lib/motions'
 import { Share2, Users, Wallet, Activity } from 'lucide-react'
 import { GlassCard } from '@/components/ui/GlassCard'
+import { ExcelImportModal } from '@/components/ExcelImportModal'
 
 interface GroupDetailsContainerProps {
     group: any
@@ -114,8 +115,13 @@ export default function GroupDetailsContainer({
                                     </p>
                                 </div>
                             </div>
-                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                                Synced
+                            <div className="flex items-center gap-4">
+                                {(isAdmin || isTreasurer) && (
+                                    <ExcelImportModal groupId={group.id} />
+                                )}
+                                <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                    Synced
+                                </div>
                             </div>
                         </div>
                         <div className="p-2">

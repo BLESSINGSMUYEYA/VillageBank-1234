@@ -21,6 +21,7 @@ interface Contribution {
   penaltyApplied: number
   isLate: boolean
   createdAt: string
+  paymentDate?: string | Date // Add paymentDate
   user: {
     firstName: string
     lastName: string
@@ -126,7 +127,10 @@ export default function GroupContributions({ contributions, groupId, currentUser
                       <div className="text-right">
                         <p className="text-base font-black text-blue-600 dark:text-banana tracking-tight">{formatCurrency(contribution.amount)}</p>
                         <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mt-0.5 opacity-70">
-                          {new Date(contribution.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                          {contribution.paymentDate
+                            ? new Date(contribution.paymentDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+                            : new Date(contribution.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+                          }
                         </p>
                       </div>
                       <div className="flex items-center gap-3">
