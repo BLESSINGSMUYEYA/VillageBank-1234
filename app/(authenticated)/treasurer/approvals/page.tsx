@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from '@/components/ui/dialog'
-import { Check, X, Eye, ArrowLeft, Image as ImageIcon, AlertTriangle, Wallet, History, Maximize2, ZoomIn, ZoomOut, RotateCw } from 'lucide-react'
+import { Check, X, Eye, ArrowLeft, Image as ImageIcon, AlertTriangle, Wallet, History, Maximize2, ZoomIn, ZoomOut, RotateCw, CheckSquare } from 'lucide-react'
 import Link from 'next/link'
 import { formatCurrency } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -14,6 +14,7 @@ import { useOptimistic, useTransition } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { GrowthLoader, InlineLogoLoader } from '@/components/ui/LogoLoader'
+import { GlassCard } from '@/components/ui/GlassCard'
 
 export default function TreasurerApprovalsPage() {
     const [pending, setPending] = useState<any[]>([])
