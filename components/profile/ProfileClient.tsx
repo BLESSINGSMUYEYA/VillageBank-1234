@@ -157,31 +157,30 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                 {/* Left Column: Identity & Milestoness */}
                 <div className="lg:col-span-1 space-y-8">
                     <motion.div variants={itemFadeIn}>
-                        <div className="zen-card p-0 overflow-hidden border-none shadow-none">
-                            {/* Banner - Zen Style */}
-                            <div className="h-40 bg-gradient-to-br from-blue-900 via-slate-900 to-black relative">
-                                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.2),transparent)]" />
-                                <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-background to-transparent" />
+                        <GlassCard className="p-0 overflow-hidden border-none" hover={false}>
+                            {/* Banner - Simplified */}
+                            <div className="h-32 bg-gradient-to-br from-blue-600/20 to-indigo-600/20 dark:from-blue-900/40 dark:to-slate-900/40 relative">
+                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.2),transparent)] opacity-50" />
                             </div>
 
                             <CardContent className="relative pt-0 px-8 pb-10">
-                                {/* Avatar - Floating Zen */}
-                                <div className="flex justify-center -mt-20 mb-8">
-                                    <div className="p-2 rounded-[3rem] bg-background/80 backdrop-blur-3xl shadow-2xl border border-white/20">
-                                        <div className="w-32 h-32 rounded-[2.5rem] bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-800 dark:from-banana dark:via-yellow-400 dark:to-yellow-600 flex items-center justify-center text-white dark:text-blue-950 text-5xl font-black shadow-inner">
+                                {/* Avatar - Clean & Floating */}
+                                <div className="flex justify-center -mt-16 mb-6">
+                                    <div className="p-1.5 rounded-[2.5rem] bg-background shadow-xl">
+                                        <div className="w-32 h-32 rounded-[2rem] bg-gradient-to-br from-blue-500 to-blue-700 dark:from-blue-600 dark:to-blue-800 flex items-center justify-center text-white text-5xl font-black shadow-inner border border-white/10">
                                             {(profile?.firstName?.charAt(0) || '') + (profile?.lastName?.charAt(0) || '')}
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="space-y-8">
-                                    <div className="text-center">
-                                        <h2 className="text-4xl font-black text-foreground tracking-tighter leading-none mb-2">
+                                <div className="space-y-6">
+                                    <div className="text-center space-y-2">
+                                        <h2 className="text-3xl font-black text-foreground tracking-tight">
                                             {profile?.firstName}
                                         </h2>
 
                                         {/* uBank Tag Section */}
-                                        <div className="flex items-center justify-center gap-2 mb-4 h-8">
+                                        <div className="flex items-center justify-center h-8">
                                             {isEditingTag ? (
                                                 <div className="flex items-center gap-2 animate-in fade-in zoom-in duration-200">
                                                     <div className="relative">
@@ -189,14 +188,14 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                                         <Input
                                                             value={tagValue}
                                                             onChange={(e) => setTagValue(e.target.value)}
-                                                            className="h-8 w-40 pl-8 text-xs font-bold bg-white/10 border-white/10"
+                                                            className="h-8 w-40 pl-8 text-xs font-bold bg-muted/50 border-transparent focus:bg-background transition-colors"
                                                             placeholder="your.handle"
                                                             autoFocus
                                                         />
                                                     </div>
                                                     <Button
                                                         size="icon"
-                                                        className="h-8 w-8 bg-green-500 hover:bg-green-600 text-white rounded-full"
+                                                        className="h-8 w-8 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full"
                                                         onClick={handleSaveTag}
                                                         disabled={isSavingTag}
                                                     >
@@ -205,7 +204,7 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                                     <Button
                                                         size="icon"
                                                         variant="ghost"
-                                                        className="h-8 w-8 rounded-full hover:bg-white/10"
+                                                        className="h-8 w-8 rounded-full"
                                                         onClick={() => {
                                                             setIsEditingTag(false)
                                                             setTagValue(profile.ubankTag || '')
@@ -216,48 +215,47 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                                 </div>
                                             ) : (
                                                 <div
-                                                    className="group flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 dark:bg-white/5 border border-transparent hover:border-blue-500/30 transition-all cursor-pointer"
+                                                    className="group flex items-center gap-1 px-3 py-1 rounded-full hover:bg-muted/50 transition-colors cursor-pointer"
                                                     onClick={() => setIsEditingTag(true)}
                                                 >
-                                                    <AtSign className="w-3.5 h-3.5 text-blue-500 dark:text-banana opacity-70" />
-                                                    <span className="text-sm font-bold text-muted-foreground group-hover:text-foreground transition-colors">
-                                                        {profile.ubankTag || 'Claim your tag'}
+                                                    <span className="text-sm font-bold text-muted-foreground group-hover:text-blue-600 transition-colors">
+                                                        @{profile.ubankTag || 'claim_handle'}
                                                     </span>
                                                     <Edit2 className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-50 transition-opacity ml-1" />
                                                 </div>
                                             )}
                                         </div>
 
-                                        <div className="flex flex-wrap items-center justify-center gap-3">
-                                            <Badge variant="info" className="rounded-lg font-black text-[9px] tracking-widest uppercase px-3 py-1">
+                                        <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                                            <Badge variant="secondary" className="font-bold text-[10px] uppercase tracking-wider px-2.5 py-0.5 bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 border-0">
                                                 {profile?.role?.replace('_', ' ')}
                                             </Badge>
-                                            <Badge variant="success" className="rounded-lg font-black text-[9px] tracking-widest uppercase px-3 py-1">
-                                                Verified Node
+                                            <Badge variant="secondary" className="font-bold text-[10px] uppercase tracking-wider px-2.5 py-0.5 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border-0">
+                                                Verified
                                             </Badge>
                                         </div>
                                     </div>
 
-                                    <div className="space-y-4 pt-4 border-t border-white/10 dark:border-white/5">
+                                    <div className="space-y-5 pt-6 border-t border-border/10">
                                         {[
-                                            { icon: Mail, label: 'Auth Token', value: profile?.email },
-                                            { icon: MapPin, label: 'Home Sector', value: profile?.region || 'Central Domain' },
-                                            { icon: Calendar, label: 'Origin Point', value: profile?.joinedAt ? new Date(profile.joinedAt).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }) : '---' }
+                                            { icon: Mail, label: 'Email', value: profile?.email },
+                                            { icon: MapPin, label: 'Sector', value: profile?.region || 'Central Domain' },
+                                            { icon: Calendar, label: 'Joined', value: profile?.joinedAt ? new Date(profile.joinedAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) : '---' }
                                         ].map((item, idx) => (
                                             <div key={idx} className="flex items-center gap-4 group/item">
-                                                <div className="p-3 rounded-2xl bg-blue-600/5 dark:bg-white/5 text-blue-600 dark:text-banana group-hover/item:scale-110 transition-transform">
+                                                <div className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground group-hover/item:text-blue-500 transition-colors shrink-0">
                                                     <item.icon className="w-4 h-4" />
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <p className="zen-label lowercase opacity-40">{item.label}</p>
-                                                    <p className="text-sm font-black text-foreground truncate">{item.value}</p>
+                                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 mb-0.5">{item.label}</p>
+                                                    <p className="text-sm font-medium text-foreground truncate">{item.value}</p>
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
                                 </div>
                             </CardContent>
-                        </div>
+                        </GlassCard>
                     </motion.div>
 
                     {/* Milestone Card */}
@@ -312,23 +310,23 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                     </div>
 
                     <Tabs defaultValue="overview" className="space-y-8">
-                        <div className="flex items-center justify-between gap-4 overflow-x-auto no-scrollbar pb-2">
-                            <TabsList className="bg-transparent p-0 h-auto gap-2 shrink-0">
+                        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 border-b border-border/10">
+                            <TabsList className="bg-transparent p-0 h-auto gap-6 shrink-0">
                                 <TabsTrigger
                                     value="overview"
-                                    className="rounded-full px-8 h-12 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-blue-600 dark:data-[state=active]:text-white transition-all border border-border/50 shadow-sm"
+                                    className="rounded-none px-0 pb-3 h-auto font-black text-xs uppercase tracking-widest text-muted-foreground data-[state=active]:text-blue-600 dark:data-[state=active]:text-banana data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-blue-600 dark:data-[state=active]:border-banana transition-all hover:text-foreground"
                                 >
                                     Overview
                                 </TabsTrigger>
                                 <TabsTrigger
                                     value="groups"
-                                    className="rounded-full px-8 h-12 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-blue-600 dark:data-[state=active]:text-white transition-all border border-border/50 shadow-sm"
+                                    className="rounded-none px-0 pb-3 h-auto font-black text-xs uppercase tracking-widest text-muted-foreground data-[state=active]:text-blue-600 dark:data-[state=active]:text-banana data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-blue-600 dark:data-[state=active]:border-banana transition-all hover:text-foreground"
                                 >
                                     Nodes
                                 </TabsTrigger>
                                 <TabsTrigger
                                     value="history"
-                                    className="rounded-full px-8 h-12 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-blue-600 dark:data-[state=active]:text-white transition-all border border-border/50 shadow-sm"
+                                    className="rounded-none px-0 pb-3 h-auto font-black text-xs uppercase tracking-widest text-muted-foreground data-[state=active]:text-blue-600 dark:data-[state=active]:text-banana data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-blue-600 dark:data-[state=active]:border-banana transition-all hover:text-foreground"
                                 >
                                     Ledger
                                 </TabsTrigger>

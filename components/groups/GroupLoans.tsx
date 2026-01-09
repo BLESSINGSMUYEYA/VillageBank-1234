@@ -4,11 +4,10 @@ import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatCurrency, cn } from '@/lib/utils'
-import { Plus, CheckCircle, XCircle, Clock, Landmark, Wallet, ArrowUpRight, User, Calendar, Percent } from 'lucide-react'
+import { Plus, CheckCircle, XCircle, Clock, Landmark, Wallet, ArrowUpRight, Calendar, Percent, User } from 'lucide-react'
 import Link from 'next/link'
-import { StatsCard } from '@/components/ui/stats-card'
 import { GlassCard } from '@/components/ui/GlassCard'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
 
 interface Loan {
@@ -75,22 +74,22 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
       <GlassCard className="p-6 sm:p-8 space-y-8" hover={false}>
         {/* Stats Row */}
         {/* Stats Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border/10 border-b border-border/10 pb-6 mb-6">
-          <div className="space-y-1 pb-4 sm:pb-0 sm:px-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pb-6 mb-6">
+          <div className="space-y-1 pb-4 sm:pb-0 sm:px-4 p-4 rounded-2xl hover:bg-white/5 transition-colors">
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-2">
               <Wallet className="w-3 h-3 text-blue-500" />
               Total Disbursed
             </p>
-            <p className="text-base font-black text-foreground">{formatCurrency(totalAmountApproved)}</p>
+            <p className="text-3xl font-black text-foreground tracking-tighter">{formatCurrency(totalAmountApproved)}</p>
             <p className="text-[10px] font-bold text-muted-foreground opacity-60">{loans.length} total loans issued</p>
           </div>
 
-          <div className="space-y-1 pt-4 sm:pt-0 sm:px-4">
+          <div className="space-y-1 pt-4 sm:pt-0 sm:px-4 p-4 rounded-2xl hover:bg-white/5 transition-colors">
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-2">
               <Clock className="w-3 h-3 text-orange-500" />
               Pending Request
             </p>
-            <p className="text-base font-black text-foreground">{pendingLoans.length}</p>
+            <p className="text-3xl font-black text-foreground tracking-tighter">{pendingLoans.length}</p>
             <p className="text-[10px] font-bold text-muted-foreground opacity-60">{formatCurrency(pendingLoans.reduce((sum, l) => sum + l.amountRequested, 0))}</p>
           </div>
         </div>
@@ -168,8 +167,8 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
               loans.map((loan, index) => (
                 <motion.div key={loan.id} variants={itemFadeIn}>
                   <div className={cn(
-                    "p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group hover:bg-white/5 transition-colors",
-                    index !== loans.length - 1 && "border-b border-border/10"
+                    "p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group hover:bg-white/5 transition-colors rounded-2xl",
+                    // No border between items
                   )}>
                     <div className="flex items-center gap-4">
                       <div className={cn(

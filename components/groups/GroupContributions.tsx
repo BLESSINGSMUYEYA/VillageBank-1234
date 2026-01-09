@@ -3,7 +3,7 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatCurrency, cn } from '@/lib/utils'
-import { Plus, Eye, CheckCircle2, Wallet, ArrowUpRight, User, Calendar, Clock, CheckSquare } from 'lucide-react'
+import { Plus, Eye, Wallet, ArrowUpRight, Calendar, Clock, CheckSquare } from 'lucide-react'
 import Link from 'next/link'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { motion } from 'framer-motion'
@@ -50,22 +50,23 @@ export default function GroupContributions({ contributions, groupId, currentUser
     >
       <GlassCard className="p-6 sm:p-8 space-y-8" hover={false}>
         {/* Stats Row - Loans Style (Responsive) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border/10 border-b border-border/10 pb-6 mb-6">
-          <div className="space-y-1 pb-4 sm:pb-0 sm:px-4">
+        {/* Stats Row - Loans Style (Responsive) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pb-6 mb-6">
+          <div className="space-y-1 pb-4 sm:pb-0 sm:px-4 p-4 rounded-2xl hover:bg-white/5 transition-colors">
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-2">
               <CheckSquare className="w-3 h-3 text-emerald-500" />
               Total Settled
             </p>
-            <p className="text-base font-black text-foreground">{formatCurrency(totalCompleted)}</p>
+            <p className="text-3xl font-black text-foreground tracking-tighter">{formatCurrency(totalCompleted)}</p>
             <p className="text-[10px] font-bold text-muted-foreground opacity-60">{completedContributions.length} contributions completed</p>
           </div>
 
-          <div className="space-y-1 pt-4 sm:pt-0 sm:px-4">
+          <div className="space-y-1 pt-4 sm:pt-0 sm:px-4 p-4 rounded-2xl hover:bg-white/5 transition-colors">
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-2">
               <Clock className="w-3 h-3 text-orange-500" />
               Awaiting Approval
             </p>
-            <p className="text-base font-black text-foreground">{formatCurrency(totalPending)}</p>
+            <p className="text-3xl font-black text-foreground tracking-tighter">{formatCurrency(totalPending)}</p>
             <p className="text-[10px] font-bold text-muted-foreground opacity-60">{pendingContributions.length} pending verification</p>
           </div>
         </div>
@@ -98,8 +99,8 @@ export default function GroupContributions({ contributions, groupId, currentUser
               contributions.map((contribution, index) => (
                 <motion.div key={contribution.id} variants={itemFadeIn}>
                   <div className={cn(
-                    "p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group hover:bg-white/5 transition-colors",
-                    index !== contributions.length - 1 && "border-b border-border/10"
+                    "p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group hover:bg-white/5 transition-colors rounded-2xl",
+                    // Removed border logic
                   )}>
                     <div className="flex items-center gap-4">
                       <div className={cn(

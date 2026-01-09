@@ -31,22 +31,22 @@ export default function GroupDetailsContainer({
     return (
         <Tabs defaultValue="standings" className="space-y-6 sm:space-y-10">
             <div className="flex items-center justify-between gap-4 overflow-x-auto no-scrollbar pb-2">
-                <TabsList className="bg-transparent p-0 h-auto gap-2 shrink-0">
+                <TabsList className="bg-transparent p-0 h-auto gap-6 shrink-0">
                     <TabsTrigger
                         value="standings"
-                        className="rounded-full px-8 h-11 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 shadow-sm"
+                        className="rounded-none px-0 pb-3 h-auto font-black text-xs uppercase tracking-widest text-muted-foreground data-[state=active]:text-blue-600 dark:data-[state=active]:text-banana data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-blue-600 dark:data-[state=active]:border-banana transition-all hover:text-foreground"
                     >
                         Standings
                     </TabsTrigger>
                     <TabsTrigger
                         value="ledger"
-                        className="rounded-full px-8 h-11 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 shadow-sm"
+                        className="rounded-none px-0 pb-3 h-auto font-black text-xs uppercase tracking-widest text-muted-foreground data-[state=active]:text-blue-600 dark:data-[state=active]:text-banana data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-blue-600 dark:data-[state=active]:border-banana transition-all hover:text-foreground"
                     >
                         Ledger
                     </TabsTrigger>
                     <TabsTrigger
                         value="activities"
-                        className="rounded-full px-8 h-11 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 shadow-sm"
+                        className="rounded-none px-0 pb-3 h-auto font-black text-xs uppercase tracking-widest text-muted-foreground data-[state=active]:text-blue-600 dark:data-[state=active]:text-banana data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-blue-600 dark:data-[state=active]:border-banana transition-all hover:text-foreground"
                     >
                         Activity
                     </TabsTrigger>
@@ -57,7 +57,7 @@ export default function GroupDetailsContainer({
                         <TabsList className="bg-transparent p-0 h-auto gap-2">
                             <TabsTrigger
                                 value="manage"
-                                className="rounded-full px-8 h-11 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-indigo-600 data-[state=active]:text-white transition-all border border-border/50 shadow-sm"
+                                className="rounded-none px-0 pb-3 h-auto font-black text-xs uppercase tracking-widest text-muted-foreground data-[state=active]:text-indigo-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-indigo-600 transition-all hover:text-foreground"
                             >
                                 <Share2 className="w-4 h-4 mr-2" />
                                 Invite

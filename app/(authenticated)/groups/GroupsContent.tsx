@@ -69,25 +69,18 @@ export function GroupsContent({ userGroups }: GroupsContentProps) {
                         </motion.div>
                     ))}
 
-                    {/* Add New Group Premium Card */}
+                    {/* Add New Group Premium Card - Simplified */}
                     <motion.div variants={itemFadeIn}>
                         <Link href="/groups/new" className="block h-full group">
-                            <div className="h-full min-h-[380px] rounded-[32px] border-2 border-dashed border-blue-500/20 hover:border-blue-500/40 bg-blue-50/20 dark:bg-white/5 hover:bg-blue-50/40 dark:hover:bg-white/10 flex flex-col items-center justify-center text-center p-8 transition-all duration-300 hover:scale-[1.01] cursor-pointer relative overflow-hidden group/card shadow-xl shadow-blue-500/5">
-                                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity" />
-                                <div className="w-24 h-24 rounded-3xl bg-white dark:bg-slate-900 shadow-xl shadow-blue-500/10 flex items-center justify-center mb-6 group-hover/card:rotate-12 group-hover/card:scale-110 transition-all duration-500 border border-white/20 dark:border-white/5">
-                                    <Plus className="w-12 h-12 text-blue-600 dark:text-banana" />
+                            <div className="h-full min-h-[300px] rounded-[32px] border border-dashed border-blue-500/20 hover:border-blue-500/40 bg-blue-50/10 dark:bg-white/5 flex flex-col items-center justify-center text-center p-8 transition-all duration-300 hover:bg-blue-50/20 dark:hover:bg-white/10 cursor-pointer relative overflow-hidden group/card">
+                                <div className="w-16 h-16 rounded-2xl bg-blue-600/10 dark:bg-banana/10 flex items-center justify-center mb-6 border border-blue-600/10 dark:border-banana/20 group-hover/card:scale-110 transition-transform">
+                                    <Plus className="w-8 h-8 text-blue-600 dark:text-banana" />
                                 </div>
-                                <div className="relative z-10">
-                                    <h3 className="text-2xl font-black text-foreground tracking-tight">{t('groups.create_group')}</h3>
-                                    <p className="text-sm text-muted-foreground font-bold mt-3 max-w-[220px] mx-auto opacity-70 leading-relaxed">
+                                <div className="relative z-10 space-y-2">
+                                    <h3 className="text-xl font-black text-foreground tracking-tight">{t('groups.create_group')}</h3>
+                                    <p className="text-sm font-medium text-muted-foreground opacity-70 leading-relaxed max-w-[200px] mx-auto">
                                         {t('groups.create_group_desc')}
                                     </p>
-                                </div>
-
-                                <div className="absolute bottom-10 opacity-0 group-hover/card:opacity-100 group-hover/card:bottom-8 transition-all duration-500">
-                                    <Button variant="outline" size="sm" className="rounded-full px-6 font-black text-xs uppercase tracking-widest border-blue-500/20 bg-white/50 dark:bg-slate-900/50">
-                                        Start Now
-                                    </Button>
                                 </div>
                             </div>
                         </Link>
