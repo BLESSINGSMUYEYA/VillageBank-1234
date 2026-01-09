@@ -152,7 +152,7 @@ export function MobileNavigation() {
                     key={item.name}
                     href={item.href}
                     className={cn(
-                      "relative flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all duration-300 group",
+                      "relative flex flex-col items-center justify-center w-16 h-16 rounded-2xl transition-all duration-300 group",
                       isActive
                         ? 'text-blue-600 dark:text-banana'
                         : 'text-muted-foreground hover:text-foreground'
@@ -168,9 +168,12 @@ export function MobileNavigation() {
                       )}
                     </AnimatePresence>
                     <Icon className={cn(
-                      "w-5 h-5 relative z-10 transition-transform duration-300",
+                      "w-5 h-5 relative z-10 transition-transform duration-300 mb-0.5",
                       isActive ? 'scale-110 stroke-[2.5px]' : 'group-active:scale-95'
                     )} />
+                    <span className="text-[9px] font-black uppercase tracking-wide relative z-10">
+                      {item.name}
+                    </span>
                   </Link>
                 )
               })}

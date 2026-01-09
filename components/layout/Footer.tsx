@@ -4,9 +4,11 @@ import Link from 'next/link'
 import { Github, Mail, Download } from 'lucide-react'
 import { useInstallPrompt } from '@/hooks/useInstallPrompt'
 import { Button } from '@/components/ui/button'
+import { useLanguage } from '@/components/providers/LanguageProvider'
 
 export function Footer() {
   const { showInstallPrompt, promptToInstall } = useInstallPrompt()
+  const { t } = useLanguage()
 
   return (
     <footer className="border-t border-border/50 bg-background/50 backdrop-blur-xl mt-auto">
@@ -19,7 +21,7 @@ export function Footer() {
               </h3>
             </Link>
             <p className="text-muted-foreground text-sm mb-6 max-w-sm leading-relaxed">
-              Empowering communities with transparent, accessible, and modern financial tools. Built for the future of Malawi.
+              {t('footer.desc')}
             </p>
             <div className="flex items-center gap-3">
               <a href="#" className="p-2 rounded-full bg-muted/50 hover:bg-banana/10 text-muted-foreground hover:text-banana transition-colors">
@@ -37,49 +39,49 @@ export function Footer() {
                   className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold shadow-lg shadow-amber-500/25 ml-2"
                 >
                   <Download className="w-4 h-4 mr-1.5" />
-                  Install App
+                  {t('footer.install_app') || 'Install App'}
                 </Button>
               )}
             </div>
           </div>
 
           <div>
-            <h4 className="text-sm font-black text-foreground mb-4 uppercase tracking-widest">Platform</h4>
+            <h4 className="text-sm font-black text-foreground mb-4 uppercase tracking-widest">{t('footer.platform')}</h4>
             <ul className="space-y-3">
               <li>
                 <Link href="/dashboard" className="text-muted-foreground hover:text-banana text-sm font-medium transition-colors">
-                  Dashboard
+                  {t('common.dashboard')}
                 </Link>
               </li>
               <li>
                 <Link href="/groups" className="text-muted-foreground hover:text-banana text-sm font-medium transition-colors">
-                  Groups
+                  {t('common.groups')}
                 </Link>
               </li>
               <li>
                 <Link href="/contributions" className="text-muted-foreground hover:text-banana text-sm font-medium transition-colors">
-                  Contributions
+                  {t('common.contributions')}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-sm font-black text-foreground mb-4 uppercase tracking-widest">Support</h4>
+            <h4 className="text-sm font-black text-foreground mb-4 uppercase tracking-widest">{t('footer.support')}</h4>
             <ul className="space-y-3">
               <li>
                 <Link href="/help" className="text-muted-foreground hover:text-banana text-sm font-medium transition-colors">
-                  Help Center
+                  {t('footer.help_center')}
                 </Link>
               </li>
               <li>
                 <Link href="/privacy" className="text-muted-foreground hover:text-banana text-sm font-medium transition-colors">
-                  Privacy Policy
+                  {t('footer.privacy_policy')}
                 </Link>
               </li>
               <li>
                 <Link href="/terms" className="text-muted-foreground hover:text-banana text-sm font-medium transition-colors">
-                  Terms of Service
+                  {t('footer.terms_of_service')}
                 </Link>
               </li>
             </ul>
@@ -88,7 +90,7 @@ export function Footer() {
 
         <div className="border-t border-border/50 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-muted-foreground text-xs font-medium">
-            © {new Date().getFullYear()} uBank. All rights reserved.
+            © {new Date().getFullYear()} uBank. {t('footer.rights_reserved')}
           </p>
           <div className="flex items-center gap-4">
             {/* Install button for bottom section (alternative placement) */}
@@ -98,12 +100,12 @@ export function Footer() {
                 className="text-xs font-bold text-amber-500 hover:text-amber-400 transition-colors flex items-center gap-1.5 uppercase tracking-wider"
               >
                 <Download className="w-3.5 h-3.5" />
-                Install App
+                {t('footer.install_app') || 'Install App'}
               </button>
             )}
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Systems Operational</span>
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{t('footer.systems_operational')}</span>
             </div>
           </div>
         </div>

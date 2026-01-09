@@ -113,7 +113,7 @@ export function GroupsContent({ userGroups }: GroupsContentProps) {
                     </p>
 
                     <Link href="/groups/new">
-                        <Button variant="banana" size="xl" className="shadow-2xl shadow-yellow-500/20 px-10">
+                        <Button variant="default" size="xl" className="shadow-2xl shadow-blue-500/20 px-10">
                             <Plus className="w-6 h-6 mr-2" />
                             {t('groups.create_group')}
                         </Button>

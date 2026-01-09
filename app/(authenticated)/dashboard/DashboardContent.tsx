@@ -125,12 +125,12 @@ export function DashboardContent({
                         {/* Total Contributions */}
                         <div className="p-6 sm:p-8 space-y-2 hover:bg-white/5 transition-colors group cursor-default relative overflow-hidden">
                             <div className="absolute inset-0 bg-gradient-to-br from-banana/0 to-banana/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                            <p className="zen-label opacity-60 flex items-center gap-2 relative z-10">
+                            <div className="zen-label opacity-60 flex items-center gap-2 relative z-10">
                                 <div className="p-1 rounded bg-banana/10 text-banana">
                                     <Wallet className="w-3.5 h-3.5" />
                                 </div>
                                 {t('dashboard.total_contributions') || 'Savings'}
-                            </p>
+                            </div>
                             <div className="flex items-center gap-3 relative z-10">
                                 <p className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
                                     {isContributionsVisible ? formatCurrency(stats.totalContributions) : '••••••'}
@@ -155,12 +155,12 @@ export function DashboardContent({
                         {/* Active Groups */}
                         <div className="p-6 sm:p-8 space-y-2 hover:bg-white/5 transition-colors group cursor-default relative overflow-hidden">
                             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                            <p className="zen-label opacity-60 flex items-center gap-2 relative z-10">
+                            <div className="zen-label opacity-60 flex items-center gap-2 relative z-10">
                                 <div className="p-1 rounded bg-blue-500/10 text-blue-500">
                                     <Users className="w-3.5 h-3.5" />
                                 </div>
                                 {t('common.groups') || 'Network'}
-                            </p>
+                            </div>
                             <p className="text-2xl sm:text-3xl font-black text-blue-600 dark:text-blue-400 tracking-tight relative z-10">{stats.totalGroups}</p>
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest relative z-10">Active Circles</p>
                         </div>
@@ -168,12 +168,12 @@ export function DashboardContent({
                         {/* Recent Activity */}
                         <div className="p-6 sm:p-8 space-y-2 hover:bg-white/5 transition-colors group cursor-default relative overflow-hidden">
                             <div className="absolute inset-0 bg-gradient-to-br from-purple-500/0 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                            <p className="zen-label opacity-60 flex items-center gap-2 relative z-10">
+                            <div className="zen-label opacity-60 flex items-center gap-2 relative z-10">
                                 <div className="p-1 rounded bg-purple-500/10 text-purple-500">
                                     <Zap className="w-3.5 h-3.5" />
                                 </div>
                                 {t('dashboard.recent_activity')}
-                            </p>
+                            </div>
                             <p className="text-2xl sm:text-3xl font-black text-purple-500 tracking-tight relative z-10">{recentActivity.length}</p>
                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest relative z-10">This Month</p>
                         </div>
@@ -190,12 +190,12 @@ export function DashboardContent({
                                         </span>
                                     </>
                                 )}
-                                <p className="zen-label opacity-60 flex items-center gap-2 relative z-10">
+                                <div className="zen-label opacity-60 flex items-center gap-2 relative z-10">
                                     <div className={cn("p-1 rounded", pendingApprovals.length > 0 ? "bg-red-500/10 text-red-500" : "bg-muted text-muted-foreground")}>
                                         <ArrowUpRight className="w-3.5 h-3.5" />
                                     </div>
                                     {t('dashboard.pending_approvals')}
-                                </p>
+                                </div>
                                 <p className={cn("text-2xl sm:text-3xl font-black tracking-tight relative z-10", pendingApprovals.length > 0 ? "text-red-500" : "text-muted-foreground")}>
                                     {pendingApprovals.length}
                                 </p>

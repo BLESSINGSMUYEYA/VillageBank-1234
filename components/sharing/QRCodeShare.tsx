@@ -71,7 +71,27 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
     return new Promise((resolve, reject) => {
       const img = new Image()
       img.crossOrigin = 'anonymous'
-      img.onload = () => {
+
+      const logoImg = new Image()
+      logoImg.crossOrigin = 'anonymous'
+
+      let imagesLoaded = 0
+      const onImageLoad = () => {
+        imagesLoaded++
+        if (imagesLoaded === 2) {
+          drawCanvas()
+        }
+      }
+
+      img.onload = onImageLoad
+      logoImg.onload = onImageLoad
+      img.onerror = () => reject(new Error('Failed to load QR image'))
+      logoImg.onerror = () => reject(new Error('Failed to load logo image'))
+
+      img.src = qrDataUrl
+      logoImg.src = '/ubank-logo.png' // Utilizing the logo from public folder
+
+      const drawCanvas = () => {
         const canvas = document.createElement('canvas')
         const ctx = canvas.getContext('2d')
         if (!ctx) {
@@ -82,7 +102,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
         const width = 1080
         const padding = 80
         const qrSize = width - (padding * 2)
-        const headerHeight = 120
+        const headerHeight = 200 // Increased for logo
         const footerHeight = 400
         const height = qrSize + headerHeight + footerHeight
 
@@ -95,11 +115,19 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
         ctx.fillStyle = gradient
         ctx.fillRect(0, 0, width, height)
 
+        // Draw Logo
+        const logoSize = 80
+        const logoX = (width - logoSize) / 2
+        const logoY = padding - 20
+        ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize)
+
         ctx.fillStyle = '#1e293b'
         ctx.font = 'bold 52px Inter, system-ui, sans-serif'
         ctx.textAlign = 'center'
-        ctx.fillText('uBank Group', width / 2, padding + 20)
+        // Updated text to "uBank" and positioned below logo
+        ctx.fillText('uBank', width / 2, logoY + logoSize + 50)
 
+        // QR Code Container
         ctx.shadowColor = 'rgba(0, 0, 0, 0.1)'
         ctx.shadowBlur = 40
         ctx.shadowOffsetY = 10
@@ -149,8 +177,6 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
           }
         }, 'image/png', 1.0)
       }
-      img.onerror = () => reject(new Error('Failed to load QR image'))
-      img.src = qrDataUrl
     })
   }
 
@@ -241,35 +267,35 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
         <GlassCard className="p-8 sm:p-12 space-y-10" hover={false}>
           <SectionHeader
             title="Invitation Protocol"
-            description="Configure access parameters for this share link"
+            description="Configure secure access parameters for this share link"
             icon={Share2}
           />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <FormGroup label="Access Level">
               <Select value={permissions} onValueChange={setPermissions}>
-                <SelectTrigger className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-bold px-6">
+                <SelectTrigger className="w-full h-14 rounded-2xl bg-white/40 dark:bg-black/20 border-white/10 shadow-inner backdrop-blur-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/30 transition-all font-bold text-foreground hover:bg-white/50 dark:hover:bg-white/5 px-5">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="rounded-2xl border-white/10 backdrop-blur-3xl">
-                  <SelectItem value="VIEW_ONLY" className="font-bold">View Only</SelectItem>
-                  <SelectItem value="REQUEST_JOIN" className="font-bold">Can Request to Join</SelectItem>
-                  <SelectItem value="LIMITED_ACCESS" className="font-bold">Limited Access</SelectItem>
-                  <SelectItem value="FULL_PREVIEW" className="font-bold">Full Preview</SelectItem>
+                <SelectContent className="rounded-2xl border-white/10 bg-white/90 dark:bg-slate-950/90 backdrop-blur-3xl shadow-2xl p-1">
+                  <SelectItem value="VIEW_ONLY" className="font-bold rounded-xl focus:bg-blue-500/10 focus:text-blue-600 cursor-pointer py-3">View Only</SelectItem>
+                  <SelectItem value="REQUEST_JOIN" className="font-bold rounded-xl focus:bg-blue-500/10 focus:text-blue-600 cursor-pointer py-3">Can Request to Join</SelectItem>
+                  <SelectItem value="LIMITED_ACCESS" className="font-bold rounded-xl focus:bg-blue-500/10 focus:text-blue-600 cursor-pointer py-3">Limited Access</SelectItem>
+                  <SelectItem value="FULL_PREVIEW" className="font-bold rounded-xl focus:bg-blue-500/10 focus:text-blue-600 cursor-pointer py-3">Full Preview</SelectItem>
                 </SelectContent>
               </Select>
             </FormGroup>
 
             <FormGroup label="Persistence">
               <Select value={expiresIn} onValueChange={setExpiresIn}>
-                <SelectTrigger className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-bold px-6">
+                <SelectTrigger className="w-full h-14 rounded-2xl bg-white/40 dark:bg-black/20 border-white/10 shadow-inner backdrop-blur-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/30 transition-all font-bold text-foreground hover:bg-white/50 dark:hover:bg-white/5 px-5">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="rounded-2xl border-white/10 backdrop-blur-3xl">
-                  <SelectItem value="1" className="font-bold">1 Day</SelectItem>
-                  <SelectItem value="7" className="font-bold">7 Days</SelectItem>
-                  <SelectItem value="30" className="font-bold">30 Days</SelectItem>
-                  <SelectItem value="never" className="font-bold">Permanent</SelectItem>
+                <SelectContent className="rounded-2xl border-white/10 bg-white/90 dark:bg-slate-950/90 backdrop-blur-3xl shadow-2xl p-1">
+                  <SelectItem value="1" className="font-bold rounded-xl focus:bg-blue-500/10 focus:text-blue-600 cursor-pointer py-3">1 Day</SelectItem>
+                  <SelectItem value="7" className="font-bold rounded-xl focus:bg-blue-500/10 focus:text-blue-600 cursor-pointer py-3">7 Days</SelectItem>
+                  <SelectItem value="30" className="font-bold rounded-xl focus:bg-blue-500/10 focus:text-blue-600 cursor-pointer py-3">30 Days</SelectItem>
+                  <SelectItem value="never" className="font-bold rounded-xl focus:bg-blue-500/10 focus:text-blue-600 cursor-pointer py-3">Permanent</SelectItem>
                 </SelectContent>
               </Select>
             </FormGroup>
@@ -281,6 +307,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
                 max="100"
                 value={maxUses}
                 onChange={(e) => setMaxUses(e.target.value)}
+                className="bg-white/40 dark:bg-black/20"
               />
             </FormGroup>
           </div>
@@ -291,6 +318,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
               value={customMessage}
               onChange={(e) => setCustomMessage(e.target.value.slice(0, 100))}
               maxLength={100}
+              className="bg-white/40 dark:bg-black/20"
             />
             <div className="flex justify-end pt-2">
               <span className="text-[10px] uppercase tracking-widest font-black text-muted-foreground opacity-50">
@@ -303,18 +331,18 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
             onClick={generateQRCode}
             disabled={loading}
             size="xl"
-            variant="banana"
-            className="w-full shadow-lg shadow-yellow-500/10 h-16 rounded-2xl"
+            variant="default"
+            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-xl shadow-blue-500/20 h-16 rounded-2xl border-t border-white/20 font-black tracking-tight text-lg transition-all active:scale-[0.98]"
           >
             {loading ? (
               <>
                 <InlineLogoLoader size="sm" />
-                Processing...
+                <span className="ml-2">Encoding protocol...</span>
               </>
             ) : (
               <>
-                <QrCode className="mr-2 h-5 w-5" />
-                Generate Secure Entry Key
+                <QrCode className="mr-3 h-5 w-5" />
+                Generate Secure Key
               </>
             )}
           </Button>
@@ -330,80 +358,99 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
             exit={{ opacity: 0, scale: 0.95 }}
           >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:items-start">
-              <GlassCard className="p-8 flex flex-col items-center justify-center space-y-6" hover={false}>
-                <div className="relative group">
-                  <div className="absolute -inset-4 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-[40px] blur-2xl opacity-20 group-hover:opacity-40 transition-opacity duration-500" />
-                  <div className="relative p-6 bg-white dark:bg-slate-900 rounded-[32px] shadow-2xl border border-white/20">
+              {/* QR Code Card */}
+              <GlassCard className="p-8 flex flex-col items-center justify-center space-y-8 bg-gradient-to-br from-white/40 to-white/10 dark:from-slate-900/60 dark:to-slate-900/20" hover={true}>
+                <div className="relative group cursor-pointer" onClick={downloadQRCode}>
+                  <div className="absolute -inset-8 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-700 animate-pulse" />
+                  <div className="relative p-6 bg-white rounded-[32px] shadow-2xl border border-white/20 transform group-hover:scale-[1.02] transition-transform duration-500">
                     <img
                       src={shareData.qrCode}
                       alt="Group QR Code"
-                      className="w-full max-w-[280px] h-auto aspect-square object-contain"
+                      className="w-full max-w-[260px] h-auto aspect-square object-contain"
                     />
                   </div>
                 </div>
-                <div className="text-center space-y-1">
-                  <h4 className="text-lg font-black tracking-tight">{groupName}</h4>
-                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Entry Authorization</p>
+                <div className="text-center space-y-1.5">
+                  <h4 className="text-xl font-black tracking-tight text-foreground">{groupName}</h4>
+                  <p className="text-[10px] font-black text-blue-500 uppercase tracking-[0.2em]">Secure Entry Point</p>
                 </div>
               </GlassCard>
 
+              {/* Details & Actions Card */}
               <GlassCard className="p-8 sm:p-10 space-y-8" hover={false}>
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground">Key Metadata</h4>
+                <div className="flex items-center justify-between border-b border-border/10 pb-6">
+                  <div className="space-y-1">
+                    <h4 className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground">Permissions</h4>
+                    <p className="text-xs text-muted-foreground/60 font-medium">Access level configuration</p>
+                  </div>
                   {getPermissionBadge(shareData.permissions)}
                 </div>
 
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-white/40 dark:bg-white/5 rounded-2xl border border-white/10">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-4 bg-blue-500/5 hover:bg-blue-500/10 transition-colors rounded-2xl border border-blue-500/10 group">
                     <div className="flex items-center gap-3">
-                      <Users className="h-4 w-4 text-blue-500" />
-                      <span className="text-xs font-black uppercase tracking-wider">Capacity</span>
+                      <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Users className="h-4 w-4 text-blue-600" />
+                      </div>
+                      <span className="text-xs font-black uppercase tracking-wider text-muted-foreground group-hover:text-blue-600 transition-colors">Capacity</span>
                     </div>
                     <span className="text-sm font-bold">{shareData.currentUses} / {shareData.maxUses} uses</span>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 bg-white/40 dark:bg-white/5 rounded-2xl border border-white/10">
+                  <div className="flex items-center justify-between p-4 bg-orange-500/5 hover:bg-orange-500/10 transition-colors rounded-2xl border border-orange-500/10 group">
                     <div className="flex items-center gap-3">
-                      <Clock className="h-4 w-4 text-orange-500" />
-                      <span className="text-xs font-black uppercase tracking-wider">Persistence</span>
+                      <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Clock className="h-4 w-4 text-orange-600" />
+                      </div>
+                      <span className="text-xs font-black uppercase tracking-wider text-muted-foreground group-hover:text-orange-600 transition-colors">Expires</span>
                     </div>
                     <span className="text-sm font-bold">
                       {shareData.expiresAt
-                        ? `Until ${new Date(shareData.expiresAt).toLocaleDateString()}`
-                        : 'Permanent'
+                        ? new Date(shareData.expiresAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+                        : 'Never'
                       }
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 bg-white/40 dark:bg-white/5 rounded-2xl border border-white/10">
+                  <div className="flex items-center justify-between p-4 bg-emerald-500/5 hover:bg-emerald-500/10 transition-colors rounded-2xl border border-emerald-500/10 group">
                     <div className="flex items-center gap-3">
-                      <Shield className="h-4 w-4 text-emerald-500" />
-                      <span className="text-xs font-black uppercase tracking-wider">Security</span>
+                      <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Shield className="h-4 w-4 text-emerald-600" />
+                      </div>
+                      <span className="text-xs font-black uppercase tracking-wider text-muted-foreground group-hover:text-emerald-600 transition-colors">Security</span>
                     </div>
-                    <span className="text-sm font-bold">SHA-256 Validated</span>
+                    <span className="text-sm font-bold text-emerald-600">SHA-256 Verified</span>
                   </div>
                 </div>
 
-                <div className="pt-4 grid grid-cols-2 gap-4">
-                  <Button onClick={copyShareLink} variant="outline" className="h-14 font-black rounded-xl border-2 hover:bg-slate-50 dark:hover:bg-white/5 transition-all">
+                <div className="pt-2 grid grid-cols-2 gap-3">
+                  <Button
+                    onClick={copyShareLink}
+                    variant="outline"
+                    className="h-12 font-bold rounded-xl border-border/20 hover:bg-white/5 hover:text-blue-600 hover:border-blue-500/30 transition-all text-xs uppercase tracking-wider"
+                  >
                     <Copy className="h-4 w-4 mr-2" />
                     Copy Link
                   </Button>
-                  <Button onClick={downloadQRCode} variant="outline" className="h-14 font-black rounded-xl border-2 hover:bg-slate-50 dark:hover:bg-white/5 transition-all">
+                  <Button
+                    onClick={downloadQRCode}
+                    variant="outline"
+                    className="h-12 font-bold rounded-xl border-border/20 hover:bg-white/5 hover:text-blue-600 hover:border-blue-500/30 transition-all text-xs uppercase tracking-wider"
+                  >
                     <Download className="h-4 w-4 mr-2" />
-                    Archive Key
+                    Download
                   </Button>
                 </div>
 
                 <Button
                   onClick={handleShare}
-                  variant="banana"
+                  variant="default"
                   size="xl"
-                  className="w-full shadow-xl shadow-yellow-500/10 group h-16 rounded-2xl"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/25 group h-14 rounded-2xl font-black tracking-tight"
                   disabled={loading}
                 >
                   <Share2 className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" />
-                  {loading ? 'Preparing Vault...' : 'Distribute Invitation'}
+                  {loading ? 'Processing...' : 'Share Invitation'}
                 </Button>
               </GlassCard>
             </div>

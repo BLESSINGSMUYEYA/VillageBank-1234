@@ -144,7 +144,7 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                     }
                     action={
                         <Link href="/settings">
-                            <Button variant="banana" className="px-6 group">
+                            <Button variant="default" className="px-6 group">
                                 <Settings className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform" />
                                 {t('profile.edit_profile')}
                             </Button>
@@ -316,19 +316,19 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                             <TabsList className="bg-transparent p-0 h-auto gap-2 shrink-0">
                                 <TabsTrigger
                                     value="overview"
-                                    className="rounded-full px-8 h-12 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 shadow-sm"
+                                    className="rounded-full px-8 h-12 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-blue-600 dark:data-[state=active]:text-white transition-all border border-border/50 shadow-sm"
                                 >
                                     Overview
                                 </TabsTrigger>
                                 <TabsTrigger
                                     value="groups"
-                                    className="rounded-full px-8 h-12 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 shadow-sm"
+                                    className="rounded-full px-8 h-12 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-blue-600 dark:data-[state=active]:text-white transition-all border border-border/50 shadow-sm"
                                 >
                                     Nodes
                                 </TabsTrigger>
                                 <TabsTrigger
                                     value="history"
-                                    className="rounded-full px-8 h-12 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 shadow-sm"
+                                    className="rounded-full px-8 h-12 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-blue-600 dark:data-[state=active]:text-white transition-all border border-border/50 shadow-sm"
                                 >
                                     Ledger
                                 </TabsTrigger>

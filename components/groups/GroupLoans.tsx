@@ -74,22 +74,23 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
     >
       <GlassCard className="p-6 sm:p-8 space-y-8" hover={false}>
         {/* Stats Row */}
-        <div className="grid grid-cols-2 divide-x divide-border/10 border-b border-border/10 pb-6 mb-6">
-          <div className="space-y-1 px-4">
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-              <Wallet className="w-4 h-4 text-blue-500" />
+        {/* Stats Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border/10 border-b border-border/10 pb-6 mb-6">
+          <div className="space-y-1 pb-4 sm:pb-0 sm:px-4">
+            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+              <Wallet className="w-3 h-3 text-blue-500" />
               Total Disbursed
             </p>
-            <p className="text-2xl font-black text-foreground">{formatCurrency(totalAmountApproved)}</p>
+            <p className="text-base font-black text-foreground">{formatCurrency(totalAmountApproved)}</p>
             <p className="text-[10px] font-bold text-muted-foreground opacity-60">{loans.length} total loans issued</p>
           </div>
 
-          <div className="space-y-1 px-4">
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-              <Clock className="w-4 h-4 text-orange-500" />
+          <div className="space-y-1 pt-4 sm:pt-0 sm:px-4">
+            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+              <Clock className="w-3 h-3 text-orange-500" />
               Pending Request
             </p>
-            <p className="text-2xl font-black text-foreground">{pendingLoans.length}</p>
+            <p className="text-base font-black text-foreground">{pendingLoans.length}</p>
             <p className="text-[10px] font-bold text-muted-foreground opacity-60">{formatCurrency(pendingLoans.reduce((sum, l) => sum + l.amountRequested, 0))}</p>
           </div>
         </div>
@@ -101,7 +102,7 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
             <p className="text-sm font-bold text-muted-foreground opacity-70">Management and history of group credit</p>
           </div>
           <Link href={`/loans/new?groupId=${groupId}`} className="w-full sm:w-auto">
-            <Button size="xl" variant="banana" className="w-full sm:w-auto shadow-xl shadow-yellow-500/10 group h-14 rounded-2xl">
+            <Button size="xl" variant="default" className="w-full sm:w-auto shadow-xl shadow-blue-500/10 group h-14 rounded-2xl">
               <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" />
               New Application
             </Button>

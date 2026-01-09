@@ -137,7 +137,7 @@ export default function GroupDetailsClient({
                                     </Dialog>
                                 )}
                                 <Link href="/contributions/new" className="flex-1 xl:flex-none">
-                                    <Button variant="banana" className="w-full xl:w-auto h-11 rounded-xl px-8 font-black text-xs gap-2 shadow-lg shadow-yellow-500/20 active:scale-95 transition-all">
+                                    <Button variant="default" className="w-full xl:w-auto h-11 rounded-xl px-8 font-black text-xs gap-2 shadow-lg shadow-blue-500/20 active:scale-95 transition-all">
                                         <DollarSign className="w-4 h-4" />
                                         Contribute
                                     </Button>

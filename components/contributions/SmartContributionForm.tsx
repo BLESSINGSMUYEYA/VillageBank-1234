@@ -446,7 +446,7 @@ export default function SmartContributionForm() {
 
                                     <Button
                                         size="xl"
-                                        variant="banana"
+                                        variant="default"
                                         className="w-full mt-8 shadow-xl shadow-yellow-500/20 font-black h-16 rounded-2xl group"
                                         onClick={handleSubmit}
                                         disabled={loading || amount <= 0 || !selectedGroupId}

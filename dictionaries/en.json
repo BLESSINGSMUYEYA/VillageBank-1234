@@ -328,5 +328,16 @@
     "success_title": "Identity Secured",
     "success_desc": "Your password has been successfully updated. You can now sign in.",
     "error_invalid_token": "The reset link is invalid or has expired."
+  },
+  "footer": {
+    "desc": "Empowering communities with transparent, accessible, and modern financial tools. Built for the future of Malawi.",
+    "install_app": "Install App",
+    "platform": "Platform",
+    "support": "Support",
+    "help_center": "Help Center",
+    "privacy_policy": "Privacy Policy",
+    "terms_of_service": "Terms of Service",
+    "rights_reserved": "All rights reserved.",
+    "systems_operational": "Systems Operational"
   }
 }

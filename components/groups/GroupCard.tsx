@@ -151,7 +151,7 @@ export function GroupCard({ membership }: GroupCardProps) {
             <div className="p-6 pt-6">
                 <Link href={`/groups/${membership.groupId}`} className="block">
                     <Button
-                        variant="banana"
+                        variant="default"
                         className="w-full h-14 rounded-2xl font-black text-lg shadow-xl shadow-yellow-500/10 group-hover:scale-[1.02] active:scale-[0.98] transition-all group/btn"
                     >
                         {t('groups.view_dashboard')}

@@ -66,7 +66,7 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                     action={
                         userGroups.length > 0 && (
                             <Link href="/contributions/new">
-                                <Button variant="banana" size="xl" className="shadow-yellow-500/20 px-8 group">
+                                <Button variant="default" size="xl" className="shadow-blue-500/20 px-8 group">
                                     <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" />
                                     {t('contributions.make_contribution')}
                                 </Button>
@@ -218,7 +218,7 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                                     </SelectContent>
                                 </Select>
 
-                                <Button variant="outline" size="icon" className="rounded-[1.2rem] shrink-0 h-14 w-full lg:w-14 bg-white/40 dark:bg-slate-900/40 border-none shadow-inner hover:bg-blue-600 hover:text-white dark:hover:bg-banana dark:hover:text-blue-950 group transition-all" title="Clear Filters">
+                                <Button variant="outline" size="icon" className="rounded-[1.2rem] shrink-0 h-14 w-full lg:w-14 bg-white/40 dark:bg-slate-900/40 border-none shadow-inner hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white group transition-all" title="Clear Filters">
                                     <Filter className="w-5 h-5 text-muted-foreground group-hover:rotate-180 transition-transform" />
                                 </Button>
                             </div>
@@ -318,7 +318,7 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                                     action={
                                         userGroups.length > 0 ? (
                                             <Link href="/contributions/new">
-                                                <Button variant="banana" size="xl" className="shadow-yellow-500/20 px-12 group h-auto py-7">
+                                                <Button variant="default" size="xl" className="px-12 group h-auto py-7">
                                                     <Plus className="w-6 h-6 mr-3 group-hover:rotate-90 transition-transform" />
                                                     {t('contributions.first_contribution')}
                                                 </Button>

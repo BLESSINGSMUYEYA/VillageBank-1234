@@ -106,7 +106,7 @@ export function VaultClient({
                                 </Link>
                                 {eligibilityChecks.some(c => c.eligible) && (
                                     <Link href="/loans/new">
-                                        <Button variant="banana" className="rounded-xl font-black shadow-lg shadow-yellow-500/20 h-12">
+                                        <Button variant="default" className="rounded-xl font-black shadow-lg shadow-blue-500/20 h-12">
                                             <Zap className="w-4 h-4 mr-2" />
                                             {t('common.loans')}
                                         </Button>
@@ -278,7 +278,7 @@ export function VaultClient({
                                     <div className="pt-8 border-t border-white/10 dark:border-white/5 mt-auto">
                                         {check.eligible ? (
                                             <Link href={`/loans/new?groupId=${check.group.id}`}>
-                                                <Button className="w-full h-14 rounded-2xl font-black bg-blue-600 hover:bg-blue-700 text-white dark:bg-banana dark:text-blue-950 shadow-xl shadow-blue-500/10 transition-all hover:-translate-y-1">
+                                                <Button className="w-full h-14 rounded-2xl font-black bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:text-white shadow-xl shadow-blue-500/10 transition-all hover:-translate-y-1">
                                                     {t('vault.deploy_capital')}
                                                 </Button>
                                             </Link>

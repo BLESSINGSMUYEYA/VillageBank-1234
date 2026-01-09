@@ -670,7 +670,7 @@ function NewLoanPageContent() {
                   <Button
                     type="submit"
                     disabled={loading}
-                    variant="banana"
+                    variant="default"
                     size="xl"
                     className="px-12 shadow-blue-500/20"
                   >

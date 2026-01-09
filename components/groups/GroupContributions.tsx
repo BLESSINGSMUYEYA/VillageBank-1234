@@ -3,9 +3,8 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatCurrency, cn } from '@/lib/utils'
-import { Plus, Eye, CheckCircle2, Clock, Wallet, ArrowUpRight, User, Calendar, CheckSquare } from 'lucide-react'
+import { Plus, Eye, CheckCircle2, Wallet, ArrowUpRight, User, Calendar, Clock, CheckSquare } from 'lucide-react'
 import Link from 'next/link'
-import { StatsCard } from '@/components/ui/stats-card'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { motion } from 'framer-motion'
 import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
@@ -49,34 +48,33 @@ export default function GroupContributions({ contributions, groupId, currentUser
       className="space-y-6"
     >
       <GlassCard className="p-6 sm:p-8 space-y-8" hover={false}>
-        {/* Summary Cards - 2 inline */}
-        <div className="grid grid-cols-2 gap-4 sm:gap-6">
-          <StatsCard
-            index={1}
-            label="Total Settled"
-            value={formatCurrency(totalCompleted)}
-            description={`${completedContributions.length} contributions completed`}
-            icon={CheckSquare}
-            variant="featured"
-            className="w-full"
-          />
+        {/* Stats Row - Loans Style (Responsive) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border/10 border-b border-border/10 pb-6 mb-6">
+          <div className="space-y-1 pb-4 sm:pb-0 sm:px-4">
+            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+              <CheckSquare className="w-3 h-3 text-emerald-500" />
+              Total Settled
+            </p>
+            <p className="text-base font-black text-foreground">{formatCurrency(totalCompleted)}</p>
+            <p className="text-[10px] font-bold text-muted-foreground opacity-60">{completedContributions.length} contributions completed</p>
+          </div>
 
-          <StatsCard
-            index={2}
-            label="Awaiting Approval"
-            value={formatCurrency(totalPending)}
-            description={`${pendingContributions.length} pending verification`}
-            icon={Clock}
-            variant="glass"
-            className="w-full"
-          />
+          <div className="space-y-1 pt-4 sm:pt-0 sm:px-4">
+            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+              <Clock className="w-3 h-3 text-orange-500" />
+              Awaiting Approval
+            </p>
+            <p className="text-base font-black text-foreground">{formatCurrency(totalPending)}</p>
+            <p className="text-[10px] font-bold text-muted-foreground opacity-60">{pendingContributions.length} pending verification</p>
+          </div>
         </div>
+
 
         {/* Simplified Action Header */}
         {/* Actions */}
         <motion.div variants={itemFadeIn} className="flex flex-col sm:flex-row gap-3 w-full">
           <Link href="/contributions/new" className="flex-1">
-            <Button variant="banana" className="w-full shadow-xl shadow-yellow-500/10 group h-11 rounded-2xl px-6 font-black tracking-tight text-xs uppercase">
+            <Button variant="default" className="w-full shadow-xl shadow-blue-500/10 group h-11 rounded-2xl px-6 font-black tracking-tight text-xs uppercase">
               <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" />
               New Entry
             </Button>

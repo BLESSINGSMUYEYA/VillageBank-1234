@@ -68,7 +68,7 @@ export function LoansClient({ loans, eligibilityChecks }: LoansClientProps) {
                     }
                     action={eligibilityChecks.some(check => check.eligible) && (
                         <Link href="/loans/new">
-                            <Button variant="banana" size="xl" className="shadow-yellow-500/20 px-8 group">
+                            <Button variant="default" size="xl" className="shadow-blue-500/20 px-8 group">
                                 <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" />
                                 {t('loans.request_loan')}
                             </Button>
@@ -171,7 +171,7 @@ export function LoansClient({ loans, eligibilityChecks }: LoansClientProps) {
                                     <div className="mt-auto pt-6 border-t border-white/20 dark:border-white/5">
                                         {check.eligible ? (
                                             <Link href={`/loans/new?groupId=${check.group.id}`} className="block">
-                                                <Button className="w-full rounded-2xl font-black bg-blue-600 hover:bg-blue-700 text-white dark:bg-banana dark:hover:bg-yellow-400 dark:text-blue-950 shadow-xl shadow-blue-500/10 dark:shadow-yellow-500/5 h-12 group/btn transition-all">
+                                                <Button className="w-full rounded-2xl font-black bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white shadow-xl shadow-blue-500/10 dark:shadow-blue-500/5 h-12 group/btn transition-all">
                                                     Deploy Capital
                                                     <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
                                                 </Button>

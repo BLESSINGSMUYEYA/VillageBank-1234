@@ -114,7 +114,7 @@ export function JoinGroupQR() {
 
             <DialogTrigger asChild>
                 <Button
-                    variant="banana"
+                    variant="default"
                     className="shadow-yellow-500/20 group px-6 border-none"
                     onClick={() => setIsOpen(true)}
                 >

@@ -511,7 +511,7 @@ export default function GroupSettingsPage() {
                 <Button
                   onClick={handleSave}
                   disabled={saving}
-                  variant="banana"
+                  variant="default"
                   size="xl"
                   className="w-full shadow-blue-500/20"
                 >
