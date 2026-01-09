@@ -44,7 +44,7 @@ export function GlassCard({
             {...props}
         >
             {/* Ambient Inner Glow */}
-            <div className="absolute inset-0 z-0 pointer-events-none opacity-50 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.1),transparent)]" />
+            <div className="absolute inset-0 z-0 pointer-events-none opacity-50 bg-glow-radial" />
 
             {/* Shimmer Effect on Hover */}
             {hover && (

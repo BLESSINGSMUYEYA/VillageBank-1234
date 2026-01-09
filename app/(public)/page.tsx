@@ -14,16 +14,25 @@ import { cn } from '@/lib/utils'
 import { UBankLogo } from '@/components/ui/Logo'
 
 export default function Home() {
-    const { isAuthenticated, loading } = useAuth()
+    // Client-side authentication check removed.
+    // Redirection for authenticated users is handled by middleware.ts (verified)
+    // to prevent content flash.
+    // const { isAuthenticated, loading } = useAuth() -> We still need loading state maybe?
+    // Actually, middleware redirects BEFORE rendering, so we might not even reach here if logged in.
+    // But if we do reach here, it means we are NOT logged in (or middleware failed).
+    // Let's keep useAuth hooks if used elsewhere, but remove the useEffect redirect.
+
+    // Original code:
+    // const { isAuthenticated, loading } = useAuth()
+    // ... useEffect ...
+
     const { t } = useLanguage()
-    const router = useRouter()
+    // removed local router usage for redirect
+    // const router = useRouter()
 
-    useEffect(() => {
-        if (!loading && isAuthenticated) {
-            router.push('/dashboard')
-        }
-    }, [isAuthenticated, loading, router])
-
+    // The following blocks are removed because we are not doing client-side auth checks for redirection anymore.
+    // middleware.ts handles it.
+    /*
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
@@ -40,6 +49,7 @@ export default function Home() {
     if (isAuthenticated) {
         return null
     }
+    */
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 selection:bg-blue-500/30 overflow-x-hidden">

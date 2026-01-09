@@ -1,29 +1,58 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
-import en from '../../dictionaries/en.json'
-import ny from '../../dictionaries/ny.json'
+import { LogoLoader } from '@/components/ui/LogoLoader'
 
 type Language = 'en' | 'ny'
-type Dictionary = typeof en
-
-const dictionaries: Record<Language, any> = {
-    en,
-    ny
-}
 
 interface LanguageContextType {
     language: Language
     setLanguage: (lang: Language) => void
     t: (key: string, variables?: Record<string, string | number>) => string
+    isLoaded: boolean
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
     const [language, setLanguageState] = useState<Language>('en')
+    const [dictionary, setDictionary] = useState<Record<string, any>>({})
     const [isLoaded, setIsLoaded] = useState(false)
 
+    // Load dictionary effect
+    useEffect(() => {
+        let isMounted = true;
+
+        const loadDictionary = async () => {
+            setIsLoaded(false)
+            try {
+                // Dynamic import for bundle splitting
+                const dict = await import(`../../dictionaries/${language}.json`)
+                if (isMounted) {
+                    setDictionary(dict.default || dict)
+                    setIsLoaded(true)
+                }
+            } catch (error) {
+                console.error(`Failed to load dictionary for language: ${language}`, error)
+                // Fallback attempt to english if failed
+                if (language !== 'en') {
+                    try {
+                        const enDict = await import(`../../dictionaries/en.json`)
+                        if (isMounted) {
+                            setDictionary(enDict.default || enDict)
+                            setIsLoaded(true)
+                        }
+                    } catch (e) { console.error("Fatal: Could not load fallback dictionary", e) }
+                }
+            }
+        }
+
+        loadDictionary()
+
+        return () => { isMounted = false }
+    }, [language])
+
+    // Initial language detection
     useEffect(() => {
         const savedLang = localStorage.getItem('app-language') as Language
         if (savedLang && ['en', 'ny'].includes(savedLang)) {
@@ -35,7 +64,6 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
                 setLanguageState(browserLang as Language)
             }
         }
-        setIsLoaded(true)
     }, [])
 
     const setLanguage = useCallback((lang: Language) => {
@@ -44,27 +72,16 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     }, [])
 
     const t = useCallback((key: string, variables?: Record<string, string | number>): string => {
+        if (!dictionary) return key
+
         const keys = key.split('.')
-        let result: any = dictionaries[language]
+        let result: any = dictionary
 
         // Find the translation string
         for (const k of keys) {
             if (result && k in result) {
                 result = result[k]
             } else {
-                // Fallback to English
-                if (language !== 'en') {
-                    let fallbackResult: any = dictionaries['en']
-                    for (const fk of keys) {
-                        if (fallbackResult && fk in fallbackResult) {
-                            fallbackResult = fallbackResult[fk]
-                        } else {
-                            return key
-                        }
-                    }
-                    result = fallbackResult
-                    break
-                }
                 return key
             }
         }
@@ -79,14 +96,20 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         }
 
         return result
-    }, [language])
+    }, [dictionary])
 
-    // if (!isLoaded) {
-    //     return null
-    // }
+    // Show loader while initial dictionary fetches to prevent "Flash of Unstyled Text" (FOUT) / Keys
+    // This also solves hydration mismatch concepts because we only render children when ready on client
+    if (!isLoaded) {
+        return (
+            <div className="h-screen w-screen flex items-center justify-center bg-background">
+                <LogoLoader className="w-20 h-20 text-primary" />
+            </div>
+        )
+    }
 
     return (
-        <LanguageContext.Provider value={{ language, setLanguage, t }}>
+        <LanguageContext.Provider value={{ language, setLanguage, t, isLoaded }}>
             {children}
         </LanguageContext.Provider>
     )

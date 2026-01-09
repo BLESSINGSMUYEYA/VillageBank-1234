@@ -360,6 +360,10 @@
     @apply bg-gradient-to-br from-banana to-yellow-500;
   }
 
+  .bg-glow-radial {
+    background-image: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1), transparent);
+  }
+
   .text-shimmer {
     background: linear-gradient(to right,
         currentColor 20%,

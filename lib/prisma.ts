@@ -47,10 +47,18 @@ const prismaClientOptions: Prisma.PrismaClientOptions = {
   }
 }
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient(prismaClientOptions)
+const prismaClientSingleton = () => {
+  return new PrismaClient(prismaClientOptions)
+}
+
+declare global {
+  var prismaGlobal: undefined | ReturnType<typeof prismaClientSingleton>
+}
+
+export const prisma = globalThis.prismaGlobal ?? prismaClientSingleton()
 
 if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prisma
+  globalThis.prismaGlobal = prisma
 }
 
 export type { MemberStatus } from '@prisma/client'
