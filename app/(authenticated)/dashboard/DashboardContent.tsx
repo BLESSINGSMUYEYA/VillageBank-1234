@@ -70,32 +70,51 @@ export function DashboardContent({
             animate="animate"
             className="space-y-6 sm:space-y-10 pb-10"
         >
+
             {/* Zen Hero Card - Dashboard Command Center */}
             <motion.div variants={itemFadeIn}>
-                <div className="zen-card overflow-hidden">
+                <div className="relative overflow-hidden rounded-[32px] border border-white/20 dark:border-white/10 shadow-2xl bg-white/40 dark:bg-slate-900/40 backdrop-blur-3xl group/hero">
+
+                    {/* Ambient Background Glow */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5 opacity-0 group-hover/hero:opacity-100 transition-opacity duration-1000" />
+                    <div className="absolute -top-24 -right-24 w-64 h-64 bg-banana/10 rounded-full blur-3xl pointer-events-none" />
+                    <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+
                     {/* Top Identity Section */}
-                    <div className="relative p-6 sm:p-10">
-                        <div className="flex flex-col md:flex-row justify-between items-start gap-6">
-                            <div className="space-y-4">
+                    <div className="relative p-8 sm:p-10">
+                        <div className="flex flex-col md:flex-row justify-between items-start gap-8">
+                            <div className="space-y-4 max-w-2xl">
                                 <div>
-                                    <h1 className="text-3xl sm:text-4xl font-black text-foreground tracking-tighter leading-tight mb-2">
-                                        {t('common.dashboard')}
-                                    </h1>
-                                    <p className="text-sm font-medium text-muted-foreground line-clamp-2 max-w-xl leading-relaxed flex flex-wrap items-center gap-1.5 opacity-80">
-                                        {t('dashboard.welcome')},
-                                        <span className="text-blue-600 dark:text-banana font-bold">{user.firstName}</span>!
-                                        <span className="hidden sm:inline text-muted-foreground/60">•</span>
-                                        <span>{t('dashboard.rev_finances')}</span>
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.2 }}
+                                    >
+                                        <h1 className="text-4xl sm:text-5xl font-black tracking-tighter leading-[0.9] mb-3">
+                                            <span className="text-foreground">{t('common.dashboard')}</span>
+                                            <span className="text-blue-600 dark:text-banana">.</span>
+                                        </h1>
+                                    </motion.div>
+                                    <p className="text-base sm:text-lg font-medium text-muted-foreground/80 leading-relaxed max-w-xl">
+                                        {t('dashboard.welcome')}, <span className="text-foreground font-bold">{user.firstName}</span>!
+                                        <br className="hidden sm:block" />
+                                        <span className="opacity-80">{t('dashboard.rev_finances')}</span>
                                     </p>
                                 </div>
                             </div>
 
-                            <div className="flex gap-3 shrink-0">
+                            <div className="flex gap-4 shrink-0 mt-2 md:mt-0">
                                 <Link href="/contributions/new">
-                                    <Button variant="banana" className="rounded-xl font-black shadow-lg shadow-yellow-500/20 h-12">
-                                        <DollarSign className="w-4 h-4 mr-2" />
-                                        {t('dashboard.make_contribution')}
-                                    </Button>
+                                    <div className="relative group rounded-xl bg-gradient-to-b from-blue-500 to-blue-600 p-[1px] shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-shadow">
+                                        <Button
+                                            size="lg"
+                                            className="relative h-12 bg-blue-600 hover:bg-blue-500 text-white border-0 rounded-xl px-8 font-black tracking-wide overflow-hidden"
+                                        >
+                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out" />
+                                            <DollarSign className="w-5 h-5 mr-2" />
+                                            {t('dashboard.make_contribution')}
+                                        </Button>
+                                    </div>
                                 </Link>
                             </div>
                         </div>
@@ -103,18 +122,22 @@ export function DashboardContent({
 
                     {/* Stats Grid Divider */}
                     <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-white/10 border-t border-white/10 bg-white/5 dark:bg-black/20">
-                        <div className="p-6 space-y-1">
-                            <p className="zen-label opacity-50 flex items-center gap-2">
-                                <Wallet className="w-3 h-3" />
-                                {t('dashboard.total_contributions') || 'Total Savings'}
+                        {/* Total Contributions */}
+                        <div className="p-6 sm:p-8 space-y-2 hover:bg-white/5 transition-colors group cursor-default relative overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-br from-banana/0 to-banana/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <p className="zen-label opacity-60 flex items-center gap-2 relative z-10">
+                                <div className="p-1 rounded bg-banana/10 text-banana">
+                                    <Wallet className="w-3.5 h-3.5" />
+                                </div>
+                                {t('dashboard.total_contributions') || 'Savings'}
                             </p>
-                            <div className="flex items-center gap-2">
-                                <p className="text-xl sm:text-2xl font-black text-foreground">
+                            <div className="flex items-center gap-3 relative z-10">
+                                <p className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
                                     {isContributionsVisible ? formatCurrency(stats.totalContributions) : '••••••'}
                                 </p>
                                 <button
                                     onClick={handleToggleVisibility}
-                                    className="text-muted-foreground/50 hover:text-foreground transition-colors focus:outline-none"
+                                    className="text-muted-foreground/40 hover:text-blue-500 transition-colors p-1 hover:bg-blue-500/10 rounded-lg"
                                 >
                                     {isContributionsVisible ? (
                                         <EyeOff className="w-4 h-4" />
@@ -123,45 +146,69 @@ export function DashboardContent({
                                     )}
                                 </button>
                             </div>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('dashboard.status_healthy')}</p>
+                            <div className="flex items-center gap-2 pt-1 relative z-10">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t('dashboard.status_healthy')}</p>
+                            </div>
                         </div>
-                        <div className="p-6 space-y-1">
-                            <p className="zen-label opacity-50 flex items-center gap-2">
-                                <Users className="w-3 h-3" />
+
+                        {/* Active Groups */}
+                        <div className="p-6 sm:p-8 space-y-2 hover:bg-white/5 transition-colors group cursor-default relative overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <p className="zen-label opacity-60 flex items-center gap-2 relative z-10">
+                                <div className="p-1 rounded bg-blue-500/10 text-blue-500">
+                                    <Users className="w-3.5 h-3.5" />
+                                </div>
                                 {t('common.groups') || 'Network'}
                             </p>
-                            <p className="text-xl sm:text-2xl font-black text-blue-600 dark:text-banana">{stats.totalGroups}</p>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase">Active Circles</p>
+                            <p className="text-2xl sm:text-3xl font-black text-blue-600 dark:text-blue-400 tracking-tight relative z-10">{stats.totalGroups}</p>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest relative z-10">Active Circles</p>
                         </div>
-                        <div className="p-6 space-y-1">
-                            <p className="zen-label opacity-50 flex items-center gap-2">
-                                <Zap className="w-3 h-3" />
+
+                        {/* Recent Activity */}
+                        <div className="p-6 sm:p-8 space-y-2 hover:bg-white/5 transition-colors group cursor-default relative overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/0 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <p className="zen-label opacity-60 flex items-center gap-2 relative z-10">
+                                <div className="p-1 rounded bg-purple-500/10 text-purple-500">
+                                    <Zap className="w-3.5 h-3.5" />
+                                </div>
                                 {t('dashboard.recent_activity')}
                             </p>
-                            <p className="text-xl sm:text-2xl font-black text-emerald-500">{recentActivity.length}</p>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase">This Month</p>
+                            <p className="text-2xl sm:text-3xl font-black text-purple-500 tracking-tight relative z-10">{recentActivity.length}</p>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest relative z-10">This Month</p>
                         </div>
-                        <div className="p-6 space-y-1 relative group cursor-pointer hover:bg-white/5 transition-colors">
-                            {pendingApprovals.length > 0 && (
-                                <span className="absolute top-4 right-4 flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                                </span>
-                            )}
-                            <p className="zen-label opacity-50 flex items-center gap-2">
-                                <ArrowUpRight className="w-3 h-3" />
-                                {t('dashboard.pending_approvals')}
-                            </p>
-                            <p className={cn("text-xl sm:text-2xl font-black", pendingApprovals.length > 0 ? "text-red-500" : "text-foreground")}>
-                                {pendingApprovals.length}
-                            </p>
-                            <Link href="/treasurer/approvals" className="text-[10px] font-bold text-muted-foreground uppercase hover:text-blue-500 flex items-center gap-1">
-                                Review Items <ArrowRight className="w-3 h-3" />
-                            </Link>
-                        </div>
+
+                        {/* Pending Approvals */}
+                        <Link href="/treasurer/approvals" className="block h-full">
+                            <div className="p-6 sm:p-8 space-y-2 hover:bg-white/5 transition-colors group cursor-pointer h-full relative overflow-hidden">
+                                {pendingApprovals.length > 0 && (
+                                    <>
+                                        <div className="absolute inset-0 bg-gradient-to-br from-red-500/0 via-red-500/5 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        <span className="absolute top-6 right-6 flex h-3 w-3">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 shadow-lg shadow-red-500/50"></span>
+                                        </span>
+                                    </>
+                                )}
+                                <p className="zen-label opacity-60 flex items-center gap-2 relative z-10">
+                                    <div className={cn("p-1 rounded", pendingApprovals.length > 0 ? "bg-red-500/10 text-red-500" : "bg-muted text-muted-foreground")}>
+                                        <ArrowUpRight className="w-3.5 h-3.5" />
+                                    </div>
+                                    {t('dashboard.pending_approvals')}
+                                </p>
+                                <p className={cn("text-2xl sm:text-3xl font-black tracking-tight relative z-10", pendingApprovals.length > 0 ? "text-red-500" : "text-muted-foreground")}>
+                                    {pendingApprovals.length}
+                                </p>
+                                <div className="flex items-center gap-1.5 relative z-10 group-hover:translate-x-1 transition-transform">
+                                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest  group-hover:text-blue-500 transition-colors">Review Items</span>
+                                    <ArrowRight className="w-3 h-3 text-muted-foreground group-hover:text-blue-500" />
+                                </div>
+                            </div>
+                        </Link>
                     </div>
                 </div>
             </motion.div>
+
 
             {/* Main Content Area - Sequential Layout */}
             <div className="space-y-12 sm:space-y-16">
