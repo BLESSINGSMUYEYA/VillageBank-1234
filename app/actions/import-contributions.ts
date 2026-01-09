@@ -183,11 +183,6 @@ export async function commitImport(
                         paymentDate: new Date(row.date),
                         status: 'COMPLETED', // Use COMPLETED for imported historical data? Or PENDING? Usually historical is done.
                         paymentMethod: 'IMPORT',
-                        type: 'MONTHLY_CONTRIBUTION', // Assuming standard schema, but checking schema showed Contribution model doesn't have 'type' enum?
-                        // Wait, schema check: Contribution model has:
-                        // id, groupId, userId, amount, month, year, paymentDate, paymentMethod, transactionRef, receiptUrl, status, penaltyApplied, isLate, reviewedById, reviewDate, rejectionReason
-                        // no 'type' field in Contribution model in the schema I saw!
-                        // It has 'status' (PaymentStatus enum).
                     },
                 })
             )
