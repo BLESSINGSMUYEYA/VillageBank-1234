@@ -36,6 +36,7 @@ export default function TreasurerApprovalsPage() {
     // Zoom State
     const [zoomLevel, setZoomLevel] = useState(1)
     const [rotation, setRotation] = useState(0)
+    const [isDetailsOpen, setIsDetailsOpen] = useState(true)
 
     useEffect(() => {
         fetchPending()
