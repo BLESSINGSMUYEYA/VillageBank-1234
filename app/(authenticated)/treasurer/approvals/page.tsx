@@ -204,9 +204,9 @@ export default function TreasurerApprovalsPage() {
                 </div>
             )}
 
-            {/* Side-by-Side Review Modal */}
+            {/* Side-by-Side Review Modal - Zen Refactor */}
             <Dialog open={!!reviewItem} onOpenChange={(open) => !open && setReviewItem(null)}>
-                <DialogContent className="max-w-[95vw] w-[1400px] h-[90vh] p-0 gap-0 overflow-hidden rounded-2xl border-none outline-none bg-background flex">
+                <DialogContent className="max-w-[95vw] w-[1400px] h-[90vh] p-0 gap-0 overflow-hidden rounded-[32px] border-none outline-none bg-black/40 backdrop-blur-xl flex flex-col md:flex-row shadow-2xl">
                     <DialogTitle className="sr-only">Contribution Review</DialogTitle>
                     <DialogDescription className="sr-only">
                         Review and verify contribution for {reviewItem?.user?.firstName} {reviewItem?.user?.lastName}
@@ -214,22 +214,24 @@ export default function TreasurerApprovalsPage() {
                     {reviewItem && (
                         <>
                             {/* Left Panel: Evidence (Zoomable Receipt) */}
-                            <div className="flex-1 bg-black/5 dark:bg-black/40 relative flex items-center justify-center overflow-hidden border-r border-border">
+                            <div className="flex-1 bg-black/80 relative flex items-center justify-center overflow-hidden">
                                 {reviewItem.receiptUrl ? (
                                     <>
-                                        <div className="absolute top-4 left-4 z-10 flex gap-2">
-                                            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-white/90 shadow-sm hover:bg-white" onClick={() => setZoomLevel(prev => Math.min(prev + 0.5, 3))}>
-                                                <ZoomIn className="w-4 h-4 text-black" />
-                                            </Button>
-                                            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-white/90 shadow-sm hover:bg-white" onClick={() => setZoomLevel(prev => Math.max(prev - 0.5, 0.5))}>
-                                                <ZoomOut className="w-4 h-4 text-black" />
-                                            </Button>
-                                            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-white/90 shadow-sm hover:bg-white" onClick={() => setRotation(prev => prev + 90)}>
-                                                <RotateCw className="w-4 h-4 text-black" />
-                                            </Button>
-                                            <div className="bg-black/60 text-white text-[10px] font-bold px-3 py-1.5 rounded-full backdrop-blur-sm self-center">
-                                                {Math.round(zoomLevel * 100)}%
-                                            </div>
+                                        <div className="absolute top-6 left-6 z-10 flex gap-2">
+                                            <GlassCard className="p-1.5 flex gap-2 rounded-full border-white/10 bg-black/40 backdrop-blur-md" hover={false}>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-white hover:bg-white/20" onClick={() => setZoomLevel(prev => Math.min(prev + 0.5, 3))}>
+                                                    <ZoomIn className="w-4 h-4" />
+                                                </Button>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-white hover:bg-white/20" onClick={() => setZoomLevel(prev => Math.max(prev - 0.5, 0.5))}>
+                                                    <ZoomOut className="w-4 h-4" />
+                                                </Button>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-white hover:bg-white/20" onClick={() => setRotation(prev => prev + 90)}>
+                                                    <RotateCw className="w-4 h-4" />
+                                                </Button>
+                                                <div className="h-8 px-3 flex items-center justify-center border-l border-white/10 text-[10px] font-black text-white/80">
+                                                    {Math.round(zoomLevel * 100)}%
+                                                </div>
+                                            </GlassCard>
                                         </div>
 
                                         <div className="w-full h-full overflow-auto flex items-center justify-center p-8 cursor-grab active:cursor-grabbing">
@@ -237,76 +239,92 @@ export default function TreasurerApprovalsPage() {
                                                 src={reviewItem.receiptUrl}
                                                 alt="Evidence"
                                                 animate={{ scale: zoomLevel, rotate: rotation }}
-                                                className="max-w-none shadow-2xl rounded-sm"
+                                                className="max-w-none shadow-2xl rounded-sm ring-1 ring-white/10"
                                                 style={{ maxHeight: '80vh' }}
                                             />
                                         </div>
                                     </>
                                 ) : (
-                                    <div className="flex flex-col items-center opacity-40">
-                                        <ImageIcon className="w-16 h-16 mb-4" />
-                                        <p className="font-bold text-xl uppercase">No Receipt Attached</p>
+                                    <div className="flex flex-col items-center opacity-40 text-white/50">
+                                        <ImageIcon className="w-20 h-20 mb-6 stroke-1" />
+                                        <p className="font-black text-2xl uppercase tracking-widest">No Receipt Attached</p>
                                     </div>
                                 )}
                             </div>
 
                             {/* Right Panel: Ledger / Action */}
-                            <div className="w-[400px] md:w-[480px] bg-background flex flex-col h-full border-l border-border shadow-xl z-20">
-                                <div className="p-6 border-b border-border bg-muted/10">
-                                    <h2 className="text-xl font-black text-foreground mb-1">Verification</h2>
-                                    <p className="text-sm text-muted-foreground">Compare the proof on the left with the claim below.</p>
+                            <div className="w-[400px] md:w-[480px] bg-white dark:bg-slate-950 flex flex-col h-full border-l border-white/10 z-20 shadow-2xl">
+                                <div className="p-8 border-b border-border bg-muted/5">
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <div className="w-10 h-10 rounded-xl bg-blue-600/10 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                                            <CheckSquare className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-xl font-black text-foreground tracking-tight">Verification</h2>
+                                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Review Transaction Details</p>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                                <div className="flex-1 overflow-y-auto p-8 space-y-8 scrollbar-hide">
                                     {/* Amount Section */}
-                                    <div className="space-y-2">
-                                        <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Claimed Amount</p>
-                                        <div className="text-4xl font-black text-blue-600 dark:text-blue-400">
+                                    <div className="space-y-2 text-center py-6 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-3xl border border-blue-500/10">
+                                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Claimed Amount</p>
+                                        <div className="text-5xl font-black text-blue-600 dark:text-blue-400 tracking-tighter shimmer">
                                             {formatCurrency(reviewItem.amount)}
                                         </div>
                                     </div>
 
                                     {/* Meta Data */}
-                                    <div className="grid grid-cols-1 gap-4 p-4 rounded-xl bg-muted/30 border border-border">
-                                        <div>
-                                            <p className="text-[10px] font-bold uppercase text-muted-foreground">Contributor</p>
-                                            <p className="font-bold text-foreground">{reviewItem.user.firstName} {reviewItem.user.lastName}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-bold uppercase text-muted-foreground">Transaction Ref</p>
-                                            <p className="font-mono text-xs font-bold text-foreground break-all">{reviewItem.transactionRef || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-bold uppercase text-muted-foreground">Date</p>
-                                            <p className="font-bold text-foreground">{new Date(reviewItem.paymentDate || reviewItem.createdAt).toLocaleDateString()} {new Date(reviewItem.paymentDate || reviewItem.createdAt).toLocaleTimeString()}</p>
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground pl-3 mb-2">Transaction Data</p>
+                                        <div className="grid grid-cols-1 divide-y divide-border/40 border border-border/40 rounded-2xl overflow-hidden bg-muted/20">
+                                            <div className="p-4 flex justify-between items-center bg-white/40 dark:bg-white/5">
+                                                <span className="text-xs font-bold text-muted-foreground">Contributor</span>
+                                                <span className="font-black text-sm text-foreground">{reviewItem.user.firstName} {reviewItem.user.lastName}</span>
+                                            </div>
+                                            <div className="p-4 flex justify-between items-center bg-white/40 dark:bg-white/5">
+                                                <span className="text-xs font-bold text-muted-foreground">Group</span>
+                                                <Badge variant="outline" className="font-bold border-blue-500/20 text-blue-600 bg-blue-500/5">{reviewItem.group.name}</Badge>
+                                            </div>
+                                            <div className="p-4 flex justify-between items-center bg-white/40 dark:bg-white/5">
+                                                <span className="text-xs font-bold text-muted-foreground">Reference</span>
+                                                <span className="font-mono text-xs font-bold text-foreground bg-muted/50 px-2 py-1 rounded">{reviewItem.transactionRef || 'N/A'}</span>
+                                            </div>
+                                            <div className="p-4 flex justify-between items-center bg-white/40 dark:bg-white/5">
+                                                <span className="text-xs font-bold text-muted-foreground">Date</span>
+                                                <span className="font-black text-sm text-foreground">{new Date(reviewItem.paymentDate || reviewItem.createdAt).toLocaleDateString()}</span>
+                                            </div>
                                         </div>
                                     </div>
 
                                     {/* Financial Context */}
-                                    <div className="space-y-3">
-                                        <h3 className="text-xs font-black uppercase text-muted-foreground tracking-widest flex items-center gap-2">
-                                            <Wallet className="w-3 h-3" /> Member Standing
+                                    <div className="space-y-4">
+                                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground pl-3 flex items-center gap-2">
+                                            Wallet Context
                                         </h3>
-                                        <div className="flex items-center justify-between p-3 rounded-lg border border-border">
-                                            <span className="text-sm font-medium">Unpaid Penalties</span>
-                                            <span className={cn("font-bold text-sm", reviewItem.member.unpaidPenalties > 0 ? "text-red-500" : "text-muted-foreground")}>
-                                                {formatCurrency(reviewItem.member.unpaidPenalties)}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center justify-between p-3 rounded-lg border border-border">
-                                            <span className="text-sm font-medium">Current Balance</span>
-                                            <span className="font-bold text-sm text-green-600 dark:text-green-500">
-                                                {formatCurrency(reviewItem.member.balance)}
-                                            </span>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <GlassCard className="p-4 border-red-500/20 bg-red-500/5" hover={false}>
+                                                <p className="text-[9px] font-black uppercase text-red-600/60 mb-1">Penalties</p>
+                                                <p className={cn("text-lg font-black", reviewItem.member.unpaidPenalties > 0 ? "text-red-600" : "text-muted-foreground")}>
+                                                    {formatCurrency(reviewItem.member.unpaidPenalties)}
+                                                </p>
+                                            </GlassCard>
+                                            <GlassCard className="p-4 border-green-500/20 bg-green-500/5" hover={false}>
+                                                <p className="text-[9px] font-black uppercase text-green-600/60 mb-1">Balance</p>
+                                                <p className="text-lg font-black text-green-600">
+                                                    {formatCurrency(reviewItem.member.balance)}
+                                                </p>
+                                            </GlassCard>
                                         </div>
                                     </div>
 
                                     {/* Rejection Form */}
-                                    <div className="pt-4 border-t border-border">
-                                        <p className="text-xs font-bold mb-2 text-muted-foreground">Notes / Rejection Reason</p>
+                                    <div className="pt-2">
+                                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-3 pl-1">Rejection Reason</p>
                                         <textarea
-                                            className="w-full min-h-[80px] p-3 rounded-lg border border-input bg-background text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-                                            placeholder="Optional: Leave a reason if rejecting..."
+                                            className="w-full min-h-[100px] p-4 rounded-2xl border-2 border-border/50 bg-muted/20 text-sm font-medium focus:border-blue-500/50 focus:bg-white dark:focus:bg-black/20 outline-none resize-none transition-all placeholder:text-muted-foreground/50"
+                                            placeholder="Required only if rejecting..."
                                             value={rejectionReason}
                                             onChange={(e) => setRejectionReason(e.target.value)}
                                         />
@@ -314,11 +332,11 @@ export default function TreasurerApprovalsPage() {
                                 </div>
 
                                 {/* Footer Actions */}
-                                <div className="p-6 border-t border-border bg-muted/10">
-                                    <div className="grid grid-cols-2 gap-3">
+                                <div className="p-6 border-t border-border bg-muted/5 backdrop-blur-sm">
+                                    <div className="grid grid-cols-2 gap-4">
                                         <Button
                                             variant="destructive"
-                                            className="h-12 font-bold rounded-xl"
+                                            className="h-14 font-black text-xs uppercase tracking-widest rounded-2xl shadow-lg shadow-red-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
                                             onClick={() => handleReviewAction('REJECTED')}
                                             disabled={isSubmitting}
                                         >
@@ -326,15 +344,15 @@ export default function TreasurerApprovalsPage() {
                                         </Button>
                                         <Button
                                             variant="default"
-                                            className="h-12 font-bold rounded-xl bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/20 transition-all"
+                                            className="h-14 font-black text-xs uppercase tracking-widest rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-xl shadow-blue-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all"
                                             onClick={() => handleReviewAction('COMPLETED')}
                                             disabled={isSubmitting}
                                         >
                                             {isSubmitting ? (
-                                                <InlineLogoLoader size="xs" />
+                                                <InlineLogoLoader size="xs" color="white" />
                                             ) : (
                                                 <>
-                                                    <Check className="w-4 h-4 mr-2" /> Approve
+                                                    <Check className="w-5 h-5 mr-2" /> Approve
                                                 </>
                                             )}
                                         </Button>
