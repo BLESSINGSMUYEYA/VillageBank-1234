@@ -38,7 +38,7 @@ export function FinancialOverview({ charts }: FinancialOverviewProps) {
                                 </p>
                             </div>
                         </div>
-                        <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                        <div className="zen-label text-muted-foreground flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse relative">
                                 <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-75"></span>
                             </span>

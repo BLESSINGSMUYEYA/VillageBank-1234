@@ -9,31 +9,9 @@ if (!process.env.DATABASE_URL) {
   console.warn('DATABASE_URL is missing from environment variables.')
 }
 
-// Helper to get database URL with connection pool settings
+// Helper to get database URL
 const getDatabaseUrl = () => {
-  const url = process.env.DATABASE_URL
-  if (!url) return url
-
-  // Only append if it looks like a connection string and doesn't already have the settings
-  try {
-    const urlObj = new URL(url)
-    let changed = false
-
-    if (!urlObj.searchParams.has('connection_limit')) {
-      // Set to 10 to avoid exhausting database connection limits in development
-      urlObj.searchParams.set('connection_limit', '10')
-      changed = true
-    }
-    if (!urlObj.searchParams.has('pool_timeout')) {
-      urlObj.searchParams.set('pool_timeout', '30')
-      changed = true
-    }
-
-    return changed ? urlObj.toString() : url
-  } catch (e) {
-    // If not a valid URL (e.g. mock or special string), return as is
-    return url
-  }
+  return process.env.DATABASE_URL
 }
 
 // Build connection options

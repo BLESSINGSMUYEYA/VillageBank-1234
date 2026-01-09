@@ -35,14 +35,14 @@ export function QuickActions() {
                                 </p>
                             </div>
                         </div>
-                        <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                        <div className="zen-label text-muted-foreground">
                             Ready
                         </div>
                     </div>
 
                     <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                         <Link href="/loans/new">
-                            <div className="group cursor-pointer bg-white/50 dark:bg-slate-900/50 hover:bg-white/80 dark:hover:bg-slate-800/80 p-6 rounded-2xl transition-all border border-border/50 h-full flex flex-col justify-center">
+                            <div className="group cursor-pointer bg-white/50 dark:bg-slate-900/50 hover:bg-white/80 dark:hover:bg-slate-800/80 p-6 rounded-2xl transition-all border border-border/50 h-full flex flex-col justify-center shadow-sm hover:shadow-md">
                                 <div className="flex items-center gap-4">
                                     <div className="bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl group-hover:scale-110 transition-transform shadow-sm">
                                         <PiggyBank className="w-6 h-6 text-indigo-600" />
@@ -55,7 +55,7 @@ export function QuickActions() {
                             </div>
                         </Link>
                         <Link href="/groups">
-                            <div className="group cursor-pointer bg-white/50 dark:bg-slate-900/50 hover:bg-white/80 dark:hover:bg-slate-800/80 p-6 rounded-2xl transition-all border border-border/50 h-full flex flex-col justify-center">
+                            <div className="group cursor-pointer bg-white/50 dark:bg-slate-900/50 hover:bg-white/80 dark:hover:bg-slate-800/80 p-6 rounded-2xl transition-all border border-border/50 h-full flex flex-col justify-center shadow-sm hover:shadow-md">
                                 <div className="flex items-center gap-4">
                                     <div className="bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl group-hover:scale-110 transition-transform shadow-sm">
                                         <Users className="w-6 h-6 text-emerald-600" />

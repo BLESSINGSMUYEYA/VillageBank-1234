@@ -61,3 +61,14 @@ export function ActivitySkeleton() {
         </div>
     )
 }
+export function DashboardSkeleton() {
+    return (
+        <div className="space-y-6 sm:space-y-10 pb-10">
+            <HeroSkeleton />
+            <div className="space-y-12 sm:space-y-16">
+                <ChartsSkeleton />
+                <ActivitySkeleton />
+            </div>
+        </div>
+    )
+}

@@ -26,10 +26,10 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
 
     return (
         <motion.div variants={itemFadeIn}>
-            <div className="relative overflow-hidden rounded-[32px] border border-white/20 dark:border-white/10 shadow-2xl bg-white/40 dark:bg-slate-900/40 backdrop-blur-3xl group/hero">
+            <div className="zen-card relative overflow-hidden group/hero">
 
                 {/* Ambient Background Glow */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5 opacity-0 group-hover/hero:opacity-100 transition-opacity duration-1000" />
+                <div className="bg-hero-glow opacity-0 group-hover/hero:opacity-100 transition-opacity duration-1000" />
                 <div className="absolute -top-24 -right-24 w-64 h-64 bg-banana/10 rounded-full blur-3xl pointer-events-none" />
                 <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -58,12 +58,12 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
 
                         <div className="flex gap-4 shrink-0 mt-2 md:mt-0">
                             <Link href="/contributions/new">
-                                <div className="relative group rounded-xl bg-gradient-to-b from-blue-500 to-blue-600 p-[1px] shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-shadow">
+                                <div className="relative group rounded-xl bg-gradient-to-b from-blue-500 to-blue-600 p-[1px] shadow-glow-blue transition-shadow">
                                     <Button
                                         size="lg"
                                         className="relative h-12 bg-blue-600 hover:bg-blue-500 text-white border-0 rounded-xl px-8 font-black tracking-wide overflow-hidden"
                                     >
-                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out" />
+                                        <div className="bg-shimmer-slide" />
                                         <DollarSign className="w-5 h-5 mr-2" />
                                         {t('dashboard.make_contribution')}
                                     </Button>

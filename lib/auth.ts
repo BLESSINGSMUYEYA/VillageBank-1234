@@ -2,11 +2,10 @@ import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 
-if (!process.env.JWT_SECRET && process.env.NODE_ENV === 'production') {
-    throw new Error('JWT_SECRET must be defined in production environment');
+const SECRET_KEY = process.env.JWT_SECRET;
+if (!SECRET_KEY) {
+    throw new Error('JWT_SECRET environment variable is not defined');
 }
-
-const SECRET_KEY = process.env.JWT_SECRET || 'dev-secret-key-do-not-use-in-prod';
 const key = new TextEncoder().encode(SECRET_KEY);
 
 export async function signToken(payload: any) {

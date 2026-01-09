@@ -379,4 +379,17 @@
   .text-label-caps {
     @apply text-[10px] font-black text-muted-foreground uppercase tracking-widest;
   }
+
+  /* DashboardHero Utilities */
+  .bg-hero-glow {
+    @apply absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5;
+  }
+
+  .bg-shimmer-slide {
+    @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out;
+  }
+
+  .shadow-glow-blue {
+    @apply shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40;
+  }
 }

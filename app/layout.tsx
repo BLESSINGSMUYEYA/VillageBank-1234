@@ -30,6 +30,7 @@ export const metadata: Metadata = {
 import { AuthProvider } from '@/components/providers/AuthProvider'
 import { LanguageProvider } from '@/components/providers/LanguageProvider'
 import { Toaster } from 'sonner'
+import { ServiceWorkerRegister } from '@/components/providers/ServiceWorkerRegister'
 
 export default function RootLayout({
   children,
@@ -43,37 +44,11 @@ export default function RootLayout({
           <LanguageProvider>
             {children}
             <Toaster richColors position="top-center" closeButton />
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  if ('serviceWorker' in navigator) {
-                    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-                    console.log('SW Setup - Env:', '${process.env.NODE_ENV}', 'Local:', isLocal);
-                    
-                    if ('${process.env.NODE_ENV}' === 'production' && !isLocal) {
-                      window.addEventListener('load', function() {
-                        navigator.serviceWorker.register('/sw.js').then(function(registration) {
-                          console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                        }, function(err) {
-                          console.log('ServiceWorker registration failed: ', err);
-                        });
-                      });
-                    } else {
-                      // Unregister service workers in development or localhost
-                      navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                        for(let registration of registrations) {
-                          registration.unregister();
-                          console.log('ServiceWorker unregistered (Dev/Localhost)');
-                        }
-                      });
-                    }
-                  }
-                `,
-              }}
-            />
+            <ServiceWorkerRegister />
           </LanguageProvider>
         </AuthProvider>
       </body>
     </html>
   )
 }
+
