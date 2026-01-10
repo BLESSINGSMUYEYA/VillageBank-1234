@@ -25,6 +25,11 @@ export const metadata: Metadata = {
   title: 'uBank - Your Personal & Group Wealth Manager',
   description: 'The modern way to save together. Personal wallets and village banking groups in one app.',
   manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'uBank',
+  },
 }
 
 import { AuthProvider } from '@/components/providers/AuthProvider'

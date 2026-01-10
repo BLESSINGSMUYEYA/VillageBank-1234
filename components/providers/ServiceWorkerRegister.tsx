@@ -8,7 +8,7 @@ export function ServiceWorkerRegister() {
             const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
             const isProduction = process.env.NODE_ENV === 'production'
 
-            if (isProduction && !isLocal) {
+            if (isProduction || isLocal) {
                 // Register SW in production
                 navigator.serviceWorker
                     .register('/sw.js')
