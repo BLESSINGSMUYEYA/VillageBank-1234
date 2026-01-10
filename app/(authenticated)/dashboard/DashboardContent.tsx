@@ -40,7 +40,7 @@ export function DashboardContent({
             variants={staggerContainer}
             initial="initial"
             animate="animate"
-            className="space-y-6 sm:space-y-10 pb-10"
+            className="space-y-6 sm:space-y-8 pb-10"
         >
 
             {/* Zen Hero Card - Dashboard Command Center */}
@@ -52,7 +52,7 @@ export function DashboardContent({
             />
 
             {/* Main Content Area - Sequential Layout */}
-            <div className="space-y-12 sm:space-y-16">
+            <div className="space-y-6 sm:space-y-8">
 
                 {/* 1. Performance (Growth & Analytics) */}
                 <FinancialOverview charts={charts} />

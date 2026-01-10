@@ -48,43 +48,43 @@ export default function GroupContributions({ contributions, groupId, currentUser
       animate="animate"
       className="space-y-6"
     >
-      <GlassCard className="p-6 sm:p-8 space-y-8" hover={false}>
+      <GlassCard className="p-5 sm:p-6 space-y-6" hover={false}>
         {/* Stats Row - Loans Style (Responsive) */}
         {/* Stats Row - Loans Style (Responsive) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pb-6 mb-6">
-          <div className="space-y-1 pb-4 sm:pb-0 sm:px-4 p-4 rounded-2xl hover:bg-white/5 transition-colors">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 mb-4">
+          <div className="space-y-1 pb-3 sm:pb-0 sm:px-3 p-3 rounded-xl hover:bg-white/5 transition-colors">
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-2">
               <CheckSquare className="w-3 h-3 text-emerald-500" />
               Total Settled
             </p>
-            <p className="text-3xl font-black text-foreground tracking-tighter">{formatCurrency(totalCompleted)}</p>
+            <p className="text-2xl font-black text-foreground tracking-tighter">{formatCurrency(totalCompleted)}</p>
             <p className="text-[10px] font-bold text-muted-foreground opacity-60">{completedContributions.length} contributions completed</p>
           </div>
 
-          <div className="space-y-1 pt-4 sm:pt-0 sm:px-4 p-4 rounded-2xl hover:bg-white/5 transition-colors">
-            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+          <div className="space-y-1 pt-3 sm:pt-0 sm:px-3 p-3 rounded-xl hover:bg-white/5 transition-colors">
+            <p className="text-[9px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-2">
               <Clock className="w-3 h-3 text-orange-500" />
               Awaiting Approval
             </p>
-            <p className="text-3xl font-black text-foreground tracking-tighter">{formatCurrency(totalPending)}</p>
-            <p className="text-[10px] font-bold text-muted-foreground opacity-60">{pendingContributions.length} pending verification</p>
+            <p className="text-2xl font-black text-foreground tracking-tighter">{formatCurrency(totalPending)}</p>
+            <p className="text-[9px] font-bold text-muted-foreground opacity-60">{pendingContributions.length} pending verification</p>
           </div>
         </div>
 
 
         {/* Simplified Action Header */}
         {/* Actions */}
-        <motion.div variants={itemFadeIn} className="flex flex-col sm:flex-row gap-3 w-full">
+        <motion.div variants={itemFadeIn} className="flex flex-col sm:flex-row gap-2 w-full">
           <Link href="/contributions/new" className="flex-1">
-            <Button variant="default" className="w-full shadow-xl shadow-blue-500/10 group h-11 rounded-2xl px-6 font-black tracking-tight text-xs uppercase">
-              <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" />
+            <Button variant="default" className="w-full shadow-xl shadow-blue-500/10 group h-9 rounded-xl px-4 font-black tracking-tight text-[10px] uppercase">
+              <Plus className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform" />
               New Entry
             </Button>
           </Link>
           {(currentUserRole === 'TREASURER' || currentUserRole === 'ADMIN') && (
             <Link href="/treasurer/approvals" className="flex-1">
-              <Button variant="outline" className="w-full border-2 font-black tracking-tight text-xs uppercase rounded-2xl h-11 px-6 hover:bg-slate-50 dark:hover:bg-white/5 transition-all">
-                <Eye className="h-5 w-5 mr-2" />
+              <Button variant="outline" className="w-full border font-black tracking-tight text-[10px] uppercase rounded-xl h-9 px-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-all">
+                <Eye className="h-4 w-4 mr-2" />
                 Review Queue
               </Button>
             </Link>
@@ -99,21 +99,21 @@ export default function GroupContributions({ contributions, groupId, currentUser
               contributions.map((contribution, index) => (
                 <motion.div key={contribution.id} variants={itemFadeIn}>
                   <div className={cn(
-                    "p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group hover:bg-white/5 transition-colors rounded-2xl",
+                    "p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 group hover:bg-white/5 transition-colors rounded-xl",
                     // Removed border logic
                   )}>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
                       <div className={cn(
-                        "w-12 h-12 rounded-2xl flex items-center justify-center border transition-colors shrink-0",
+                        "w-10 h-10 rounded-xl flex items-center justify-center border transition-colors shrink-0",
                         contribution.status === 'COMPLETED' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600' :
                           contribution.status === 'PENDING' ? 'bg-orange-500/10 border-orange-500/20 text-orange-600' :
                             'bg-red-500/10 border-red-500/20 text-red-600'
                       )}>
-                        <Wallet className="w-6 h-6" />
+                        <Wallet className="w-5 h-5" />
                       </div>
                       <div>
                         <h4 className="font-black text-sm text-foreground tracking-tight">{contribution.user.firstName} {contribution.user.lastName}</h4>
-                        <div className="flex items-center gap-3 text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">
+                        <div className="flex items-center gap-2 text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">
                           <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />
                             {new Date(contribution.year, contribution.month - 1).toLocaleDateString('en-US', {
                               month: 'short',
@@ -124,20 +124,20 @@ export default function GroupContributions({ contributions, groupId, currentUser
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto pl-14 sm:pl-0">
+                    <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto pl-14 sm:pl-0">
                       <div className="text-right">
-                        <p className="text-base font-black text-blue-600 dark:text-banana tracking-tight">{formatCurrency(contribution.amount)}</p>
-                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mt-0.5 opacity-70">
+                        <p className="text-sm font-black text-blue-600 dark:text-banana tracking-tight">{formatCurrency(contribution.amount)}</p>
+                        <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-wider mt-0 opacity-70">
                           {contribution.paymentDate
                             ? new Date(contribution.paymentDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
                             : new Date(contribution.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
                           }
                         </p>
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
                         <Badge
                           className={cn(
-                            "font-black uppercase tracking-widest text-[9px] px-3 py-1 rounded-lg border-2",
+                            "font-black uppercase tracking-widest text-[8px] px-2 py-0.5 rounded-lg border",
                             contribution.status === 'COMPLETED' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' :
                               contribution.status === 'PENDING' ? 'bg-orange-500/10 text-orange-600 border-orange-500/20' :
                                 'bg-red-500/10 text-red-600 border-red-500/20'
@@ -149,10 +149,10 @@ export default function GroupContributions({ contributions, groupId, currentUser
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 rounded-lg hover:bg-blue-500/10 hover:text-blue-600"
+                            className="h-7 w-7 rounded-lg hover:bg-blue-500/10 hover:text-blue-600"
                             onClick={() => window.open(contribution.receiptUrl, '_blank')}
                           >
-                            <ArrowUpRight className="w-4 h-4" />
+                            <ArrowUpRight className="w-3.5 h-3.5" />
                           </Button>
                         )}
                       </div>

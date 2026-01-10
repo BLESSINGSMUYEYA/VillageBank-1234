@@ -46,15 +46,15 @@ export function GroupCard({ membership }: GroupCardProps) {
             hover={true}
         >
             {/* Top Branding & Header */}
-            <div className="relative p-6 pb-4">
+            <div className="relative p-5 sm:p-6 pb-2">
                 {/* Ambient background glow for the card head */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 dark:bg-blue-500/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-blue-600/20 transition-colors" />
 
                 <div className="flex items-start justify-between relative z-10">
                     <div className="flex items-center gap-4">
                         <div className="relative">
-                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                                <span className="font-black text-white text-2xl tracking-tighter">
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                                <span className="font-black text-white text-lg tracking-tighter">
                                     {group.name.substring(0, 1).toUpperCase()}
                                 </span>
                             </div>
@@ -66,7 +66,7 @@ export function GroupCard({ membership }: GroupCardProps) {
                         </div>
 
                         <div className="min-w-0">
-                            <h3 className="font-black text-xl text-foreground leading-tight group-hover:text-blue-600 dark:group-hover:text-banana transition-colors truncate pr-2">
+                            <h3 className="font-black text-lg text-foreground leading-tight group-hover:text-blue-600 dark:group-hover:text-banana transition-colors truncate pr-2">
                                 {group.name}
                             </h3>
                             <div className="flex items-center gap-2 mt-2">
@@ -92,55 +92,55 @@ export function GroupCard({ membership }: GroupCardProps) {
             </div>
 
             {/* Stats Bento Grid */}
-            <div className="px-6 space-y-4">
-                <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-white/40 dark:bg-slate-950/40 rounded-3xl p-4 border border-white/50 dark:border-white/5 group-hover:border-blue-500/20 transition-colors">
+            <div className="px-5 sm:px-6 space-y-3">
+                <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-white/40 dark:bg-slate-950/40 rounded-2xl p-3 border border-white/50 dark:border-white/5 group-hover:border-blue-500/20 transition-colors">
                         <div className="flex items-center gap-2 text-muted-foreground mb-2 opacity-60">
                             <Users className="w-3.5 h-3.5" />
                             <span className="text-[10px] font-black uppercase tracking-[0.15em]">{t('groups.members')}</span>
                         </div>
                         <div className="flex items-end gap-1">
-                            <p className="font-black text-2xl text-foreground leading-none">
+                            <p className="font-black text-xl text-foreground leading-none">
                                 {group._count?.members || 0}
                             </p>
-                            <span className="text-[10px] font-bold text-muted-foreground pb-0.5">active</span>
+                            <span className="text-[9px] font-bold text-muted-foreground pb-0.5">active</span>
                         </div>
                     </div>
-                    <div className="bg-white/40 dark:bg-slate-950/40 rounded-3xl p-4 border border-white/50 dark:border-white/5 group-hover:border-blue-500/20 transition-colors">
+                    <div className="bg-white/40 dark:bg-slate-950/40 rounded-2xl p-3 border border-white/50 dark:border-white/5 group-hover:border-blue-500/20 transition-colors">
                         <div className="flex items-center gap-2 text-muted-foreground mb-2 opacity-60">
                             <TrendingUp className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.15em]">Growth</span>
+                            <span className="text-[9px] font-black uppercase tracking-[0.15em]">Growth</span>
                         </div>
                         <div className="flex items-end gap-1">
-                            <p className="font-black text-2xl text-foreground leading-none">
+                            <p className="font-black text-xl text-foreground leading-none">
                                 {group.maxLoanMultiplier}x
                             </p>
-                            <span className="text-[10px] font-bold text-emerald-500 pb-0.5">cap</span>
+                            <span className="text-[9px] font-bold text-emerald-500 pb-0.5">cap</span>
                         </div>
                     </div>
                 </div>
 
                 {/* Detailed Metadata Row */}
-                <div className="bg-blue-600/5 dark:bg-white/5 rounded-3xl p-4 border border-blue-500/10 dark:border-white/5">
-                    <div className="flex items-center justify-between mb-3 border-b border-blue-500/5 pb-2">
+                <div className="bg-blue-600/5 dark:bg-white/5 rounded-2xl p-3 border border-blue-500/10 dark:border-white/5">
+                    <div className="flex items-center justify-between mb-2 border-b border-blue-500/5 pb-2">
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                                <Wallet className="w-4 h-4 text-blue-600 dark:text-banana" />
+                            <div className="w-6 h-6 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                                <Wallet className="w-3 h-3 text-blue-600 dark:text-banana" />
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('dashboard.monthly_contribution')}</span>
+                            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{t('dashboard.monthly_contribution')}</span>
                         </div>
-                        <p className="font-black text-sm text-foreground">
+                        <p className="font-black text-xs text-foreground">
                             {formatCurrency(group.monthlyContribution)}
                         </p>
                     </div>
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                                <Calendar className="w-4 h-4 text-blue-600 dark:text-banana" />
+                            <div className="w-6 h-6 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                                <Calendar className="w-3 h-3 text-blue-600 dark:text-banana" />
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('groups.cycle_duration')}</span>
+                            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{t('groups.cycle_duration')}</span>
                         </div>
-                        <p className="font-black text-sm text-foreground">
+                        <p className="font-black text-xs text-foreground">
                             {t('groups.next_30_days')}
                         </p>
                     </div>
@@ -148,14 +148,14 @@ export function GroupCard({ membership }: GroupCardProps) {
             </div>
 
             {/* CTA / Action Area */}
-            <div className="p-6 pt-6">
+            <div className="p-5 sm:p-6 pt-4">
                 <Link href={`/groups/${membership.groupId}`} className="block">
                     <Button
                         variant="default"
-                        className="w-full h-14 rounded-2xl font-black text-lg shadow-xl shadow-yellow-500/10 group-hover:scale-[1.02] active:scale-[0.98] transition-all group/btn"
+                        className="w-full h-11 rounded-xl font-black text-sm shadow-xl shadow-yellow-500/10 group-hover:scale-[1.02] active:scale-[0.98] transition-all group/btn"
                     >
                         {t('groups.view_dashboard')}
-                        <ChevronRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                        <ChevronRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
                     </Button>
                 </Link>
             </div>

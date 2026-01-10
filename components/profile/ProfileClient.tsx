@@ -126,11 +126,11 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
             variants={staggerContainer}
             initial="initial"
             animate="animate"
-            className="space-y-8 sm:space-y-12 pb-20"
+            className="space-y-6 sm:space-y-8 pb-20"
         >
             {/* Header Section */}
             <motion.div variants={fadeIn}>
-                <Link href="/dashboard" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-blue-600 dark:hover:text-banana transition-all duration-300 group mb-4">
+                <Link href="/dashboard" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-blue-600 dark:hover:text-banana transition-all duration-300 group mb-2">
                     <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
                     {t('common.back')}
                 </Link>
@@ -144,8 +144,8 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                     }
                     action={
                         <Link href="/settings">
-                            <Button variant="default" className="px-6 group">
-                                <Settings className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform" />
+                            <Button variant="default" size="sm" className="px-4 h-9 group text-xs">
+                                <Settings className="w-3.5 h-3.5 mr-2 group-hover:rotate-90 transition-transform" />
                                 {t('profile.edit_profile')}
                             </Button>
                         </Link>
@@ -153,29 +153,29 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                 />
             </motion.div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-10">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                 {/* Left Column: Identity & Milestoness */}
                 <div className="lg:col-span-1 space-y-8">
                     <motion.div variants={itemFadeIn}>
                         <GlassCard className="p-0 overflow-hidden border-none" hover={false}>
                             {/* Banner - Simplified */}
-                            <div className="h-32 bg-gradient-to-br from-blue-600/20 to-indigo-600/20 dark:from-blue-900/40 dark:to-slate-900/40 relative">
+                            <div className="h-24 bg-gradient-to-br from-blue-600/20 to-indigo-600/20 dark:from-blue-900/40 dark:to-slate-900/40 relative">
                                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.2),transparent)] opacity-50" />
                             </div>
 
-                            <CardContent className="relative pt-0 px-8 pb-10">
+                            <CardContent className="relative pt-0 px-5 sm:px-6 pb-6">
                                 {/* Avatar - Clean & Floating */}
-                                <div className="flex justify-center -mt-16 mb-6">
-                                    <div className="p-1.5 rounded-[2.5rem] bg-background shadow-xl">
-                                        <div className="w-32 h-32 rounded-[2rem] bg-gradient-to-br from-blue-500 to-blue-700 dark:from-blue-600 dark:to-blue-800 flex items-center justify-center text-white text-5xl font-black shadow-inner border border-white/10">
+                                <div className="flex justify-center -mt-12 mb-4">
+                                    <div className="p-1.5 rounded-[2rem] bg-background shadow-xl">
+                                        <div className="w-24 h-24 rounded-[1.6rem] bg-gradient-to-br from-blue-500 to-blue-700 dark:from-blue-600 dark:to-blue-800 flex items-center justify-center text-white text-4xl font-black shadow-inner border border-white/10">
                                             {(profile?.firstName?.charAt(0) || '') + (profile?.lastName?.charAt(0) || '')}
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="space-y-6">
-                                    <div className="text-center space-y-2">
-                                        <h2 className="text-3xl font-black text-foreground tracking-tight">
+                                <div className="space-y-4">
+                                    <div className="text-center space-y-1">
+                                        <h2 className="text-2xl font-black text-foreground tracking-tight">
                                             {profile?.firstName}
                                         </h2>
 
@@ -236,19 +236,19 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                         </div>
                                     </div>
 
-                                    <div className="space-y-5 pt-6 border-t border-border/10">
+                                    <div className="space-y-4 pt-4 border-t border-border/10">
                                         {[
                                             { icon: Mail, label: 'Email', value: profile?.email },
                                             { icon: MapPin, label: 'Sector', value: profile?.region || 'Central Domain' },
                                             { icon: Calendar, label: 'Joined', value: profile?.joinedAt ? new Date(profile.joinedAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) : '---' }
                                         ].map((item, idx) => (
-                                            <div key={idx} className="flex items-center gap-4 group/item">
-                                                <div className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center text-muted-foreground group-hover/item:text-blue-500 transition-colors shrink-0">
-                                                    <item.icon className="w-4 h-4" />
+                                            <div key={idx} className="flex items-center gap-3 group/item">
+                                                <div className="w-7 h-7 rounded-lg bg-muted/50 flex items-center justify-center text-muted-foreground group-hover/item:text-blue-500 transition-colors shrink-0">
+                                                    <item.icon className="w-3.5 h-3.5" />
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 mb-0.5">{item.label}</p>
-                                                    <p className="text-sm font-medium text-foreground truncate">{item.value}</p>
+                                                    <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest opacity-60 mb-0">{item.label}</p>
+                                                    <p className="text-xs font-medium text-foreground truncate">{item.value}</p>
                                                 </div>
                                             </div>
                                         ))}
@@ -260,17 +260,17 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
 
                     {/* Milestone Card */}
                     <motion.div variants={itemFadeIn}>
-                        <GlassCard className="p-6 border-none bg-gradient-to-br from-blue-700/10 to-transparent" hover={true}>
-                            <h3 className="text-xs font-black text-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
-                                <Award className="w-4 h-4 text-banana" />
+                        <GlassCard className="p-5 sm:p-6 border-none bg-gradient-to-br from-blue-700/10 to-transparent" hover={true}>
+                            <h3 className="text-[10px] font-black text-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
+                                <Award className="w-3.5 h-3.5 text-banana" />
                                 {t('profile.investor_tier')}
                             </h3>
-                            <div className="space-y-4">
+                            <div className="space-y-3">
                                 <div className="flex justify-between items-end mb-1">
-                                    <span className="text-2xl font-black text-foreground tracking-tighter">Diamond</span>
-                                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">75% to Elite</span>
+                                    <span className="text-xl font-black text-foreground tracking-tighter">Diamond</span>
+                                    <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">75% to Elite</span>
                                 </div>
-                                <div className="w-full bg-blue-900/10 dark:bg-white/10 rounded-full h-2.5 overflow-hidden">
+                                <div className="w-full bg-blue-900/10 dark:bg-white/10 rounded-full h-2 overflow-hidden">
                                     <motion.div
                                         initial={{ width: 0 }}
                                         animate={{ width: '75%' }}
@@ -278,7 +278,7 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                         className="bg-blue-600 dark:bg-banana h-full rounded-full"
                                     />
                                 </div>
-                                <p className="text-[10px] font-bold text-muted-foreground opacity-70 leading-relaxed uppercase tracking-wider">
+                                <p className="text-[9px] font-bold text-muted-foreground opacity-70 leading-relaxed uppercase tracking-wider">
                                     Maintain a perfect streak for 45 more days to unlock priority credit access and lower interest premiums.
                                 </p>
                             </div>
@@ -287,7 +287,7 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                 </div>
 
                 {/* Right Column: Financial Performance */}
-                <div className="lg:col-span-2 space-y-8 sm:space-y-10">
+                <div className="lg:col-span-2 space-y-4 sm:space-y-6">
                     <div className="flex overflow-x-auto pb-4 -mx-4 px-4 gap-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-2 no-scrollbar">
                         <StatsCard
                             index={1}
@@ -333,28 +333,28 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                             </TabsList>
                         </div>
 
-                        <TabsContent value="overview" className="space-y-6 mt-0 outline-none">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <TabsContent value="overview" className="space-y-4 mt-0 outline-none">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <motion.div variants={itemFadeIn}>
-                                    <div className="zen-card p-8 h-full">
-                                        <h3 className="text-lg font-black text-foreground mb-6 flex items-center gap-3">
-                                            <Shield className="w-5 h-5 text-blue-600 dark:text-banana" />
+                                    <div className="zen-card p-5 h-full">
+                                        <h3 className="text-lg font-black text-foreground mb-4 flex items-center gap-2">
+                                            <Shield className="w-4 h-4 text-blue-600 dark:text-banana" />
                                             Credit Matrix
                                         </h3>
-                                        <div className="space-y-8">
-                                            <div className="flex justify-between items-center bg-blue-600/5 dark:bg-white/5 p-6 rounded-2xl shadow-inner border border-white/10">
+                                        <div className="space-y-5">
+                                            <div className="flex justify-between items-center bg-blue-600/5 dark:bg-white/5 p-4 rounded-xl shadow-inner border border-white/10">
                                                 <div>
-                                                    <p className="zen-label lowercase opacity-40">Standing</p>
-                                                    <p className="text-xl font-black text-emerald-500">EXCELLENT</p>
+                                                    <p className="zen-label lowercase opacity-40 text-[10px]">Standing</p>
+                                                    <p className="text-lg font-black text-emerald-500">EXCELLENT</p>
                                                 </div>
-                                                <CheckCircle2 className="w-10 h-10 text-emerald-500" />
+                                                <CheckCircle2 className="w-8 h-8 text-emerald-500" />
                                             </div>
-                                            <div className="space-y-4">
-                                                <div className="flex justify-between zen-label">
+                                            <div className="space-y-3">
+                                                <div className="flex justify-between zen-label text-[10px]">
                                                     <span>Protocol Compliance</span>
                                                     <span>{financials.eligibilityScore}%</span>
                                                 </div>
-                                                <div className="w-full bg-slate-100 dark:bg-slate-800/50 h-2 rounded-full overflow-hidden">
+                                                <div className="w-full bg-slate-100 dark:bg-slate-800/50 h-1.5 rounded-full overflow-hidden">
                                                     <motion.div
                                                         initial={{ width: 0 }}
                                                         animate={{ width: `${financials.eligibilityScore}%` }}
@@ -367,24 +367,24 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                 </motion.div>
 
                                 <motion.div variants={itemFadeIn}>
-                                    <div className="zen-card p-8 h-full flex flex-col">
-                                        <h3 className="text-lg font-black text-foreground mb-6 flex items-center gap-3">
-                                            <Zap className="w-5 h-5 text-banana" />
+                                    <div className="zen-card p-5 sm:p-6 h-full flex flex-col">
+                                        <h3 className="text-lg font-black text-foreground mb-4 flex items-center gap-2">
+                                            <Zap className="w-4 h-4 text-banana" />
                                             Liabilities
                                         </h3>
-                                        <div className="space-y-6 flex-1">
-                                            <div className="p-6 rounded-2xl bg-red-500/5 border border-red-500/10 flex justify-between items-center shadow-inner">
+                                        <div className="space-y-4 flex-1">
+                                            <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/10 flex justify-between items-center shadow-inner">
                                                 <div>
                                                     <p className="zen-label lowercase text-red-500 italic">Net Due</p>
-                                                    <span className="text-2xl font-black text-red-500">{formatCurrency(financials.outstandingLoanBalance)}</span>
+                                                    <span className="text-xl font-black text-red-500">{formatCurrency(financials.outstandingLoanBalance)}</span>
                                                 </div>
                                             </div>
-                                            <p className="zen-label lowercase opacity-40 leading-relaxed pt-2">
+                                            <p className="zen-label lowercase opacity-40 leading-relaxed pt-2 text-[10px]">
                                                 {financials.recentLoans?.filter(l => l.status === 'ACTIVE').length || 0} active borrowing cycles in deployment.
                                             </p>
-                                            <div className="mt-auto pt-6">
+                                            <div className="mt-auto pt-4">
                                                 <Link href="/vault" className="block">
-                                                    <Button className="w-full h-14 rounded-2xl font-black bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-xl transition-all hover:scale-105 active:scale-95">
+                                                    <Button className="w-full h-10 rounded-xl font-black text-xs bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-xl transition-all hover:scale-105 active:scale-95">
                                                         Manage Agreements
                                                     </Button>
                                                 </Link>
@@ -396,27 +396,27 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                         </TabsContent>
 
                         <TabsContent value="groups" className="mt-0 outline-none">
-                            <motion.div variants={fadeIn} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <motion.div variants={fadeIn} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {memberships.length > 0 ? (
                                     memberships.map((group) => (
                                         <motion.div key={group.id} variants={itemFadeIn}>
-                                            <div className="zen-card p-8 group hover:border-blue-500/30 transition-all cursor-pointer">
-                                                <div className="flex justify-between items-start mb-6">
-                                                    <div className="w-16 h-16 rounded-[1.5rem] bg-blue-600/5 flex items-center justify-center text-blue-600 dark:text-banana font-black text-3xl shadow-inner group-hover:scale-110 transition-transform">
+                                            <div className="zen-card p-5 sm:p-6 group hover:border-blue-500/30 transition-all cursor-pointer">
+                                                <div className="flex justify-between items-start mb-4">
+                                                    <div className="w-12 h-12 rounded-[1rem] bg-blue-600/5 flex items-center justify-center text-blue-600 dark:text-banana font-black text-2xl shadow-inner group-hover:scale-110 transition-transform">
                                                         {group.name.charAt(0)}
                                                     </div>
-                                                    <Badge variant="outline" className="zen-label border-none">
+                                                    <Badge variant="outline" className="zen-label border-none text-[9px]">
                                                         {group.role}
                                                     </Badge>
                                                 </div>
-                                                <h4 className="text-2xl font-black text-foreground truncate mb-2">{group.name}</h4>
-                                                <div className="flex items-center gap-2 text-muted-foreground mb-8">
-                                                    <Users className="w-4 h-4 opacity-40" />
-                                                    <span className="zen-label lowercase">{group.memberCount} active nodes</span>
+                                                <h4 className="text-lg font-black text-foreground truncate mb-1">{group.name}</h4>
+                                                <div className="flex items-center gap-1.5 text-muted-foreground mb-5">
+                                                    <Users className="w-3.5 h-3.5 opacity-40" />
+                                                    <span className="zen-label lowercase text-[10px]">{group.memberCount} active nodes</span>
                                                 </div>
-                                                <div className="pt-8 border-t border-white/10 dark:border-white/5 flex justify-between items-center">
-                                                    <div className="zen-label lowercase opacity-40">Monthly Stake</div>
-                                                    <div className="text-lg font-black text-blue-600 dark:text-banana">
+                                                <div className="pt-5 border-t border-white/10 dark:border-white/5 flex justify-between items-center">
+                                                    <div className="zen-label lowercase opacity-40 text-[10px]">Monthly Stake</div>
+                                                    <div className="text-base font-black text-blue-600 dark:text-banana">
                                                         {formatCurrency(group.monthlyContribution)}
                                                     </div>
                                                 </div>
@@ -424,7 +424,7 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                         </motion.div>
                                     ))
                                 ) : (
-                                    <div className="col-span-2 p-8">
+                                    <div className="col-span-2 p-5">
                                         <EmptyState
                                             icon={Users}
                                             title="No Active Circles"
@@ -439,34 +439,34 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                         <TabsContent value="history" className="mt-0 outline-none">
                             <motion.div variants={fadeIn}>
                                 <div className="zen-card overflow-hidden">
-                                    <div className="p-8 border-b border-white/10 flex justify-between items-center bg-blue-600/5 dark:bg-white/5">
-                                        <h3 className="text-lg font-black flex items-center gap-3">
-                                            <History className="w-5 h-5 text-blue-600 dark:text-banana" />
+                                    <div className="p-5 sm:p-6 border-b border-white/10 flex justify-between items-center bg-blue-600/5 dark:bg-white/5">
+                                        <h3 className="text-lg font-black flex items-center gap-2">
+                                            <History className="w-4 h-4 text-blue-600 dark:text-banana" />
                                             Ledger Events
                                         </h3>
-                                        <Badge variant="outline" className="zen-label border-none uppercase">Immutable Record</Badge>
+                                        <Badge variant="outline" className="zen-label border-none uppercase text-[9px]">Immutable Record</Badge>
                                     </div>
                                     <div className="divide-y divide-white/5">
                                         {financials.recentContributions?.map((item, i) => (
-                                            <div key={i} className="p-8 flex items-center justify-between hover:bg-blue-600/5 dark:hover:bg-white/5 transition-all">
-                                                <div className="flex items-center gap-6">
-                                                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-black text-xl shadow-inner">
+                                            <div key={i} className="p-5 sm:p-6 flex items-center justify-between hover:bg-blue-600/5 dark:hover:bg-white/5 transition-all">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-black text-lg shadow-inner">
                                                         +
                                                     </div>
                                                     <div>
-                                                        <p className="text-lg font-black leading-none mb-1">Capital Stake</p>
-                                                        <p className="zen-label lowercase opacity-40">{new Date(item.date).toLocaleDateString()}</p>
+                                                        <p className="text-sm font-black leading-none mb-0.5">Capital Stake</p>
+                                                        <p className="zen-label lowercase opacity-40 text-[10px]">{new Date(item.date).toLocaleDateString()}</p>
                                                     </div>
                                                 </div>
                                                 <div className="text-right">
-                                                    <p className="text-xl font-black text-emerald-500">+{formatCurrency(item.amount)}</p>
-                                                    <p className="zen-label lowercase text-emerald-500/60 font-black">Success</p>
+                                                    <p className="text-base font-black text-emerald-500">+{formatCurrency(item.amount)}</p>
+                                                    <p className="zen-label lowercase text-emerald-500/60 font-black text-[9px]">Success</p>
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
                                     {(!financials.recentContributions || financials.recentContributions.length === 0) && (
-                                        <div className="p-12">
+                                        <div className="p-8">
                                             <EmptyState
                                                 icon={History}
                                                 title="Empty Ledger"

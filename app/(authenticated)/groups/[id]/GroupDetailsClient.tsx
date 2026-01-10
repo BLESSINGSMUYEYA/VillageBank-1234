@@ -60,7 +60,7 @@ export default function GroupDetailsClient({
                     {t('common.back') || 'Back'}
                 </Link>
                 <PageHeader
-                    title={t('groups.details_title') || 'Command Center'}
+                    title={t('groups.details_title') || 'Group Details'}
                     description={
                         <span className="flex flex-wrap items-center gap-1.5 opacity-80">
                             <Shield className="w-4 h-4 text-blue-600 dark:text-banana" />
@@ -70,7 +70,7 @@ export default function GroupDetailsClient({
                 />
             </motion.div>
 
-            {/* Hero Card - The Command Center */}
+            {/* Hero Card - Group Overview */}
             <motion.div variants={itemFadeIn}>
                 <div className="zen-card overflow-hidden">
                     {/* Top Identity Section */}

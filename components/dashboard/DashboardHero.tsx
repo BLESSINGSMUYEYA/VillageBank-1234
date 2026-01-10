@@ -5,13 +5,17 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
-import { DollarSign, Wallet, Users, Zap, ArrowUpRight, ArrowRight, Eye, EyeOff } from 'lucide-react'
+import { DollarSign, Wallet, Users, Zap, ArrowUpRight, ArrowRight, Eye, EyeOff, Shield } from 'lucide-react'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { formatCurrency, cn } from '@/lib/utils'
 import { itemFadeIn } from '@/lib/motions'
+import { SecurityVerificationModal } from '@/app/(authenticated)/dashboard/SecurityVerificationModal'
 
 interface DashboardHeroProps {
-    user: { firstName: string | null }
+    user: {
+        firstName: string | null
+        role: string
+    }
     stats: {
         totalContributions: number
         totalGroups: number
@@ -23,9 +27,24 @@ interface DashboardHeroProps {
 export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivityCount }: DashboardHeroProps) {
     const { t } = useLanguage()
     const [isContributionsVisible, setIsContributionsVisible] = useState(false)
+    const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false)
+
+    const handleToggleVisibility = () => {
+        if (isContributionsVisible) {
+            setIsContributionsVisible(false)
+        } else {
+            setIsVerificationModalOpen(true)
+        }
+    }
+
+    const handleVerified = () => {
+        setIsContributionsVisible(true)
+    }
+
+    const isAdminOrTreasurer = user.role === 'ADMIN' || user.role === 'TREASURER'
 
     return (
-        <motion.div variants={itemFadeIn}>
+        <motion.div variants={itemFadeIn} className="space-y-6">
             <div className="zen-card relative overflow-hidden group/hero">
 
                 {/* Ambient Background Glow - Reduced Opacity */}
@@ -84,7 +103,7 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                                 {isContributionsVisible ? formatCurrency(stats.totalContributions) : '••••••'}
                             </p>
                             <button
-                                onClick={() => setIsContributionsVisible(!isContributionsVisible)}
+                                onClick={handleToggleVisibility}
                                 className="text-muted-foreground/40 hover:text-blue-500 transition-colors"
                             >
                                 {isContributionsVisible ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
@@ -110,23 +129,39 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                         <p className="text-xl sm:text-2xl font-black text-purple-500 tracking-tight">{recentActivityCount}</p>
                     </div>
 
-                    {/* Pending Approvals */}
-                    <Link href="/treasurer/approvals" className="block h-full">
-                        <div className="p-4 rounded-xl hover:bg-white/5 transition-colors group cursor-pointer h-full relative overflow-hidden">
+                    {/* Pending Approvals - Conditional */}
+                    {isAdminOrTreasurer ? (
+                        <Link href="/treasurer/approvals" className="block h-full">
+                            <div className="p-4 rounded-xl hover:bg-white/5 transition-colors group cursor-pointer h-full relative overflow-hidden">
+                                <div className="zen-label opacity-60 flex items-center gap-2 mb-2">
+                                    <ArrowUpRight className={cn("w-3.5 h-3.5", pendingApprovalsCount > 0 ? "text-red-500" : "text-muted-foreground")} />
+                                    {t('dashboard.pending_approvals')}
+                                </div>
+                                <div className="flex items-end justify-between">
+                                    <p className={cn("text-xl sm:text-2xl font-black tracking-tight", pendingApprovalsCount > 0 ? "text-red-500" : "text-muted-foreground/50")}>
+                                        {pendingApprovalsCount}
+                                    </p>
+                                    {pendingApprovalsCount > 0 && <ArrowRight className="w-3.5 h-3.5 text-red-500 relative bottom-1" />}
+                                </div>
+                            </div>
+                        </Link>
+                    ) : (
+                        <div className="p-4 rounded-xl hover:bg-white/5 transition-colors group cursor-default relative overflow-hidden opacity-50">
                             <div className="zen-label opacity-60 flex items-center gap-2 mb-2">
-                                <ArrowUpRight className={cn("w-3.5 h-3.5", pendingApprovalsCount > 0 ? "text-red-500" : "text-muted-foreground")} />
-                                {t('dashboard.pending_approvals')}
+                                <Shield className="w-3.5 h-3.5 text-emerald-500" />
+                                Status
                             </div>
-                            <div className="flex items-end justify-between">
-                                <p className={cn("text-xl sm:text-2xl font-black tracking-tight", pendingApprovalsCount > 0 ? "text-red-500" : "text-muted-foreground/50")}>
-                                    {pendingApprovalsCount}
-                                </p>
-                                {pendingApprovalsCount > 0 && <ArrowRight className="w-3.5 h-3.5 text-red-500 relative bottom-1" />}
-                            </div>
+                            <p className="text-lg font-black text-emerald-500 tracking-tight">Active</p>
                         </div>
-                    </Link>
+                    )}
                 </div>
             </div>
+
+            <SecurityVerificationModal
+                open={isVerificationModalOpen}
+                onOpenChange={setIsVerificationModalOpen}
+                onVerified={handleVerified}
+            />
         </motion.div>
     )
 }

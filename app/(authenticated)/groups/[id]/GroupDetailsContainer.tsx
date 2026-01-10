@@ -29,7 +29,7 @@ export default function GroupDetailsContainer({
     currentUserMember
 }: GroupDetailsContainerProps) {
     return (
-        <Tabs defaultValue="standings" className="space-y-6 sm:space-y-10">
+        <Tabs defaultValue="standings" className="space-y-6 sm:space-y-8">
             <div className="flex items-center justify-between gap-4 overflow-x-auto no-scrollbar pb-2">
                 <TabsList className="bg-transparent p-0 h-auto gap-6 shrink-0">
                     <TabsTrigger
@@ -70,7 +70,7 @@ export default function GroupDetailsContainer({
             <motion.div variants={itemFadeIn}>
                 <TabsContent value="standings" className="mt-0 border-none outline-none focus-visible:ring-0">
                     <GlassCard className="flex flex-col p-0 overflow-hidden" hover={false}>
-                        <div className="p-5 sm:p-7 border-b border-border/50 flex items-center justify-between bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl">
+                        <div className="p-5 sm:p-6 border-b border-border/50 flex items-center justify-between bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl">
                             <div className="flex items-center gap-3">
                                 <div className="p-2.5 bg-blue-500/10 rounded-xl">
                                     <Users className="w-5 h-5 text-blue-500" />

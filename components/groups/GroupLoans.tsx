@@ -71,38 +71,38 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
       animate="animate"
       className="space-y-6"
     >
-      <GlassCard className="p-6 sm:p-8 space-y-8" hover={false}>
+      <GlassCard className="p-5 sm:p-6 space-y-6" hover={false}>
         {/* Stats Row */}
         {/* Stats Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pb-6 mb-6">
-          <div className="space-y-1 pb-4 sm:pb-0 sm:px-4 p-4 rounded-2xl hover:bg-white/5 transition-colors">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 mb-4">
+          <div className="space-y-1 pb-3 sm:pb-0 sm:px-3 p-3 rounded-xl hover:bg-white/5 transition-colors">
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-2">
               <Wallet className="w-3 h-3 text-blue-500" />
               Total Disbursed
             </p>
-            <p className="text-3xl font-black text-foreground tracking-tighter">{formatCurrency(totalAmountApproved)}</p>
+            <p className="text-2xl font-black text-foreground tracking-tighter">{formatCurrency(totalAmountApproved)}</p>
             <p className="text-[10px] font-bold text-muted-foreground opacity-60">{loans.length} total loans issued</p>
           </div>
 
-          <div className="space-y-1 pt-4 sm:pt-0 sm:px-4 p-4 rounded-2xl hover:bg-white/5 transition-colors">
-            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+          <div className="space-y-1 pt-3 sm:pt-0 sm:px-3 p-3 rounded-xl hover:bg-white/5 transition-colors">
+            <p className="text-[9px] font-black text-muted-foreground uppercase tracking-wider flex items-center gap-2">
               <Clock className="w-3 h-3 text-orange-500" />
               Pending Request
             </p>
-            <p className="text-3xl font-black text-foreground tracking-tighter">{pendingLoans.length}</p>
-            <p className="text-[10px] font-bold text-muted-foreground opacity-60">{formatCurrency(pendingLoans.reduce((sum, l) => sum + l.amountRequested, 0))}</p>
+            <p className="text-2xl font-black text-foreground tracking-tighter">{pendingLoans.length}</p>
+            <p className="text-[9px] font-bold text-muted-foreground opacity-60">{formatCurrency(pendingLoans.reduce((sum, l) => sum + l.amountRequested, 0))}</p>
           </div>
         </div>
 
         {/* Simplified Action Header */}
-        <motion.div variants={itemFadeIn} className="flex flex-col sm:flex-row items-center justify-between gap-6 pb-2">
+        <motion.div variants={itemFadeIn} className="flex flex-col sm:flex-row items-center justify-between gap-3 pb-2">
           <div className="text-center sm:text-left">
-            <h2 className="text-2xl font-black text-foreground tracking-tight">Loan Lifecycle</h2>
-            <p className="text-sm font-bold text-muted-foreground opacity-70">Management and history of group credit</p>
+            <h2 className="text-lg font-black text-foreground tracking-tight">Loan Lifecycle</h2>
+            <p className="text-xs font-bold text-muted-foreground opacity-70">Management and history of group credit</p>
           </div>
           <Link href={`/loans/new?groupId=${groupId}`} className="w-full sm:w-auto">
-            <Button size="xl" variant="default" className="w-full sm:w-auto shadow-xl shadow-blue-500/10 group h-14 rounded-2xl">
-              <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" />
+            <Button size="xl" variant="default" className="w-full sm:w-auto shadow-xl shadow-blue-500/10 group h-10 rounded-xl text-sm">
+              <Plus className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform" />
               New Application
             </Button>
           </Link>
@@ -167,35 +167,35 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
               loans.map((loan, index) => (
                 <motion.div key={loan.id} variants={itemFadeIn}>
                   <div className={cn(
-                    "p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group hover:bg-white/5 transition-colors rounded-2xl",
+                    "p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 group hover:bg-white/5 transition-colors rounded-xl",
                     // No border between items
                   )}>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
                       <div className={cn(
-                        "w-12 h-12 rounded-2xl flex items-center justify-center border transition-colors",
+                        "w-10 h-10 rounded-xl flex items-center justify-center border transition-colors",
                         loan.status === 'COMPLETED' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600' :
                           loan.status === 'ACTIVE' ? 'bg-blue-600/10 border-blue-600/20 text-blue-600' :
                             'bg-slate-500/10 border-slate-500/20 text-slate-500'
                       )}>
-                        <Landmark className="w-6 h-6" />
+                        <Landmark className="w-5 h-5" />
                       </div>
                       <div>
                         <h4 className="font-black text-sm text-foreground">{loan.user.firstName} {loan.user.lastName}</h4>
-                        <div className="flex items-center gap-3 text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">
+                        <div className="flex items-center gap-3 text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">
                           <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {new Date(loan.createdAt).toLocaleDateString()}</span>
                           <span className="flex items-center gap-1"><Percent className="w-3 h-3" /> {loan.interestRate}% Interest</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between sm:justify-end gap-6 sm:gap-10">
+                    <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-6">
                       <div className="text-right">
-                        <p className="text-base font-black text-foreground">{formatCurrency(loan.amountApproved || loan.amountRequested)}</p>
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase mt-0.5">{loan.repaymentPeriodMonths} Month Term</p>
+                        <p className="text-sm font-black text-foreground">{formatCurrency(loan.amountApproved || loan.amountRequested)}</p>
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase mt-0">{loan.repaymentPeriodMonths} Month Term</p>
                       </div>
                       <Badge
                         className={cn(
-                          "font-black uppercase tracking-widest text-[9px] px-3 py-1 rounded-lg border-2",
+                          "font-black uppercase tracking-widest text-[8px] px-2 py-0.5 rounded-lg border",
                           loan.status === 'COMPLETED' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' :
                             loan.status === 'ACTIVE' ? 'bg-blue-600/10 text-blue-600 border-blue-600/20' :
                               'bg-slate-500/10 text-slate-500 border-slate-500/20'
