@@ -34,19 +34,22 @@ export default function GroupDetailsContainer({
                 <TabsList className="bg-transparent p-0 h-auto gap-6 shrink-0">
                     <TabsTrigger
                         value="standings"
-                        className="rounded-none px-0 pb-3 h-auto font-black text-xs uppercase tracking-widest text-muted-foreground data-[state=active]:text-blue-600 dark:data-[state=active]:text-banana data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-blue-600 dark:data-[state=active]:border-banana transition-all hover:text-foreground"
+                        className="rounded-none px-0 pb-3 h-auto text-tab-label text-muted-foreground data-[state=active]:text-blue-600 dark:data-[state=active]:text-banana data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-blue-600 dark:data-[state=active]:border-banana transition-all hover:text-foreground"
                     >
                         Standings
+                        <span className="ml-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-200 py-0.5 px-2 rounded-full text-[9px] font-black">
+                            {group.members.filter((m: any) => m.status === 'ACTIVE').length}
+                        </span>
                     </TabsTrigger>
                     <TabsTrigger
                         value="ledger"
-                        className="rounded-none px-0 pb-3 h-auto font-black text-xs uppercase tracking-widest text-muted-foreground data-[state=active]:text-blue-600 dark:data-[state=active]:text-banana data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-blue-600 dark:data-[state=active]:border-banana transition-all hover:text-foreground"
+                        className="rounded-none px-0 pb-3 h-auto text-tab-label text-muted-foreground data-[state=active]:text-blue-600 dark:data-[state=active]:text-banana data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-blue-600 dark:data-[state=active]:border-banana transition-all hover:text-foreground"
                     >
                         Ledger
                     </TabsTrigger>
                     <TabsTrigger
                         value="activities"
-                        className="rounded-none px-0 pb-3 h-auto font-black text-xs uppercase tracking-widest text-muted-foreground data-[state=active]:text-blue-600 dark:data-[state=active]:text-banana data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-blue-600 dark:data-[state=active]:border-banana transition-all hover:text-foreground"
+                        className="rounded-none px-0 pb-3 h-auto text-tab-label text-muted-foreground data-[state=active]:text-blue-600 dark:data-[state=active]:text-banana data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-blue-600 dark:data-[state=active]:border-banana transition-all hover:text-foreground"
                     >
                         Activity
                     </TabsTrigger>
@@ -57,7 +60,7 @@ export default function GroupDetailsContainer({
                         <TabsList className="bg-transparent p-0 h-auto gap-2">
                             <TabsTrigger
                                 value="manage"
-                                className="rounded-none px-0 pb-3 h-auto font-black text-xs uppercase tracking-widest text-muted-foreground data-[state=active]:text-indigo-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-indigo-600 transition-all hover:text-foreground"
+                                className="rounded-none px-0 pb-3 h-auto text-tab-label text-muted-foreground data-[state=active]:text-indigo-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-indigo-600 transition-all hover:text-foreground"
                             >
                                 <Share2 className="w-4 h-4 mr-2" />
                                 Invite
@@ -76,15 +79,15 @@ export default function GroupDetailsContainer({
                                     <Users className="w-5 h-5 text-blue-500" />
                                 </div>
                                 <div>
-                                    <h2 className="text-lg font-black text-foreground">
+                                    <h2 className="text-card-title text-foreground">
                                         Member Standings
                                     </h2>
-                                    <p className="text-xs font-medium text-muted-foreground">
+                                    <p className="text-body-secondary">
                                         Full roster and role management
                                     </p>
                                 </div>
                             </div>
-                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                            <div className="zen-label text-muted-foreground">
                                 {group.members.length} Active
                             </div>
                         </div>
@@ -107,10 +110,10 @@ export default function GroupDetailsContainer({
                                     <Wallet className="w-5 h-5 text-emerald-500" />
                                 </div>
                                 <div>
-                                    <h2 className="text-lg font-black text-foreground">
+                                    <h2 className="text-card-title text-foreground">
                                         Financial Ledger
                                     </h2>
-                                    <p className="text-xs font-medium text-muted-foreground">
+                                    <p className="text-body-secondary">
                                         Contributions and credit records
                                     </p>
                                 </div>
@@ -119,7 +122,7 @@ export default function GroupDetailsContainer({
                                 {(isAdmin || isTreasurer) && (
                                     <ExcelImportModal groupId={group.id} />
                                 )}
-                                <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                <div className="zen-label text-muted-foreground">
                                     Synced
                                 </div>
                             </div>
@@ -127,8 +130,8 @@ export default function GroupDetailsContainer({
                         <div className="p-2">
                             <Tabs defaultValue="contributions_sub" className="w-full">
                                 <TabsList className="bg-slate-100/50 dark:bg-slate-800/50 p-1 rounded-2xl mb-4 ml-4 mt-4">
-                                    <TabsTrigger value="contributions_sub" className="rounded-xl px-6 font-bold text-[10px] uppercase">Contributions</TabsTrigger>
-                                    <TabsTrigger value="loans_sub" className="rounded-xl px-6 font-bold text-[10px] uppercase">Loans</TabsTrigger>
+                                    <TabsTrigger value="contributions_sub" className="rounded-xl px-6 text-tab-label">Contributions</TabsTrigger>
+                                    <TabsTrigger value="loans_sub" className="rounded-xl px-6 text-tab-label">Loans</TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="contributions_sub" className="m-0">
                                     <GroupContributions
@@ -158,15 +161,15 @@ export default function GroupDetailsContainer({
                                     <Activity className="w-5 h-5 text-purple-500" />
                                 </div>
                                 <div>
-                                    <h2 className="text-lg font-black text-foreground">
+                                    <h2 className="text-card-title text-foreground">
                                         Group Activity
                                     </h2>
-                                    <p className="text-xs font-medium text-muted-foreground">
+                                    <p className="text-body-secondary">
                                         Recent events and updates
                                     </p>
                                 </div>
                             </div>
-                            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                            <div className="zen-label text-muted-foreground">
                                 Real-time
                             </div>
                         </div>

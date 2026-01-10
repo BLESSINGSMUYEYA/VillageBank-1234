@@ -131,7 +131,7 @@ export function VaultClient({
                                 <CreditCard className="w-3 h-3" />
                                 {t('vault.active_liability')}
                             </p>
-                            <p className="text-xl sm:text-2xl font-black text-blue-600 dark:text-banana">{formatCurrency(activeDebt)}</p>
+                            <p className="text-stat-value text-blue-600 dark:text-banana">{formatCurrency(activeDebt)}</p>
                             <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('vault.agreements', { count: loans.filter(l => l.status === 'ACTIVE').length })}</p>
                         </div>
                         <div className="p-5 sm:p-6 space-y-1">
@@ -139,7 +139,7 @@ export function VaultClient({
                                 <Clock className="w-3 h-3" />
                                 {t('vault.pending_review')}
                             </p>
-                            <p className="text-xl sm:text-2xl font-black text-foreground">{pendingReview}</p>
+                            <p className="text-stat-value text-foreground">{pendingReview}</p>
                             <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('vault.ledger_sync')}</p>
                         </div>
                         <div className="p-5 sm:p-6 space-y-1">
@@ -147,7 +147,7 @@ export function VaultClient({
                                 <TrendingUp className="w-3 h-3" />
                                 {t('vault.credit_strength')}
                             </p>
-                            <p className="text-xl sm:text-2xl font-black text-emerald-500">
+                            <p className="text-stat-value text-emerald-500">
                                 {eligibilityChecks.filter(c => c.eligible).length > 0 ? t('vault.optimal') : t('vault.building')}
                             </p>
                             <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('vault.portfolio_health')}</p>
@@ -162,13 +162,13 @@ export function VaultClient({
                     <TabsList className="bg-transparent p-0 h-auto gap-2 shrink-0">
                         <TabsTrigger
                             value="savings"
-                            className="rounded-full px-8 h-12 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 shadow-sm"
+                            className="rounded-full px-8 h-12 text-tab-label data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 shadow-sm"
                         >
                             {t('vault.savings_ledger')}
                         </TabsTrigger>
                         <TabsTrigger
                             value="credit"
-                            className="rounded-full px-8 h-12 font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 shadow-sm"
+                            className="rounded-full px-8 h-12 text-tab-label data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 shadow-sm"
                         >
                             {t('vault.credit_hub')}
                         </TabsTrigger>
@@ -205,7 +205,7 @@ export function VaultClient({
                                                     </span>
                                                 </TableCell>
                                                 <TableCell className="text-right pr-8">
-                                                    <Badge variant={c.status === 'COMPLETED' ? 'success' : c.status === 'PENDING' ? 'warning' : 'error'}>
+                                                    <Badge variant={c.status === 'COMPLETED' ? 'success' : c.status === 'PENDING' ? 'warning' : 'error'} className="text-tab-label">
                                                         {c.status}
                                                     </Badge>
                                                 </TableCell>
@@ -265,7 +265,7 @@ export function VaultClient({
                                         <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 shadow-inner", check.eligible ? "bg-banana/20 text-yellow-600 dark:text-banana" : "bg-muted/20 text-muted-foreground")}>
                                             <Zap className="w-7 h-7" fill={check.eligible ? "currentColor" : "none"} />
                                         </div>
-                                        <Badge variant={check.eligible ? 'success' : 'outline'} className="rounded-lg font-black text-[9px] tracking-widest uppercase">
+                                        <Badge variant={check.eligible ? 'success' : 'outline'} className="text-tab-label rounded-lg">
                                             {check.eligible ? t('vault.verified') : t('vault.building')}
                                         </Badge>
                                     </div>

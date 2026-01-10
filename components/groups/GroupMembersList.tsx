@@ -93,12 +93,9 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
       {/* Active Members */}
       <div className="space-y-4">
         <div className="px-5 sm:px-6 flex items-center justify-between">
-          <h2 className="text-xl font-black text-foreground flex items-center gap-2">
+          <h2 className="text-section-title text-foreground flex items-center gap-2">
             <Users className="w-5 h-5 text-blue-500" />
             Active Members
-            <span className="text-sm font-bold bg-blue-500/10 text-blue-600 dark:text-banana dark:bg-banana/10 px-2.5 py-0.5 rounded-full">
-              {activeMembers.length}
-            </span>
           </h2>
         </div>
 
@@ -116,12 +113,12 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
                 </Avatar>
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="font-black text-sm text-foreground tracking-tight">
+                    <p className="text-body-primary font-black text-foreground tracking-tight">
                       {member.user?.firstName || ''} {member.user?.lastName || ''}
                     </p>
                     <Badge
                       className={cn(
-                        "font-black uppercase tracking-widest text-[10px] px-2 py-0 border-0",
+                        "text-tab-label px-2 py-0 border-0",
                         member.role === 'ADMIN' ? 'bg-blue-600 text-white' :
                           member.role === 'TREASURER' ? 'bg-banana text-yellow-950' :
                             'bg-slate-100 dark:bg-slate-800 text-slate-500'
@@ -130,7 +127,7 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
                       {member.role}
                     </Badge>
                   </div>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider opacity-70">
+                  <p className="text-micro font-bold text-muted-foreground uppercase tracking-wider opacity-70">
                     {member.user?.email || 'No email'} • Joined {new Date(member.joinedAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
                   </p>
                 </div>
@@ -171,11 +168,11 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
       {pendingMembers.length > 0 && (
         <div className="space-y-4 pt-4 border-t border-dashed border-white/10">
           <div className="px-5 sm:px-6 flex items-center justify-between">
-            <h2 className="text-sm font-black uppercase tracking-widest text-orange-500 flex items-center gap-2">
+            <h2 className="text-body-primary font-black uppercase tracking-widest text-orange-500 flex items-center gap-2">
               <Clock className="w-4 h-4" />
               Pending Requests
             </h2>
-            <span className="text-[10px] font-black bg-orange-500/10 text-orange-500 px-2 py-0.5 rounded-full">
+            <span className="text-micro font-black bg-orange-500/10 text-orange-500 px-2 py-0.5 rounded-full">
               {pendingMembers.length}
             </span>
           </div>
@@ -190,10 +187,10 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-black text-sm text-foreground tracking-tight">
+                    <p className="text-body-primary font-black text-foreground tracking-tight">
                       {member.user?.firstName || ''} {member.user?.lastName || ''}
                     </p>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider opacity-70">
+                    <p className="text-micro font-bold text-muted-foreground uppercase tracking-wider opacity-70">
                       Requested {new Date(member.joinedAt).toLocaleDateString()}
                     </p>
                   </div>
@@ -206,7 +203,7 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
                         size="sm"
                         onClick={() => handleRoleChange(member.id, 'MEMBER')}
                         disabled={loading}
-                        className="h-8 bg-blue-600 hover:bg-blue-700 text-white font-black uppercase text-[10px] tracking-wider rounded-lg px-4"
+                        className="h-8 bg-blue-600 hover:bg-blue-700 text-white text-tab-label rounded-lg px-4"
                       >
                         Approve
                       </Button>
@@ -215,7 +212,7 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
                         variant="ghost"
                         onClick={() => handleRemoveMember(member.id)}
                         disabled={loading}
-                        className="h-8 text-red-500 hover:text-red-400 hover:bg-red-500/10 font-black uppercase text-[10px] tracking-wider rounded-lg px-3"
+                        className="h-8 text-red-500 hover:text-red-400 hover:bg-red-500/10 text-tab-label rounded-lg px-3"
                       >
                         Reject
                       </Button>

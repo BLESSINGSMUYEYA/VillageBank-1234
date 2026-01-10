@@ -18,7 +18,8 @@ import {
 } from 'lucide-react'
 import { NotificationCenter } from '@/components/notifications/NotificationCenter'
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion'
+import { useState } from 'react'
 
 import { cn } from '@/lib/utils'
 import { UBankLogo } from '@/components/ui/Logo'
@@ -29,6 +30,17 @@ export function MobileNavigation() {
   const { user, logout } = useAuth()
   const pathname = usePathname()
   const { t } = useLanguage()
+  const [isHidden, setIsHidden] = useState(false)
+  const { scrollY } = useScroll()
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0
+    if (latest > previous && latest > 50) {
+      setIsHidden(true)
+    } else {
+      setIsHidden(false)
+    }
+  })
 
   // Define member-specific navigation
   const memberNavigation = [
@@ -42,18 +54,26 @@ export function MobileNavigation() {
 
   return (
     <div className="lg:hidden">
-      {/* Mobile Header - Nano Glass */}
-      <div className="fixed top-0 left-0 right-0 z-40 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl border-b border-white/20 dark:border-white/10 shadow-sm transition-all duration-300">
+      {/* Mobile Header - Zen Mode (Hide on Scroll) */}
+      <motion.div
+        variants={{
+          visible: { y: 0 },
+          hidden: { y: -100 }
+        }}
+        animate={isHidden ? "hidden" : "visible"}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="fixed top-0 left-0 right-0 z-40 bg-white/60 dark:bg-slate-950/60 backdrop-blur-xl border-b border-white/20 dark:border-white/5 shadow-sm"
+      >
         <div className="flex items-center justify-between p-4 px-4">
           <Link href="/dashboard" className="group">
             {/* Logo and text as one unified word */}
             <div className="flex items-end gap-0.5">
               <div className="flex items-center justify-center group-active:scale-95 transition-transform">
-                <UBankLogo className="w-6 h-6" />
+                <UBankLogo className="w-7 h-7" />
               </div>
-              <h1 className="text-lg font-black bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent leading-none">Bank</h1>
+              <h1 className="text-xl font-black bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent leading-none">Bank</h1>
             </div>
-            <p className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 leading-none mt-1">{t('common.premium_member')}</p>
+            <p className="text-tab-label text-muted-foreground/60 leading-none mt-1.5 ml-0.5">{t('common.premium_member')}</p>
           </Link>
 
           <div className="flex items-center gap-2">
@@ -76,7 +96,7 @@ export function MobileNavigation() {
                     <p className="truncate text-xs text-muted-foreground font-bold opacity-70">
                       {user?.email}
                     </p>
-                    <div className="mt-2 inline-flex items-center px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-blue-500/10 text-blue-600 dark:bg-banana/10 dark:text-banana w-fit">
+                    <div className="mt-2 inline-flex items-center px-2 py-0.5 rounded-md text-tab-label bg-blue-500/10 text-blue-600 dark:bg-banana/10 dark:text-banana w-fit">
                       {user?.role?.replace('_', ' ')}
                     </div>
                   </div>
@@ -130,18 +150,19 @@ export function MobileNavigation() {
             )}
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Spacer for Fixed Header */}
+      {/* Spacer for Fixed Header - Dynamic height based on visibility could be jarring, so we keep static space 
+          but technically the content slides under. */}
       <div className="h-16" />
 
-      {/* Mobile Bottom Navigation - Floating Glass Dock */}
+      {/* Mobile Bottom Navigation - Tactile Glass Dock */}
       {user && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden px-4 pb-2 sm:pb-3 pointer-events-none safe-area-bottom">
+        <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden px-4 pb-4 sm:pb-6 pointer-events-none safe-area-bottom">
           <motion.div
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl border border-white/30 dark:border-white/10 shadow-2xl rounded-[32px] px-2 py-2 pointer-events-auto mx-auto max-w-sm"
+            className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/40 dark:border-white/10 shadow-lg shadow-slate-200/50 dark:shadow-black/50 rounded-[32px] px-2 py-2 pointer-events-auto mx-auto max-w-sm"
           >
             <div className="flex items-center justify-around gap-1">
               {allNavigation.slice(0, 5).map((item) => {
@@ -162,16 +183,24 @@ export function MobileNavigation() {
                       {isActive && (
                         <motion.div
                           layoutId="mobile-dock-active"
-                          className="absolute inset-x-1 inset-y-1 bg-blue-500/10 dark:bg-banana/10 border-b-2 border-blue-500 dark:border-banana rounded-2xl z-0"
-                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                          className="absolute top-1 left-1/2 -translate-x-1/2 w-11 h-11 rounded-full border border-blue-500/30 dark:border-banana/30 bg-blue-500/10 dark:bg-banana/10 shadow-[0_0_15px_rgba(59,130,246,0.3)] dark:shadow-[0_0_15px_rgba(255,200,0,0.2)] z-0"
+                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
                         />
                       )}
                     </AnimatePresence>
-                    <Icon className={cn(
-                      "w-5 h-5 relative z-10 transition-transform duration-300 mb-0.5",
-                      isActive ? 'scale-110 stroke-[2.5px]' : 'group-active:scale-95'
-                    )} />
-                    <span className="text-[9px] font-black uppercase tracking-wide relative z-10">
+
+                    {/* Icon with Press Animation - Increased Size */}
+                    <div className="relative z-10 group-active:scale-75 transition-transform duration-200">
+                      <Icon className={cn(
+                        "w-7 h-7 transition-all duration-300 mb-0.5",
+                        isActive ? 'stroke-[2.5px] drop-shadow-sm' : 'opacity-70 group-hover:opacity-100'
+                      )} />
+                    </div>
+
+                    <span className={cn(
+                      "text-[10px] font-bold capitalize tracking-wide relative z-10 transition-colors duration-300",
+                      isActive ? "text-blue-700 dark:text-banana" : "text-muted-foreground/60"
+                    )}>
                       {item.name}
                     </span>
                   </Link>
@@ -179,8 +208,9 @@ export function MobileNavigation() {
               })}
             </div>
           </motion.div>
-        </div>
-      )}
-    </div>
+        </div >
+      )
+      }
+    </div >
   )
 }

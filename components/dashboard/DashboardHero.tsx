@@ -62,12 +62,12 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.2 }}
                                 >
-                                    <h1 className="text-3xl sm:text-4xl font-black tracking-tighter leading-[0.9] mb-2">
+                                    <h1 className="text-page-title mb-2">
                                         <span className="text-foreground">{t('common.dashboard')}</span>
                                         <span className="text-blue-600 dark:text-banana">.</span>
                                     </h1>
                                 </motion.div>
-                                <p className="text-sm sm:text-base font-medium text-muted-foreground/80 leading-relaxed max-w-xl">
+                                <p className="text-body-primary text-muted-foreground/80 leading-relaxed max-w-xl">
                                     {t('dashboard.welcome')}, <span className="text-foreground font-bold">{user.firstName}</span>
                                 </p>
                             </div>
@@ -99,7 +99,7 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                             {t('dashboard.total_contributions') || 'Savings'}
                         </div>
                         <div className="flex items-center gap-3 relative z-10">
-                            <p className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
+                            <p className="text-stat-value text-foreground">
                                 {isContributionsVisible ? formatCurrency(stats.totalContributions) : '••••••'}
                             </p>
                             <button
@@ -117,7 +117,7 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                             <Users className="w-3.5 h-3.5 text-blue-500" />
                             {t('common.groups') || 'Network'}
                         </div>
-                        <p className="text-xl sm:text-2xl font-black text-blue-600 dark:text-blue-400 tracking-tight">{stats.totalGroups}</p>
+                        <p className="text-stat-value text-blue-600 dark:text-blue-400">{stats.totalGroups}</p>
                     </div>
 
                     {/* Recent Activity Count */}
@@ -126,7 +126,7 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                             <Zap className="w-3.5 h-3.5 text-purple-500" />
                             {t('dashboard.recent_activity')}
                         </div>
-                        <p className="text-xl sm:text-2xl font-black text-purple-500 tracking-tight">{recentActivityCount}</p>
+                        <p className="text-stat-value text-purple-500">{recentActivityCount}</p>
                     </div>
 
                     {/* Pending Approvals - Conditional */}
@@ -138,7 +138,7 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                                     {t('dashboard.pending_approvals')}
                                 </div>
                                 <div className="flex items-end justify-between">
-                                    <p className={cn("text-xl sm:text-2xl font-black tracking-tight", pendingApprovalsCount > 0 ? "text-red-500" : "text-muted-foreground/50")}>
+                                    <p className={cn("text-stat-value", pendingApprovalsCount > 0 ? "text-red-500" : "text-muted-foreground/50")}>
                                         {pendingApprovalsCount}
                                     </p>
                                     {pendingApprovalsCount > 0 && <ArrowRight className="w-3.5 h-3.5 text-red-500 relative bottom-1" />}

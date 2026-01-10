@@ -77,8 +77,8 @@ export function GroupsContent({ userGroups }: GroupsContentProps) {
                                     <Plus className="w-8 h-8 text-blue-600 dark:text-banana" />
                                 </div>
                                 <div className="relative z-10 space-y-2">
-                                    <h3 className="text-xl font-black text-foreground tracking-tight">{t('groups.create_group')}</h3>
-                                    <p className="text-sm font-medium text-muted-foreground opacity-70 leading-relaxed max-w-[200px] mx-auto">
+                                    <h3 className="text-stat-value text-foreground">{t('groups.create_group')}</h3>
+                                    <p className="text-body-primary text-muted-foreground opacity-70 leading-relaxed max-w-[200px] mx-auto">
                                         {t('groups.create_group_desc')}
                                     </p>
                                 </div>

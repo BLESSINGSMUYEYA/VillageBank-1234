@@ -20,11 +20,11 @@ export function ActivityFeed({ recentActivity }: ActivityFeedProps) {
         <section className="space-y-4">
             <motion.div variants={itemFadeIn}>
                 <div className="flex items-center justify-between px-1 mb-2">
-                    <h3 className="text-lg font-black uppercase tracking-tight text-muted-foreground flex items-center gap-2">
+                    <h3 className="text-section-title flex items-center gap-2 uppercase text-muted-foreground">
                         <Zap className="w-4 h-4 text-purple-500" />
                         {t('dashboard.recent_activity')}
                     </h3>
-                    <Link href="/activity" className="text-xs font-bold text-blue-600 hover:text-blue-500">View All</Link>
+                    <Link href="/activity" className="text-micro font-bold text-blue-600 hover:text-blue-500">View All</Link>
                 </div>
 
                 <GlassCard className="flex flex-col p-5 sm:p-6 overflow-hidden" hover={false}>
@@ -50,18 +50,18 @@ export function ActivityFeed({ recentActivity }: ActivityFeedProps) {
 
                                         <div className="flex-1 min-w-0 flex items-center justify-between">
                                             <div>
-                                                <p className="text-sm font-bold text-foreground truncate">{activity.description}</p>
-                                                <p className="text-[10px] font-medium text-muted-foreground opacity-60">
+                                                <p className="text-body-primary font-bold text-foreground truncate">{activity.description}</p>
+                                                <p className="text-micro font-medium text-muted-foreground opacity-60">
                                                     {activity.groupTag ? `@${activity.groupTag}` : activity.groupName}
                                                 </p>
                                             </div>
                                             <div className="text-right">
                                                 {activity.amount && (
-                                                    <p className="text-sm font-black text-foreground mb-0.5">
+                                                    <p className="text-body-primary font-black text-foreground mb-0.5">
                                                         {formatCurrency(activity.amount)}
                                                     </p>
                                                 )}
-                                                <p className="text-[10px] font-medium text-muted-foreground/40">{new Date(activity.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</p>
+                                                <p className="text-micro font-medium text-muted-foreground/40">{new Date(activity.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</p>
                                             </div>
                                         </div>
                                     </motion.div>

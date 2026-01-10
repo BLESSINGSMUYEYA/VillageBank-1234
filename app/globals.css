@@ -81,6 +81,47 @@
   --color-info-foreground: var(--info-foreground);
 }
 
+@layer utilities {
+
+  /* Unified Typography System */
+  .text-page-title {
+    @apply text-3xl sm:text-4xl font-black tracking-tighter leading-[0.9];
+  }
+
+  .text-section-title {
+    @apply text-lg sm:text-xl font-black tracking-tight;
+  }
+
+  .text-card-title {
+    @apply text-base sm:text-lg font-bold tracking-tight;
+  }
+
+  /* Large Stat Values */
+  .text-stat-value {
+    @apply text-xl sm:text-2xl font-black tracking-tight;
+  }
+
+  /* Body Text */
+  .text-body-primary {
+    @apply text-sm sm:text-base font-medium;
+  }
+
+  .text-body-secondary {
+    @apply text-xs font-medium text-muted-foreground;
+  }
+
+  /* Micro / Metadata */
+  .text-micro {
+    @apply text-[10px] sm:text-xs font-medium;
+  }
+
+  /* Tab / Label Overrides */
+  .text-tab-label {
+    @apply text-[10px] font-black uppercase tracking-widest;
+  }
+}
+
+
 :root {
   --radius: 0.625rem;
   /* Navy Blue Theme - Light Mode */

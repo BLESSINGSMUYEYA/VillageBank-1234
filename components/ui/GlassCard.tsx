@@ -32,7 +32,7 @@ export function GlassCard({
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            whileHover={hover ? { y: -4, transition: { duration: 0.2 } } : undefined}
+            whileHover={hover ? { y: -4, scale: 1.01, transition: { duration: 0.2 } } : undefined}
             className={cn(
                 "relative overflow-hidden rounded-[32px] border border-white/20 dark:border-white/10 shadow-2xl transition-all duration-300",
                 "bg-white/60 dark:bg-slate-900/40",

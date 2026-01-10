@@ -152,6 +152,45 @@ export async function getRecentActivity(): Promise<RecentActivity[]> {
     }))
 }
 
+export async function getAllActivities(): Promise<RecentActivity[]> {
+    const session = await getSession()
+    const userId = session?.userId
+
+    if (!userId) {
+        throw new Error('Unauthorized')
+    }
+
+    // Get user's full activity history
+    const activities = await prisma.activity.findMany({
+        where: {
+            userId: userId as string,
+        },
+        include: {
+            group: {
+                select: {
+                    name: true,
+                    ubankTag: true,
+                },
+            },
+        },
+        orderBy: {
+            createdAt: 'desc',
+        },
+        take: 50, // Limit to last 50 for now
+    })
+
+    // Format activities
+    return activities.map(activity => ({
+        id: activity.id,
+        type: activity.actionType,
+        description: activity.description,
+        amount: (activity.metadata as any)?.amount as number | undefined,
+        createdAt: activity.createdAt,
+        groupName: activity.group?.name || 'Unknown Group',
+        groupTag: activity.group?.ubankTag || undefined,
+    }))
+}
+
 export async function getChartData(): Promise<ChartData> {
     const session = await getSession()
     const userId = session?.userId

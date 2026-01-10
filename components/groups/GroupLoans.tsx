@@ -90,14 +90,15 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
               Pending Request
             </p>
             <p className="text-2xl font-black text-foreground tracking-tighter">{pendingLoans.length}</p>
-            <p className="text-[9px] font-bold text-muted-foreground opacity-60">{formatCurrency(pendingLoans.reduce((sum, l) => sum + l.amountRequested, 0))}</p>
+            <p className="text-stat-value text-foreground tracking-tighter">{pendingLoans.length}</p>
+            <p className="text-micro font-bold text-muted-foreground opacity-60">{formatCurrency(pendingLoans.reduce((sum, l) => sum + l.amountRequested, 0))}</p>
           </div>
         </div>
 
         {/* Simplified Action Header */}
         <motion.div variants={itemFadeIn} className="flex flex-col sm:flex-row items-center justify-between gap-3 pb-2">
           <div className="text-center sm:text-left">
-            <h2 className="text-lg font-black text-foreground tracking-tight">Loan Lifecycle</h2>
+            <h2 className="text-section-title text-foreground tracking-tight">Loan Lifecycle</h2>
             <p className="text-xs font-bold text-muted-foreground opacity-70">Management and history of group credit</p>
           </div>
           <Link href={`/loans/new?groupId=${groupId}`} className="w-full sm:w-auto">
@@ -113,7 +114,7 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
           <motion.div variants={fadeIn} className="space-y-4">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-orange-600 dark:text-banana">
+              <h3 className="zen-label text-orange-600 dark:text-banana">
                 Urgent Approvals Required
               </h3>
             </div>
@@ -127,11 +128,11 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
                           <User className="w-5 h-5 text-orange-600" />
                         </div>
                         <div>
-                          <p className="text-sm font-black">{loan.user.firstName} {loan.user.lastName}</p>
-                          <p className="text-[10px] font-bold text-muted-foreground uppercase">{new Date(loan.createdAt).toLocaleDateString()}</p>
+                          <p className="text-body-primary font-black">{loan.user.firstName} {loan.user.lastName}</p>
+                          <p className="text-micro font-bold text-muted-foreground uppercase">{new Date(loan.createdAt).toLocaleDateString()}</p>
                         </div>
                       </div>
-                      <p className="text-lg font-black text-orange-600 dark:text-banana">{formatCurrency(loan.amountRequested)}</p>
+                      <p className="text-stat-value text-orange-600 dark:text-banana">{formatCurrency(loan.amountRequested)}</p>
                     </div>
                     <div className="flex gap-2">
                       <Button
@@ -180,8 +181,8 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
                         <Landmark className="w-5 h-5" />
                       </div>
                       <div>
-                        <h4 className="font-black text-sm text-foreground">{loan.user.firstName} {loan.user.lastName}</h4>
-                        <div className="flex items-center gap-3 text-[9px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">
+                        <h4 className="text-body-primary font-black text-foreground">{loan.user.firstName} {loan.user.lastName}</h4>
+                        <div className="flex items-center gap-3 text-micro font-bold text-muted-foreground uppercase tracking-widest mt-0.5">
                           <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {new Date(loan.createdAt).toLocaleDateString()}</span>
                           <span className="flex items-center gap-1"><Percent className="w-3 h-3" /> {loan.interestRate}% Interest</span>
                         </div>
@@ -190,12 +191,12 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
 
                     <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-6">
                       <div className="text-right">
-                        <p className="text-sm font-black text-foreground">{formatCurrency(loan.amountApproved || loan.amountRequested)}</p>
-                        <p className="text-[9px] font-bold text-muted-foreground uppercase mt-0">{loan.repaymentPeriodMonths} Month Term</p>
+                        <p className="text-body-primary font-black text-foreground">{formatCurrency(loan.amountApproved || loan.amountRequested)}</p>
+                        <p className="text-micro font-bold text-muted-foreground uppercase mt-0">{loan.repaymentPeriodMonths} Month Term</p>
                       </div>
                       <Badge
                         className={cn(
-                          "font-black uppercase tracking-widest text-[8px] px-2 py-0.5 rounded-lg border",
+                          "text-tab-label px-2 py-0.5 rounded-lg border",
                           loan.status === 'COMPLETED' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' :
                             loan.status === 'ACTIVE' ? 'bg-blue-600/10 text-blue-600 border-blue-600/20' :
                               'bg-slate-500/10 text-slate-500 border-slate-500/20'
@@ -212,7 +213,7 @@ export default function GroupLoans({ loans, groupId, currentUserRole }: GroupLoa
                 <div className="w-20 h-20 bg-muted/20 rounded-full flex items-center justify-center mb-6 mx-auto">
                   <Landmark className="w-10 h-10 text-muted-foreground/30" />
                 </div>
-                <p className="text-lg font-black text-muted-foreground mb-8">No group financial data yet.</p>
+                <p className="text-section-title text-muted-foreground mb-8">No group financial data yet.</p>
                 <Link href={`/loans/new?groupId=${groupId}`}>
                   <Button size="xl" className="bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl px-10 shadow-xl shadow-blue-500/20 h-14">
                     Request Initial Loan
