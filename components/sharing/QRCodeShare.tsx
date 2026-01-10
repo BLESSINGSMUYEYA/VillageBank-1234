@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Copy, Download, Share2, Users, Clock, Shield, QrCode } from 'lucide-react'
+import QRCodeLib from 'qrcode'
 import { InlineLogoLoader } from '@/components/ui/LogoLoader'
 import { toast } from 'sonner'
 import { GlassCard } from '@/components/ui/GlassCard'
@@ -29,6 +30,70 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
   const [customMessage, setCustomMessage] = useState('')
   const { t } = useLanguage()
 
+  // Function to generate a high-res branded QR code data URL
+  const generateHighResQR = async (text: string): Promise<string> => {
+    try {
+      // 1. Generate base QR code to canvas
+      const canvas = document.createElement('canvas')
+      await QRCodeLib.toCanvas(canvas, text, {
+        errorCorrectionLevel: 'H', // High error correction to support logo overlay
+        margin: 1,
+        width: 1000,
+        color: {
+          dark: '#000000',
+          light: '#00000000' // Transparent background for mask
+        }
+      })
+
+      const size = canvas.width
+      const ctx = canvas.getContext('2d')
+      if (!ctx) throw new Error('Could not get canvas context')
+
+      // 2. Create Gradient for QR Modules
+      // We want to recolor the black pixels to a brand gradient
+      const gradient = ctx.createLinearGradient(0, 0, size, size)
+      gradient.addColorStop(0, '#2563eb') // blue-600
+      gradient.addColorStop(1, '#ca8a04') // yellow-600 (banana-dark)
+
+      // Use composite operation to colorize
+      ctx.globalCompositeOperation = 'source-in'
+      ctx.fillStyle = gradient
+      ctx.fillRect(0, 0, size, size)
+      ctx.globalCompositeOperation = 'source-over'
+
+      // 3. Overlay Logo in Center
+      const logoImg = new Image()
+      logoImg.crossOrigin = 'anonymous'
+      logoImg.src = '/ubank-logo.png'
+
+      await new Promise((resolve, reject) => {
+        logoImg.onload = resolve
+        logoImg.onerror = reject
+      })
+
+      // Draw white circular background for logo
+      const logoSize = size * 0.22 // 22% of QR size
+      const center = size / 2
+
+      ctx.beginPath()
+      ctx.arc(center, center, (logoSize / 2) + 20, 0, Math.PI * 2)
+      ctx.fillStyle = '#ffffff'
+      ctx.fill()
+      ctx.shadowColor = 'rgba(0,0,0,0.1)'
+      ctx.shadowBlur = 20
+      ctx.stroke()
+
+      // Draw Logo
+      ctx.shadowBlur = 0
+      ctx.drawImage(logoImg, center - logoSize / 2, center - logoSize / 2, logoSize, logoSize)
+
+      return canvas.toDataURL('image/png')
+    } catch (err) {
+      console.error('Failed to generate high res QR', err)
+      return ''
+    }
+  }
+
   const generateQRCode = async () => {
     setLoading(true)
     try {
@@ -48,7 +113,13 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
 
       const data = await response.json()
       if (response.ok) {
-        setShareData(data)
+        // Generate client-side branded QR
+        const brandedQRCode = await generateHighResQR(data.shareUrl)
+
+        setShareData({
+          ...data,
+          qrCode: brandedQRCode || data.qrCode // Fallback to server QR if client fails
+        })
         toast.success('Secure entry key generated!')
       } else {
         toast.error(data.error || 'Failed to generate access key')
@@ -72,6 +143,9 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
       const img = new Image()
       img.crossOrigin = 'anonymous'
 
+      // We don't need a separate logo load here because it's already in the QR data URL
+      // but we do need it for the Header if we want it there too.
+      // Let's keep the header logo separate for the card design.
       const logoImg = new Image()
       logoImg.crossOrigin = 'anonymous'
 
@@ -89,7 +163,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
       logoImg.onerror = () => reject(new Error('Failed to load logo image'))
 
       img.src = qrDataUrl
-      logoImg.src = '/ubank-logo.png' // Utilizing the logo from public folder
+      logoImg.src = '/ubank-logo.png'
 
       const drawCanvas = () => {
         const canvas = document.createElement('canvas')
@@ -99,76 +173,131 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
           return
         }
 
-        const width = 1080
-        const padding = 80
-        const qrSize = width - (padding * 2)
-        const headerHeight = 200 // Increased for logo
-        const footerHeight = 400
-        const height = qrSize + headerHeight + footerHeight
+        const width = 1200
+        const height = 1600 // Taller format
 
         canvas.width = width
         canvas.height = height
 
-        const gradient = ctx.createLinearGradient(0, 0, 0, height)
-        gradient.addColorStop(0, '#ffffff')
-        gradient.addColorStop(1, '#f8fafc')
-        ctx.fillStyle = gradient
+        // 1. Premium Mesh Background
+        // Create a rich gradient background
+        const bgGradient = ctx.createLinearGradient(0, 0, width, height)
+        bgGradient.addColorStop(0, '#f8fafc')   // Slate-50
+        bgGradient.addColorStop(0.5, '#f1f5f9') // Slate-100
+        bgGradient.addColorStop(1, '#e2e8f0')   // Slate-200
+        ctx.fillStyle = bgGradient
         ctx.fillRect(0, 0, width, height)
 
-        // Draw Logo
-        const logoSize = 80
-        const logoX = (width - logoSize) / 2
-        const logoY = padding - 20
-        ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize)
-
-        ctx.fillStyle = '#1e293b'
-        ctx.font = 'bold 52px Inter, system-ui, sans-serif'
-        ctx.textAlign = 'center'
-        // Updated text to "uBank" and positioned below logo
-        ctx.fillText('uBank', width / 2, logoY + logoSize + 50)
-
-        // QR Code Container
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.1)'
-        ctx.shadowBlur = 40
-        ctx.shadowOffsetY = 10
-        ctx.fillStyle = '#ffffff'
-        const radius = 40
+        // Add subtle decorative circles
+        ctx.fillStyle = 'rgba(59, 130, 246, 0.03)' // Very faint blue
         ctx.beginPath()
-        ctx.roundRect(padding - 20, headerHeight + padding - 20, qrSize + 40, qrSize + 40, radius)
+        ctx.arc(width, 0, 600, 0, Math.PI * 2)
         ctx.fill()
-        ctx.shadowBlur = 0
 
-        ctx.drawImage(img, padding, headerHeight + padding, qrSize, qrSize)
+        ctx.fillStyle = 'rgba(234, 179, 8, 0.03)' // Very faint banana
+        ctx.beginPath()
+        ctx.arc(0, height, 500, 0, Math.PI * 2)
+        ctx.fill()
 
-        const footerY = headerHeight + qrSize + padding + 60
-        ctx.fillStyle = '#2563eb'
-        ctx.font = 'bold 48px Inter, system-ui, sans-serif'
-        ctx.fillText(groupName, width / 2, footerY)
+        // 2. Glass Card Container
+        const cardWidth = 900
+        const cardHeight = 1200
+        const cardX = (width - cardWidth) / 2
+        const cardY = (height - cardHeight) / 2
+        const cardRadius = 60
 
+        ctx.save()
+        // Card Shadow
+        ctx.shadowColor = 'rgba(15, 23, 42, 0.15)'
+        ctx.shadowBlur = 60
+        ctx.shadowOffsetY = 30
+
+        // Card Background (Glass effect simulation)
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)'
+        ctx.beginPath()
+        ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius)
+        ctx.fill()
+        ctx.restore()
+
+        // Card Border
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'
+        ctx.lineWidth = 2
+        ctx.stroke()
+
+        // 3. Header Content
+        const contentCenterX = width / 2
+        let currentY = cardY + 120
+
+        // Header Logo
+        const headerLogoSize = 100
+        ctx.drawImage(logoImg, contentCenterX - (headerLogoSize / 2), currentY, headerLogoSize, headerLogoSize)
+        currentY += headerLogoSize + 40
+
+        // App Name
+        ctx.fillStyle = '#1e293b' // Slate-800
+        ctx.font = '900 48px Inter, system-ui, sans-serif'
+        ctx.textAlign = 'center'
+        ctx.fillText('uBANK', contentCenterX, currentY)
+
+        // Tagline - Golden
+        currentY += 50
+        ctx.fillStyle = '#ca8a04' // Yellow-600
+        ctx.font = '800 24px Inter, system-ui, sans-serif'
+        ctx.letterSpacing = '0.3rem'
+        const tagline = 'SECURE GROUP ACCESS'
+        ctx.fillText(tagline, contentCenterX, currentY)
+
+        // 4. QR Code
+        currentY += 80
+        const qrSize = 600
+
+        // QR Container
+        const qrContainerSize = qrSize + 60
+        ctx.fillStyle = '#ffffff'
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.05)'
+        ctx.shadowBlur = 20
+        ctx.shadowOffsetY = 10
+        ctx.beginPath()
+        ctx.roundRect(contentCenterX - (qrContainerSize / 2), currentY - 30, qrContainerSize, qrContainerSize, 40)
+        ctx.fill()
+        ctx.shadowColor = 'transparent'
+
+        // Draw the Branded QR
+        ctx.drawImage(img, contentCenterX - (qrSize / 2), currentY, qrSize, qrSize)
+
+        // 5. Footer Details
+        currentY += qrSize + 100
+
+        // Group Name
+        ctx.fillStyle = '#1e293b'
+        ctx.font = 'bold 56px Inter, system-ui, sans-serif'
+        ctx.fillText(groupName, contentCenterX, currentY)
+
+        // Custom Message
         if (customMsg) {
-          ctx.fillStyle = '#64748b'
-          ctx.font = 'italic 36px Inter, system-ui, sans-serif'
-          ctx.fillText(`"${customMsg}"`, width / 2, footerY + 70)
+          currentY += 70
+          ctx.fillStyle = '#64748b' // Slate-500
+          ctx.font = 'italic 32px Inter, system-ui, sans-serif'
+          ctx.fillText(`"${customMsg}"`, contentCenterX, currentY)
         }
 
-        const linkY = footerY + (customMsg ? 160 : 100)
+        // Link Badge
+        currentY = cardY + cardHeight - 120
         const linkText = shareUrl.replace(/^https?:\/\//, '')
-        ctx.font = '500 32px monospace'
-        const metrics = ctx.measureText(linkText)
-        const linkWidth = metrics.width + 60
+        ctx.font = '600 30px monospace' // Monospace for URL
+        const textMetrics = ctx.measureText(linkText)
+        const badgeWidth = textMetrics.width + 100
+        const badgeHeight = 80
 
-        ctx.fillStyle = '#f1f5f9'
+        ctx.fillStyle = '#f1f5f9' // Slate-100
         ctx.beginPath()
-        ctx.roundRect((width - linkWidth) / 2, linkY - 40, linkWidth, 70, 15)
+        ctx.roundRect(contentCenterX - (badgeWidth / 2), currentY - (badgeHeight / 2), badgeWidth, badgeHeight, 999)
         ctx.fill()
 
-        ctx.fillStyle = '#334155'
-        ctx.fillText(linkText, width / 2, linkY + 8)
+        ctx.fillStyle = '#3b82f6' // Blue-500
+        ctx.fillText(linkText, contentCenterX, currentY + 10)
 
-        ctx.fillStyle = '#94a3b8'
-        ctx.font = 'bold 28px Inter, system-ui, sans-serif'
-        ctx.fillText('SCAN OR CLICK TO JOIN', width / 2, height - 60)
-
+        // Generate Blob
         canvas.toBlob((blob) => {
           if (blob) {
             resolve(new File([blob], 'ubank-invite.png', { type: 'image/png' }))
