@@ -63,4 +63,34 @@ function TabsContent({
   )
 }
 
-export { Tabs, TabsList, TabsTrigger, TabsContent }
+const ZenTabsList = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.List>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.List
+    ref={ref}
+    className={cn(
+      "inline-flex h-auto items-center justify-start gap-6 bg-transparent p-0 text-muted-foreground",
+      className
+    )}
+    {...props}
+  />
+))
+ZenTabsList.displayName = TabsPrimitive.List.displayName
+
+const ZenTabsTrigger = React.forwardRef<
+  React.ElementRef<typeof TabsPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
+>(({ className, ...props }, ref) => (
+  <TabsPrimitive.Trigger
+    ref={ref}
+    className={cn(
+      "group inline-flex items-center justify-center whitespace-nowrap border-b-2 border-transparent px-0 pb-3 text-xs font-black tracking-widest uppercase transition-all hover:text-foreground data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:text-blue-600 data-[state=active]:shadow-none dark:data-[state=active]:border-banana dark:data-[state=active]:text-banana",
+      className
+    )}
+    {...props}
+  />
+))
+ZenTabsTrigger.displayName = TabsPrimitive.Trigger.displayName
+
+export { Tabs, TabsList, TabsTrigger, TabsContent, ZenTabsList, ZenTabsTrigger }

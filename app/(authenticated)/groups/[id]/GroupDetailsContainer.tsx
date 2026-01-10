@@ -1,6 +1,6 @@
 'use client'
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tabs, TabsContent, TabsList, TabsTrigger, ZenTabsList, ZenTabsTrigger } from '@/components/ui/tabs'
 import GroupMembersList from '@/components/groups/GroupMembersList'
 import GroupContributions from '@/components/groups/GroupContributions'
 import GroupLoans from '@/components/groups/GroupLoans'
@@ -31,41 +31,29 @@ export default function GroupDetailsContainer({
     return (
         <Tabs defaultValue="standings" className="space-y-6 sm:space-y-8">
             <div className="flex items-center justify-between gap-4 overflow-x-auto no-scrollbar pb-2">
-                <TabsList className="bg-transparent p-0 h-auto gap-6 shrink-0">
-                    <TabsTrigger
-                        value="standings"
-                        className="rounded-none px-0 pb-3 h-auto text-tab-label text-muted-foreground data-[state=active]:text-blue-600 dark:data-[state=active]:text-banana data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-blue-600 dark:data-[state=active]:border-banana transition-all hover:text-foreground"
-                    >
+                <ZenTabsList>
+                    <ZenTabsTrigger value="standings">
                         Standings
                         <span className="ml-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-200 py-0.5 px-2 rounded-full text-[9px] font-black">
                             {group.members.filter((m: any) => m.status === 'ACTIVE').length}
                         </span>
-                    </TabsTrigger>
-                    <TabsTrigger
-                        value="ledger"
-                        className="rounded-none px-0 pb-3 h-auto text-tab-label text-muted-foreground data-[state=active]:text-blue-600 dark:data-[state=active]:text-banana data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-blue-600 dark:data-[state=active]:border-banana transition-all hover:text-foreground"
-                    >
+                    </ZenTabsTrigger>
+                    <ZenTabsTrigger value="ledger">
                         Ledger
-                    </TabsTrigger>
-                    <TabsTrigger
-                        value="activities"
-                        className="rounded-none px-0 pb-3 h-auto text-tab-label text-muted-foreground data-[state=active]:text-blue-600 dark:data-[state=active]:text-banana data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-blue-600 dark:data-[state=active]:border-banana transition-all hover:text-foreground"
-                    >
+                    </ZenTabsTrigger>
+                    <ZenTabsTrigger value="activities">
                         Activity
-                    </TabsTrigger>
-                </TabsList>
+                    </ZenTabsTrigger>
+                </ZenTabsList>
 
                 {isAdmin && (
                     <div className="flex items-center gap-2 shrink-0">
-                        <TabsList className="bg-transparent p-0 h-auto gap-2">
-                            <TabsTrigger
-                                value="manage"
-                                className="rounded-none px-0 pb-3 h-auto text-tab-label text-muted-foreground data-[state=active]:text-indigo-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-indigo-600 transition-all hover:text-foreground"
-                            >
+                        <ZenTabsList className="gap-2">
+                            <ZenTabsTrigger value="manage" className="data-[state=active]:text-indigo-600 data-[state=active]:border-indigo-600">
                                 <Share2 className="w-4 h-4 mr-2" />
                                 Invite
-                            </TabsTrigger>
-                        </TabsList>
+                            </ZenTabsTrigger>
+                        </ZenTabsList>
                     </div>
                 )}
             </div>

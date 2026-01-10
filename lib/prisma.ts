@@ -1,7 +1,8 @@
 import { PrismaClient, Prisma } from '@prisma/client'
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
+// Prevent multiple instances of Prisma Client in development
+declare global {
+  var prismaGlobal: undefined | ReturnType<typeof prismaClientSingleton>
 }
 
 // Ensure the DATABASE_URL is explicitly checked

@@ -103,9 +103,9 @@ export function ExcelImportModal({ groupId }: ExcelImportModalProps) {
     return (
         <Dialog open={isOpen} onOpenChange={(open) => { setIsOpen(open); if (!open) resetState(); }}>
             <DialogTrigger asChild>
-                <Button variant="outline" className="gap-2">
+                <Button variant="outline" className="gap-2 px-3 sm:px-4">
                     <FileSpreadsheet className="h-4 w-4" />
-                    Import Excel
+                    <span className="hidden sm:inline">Import Excel</span>
                 </Button>
             </DialogTrigger>
             <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -118,7 +118,7 @@ export function ExcelImportModal({ groupId }: ExcelImportModalProps) {
 
                 {step === 'upload' ? (
                     <div className="space-y-6 py-4">
-                        <div className="flex flex-col items-center justify-center border-2 border-dashed border-muted-foreground/25 rounded-lg p-10 hover:bg-muted/50 transition-colors">
+                        <div className="flex flex-col items-center justify-center border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 sm:p-10 hover:bg-muted/50 transition-colors">
                             <Upload className="h-10 w-10 text-muted-foreground mb-4" />
                             <div className="text-center space-y-2">
                                 <p className="text-sm font-medium">Click to upload or drag and drop</p>
