@@ -1,17 +1,15 @@
-'use client'
-
+import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger, ZenTabsList, ZenTabsTrigger } from '@/components/ui/tabs'
 import GroupMembersList from '@/components/groups/GroupMembersList'
-import GroupContributions from '@/components/groups/GroupContributions'
-import GroupLoans from '@/components/groups/GroupLoans'
+
 import GroupActivities from '@/components/groups/GroupActivities'
+import GroupFinancials from '@/components/groups/GroupFinancials'
 import { QRCodeShare } from '@/components/sharing/QRCodeShare'
 import { motion } from 'framer-motion'
-
 import { itemFadeIn } from '@/lib/motions'
-import { Share2, Users, Wallet, Activity } from 'lucide-react'
+import { Share2, Users, Activity, Search } from 'lucide-react'
 import { GlassCard } from '@/components/ui/GlassCard'
-import { ExcelImportModal } from '@/components/ExcelImportModal'
+import { cn } from '@/lib/utils'
 
 interface GroupDetailsContainerProps {
     group: any
@@ -48,12 +46,13 @@ export default function GroupDetailsContainer({
 
                 {isAdmin && (
                     <div className="flex items-center gap-2 shrink-0">
-                        <ZenTabsList className="gap-2">
-                            <ZenTabsTrigger value="manage" className="data-[state=active]:text-indigo-600 data-[state=active]:border-indigo-600">
-                                <Share2 className="w-4 h-4 mr-2" />
-                                Invite
-                            </ZenTabsTrigger>
-                        </ZenTabsList>
+                        {/* Header Action: Invite / Manage */}
+                        <a href={`/groups/${group.id}/settings`}>
+                            <GlassCard className="flex items-center gap-2 px-3 py-1.5 cursor-pointer hover:bg-white/20" hover={true}>
+                                <Share2 className="w-4 h-4 text-indigo-500" />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-foreground">Manage</span>
+                            </GlassCard>
+                        </a>
                     </div>
                 )}
             </div>
@@ -91,54 +90,12 @@ export default function GroupDetailsContainer({
                 </TabsContent>
 
                 <TabsContent value="ledger" className="mt-0 border-none outline-none focus-visible:ring-0 space-y-8">
-                    <GlassCard className="flex flex-col p-0 overflow-hidden" hover={false}>
-                        <div className="p-5 sm:p-7 border-b border-border/50 flex items-center justify-between bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2.5 bg-emerald-500/10 rounded-xl">
-                                    <Wallet className="w-5 h-5 text-emerald-500" />
-                                </div>
-                                <div>
-                                    <h2 className="text-card-title text-foreground">
-                                        Financial Ledger
-                                    </h2>
-                                    <p className="text-body-secondary">
-                                        Contributions and credit records
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                {(isAdmin || isTreasurer) && (
-                                    <ExcelImportModal groupId={group.id} />
-                                )}
-                                <div className="zen-label text-muted-foreground">
-                                    Synced
-                                </div>
-                            </div>
-                        </div>
-                        <div className="p-2">
-                            <Tabs defaultValue="contributions_sub" className="w-full">
-                                <TabsList className="bg-slate-100/50 dark:bg-slate-800/50 p-1 rounded-2xl mb-4 ml-4 mt-4">
-                                    <TabsTrigger value="contributions_sub" className="rounded-xl px-6 text-tab-label">Contributions</TabsTrigger>
-                                    <TabsTrigger value="loans_sub" className="rounded-xl px-6 text-tab-label">Loans</TabsTrigger>
-                                </TabsList>
-                                <TabsContent value="contributions_sub" className="m-0">
-                                    <GroupContributions
-                                        contributions={group.contributions}
-                                        groupId={group.id}
-                                        currentUserRole={currentUserMember?.role}
-                                    />
-                                </TabsContent>
-                                <TabsContent value="loans_sub" className="m-0">
-                                    <GroupLoans
-                                        loans={group.loans}
-                                        groupId={group.id}
-                                        currentUserRole={currentUserMember?.role}
-                                        key={group.id}
-                                    />
-                                </TabsContent>
-                            </Tabs>
-                        </div>
-                    </GlassCard>
+                    <GroupFinancials
+                        contributions={group.contributions}
+                        loans={group.loans}
+                        groupId={group.id}
+                        currentUserRole={currentUserMember?.role}
+                    />
                 </TabsContent>
 
                 <TabsContent value="activities" className="mt-0 border-none outline-none focus-visible:ring-0">
@@ -169,39 +126,7 @@ export default function GroupDetailsContainer({
                     </GlassCard>
                 </TabsContent>
 
-                {isAdmin && (
-                    <TabsContent value="manage" className="mt-0 border-none outline-none focus-visible:ring-0">
-                        <GlassCard className="flex flex-col p-0 overflow-hidden" hover={false}>
-                            <div className="p-5 sm:p-7 border-b border-border/50 flex items-center justify-between bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2.5 bg-indigo-500/10 rounded-xl">
-                                        <Share2 className="w-5 h-5 text-indigo-500" />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-lg font-black text-foreground">
-                                            Manage Group
-                                        </h2>
-                                        <p className="text-xs font-medium text-muted-foreground">
-                                            Admin controls and sharing
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                                    Admin
-                                </div>
-                            </div>
-                            <div className="p-8 sm:p-16">
-                                <div className="max-w-md mx-auto">
-                                    <QRCodeShare
-                                        groupId={group.id}
-                                        groupName={group.name}
-                                        groupTag={group.ubankTag}
-                                    />
-                                </div>
-                            </div>
-                        </GlassCard>
-                    </TabsContent>
-                )}
+
             </motion.div>
         </Tabs>
     )

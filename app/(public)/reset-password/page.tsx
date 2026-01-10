@@ -16,6 +16,7 @@ import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 import { InlineLogoLoader } from '@/components/ui/LogoLoader';
+import { UBankLogo } from '@/components/ui/Logo';
 
 const resetSchema = z.object({
     password: z.string().min(6, 'Password must be at least 6 characters'),
@@ -115,7 +116,7 @@ function ResetPasswordForm() {
                                     id="password"
                                     type="password"
                                     {...register('password')}
-                                    className="rounded-xl bg-white/40 dark:bg-slate-900/40 border-none h-14 font-bold shadow-inner focus-visible:ring-blue-500/30 pl-12"
+                                    className="rounded-2xl bg-white/40 dark:bg-slate-900/40 border-none h-14 font-bold shadow-inner focus-visible:ring-blue-500/30 pl-12"
                                 />
                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/40" />
                             </div>
@@ -131,7 +132,7 @@ function ResetPasswordForm() {
                                     id="confirmPassword"
                                     type="password"
                                     {...register('confirmPassword')}
-                                    className="rounded-xl bg-white/40 dark:bg-slate-900/40 border-none h-14 font-bold shadow-inner focus-visible:ring-blue-500/30 pl-12"
+                                    className="rounded-2xl bg-white/40 dark:bg-slate-900/40 border-none h-14 font-bold shadow-inner focus-visible:ring-blue-500/30 pl-12"
                                 />
                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/40" />
                             </div>
@@ -179,8 +180,8 @@ export default function ResetPasswordPage() {
                 className="w-full max-w-md relative z-10"
             >
                 <motion.div variants={fadeIn} className="flex flex-col items-center mb-8">
-                    <div className="w-16 h-16 bg-blue-600 rounded-[1.5rem] flex items-center justify-center shadow-2xl mb-4">
-                        <Zap className="w-8 h-8 text-white" fill="currentColor" />
+                    <div className="w-16 h-16 bg-slate-900 dark:bg-white/10 rounded-2xl flex items-center justify-center shadow-2xl mb-4 border border-white/10">
+                        <UBankLogo className="w-10 h-10" />
                     </div>
                 </motion.div>
 

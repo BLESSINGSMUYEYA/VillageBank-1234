@@ -3,20 +3,17 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/GlassCard'
+import { ProgressRing } from '@/components/ui/ProgressRing'
 import { formatCurrency } from '@/lib/utils'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import {
     Users,
-    Wallet,
     Shield,
     ChevronRight,
     Settings,
-    Star,
-    TrendingUp,
-    Calendar
+    Activity
 } from 'lucide-react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
 interface GroupCardProps {
@@ -45,120 +42,115 @@ export function GroupCard({ membership }: GroupCardProps) {
             className="flex flex-col h-full overflow-hidden group border-white/20 dark:border-white/10"
             hover={true}
         >
-            {/* Top Branding & Header */}
-            <div className="relative p-5 sm:p-6 pb-2">
-                {/* Ambient background glow for the card head */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 dark:bg-blue-500/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-blue-600/20 transition-colors" />
+            <Link href={`/groups/${membership.groupId}`} className="flex flex-col h-full">
+                {/* Top Branding & Header */}
+                <div className="relative p-5 sm:p-6 flex-1">
+                    {/* Simplified Glow */}
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-blue-600/5 dark:bg-blue-500/5 rounded-full blur-2xl -mr-12 -mt-12" />
 
-                <div className="flex items-start justify-between relative z-10">
-                    <div className="flex items-center gap-4">
-                        <div className="relative">
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                                <span className="font-black text-white text-lg tracking-tighter">
-                                    {group.name.substring(0, 1).toUpperCase()}
-                                </span>
-                            </div>
-                            {membership.status === 'ACTIVE' && (
-                                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full border-4 border-white dark:border-slate-900 flex items-center justify-center">
-                                    <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+                    <div className="flex items-start justify-between relative z-10">
+                        <div className="flex items-center gap-4">
+                            <div className="relative">
+                                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-all duration-500">
+                                    <span className="font-black text-white text-lg tracking-tighter">
+                                        {group.name.substring(0, 1).toUpperCase()}
+                                    </span>
                                 </div>
-                            )}
-                        </div>
+                                {membership.status === 'ACTIVE' && (
+                                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-4 border-white dark:border-slate-900 flex items-center justify-center">
+                                        <div className="w-1.5 h-1.5 bg-white rounded-full" />
+                                    </div>
+                                )}
+                            </div>
 
-                        <div className="min-w-0">
-                            <h3 className="font-black text-lg text-foreground leading-tight group-hover:text-blue-600 dark:group-hover:text-banana transition-colors truncate pr-2">
-                                {group.name}
-                            </h3>
-                            <div className="flex items-center gap-2 mt-2">
-                                <Badge variant={membership.status === 'ACTIVE' ? 'success' : 'warning'} className="rounded-lg px-2 py-0 text-[10px] uppercase font-black tracking-widest">
-                                    {membership.status}
-                                </Badge>
-                                <span className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] flex items-center gap-1">
-                                    <Shield className="w-3 h-3" />
-                                    {membership.role}
-                                </span>
+                            <div className="min-w-0">
+                                <h3 className="font-black text-xl text-foreground leading-tight group-hover:text-blue-600 dark:group-hover:text-banana transition-colors truncate pr-2">
+                                    {group.name}
+                                </h3>
+                                <div className="flex items-center gap-3 mt-1.5">
+                                    <p className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] flex items-center gap-1">
+                                        <Shield className="w-3 h-3" />
+                                        {membership.role}
+                                    </p>
+                                    <span className="text-border/60">|</span>
+                                    <p className="text-[10px] font-bold text-muted-foreground flex items-center gap-1">
+                                        <Users className="w-3 h-3" />
+                                        {group._count?.members || 0} Members
+                                    </p>
+                                </div>
                             </div>
                         </div>
+
+                        {membership.role === 'ADMIN' && (
+                            <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                                <Link href={`/groups/${membership.groupId}/settings`}>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground/50 hover:text-blue-600 hover:bg-blue-500/10 transition-all">
+                                        <Settings className="w-4 h-4" />
+                                    </Button>
+                                </Link>
+                            </div>
+                        )}
                     </div>
 
-                    {membership.role === 'ADMIN' && (
-                        <Link href={`/groups/${membership.groupId}/settings`} onClick={(e) => e.stopPropagation()}>
-                            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-muted-foreground/50 hover:text-blue-600 hover:bg-blue-500/10 transition-all">
-                                <Settings className="w-4 h-4" />
-                            </Button>
-                        </Link>
-                    )}
-                </div>
-            </div>
-
-            {/* Stats Bento Grid */}
-            <div className="px-5 sm:px-6 space-y-3">
-                <div className="grid grid-cols-2 gap-2">
-                    <div className="bg-white/40 dark:bg-slate-950/40 rounded-2xl p-3 border border-white/50 dark:border-white/5 group-hover:border-blue-500/20 transition-colors">
-                        <div className="flex items-center gap-2 text-muted-foreground mb-2 opacity-60">
-                            <Users className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.15em]">{t('groups.members')}</span>
-                        </div>
-                        <div className="flex items-end gap-1">
-                            <p className="font-black text-xl text-foreground leading-none">
-                                {group._count?.members || 0}
+                    {/* Key Metric Highlight - Replaces Bento Grid */}
+                    <div className="mt-6 flex items-end justify-between border-t border-dashed border-border/50 pt-4">
+                        <div>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
+                                {t('dashboard.monthly_contribution')}
                             </p>
-                            <span className="text-[9px] font-bold text-muted-foreground pb-0.5">active</span>
-                        </div>
-                    </div>
-                    <div className="bg-white/40 dark:bg-slate-950/40 rounded-2xl p-3 border border-white/50 dark:border-white/5 group-hover:border-blue-500/20 transition-colors">
-                        <div className="flex items-center gap-2 text-muted-foreground mb-2 opacity-60">
-                            <TrendingUp className="w-3.5 h-3.5" />
-                            <span className="text-[9px] font-black uppercase tracking-[0.15em]">Growth</span>
-                        </div>
-                        <div className="flex items-end gap-1">
-                            <p className="font-black text-xl text-foreground leading-none">
-                                {group.maxLoanMultiplier}x
+                            <p className="text-xl font-black text-foreground">
+                                {formatCurrency(group.monthlyContribution)}
                             </p>
-                            <span className="text-[9px] font-bold text-emerald-500 pb-0.5">cap</span>
+                        </div>
+                        <div className="text-right">
+                            <span className={cn(
+                                "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide",
+                                membership.status === 'ACTIVE'
+                                    ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
+                                    : "bg-yellow-500/10 text-yellow-600 border border-yellow-500/20"
+                            )}>
+                                <Activity className="w-3 h-3" />
+                                {membership.status}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div className="mt-4 flex items-center justify-between border-t border-dashed border-border/50 pt-4">
+                        <div className="flex items-center gap-3">
+                            <div className="relative">
+                                <ProgressRing
+                                    radius={18}
+                                    stroke={3}
+                                    progress={65}
+                                    trackClassName="stroke-slate-200 dark:stroke-slate-800"
+                                    indicatorClassName="stroke-indigo-500"
+                                />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <span className="text-[8px] font-black text-indigo-500">65%</span>
+                                </div>
+                            </div>
+                            <div>
+                                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">
+                                    {t('groups.cycle_progress') || 'Cycle Progress'}
+                                </p>
+                                <p className="text-xs font-bold text-foreground">
+                                    12 Days Left
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Detailed Metadata Row */}
-                <div className="bg-blue-600/5 dark:bg-white/5 rounded-2xl p-3 border border-blue-500/10 dark:border-white/5">
-                    <div className="flex items-center justify-between mb-2 border-b border-blue-500/5 pb-2">
-                        <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                                <Wallet className="w-3 h-3 text-blue-600 dark:text-banana" />
-                            </div>
-                            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{t('dashboard.monthly_contribution')}</span>
-                        </div>
-                        <p className="font-black text-xs text-foreground">
-                            {formatCurrency(group.monthlyContribution)}
-                        </p>
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                                <Calendar className="w-3 h-3 text-blue-600 dark:text-banana" />
-                            </div>
-                            <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">{t('groups.cycle_duration')}</span>
-                        </div>
-                        <p className="font-black text-xs text-foreground">
-                            {t('groups.next_30_days')}
-                        </p>
+                {/* Streamlined Footer */}
+                <div className="px-5 py-3 bg-white/5 border-t border-white/5 flex items-center justify-between group-hover:bg-blue-500/5 transition-colors">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                        Tap to view details
+                    </span>
+                    <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all transform group-hover:translate-x-1">
+                        <ChevronRight className="w-4 h-4" />
                     </div>
                 </div>
-            </div>
-
-            {/* CTA / Action Area */}
-            <div className="p-5 sm:p-6 pt-4">
-                <Link href={`/groups/${membership.groupId}`} className="block">
-                    <Button
-                        variant="default"
-                        className="w-full h-11 rounded-xl font-black text-sm shadow-xl shadow-yellow-500/10 group-hover:scale-[1.02] active:scale-[0.98] transition-all group/btn"
-                    >
-                        {t('groups.view_dashboard')}
-                        <ChevronRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-                    </Button>
-                </Link>
-            </div>
+            </Link>
         </GlassCard>
     )
 }

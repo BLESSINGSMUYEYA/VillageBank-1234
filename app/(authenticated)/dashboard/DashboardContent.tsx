@@ -61,7 +61,7 @@ export function DashboardContent({
                 <ActivityFeed recentActivity={recentActivity} />
 
                 {/* 3. Workspace (Quick Actions) */}
-                <QuickActions />
+                <QuickActions pendingApprovals={pendingApprovals} user={user} />
 
             </div>
             {/* Password Verification Dialog */}

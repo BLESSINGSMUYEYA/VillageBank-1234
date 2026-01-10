@@ -5,13 +5,14 @@ import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Users, DollarSign, TrendingUp, Shield, Clock, Award, ArrowRight, Zap, Globe, Sparkles } from 'lucide-react'
+import { Users, DollarSign, TrendingUp, Shield, Clock, Award, ArrowRight, Zap, Globe, Sparkles, Menu } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { staggerContainer, itemFadeIn, fadeIn, hoverScale } from '@/lib/motions'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { cn } from '@/lib/utils'
 import { UBankLogo } from '@/components/ui/Logo'
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
 
 export default function Home() {
     // Client-side authentication check removed.
@@ -62,15 +63,17 @@ export default function Home() {
 
             <div className="relative z-10">
                 {/* Navbar */}
-                <header className="container mx-auto px-6 py-8 flex items-center justify-between">
+                <header className="container mx-auto px-6 py-8 flex items-center justify-between relative z-50">
                     <div className="flex items-center gap-3 group cursor-pointer">
-                        <div className="w-10 h-10 bg-slate-900 dark:bg-white/10 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform border border-white/5">
+                        <div className="w-10 h-10 bg-slate-900 dark:bg-white/10 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform border border-white/5">
                             <UBankLogo className="w-6 h-6" />
                         </div>
                         <span className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">
                             uBank
                         </span>
                     </div>
+
+                    {/* Desktop Nav */}
                     <div className="hidden md:flex items-center gap-8">
                         <nav className="flex items-center gap-6">
                             {['Ecosystem', 'Security', 'Features'].map((item) => (
@@ -80,10 +83,57 @@ export default function Home() {
                             ))}
                         </nav>
                         <Link href="/login">
-                            <Button className="bg-slate-950 dark:bg-white text-white dark:text-slate-950 font-black rounded-xl px-8 h-12 hover:scale-105 transition-all">
+                            <Button className="bg-slate-950 dark:bg-white text-white dark:text-slate-950 font-black rounded-2xl px-8 h-12 hover:scale-105 transition-all">
                                 {t('landing.launch_app')}
                             </Button>
                         </Link>
+                    </div>
+
+                    {/* Mobile Nav Toggle */}
+                    <div className="md:hidden">
+                        <Sheet>
+                            <SheetTrigger asChild>
+                                <Button variant="ghost" size="icon" className="rounded-xl">
+                                    <Menu className="w-6 h-6 text-slate-900 dark:text-white" />
+                                </Button>
+                            </SheetTrigger>
+                            <SheetContent side="right" className="w-[300px] border-l border-white/10 bg-slate-950/95 backdrop-blur-xl">
+                                <SheetTitle className="hidden">Mobile Navigation</SheetTitle>
+                                <div className="flex flex-col h-full pt-10">
+                                    <div className="flex items-center gap-3 mb-10 px-2">
+                                        <div className="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg border border-white/10">
+                                            <UBankLogo className="w-6 h-6 invert" />
+                                        </div>
+                                        <span className="text-2xl font-black text-white tracking-tighter">
+                                            uBank
+                                        </span>
+                                    </div>
+                                    <nav className="flex flex-col gap-4">
+                                        {['Ecosystem', 'Security', 'Features'].map((item) => (
+                                            <Link
+                                                key={item}
+                                                href="#"
+                                                className="px-4 py-3 text-sm font-black uppercase tracking-widest text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+                                            >
+                                                {t(`landing.${item.toLowerCase()}` as any) || item}
+                                            </Link>
+                                        ))}
+                                    </nav>
+                                    <div className="mt-auto pb-8 space-y-4">
+                                        <Link href="/login" className="block">
+                                            <Button className="w-full bg-blue-600 text-white font-black rounded-2xl h-14 hover:bg-blue-700 transition-all">
+                                                {t('landing.launch_app')}
+                                            </Button>
+                                        </Link>
+                                        <Link href="/register" className="block">
+                                            <Button variant="outline" className="w-full border-white/10 text-white hover:bg-white/5 font-black rounded-2xl h-14">
+                                                Create Account
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                </div>
+                            </SheetContent>
+                        </Sheet>
                     </div>
                 </header>
 
@@ -102,10 +152,20 @@ export default function Home() {
 
                         {/* Main Title */}
                         <motion.h1 variants={fadeIn} className="text-5xl md:text-7xl lg:text-8xl font-black text-slate-900 dark:text-white tracking-tighter leading-[0.9] max-w-5xl mx-auto">
-                            {t('landing.main_title').split(',')[0]}, <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-600 bg-300% animate-shimmer">
-                                {t('landing.main_title').split(',')[1] || ''}
-                            </span>
+                            {(() => {
+                                const title = t('landing.main_title');
+                                const hasComma = title.includes(',');
+                                const [first, ...rest] = hasComma ? title.split(',') : [title];
+                                const second = rest.join(',');
+                                return (
+                                    <>
+                                        {first}{hasComma ? ',' : ''} <br />
+                                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-600 bg-300% animate-shimmer">
+                                            {second}
+                                        </span>
+                                    </>
+                                );
+                            })()}
                         </motion.h1>
 
                         {/* Subtitle */}

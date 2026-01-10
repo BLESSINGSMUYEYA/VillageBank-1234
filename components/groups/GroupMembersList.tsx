@@ -30,9 +30,10 @@ interface GroupMembersListProps {
   groupId: string
   currentUserRole?: string
   currentUserId: string
+  searchTerm?: string
 }
 
-export default function GroupMembersList({ members, groupId, currentUserRole, currentUserId }: GroupMembersListProps) {
+export default function GroupMembersList({ members, groupId, currentUserRole, currentUserId, searchTerm = '' }: GroupMembersListProps) {
   const [loading, setLoading] = useState(false)
 
   const handleRoleChange = async (memberId: string, newRole: string) => {
@@ -85,18 +86,24 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
     }
   }
 
-  const activeMembers = members.filter(m => m.status === 'ACTIVE')
-  const pendingMembers = members.filter(m => m.status === 'PENDING')
+  const matchesSearch = (member: Member) => {
+    const fullName = `${member.user?.firstName || ''} ${member.user?.lastName || ''}`.toLowerCase()
+    return fullName.includes(searchTerm.toLowerCase())
+  }
+
+  const activeMembers = members.filter(m => m.status === 'ACTIVE' && matchesSearch(m))
+  const pendingMembers = members.filter(m => m.status === 'PENDING' && matchesSearch(m))
 
   return (
     <div className="space-y-6 sm:space-y-8">
       {/* Active Members */}
       <div className="space-y-4">
-        <div className="px-5 sm:px-6 flex items-center justify-between">
+        <div className="px-5 sm:px-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h2 className="text-section-title text-foreground flex items-center gap-2">
             <Users className="w-5 h-5 text-blue-500" />
             Active Members
           </h2>
+
         </div>
 
         <div className="space-y-1">
