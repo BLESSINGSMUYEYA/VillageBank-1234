@@ -21,9 +21,10 @@ interface DashboardHeroProps {
         totalGroups: number
     }
     pendingApprovalsCount: number
+    recentActivityCount: number
 }
 
-export function DashboardHero({ user, stats, pendingApprovalsCount }: DashboardHeroProps) {
+export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivityCount }: DashboardHeroProps) {
     const { t } = useLanguage()
     const [isContributionsVisible, setIsContributionsVisible] = useState(false)
     const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false)

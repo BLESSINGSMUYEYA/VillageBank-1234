@@ -48,6 +48,7 @@ export function DashboardContent({
                 user={user}
                 stats={stats}
                 pendingApprovalsCount={pendingApprovals.length}
+                recentActivityCount={recentActivity.length}
             />
 
             {/* Main Content Area - Sequential Layout */}
