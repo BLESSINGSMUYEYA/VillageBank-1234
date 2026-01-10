@@ -19,9 +19,10 @@ import { useLanguage } from '@/components/providers/LanguageProvider'
 interface QRCodeShareProps {
   groupId: string
   groupName: string
+  groupTag?: string | null
 }
 
-export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
+export function QRCodeShare({ groupId, groupName, groupTag }: QRCodeShareProps) {
   const [shareData, setShareData] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [permissions, setPermissions] = useState('REQUEST_JOIN')
@@ -138,7 +139,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
     }
   }
 
-  const createCombinedImage = async (qrDataUrl: string, groupName: string, shareUrl: string, customMsg?: string): Promise<File> => {
+  const createCombinedImage = async (qrDataUrl: string, groupName: string, shareUrl: string, customMsg?: string, tag?: string | null): Promise<File> => {
     return new Promise((resolve, reject) => {
       const img = new Image()
       img.crossOrigin = 'anonymous'
@@ -266,36 +267,50 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
         ctx.drawImage(img, contentCenterX - (qrSize / 2), currentY, qrSize, qrSize)
 
         // 5. Footer Details
-        currentY += qrSize + 100
+        currentY += qrSize + 80 // Reduced gap
 
-        // Group Name
-        ctx.fillStyle = '#1e293b'
-        ctx.font = 'bold 56px Inter, system-ui, sans-serif'
-        ctx.fillText(groupName, contentCenterX, currentY)
+        // Group Tag Badge (Primary Display)
+        if (tag) {
+          ctx.font = 'bold 42px Inter, system-ui, sans-serif' // Increased size
+          const tagText = tag.startsWith('@') ? tag : `@${tag}`
+          const textMetrics = ctx.measureText(tagText)
+          const badgeWidth = textMetrics.width + 120
+          const badgeHeight = 100
+
+          // Badge Background
+          ctx.fillStyle = 'rgba(59, 130, 246, 0.08)' // Blue-500/8
+          ctx.strokeStyle = 'rgba(59, 130, 246, 0.3)' // Blue-500/30
+          ctx.lineWidth = 3
+
+          ctx.beginPath()
+          ctx.roundRect(contentCenterX - (badgeWidth / 2), currentY, badgeWidth, badgeHeight, 999)
+          ctx.fill()
+          ctx.stroke()
+
+          // Badge Text
+          ctx.fillStyle = '#2563eb' // Blue-600
+          ctx.textAlign = 'center'
+          ctx.textBaseline = 'middle'
+          ctx.fillText(tagText, contentCenterX, currentY + (badgeHeight / 2))
+          ctx.textBaseline = 'alphabetic' // Reset
+
+          currentY += badgeHeight + 60
+        } else {
+          // Fallback if no tag: Show Group Name
+          ctx.fillStyle = '#1e293b'
+          ctx.font = 'bold 56px Inter, system-ui, sans-serif'
+          ctx.fillText(groupName, contentCenterX, currentY + 40)
+          currentY += 120
+        }
 
         // Custom Message
         if (customMsg) {
-          currentY += 70
           ctx.fillStyle = '#64748b' // Slate-500
           ctx.font = 'italic 32px Inter, system-ui, sans-serif'
           ctx.fillText(`"${customMsg}"`, contentCenterX, currentY)
         }
 
-        // Link Badge
-        currentY = cardY + cardHeight - 120
-        const linkText = shareUrl.replace(/^https?:\/\//, '')
-        ctx.font = '600 30px monospace' // Monospace for URL
-        const textMetrics = ctx.measureText(linkText)
-        const badgeWidth = textMetrics.width + 100
-        const badgeHeight = 80
 
-        ctx.fillStyle = '#f1f5f9' // Slate-100
-        ctx.beginPath()
-        ctx.roundRect(contentCenterX - (badgeWidth / 2), currentY - (badgeHeight / 2), badgeWidth, badgeHeight, 999)
-        ctx.fill()
-
-        ctx.fillStyle = '#3b82f6' // Blue-500
-        ctx.fillText(linkText, contentCenterX, currentY + 10)
 
         // Generate Blob
         canvas.toBlob((blob) => {
@@ -319,18 +334,20 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
         shareData.qrCode,
         groupName,
         shareData.shareUrl,
-        shareData.customMessage
+        shareData.customMessage,
+        groupTag
       )
 
-      const message = `*uBank Group Invitation*\n\n` +
-        `Group: ${groupName}\n` +
-        (shareData.customMessage ? `_"${shareData.customMessage}"_\n\n` : '') +
-        `Scan the QR code or click the link to join:\n${shareData.shareUrl}`
+      const shareText = `*Join ${groupName} on uBank*\n` +
+        (groupTag ? `Tag: ${groupTag}\n` : '') +
+        (shareData.customMessage ? `\n_"${shareData.customMessage}"_\n` : '') +
+        `\nSecure Link: ${shareData.shareUrl}`
 
       if (navigator.share && navigator.canShare) {
         const shareObj = {
           title: `Join ${groupName}`,
-          text: message,
+          text: shareText,
+          url: shareData.shareUrl, // Explicitly add URL field for supported platforms
           files: [combinedFile]
         }
 
@@ -341,7 +358,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
         }
       }
 
-      const encodedMessage = encodeURIComponent(message)
+      const encodedMessage = encodeURIComponent(shareText)
       const whatsappUrl = `https://wa.me/?text=${encodedMessage}`
       window.open(whatsappUrl, '_blank')
       toast.success('Link copied & opening WhatsApp...')

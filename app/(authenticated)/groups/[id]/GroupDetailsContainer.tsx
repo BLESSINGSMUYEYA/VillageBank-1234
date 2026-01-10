@@ -195,6 +195,7 @@ export default function GroupDetailsContainer({
                                     <QRCodeShare
                                         groupId={group.id}
                                         groupName={group.name}
+                                        groupTag={group.ubankTag}
                                     />
                                 </div>
                             </div>
