@@ -5,7 +5,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
-import { DollarSign, Wallet, Users, Zap, ArrowUpRight, ArrowRight, Eye, EyeOff, Shield } from 'lucide-react'
+import { DollarSign, Wallet, Users, ArrowUpRight, ArrowRight, Eye, EyeOff, Shield } from 'lucide-react'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { formatCurrency, cn } from '@/lib/utils'
 import { itemFadeIn } from '@/lib/motions'
@@ -21,10 +21,9 @@ interface DashboardHeroProps {
         totalGroups: number
     }
     pendingApprovalsCount: number
-    recentActivityCount: number
 }
 
-export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivityCount }: DashboardHeroProps) {
+export function DashboardHero({ user, stats, pendingApprovalsCount }: DashboardHeroProps) {
     const { t } = useLanguage()
     const [isContributionsVisible, setIsContributionsVisible] = useState(false)
     const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false)
@@ -91,15 +90,15 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                 </div>
 
                 {/* Stats Grid - Cleaner Layout (No Dividers) */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 border-t border-white/5 bg-white/5 dark:bg-black/10">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 border-t border-white/5 bg-white/5 dark:bg-black/10">
                     {/* Total Contributions */}
-                    <div className="p-4 rounded-xl hover:bg-white/5 transition-colors group cursor-default relative overflow-hidden">
+                    <div className="col-span-2 md:col-span-1 p-4 rounded-xl hover:bg-white/5 transition-colors group cursor-default relative overflow-hidden">
                         <div className="zen-label opacity-60 flex items-center gap-2 mb-2">
                             <Wallet className="w-3.5 h-3.5 text-banana" />
                             {t('dashboard.total_contributions') || 'Savings'}
                         </div>
                         <div className="flex items-center gap-3 relative z-10">
-                            <p className="text-stat-value text-foreground">
+                            <p className="text-3xl sm:text-2xl font-black tracking-tight text-foreground">
                                 {isContributionsVisible ? formatCurrency(stats.totalContributions) : '••••••'}
                             </p>
                             <button
@@ -118,15 +117,6 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                             {t('common.groups') || 'Network'}
                         </div>
                         <p className="text-stat-value text-blue-600 dark:text-blue-400">{stats.totalGroups}</p>
-                    </div>
-
-                    {/* Recent Activity Count */}
-                    <div className="p-4 rounded-xl hover:bg-white/5 transition-colors group cursor-default relative overflow-hidden">
-                        <div className="zen-label opacity-60 flex items-center gap-2 mb-2">
-                            <Zap className="w-3.5 h-3.5 text-purple-500" />
-                            {t('dashboard.recent_activity')}
-                        </div>
-                        <p className="text-stat-value text-purple-500">{recentActivityCount}</p>
                     </div>
 
                     {/* Pending Approvals - Conditional */}
