@@ -31,7 +31,7 @@ export default function GroupActivities({ activities }: GroupActivitiesProps) {
             variants={staggerContainer}
             initial="initial"
             animate="animate"
-            className="space-y-6 p-6 sm:p-10"
+            className="space-y-6 p-5 sm:p-6"
         >
             <div className="space-y-4">
                 {activities.map((activity, index) => (

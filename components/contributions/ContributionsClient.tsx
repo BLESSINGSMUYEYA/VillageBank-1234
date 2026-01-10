@@ -51,7 +51,7 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
             variants={staggerContainer}
             initial="initial"
             animate="animate"
-            className="space-y-8 sm:space-y-12 pb-20"
+            className="space-y-6 sm:space-y-8 pb-20"
         >
             {/* Header */}
             <motion.div variants={fadeIn}>
@@ -81,7 +81,7 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                 {userGroups.some(g => g.unpaidPenalties > 0) && (
                     <motion.div variants={fadeIn} className="space-y-4">
                         {userGroups.filter(g => g.unpaidPenalties > 0).map((membership) => (
-                            <GlassCard key={membership.groupId} className="border-red-500/20 bg-red-500/5 p-6" hover={false}>
+                            <GlassCard key={membership.groupId} className="border-red-500/20 bg-red-500/5 p-5 sm:p-6" hover={false}>
                                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                                     <div className="w-12 h-12 rounded-2xl bg-red-500/20 flex items-center justify-center shrink-0">
                                         <AlertCircle className="w-6 h-6 text-red-600" />
@@ -106,7 +106,7 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
 
                 {userGroups.length > 0 && currentMonthContributions.length === 0 && (
                     <motion.div variants={fadeIn}>
-                        <GlassCard className="border-blue-500/20 bg-blue-500/5 p-6" hover={false}>
+                        <GlassCard className="border-blue-500/20 bg-blue-500/5 p-5 sm:p-6" hover={false}>
                             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                                 <div className="w-12 h-12 rounded-2xl bg-blue-600/20 flex items-center justify-center shrink-0">
                                     <Calendar className="w-6 h-6 text-blue-600" />

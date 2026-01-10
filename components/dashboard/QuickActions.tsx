@@ -23,7 +23,7 @@ export function QuickActions() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Link href="/loans/new">
-                        <GlassCard className="group cursor-pointer p-6 h-full flex flex-col justify-center hover:bg-white/5 transition-all" hover={true}>
+                        <GlassCard className="group cursor-pointer p-5 sm:p-6 h-full flex flex-col justify-center hover:bg-white/5 transition-all" hover={true}>
                             <div className="flex items-center gap-4">
                                 <div className="bg-indigo-500/10 p-3 rounded-xl group-hover:scale-95 transition-transform">
                                     <PiggyBank className="w-6 h-6 text-indigo-500" />
@@ -36,7 +36,7 @@ export function QuickActions() {
                         </GlassCard>
                     </Link>
                     <Link href="/groups">
-                        <GlassCard className="group cursor-pointer p-6 h-full flex flex-col justify-center hover:bg-white/5 transition-all" hover={true}>
+                        <GlassCard className="group cursor-pointer p-5 sm:p-6 h-full flex flex-col justify-center hover:bg-white/5 transition-all" hover={true}>
                             <div className="flex items-center gap-4">
                                 <div className="bg-emerald-500/10 p-3 rounded-xl group-hover:scale-95 transition-transform">
                                     <Users className="w-6 h-6 text-emerald-500" />

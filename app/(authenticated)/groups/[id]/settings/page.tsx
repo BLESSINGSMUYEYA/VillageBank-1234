@@ -269,7 +269,7 @@ export default function GroupSettingsPage() {
       variants={staggerContainer}
       initial="initial"
       animate="animate"
-      className="space-y-8 pb-10"
+      className="space-y-6 sm:space-y-8 pb-10"
     >
       <motion.div variants={fadeIn}>
         <Link href={`/groups/${group?.id}`} className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-blue-600 dark:hover:text-banana transition-all duration-300 group mb-4">
@@ -304,7 +304,7 @@ export default function GroupSettingsPage() {
         <div className="xl:col-span-2 space-y-8">
           {/* Identity & Presence Section */}
           <motion.div variants={itemFadeIn}>
-            <GlassCard className="p-10 space-y-10" hover={false}>
+            <GlassCard className="p-5 sm:p-6 space-y-8" hover={false}>
               <SectionHeader title={t('groups.identity_presence')} icon={Landmark} />
 
               <div className="space-y-8">
@@ -345,7 +345,7 @@ export default function GroupSettingsPage() {
 
           {/* Contributions & Penalty Policies Section */}
           <motion.div variants={itemFadeIn}>
-            <GlassCard className="p-10 space-y-10" hover={false}>
+            <GlassCard className="p-5 sm:p-6 space-y-8" hover={false}>
               <SectionHeader title={t('groups.meeting_protocol')} icon={CheckCircle2} />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -402,7 +402,7 @@ export default function GroupSettingsPage() {
 
           {/* Lending & Penalty Policies Section */}
           <motion.div variants={itemFadeIn}>
-            <GlassCard className="p-10 space-y-10" hover={false}>
+            <GlassCard className="p-5 sm:p-6 space-y-8" hover={false}>
               <SectionHeader title={t('groups.financial_arch')} icon={ShieldQuestion} />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -492,7 +492,7 @@ export default function GroupSettingsPage() {
         {/* Sidebar Actions */}
         <div className="space-y-6">
           <motion.div variants={itemFadeIn}>
-            <GlassCard className="p-6 space-y-4" hover={false}>
+            <GlassCard className="p-5 sm:p-6 space-y-4" hover={false}>
               <h4 className="font-black text-xs uppercase tracking-widest text-muted-foreground">{t('groups.publication_status')}</h4>
               <div className="flex items-center justify-between p-4 bg-white/40 dark:bg-white/5 rounded-2xl border border-white/10">
                 <div className="space-y-0.5">
@@ -530,7 +530,7 @@ export default function GroupSettingsPage() {
 
           {/* Maintenance Section */}
           <motion.div variants={itemFadeIn}>
-            <GlassCard className="p-6" hover={false}>
+            <GlassCard className="p-5 sm:p-6" hover={false}>
               <h4 className="font-black text-xs uppercase tracking-widest text-muted-foreground mb-4">{t('groups.maintenance')}</h4>
               <div className="space-y-4">
                 <p className="text-[10px] text-muted-foreground font-bold leading-relaxed">
@@ -560,7 +560,7 @@ export default function GroupSettingsPage() {
 
           {/* Danger Zone */}
           <motion.div variants={itemFadeIn}>
-            <GlassCard className="p-6 border-red-500/20 bg-red-500/5" hover={false}>
+            <GlassCard className="p-5 sm:p-6 border-red-500/20 bg-red-500/5" hover={false}>
               <h4 className="font-black text-xs uppercase tracking-widest text-red-600 mb-4">{t('groups.danger_zone')}</h4>
               <div className="space-y-4">
                 <p className="text-[10px] text-red-600/80 font-bold leading-relaxed">

@@ -97,7 +97,7 @@ export default function SettingsPage() {
       variants={staggerContainer}
       initial="initial"
       animate="animate"
-      className="space-y-8 sm:space-y-12 pb-20"
+      className="space-y-6 sm:space-y-8 pb-20"
     >
       <motion.div variants={fadeIn}>
         <Link href="/dashboard" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-blue-600 dark:hover:text-banana transition-all duration-300 group mb-4">
@@ -126,7 +126,7 @@ export default function SettingsPage() {
             <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
             {/* Header Section */}
-            <div className="relative border-b border-white/10 dark:border-white/5 p-8 sm:p-10">
+            <div className="relative border-b border-white/10 dark:border-white/5 p-5 sm:p-6">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-600 opacity-80" />
               <div className="flex items-center gap-6">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/10 to-blue-600/20 dark:from-banana/10 dark:to-banana/20 flex items-center justify-center text-blue-600 dark:text-banana shadow-inner ring-1 ring-white/20">
@@ -142,7 +142,7 @@ export default function SettingsPage() {
             </div>
 
             {/* Form Content */}
-            <div className="p-8 sm:p-10 relative">
+            <div className="p-5 sm:p-6 relative">
               <form onSubmit={handleSaveProfile} className="space-y-10">
 
                 {/* Name Section */}

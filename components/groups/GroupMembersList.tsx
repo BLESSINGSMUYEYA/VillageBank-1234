@@ -92,7 +92,7 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
     <div className="space-y-6 sm:space-y-8">
       {/* Active Members */}
       <div className="space-y-4">
-        <div className="px-6 flex items-center justify-between">
+        <div className="px-5 sm:px-6 flex items-center justify-between">
           <h2 className="text-xl font-black text-foreground flex items-center gap-2">
             <Users className="w-5 h-5 text-blue-500" />
             Active Members
@@ -121,7 +121,7 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
                     </p>
                     <Badge
                       className={cn(
-                        "font-black uppercase tracking-widest text-[9px] px-2 py-0 border-0",
+                        "font-black uppercase tracking-widest text-[10px] px-2 py-0 border-0",
                         member.role === 'ADMIN' ? 'bg-blue-600 text-white' :
                           member.role === 'TREASURER' ? 'bg-banana text-yellow-950' :
                             'bg-slate-100 dark:bg-slate-800 text-slate-500'
@@ -170,7 +170,7 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
       {/* Pending Members */}
       {pendingMembers.length > 0 && (
         <div className="space-y-4 pt-4 border-t border-dashed border-white/10">
-          <div className="px-6 flex items-center justify-between">
+          <div className="px-5 sm:px-6 flex items-center justify-between">
             <h2 className="text-sm font-black uppercase tracking-widest text-orange-500 flex items-center gap-2">
               <Clock className="w-4 h-4" />
               Pending Requests

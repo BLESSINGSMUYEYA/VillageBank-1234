@@ -54,7 +54,7 @@ export function LoansClient({ loans, eligibilityChecks }: LoansClientProps) {
             variants={staggerContainer}
             initial="initial"
             animate="animate"
-            className="space-y-8 sm:space-y-12 pb-20"
+            className="space-y-6 sm:space-y-8 pb-20"
         >
             {/* Header */}
             <motion.div variants={fadeIn}>
@@ -144,7 +144,7 @@ export function LoansClient({ loans, eligibilityChecks }: LoansClientProps) {
                                 {check.eligible && (
                                     <div className="bg-gradient-to-r from-banana to-yellow-500 h-1.5" />
                                 )}
-                                <div className="p-6 flex flex-col h-full bg-white/40 dark:bg-slate-900/40">
+                                <div className="p-5 sm:p-6 flex flex-col h-full bg-white/40 dark:bg-slate-900/40">
                                     <div className="flex justify-between items-start mb-6">
                                         <div className={cn(
                                             "w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform",
@@ -202,7 +202,7 @@ export function LoansClient({ loans, eligibilityChecks }: LoansClientProps) {
             {/* Loan History Table */}
             <motion.div variants={itemFadeIn}>
                 <GlassCard className="p-0 border-white/20 dark:border-white/5 shadow-2xl overflow-hidden mt-8" hover={false}>
-                    <div className="p-6 border-b border-white/10 dark:border-white/5 bg-blue-600/5 dark:bg-white/5">
+                    <div className="p-5 sm:p-6 border-b border-white/10 dark:border-white/5 bg-blue-600/5 dark:bg-white/5">
                         <h2 className="text-lg font-black text-foreground flex items-center gap-2">
                             <History className="w-5 h-5 text-blue-600 dark:text-banana" />
                             Credit Ledger

@@ -24,7 +24,7 @@ export function FinancialOverview({ charts }: FinancialOverviewProps) {
                     </h3>
                 </div>
 
-                <GlassCard className="flex flex-col p-4 overflow-hidden" hover={false}>
+                <GlassCard className="flex flex-col p-5 sm:p-6 overflow-hidden" hover={false}>
                     <div className="rounded-2xl overflow-hidden bg-white/5 dark:bg-black/20 backdrop-blur-3xl min-h-[400px]">
                         {charts}
                     </div>

@@ -27,7 +27,7 @@ export function ActivityFeed({ recentActivity }: ActivityFeedProps) {
                     <Link href="/activity" className="text-xs font-bold text-blue-600 hover:text-blue-500">View All</Link>
                 </div>
 
-                <GlassCard className="flex flex-col p-2 overflow-hidden" hover={false}>
+                <GlassCard className="flex flex-col p-5 sm:p-6 overflow-hidden" hover={false}>
                     <div className="flex-1 overflow-y-auto max-h-[500px] scrollbar-thin p-2">
                         {recentActivity.length > 0 ? (
                             <div className="space-y-2">

@@ -77,13 +77,13 @@ export function VaultClient({
             variants={staggerContainer}
             initial="initial"
             animate="animate"
-            className="space-y-8 sm:space-y-12 pb-20"
+            className="space-y-6 sm:space-y-8 pb-20"
         >
             {/* Hero Card - Vault Command Center */}
             <motion.div variants={itemFadeIn}>
                 <div className="zen-card overflow-hidden">
                     {/* Top Identity Section */}
-                    <div className="relative p-6 sm:p-10">
+                    <div className="relative p-5 sm:p-6">
                         <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                             <div className="space-y-4">
                                 <div>
@@ -118,7 +118,7 @@ export function VaultClient({
 
                     {/* Stats Grid Divider */}
                     <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-white/10 border-t border-white/10 bg-white/5 dark:bg-black/20">
-                        <div className="p-6 space-y-1">
+                        <div className="p-5 sm:p-6 space-y-1">
                             <p className="zen-label opacity-50 flex items-center gap-2">
                                 <Wallet className="w-3 h-3" />
                                 {t('vault.net_savings')}
@@ -126,7 +126,7 @@ export function VaultClient({
                             <p className="text-xl sm:text-2xl font-black text-foreground">{formatCurrency(totalSaved)}</p>
                             <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('vault.stakes', { count: contributions.filter(c => c.status === 'COMPLETED').length })}</p>
                         </div>
-                        <div className="p-6 space-y-1">
+                        <div className="p-5 sm:p-6 space-y-1">
                             <p className="zen-label opacity-50 flex items-center gap-2">
                                 <CreditCard className="w-3 h-3" />
                                 {t('vault.active_liability')}
@@ -134,7 +134,7 @@ export function VaultClient({
                             <p className="text-xl sm:text-2xl font-black text-blue-600 dark:text-banana">{formatCurrency(activeDebt)}</p>
                             <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('vault.agreements', { count: loans.filter(l => l.status === 'ACTIVE').length })}</p>
                         </div>
-                        <div className="p-6 space-y-1">
+                        <div className="p-5 sm:p-6 space-y-1">
                             <p className="zen-label opacity-50 flex items-center gap-2">
                                 <Clock className="w-3 h-3" />
                                 {t('vault.pending_review')}
@@ -142,7 +142,7 @@ export function VaultClient({
                             <p className="text-xl sm:text-2xl font-black text-foreground">{pendingReview}</p>
                             <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('vault.ledger_sync')}</p>
                         </div>
-                        <div className="p-6 space-y-1">
+                        <div className="p-5 sm:p-6 space-y-1">
                             <p className="zen-label opacity-50 flex items-center gap-2">
                                 <TrendingUp className="w-3 h-3" />
                                 {t('vault.credit_strength')}
