@@ -183,7 +183,7 @@ export function MobileNavigation() {
                       {isActive && (
                         <motion.div
                           layoutId="mobile-dock-active"
-                          className="absolute top-1 left-1/2 -translate-x-1/2 w-11 h-11 rounded-full border border-blue-500/30 dark:border-banana/30 bg-blue-500/10 dark:bg-banana/10 shadow-[0_0_15px_rgba(59,130,246,0.3)] dark:shadow-[0_0_15px_rgba(255,200,0,0.2)] z-0"
+                          className="absolute top-1 left-1/2 -translate-x-1/2 w-9 h-9 rounded-full border border-blue-500/30 dark:border-banana/30 bg-blue-500/10 dark:bg-banana/10 shadow-[0_0_15px_rgba(59,130,246,0.3)] dark:shadow-[0_0_15px_rgba(255,200,0,0.2)] z-0"
                           transition={{ type: "spring", stiffness: 300, damping: 30 }}
                         />
                       )}
@@ -192,7 +192,7 @@ export function MobileNavigation() {
                     {/* Icon with Press Animation - Increased Size */}
                     <div className="relative z-10 group-active:scale-75 transition-transform duration-200">
                       <Icon className={cn(
-                        "w-7 h-7 transition-all duration-300 mb-0.5",
+                        "w-5 h-5 transition-all duration-300 mb-0.5",
                         isActive ? 'stroke-[2.5px] drop-shadow-sm' : 'opacity-70 group-hover:opacity-100'
                       )} />
                     </div>
