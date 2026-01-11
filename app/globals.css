@@ -366,15 +366,15 @@
   }
 
   .glass-morphism {
-    @apply bg-white/60 dark:bg-slate-950/60 backdrop-blur-2xl border border-white/40 dark:border-white/10 shadow-xl;
+    @apply bg-white/60 dark:bg-slate-950/60 backdrop-blur-lg border border-white/40 dark:border-white/10 shadow-xl;
   }
 
   .glass-morphism-light {
-    @apply bg-white/20 dark:bg-white/5 backdrop-blur-xl border border-white/20;
+    @apply bg-white/20 dark:bg-white/5 backdrop-blur-md border border-white/20;
   }
 
   .zen-card {
-    @apply bg-white/40 dark:bg-slate-900/40 border border-white/20 dark:border-white/10 rounded-[32px] backdrop-blur-3xl shadow-2xl;
+    @apply bg-white/40 dark:bg-slate-900/40 border border-white/20 dark:border-white/10 rounded-[32px] backdrop-blur-xl shadow-2xl;
   }
 
   .zen-label {

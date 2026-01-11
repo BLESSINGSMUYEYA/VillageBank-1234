@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
 
 interface LoaderProps {
-    size?: 'sm' | 'md' | 'lg' | 'xl'
+    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
     text?: string
     className?: string
     showText?: boolean
@@ -242,8 +242,8 @@ export function PageLoader({ text = 'Loading' }: { text?: string }) {
 }
 
 // Inline loader for buttons and smaller areas
-export function InlineLogoLoader({ size = 'xs' }: { size?: 'xs' | 'sm' | 'md' }) {
-    return <GrowthLoader size={size as any} showText={false} />
+export function InlineLogoLoader({ size = 'xs' }: { size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' }) {
+    return <GrowthLoader size={size} showText={false} />
 }
 
 // Card loader

@@ -1,11 +1,12 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import {
-    ContributionChart,
-    GroupComparisonChart,
-    TrendChart,
-    PaymentMethodsChart,
-    SummaryStats
-} from '@/components/charts/ContributionChart'
+import dynamic from 'next/dynamic'
+import { InlineLogoLoader } from '@/components/ui/LogoLoader'
+
+const ContributionChart = dynamic(() => import('@/components/charts/ContributionChart').then(mod => mod.ContributionChart), { ssr: false, loading: () => <div className="h-[300px] w-full flex items-center justify-center bg-white/5 rounded-2xl animate-pulse"><InlineLogoLoader size="sm" /></div> })
+const GroupComparisonChart = dynamic(() => import('@/components/charts/ContributionChart').then(mod => mod.GroupComparisonChart), { ssr: false, loading: () => <div className="h-[300px] w-full flex items-center justify-center bg-white/5 rounded-2xl animate-pulse"><InlineLogoLoader size="sm" /></div> })
+const TrendChart = dynamic(() => import('@/components/charts/ContributionChart').then(mod => mod.TrendChart), { ssr: false, loading: () => <div className="h-[300px] w-full flex items-center justify-center bg-white/5 rounded-2xl animate-pulse"><InlineLogoLoader size="sm" /></div> })
+const PaymentMethodsChart = dynamic(() => import('@/components/charts/ContributionChart').then(mod => mod.PaymentMethodsChart), { ssr: false, loading: () => <div className="h-[300px] w-full flex items-center justify-center bg-white/5 rounded-2xl animate-pulse"><InlineLogoLoader size="sm" /></div> })
+const SummaryStats = dynamic(() => import('@/components/charts/ContributionChart').then(mod => mod.SummaryStats), { ssr: false, loading: () => <div className="h-[120px] w-full flex items-center justify-center bg-white/5 rounded-2xl animate-pulse"><InlineLogoLoader size="sm" /></div> })
 import { getChartData } from '@/lib/dashboard-service'
 
 export default async function DashboardCharts() {

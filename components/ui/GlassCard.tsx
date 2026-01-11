@@ -21,24 +21,24 @@ export function GlassCard({
     ...props
 }: GlassCardProps) {
     const blurClasses = {
-        sm: "backdrop-blur-sm",
-        md: "backdrop-blur-md",
-        lg: "backdrop-blur-lg",
-        xl: "backdrop-blur-xl",
+        sm: "backdrop-blur-[2px]",
+        md: "backdrop-blur-sm",
+        lg: "backdrop-blur-md",
+        xl: "backdrop-blur-lg",
     };
 
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileHover={hover ? { y: -4, scale: 1.01, transition: { duration: 0.2 } } : undefined}
+            viewport={{ once: true, margin: "-50px" }} // Optimize viewport check
+            whileHover={hover ? { y: -2, scale: 1.005, transition: { duration: 0.2 } } : undefined} // Reduced movement
             className={cn(
-                "relative overflow-hidden rounded-[32px] border border-white/20 dark:border-white/10 shadow-2xl transition-all duration-300",
+                "relative overflow-hidden rounded-[32px] border border-white/20 dark:border-white/10 shadow-2xl transition-all duration-200", // Faster transition
                 "bg-white/60 dark:bg-slate-900/40",
                 blurClasses[blur],
                 gradient && "bg-gradient-to-br from-white/40 to-white/10 dark:from-white/5 dark:to-transparent",
-                hover && "hover:border-blue-500/30 hover:shadow-blue-500/5 hover:dark:shadow-banana/5",
+                hover && "hover:border-blue-500/30 hover:shadow-blue-500/5 hover:dark:shadow-banana/5 will-change-transform", // Hint browser
                 className
             )}
             {...props}
