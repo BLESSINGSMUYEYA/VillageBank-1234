@@ -54,7 +54,9 @@ export function VaultClient({
 }: VaultClientProps) {
     const langContext = useLanguage()
     const t = langContext.t
-    const [activeTab, setActiveTab] = useState('savings')
+    const [activeTab, setActiveTab] = useState('savings') // Keeping for safety, though unused in new layout? No, remove it.
+    const [filter, setFilter] = useState<'ALL' | 'INCOME' | 'OUTFLOW'>('ALL')
+    const [searchTerm, setSearchTerm] = useState('')
 
     // Unified Stats calculation
     const totalSaved = contributions
@@ -69,8 +71,43 @@ export function VaultClient({
             return sum + (approved - repaid)
         }, 0)
 
-    const pendingReview = contributions.filter(c => c.status === 'PENDING').length +
-        loans.filter(l => l.status === 'PENDING').length
+    // Merge & Sort Logic
+    const financialItems = [
+        ...contributions.map(c => ({
+            type: 'CONTRIBUTION' as const,
+            id: c.id,
+            amount: Number(c.amount),
+            date: c.paymentDate ? new Date(c.paymentDate) : new Date(c.createdAt),
+            status: c.status,
+            groupName: c.group.name,
+            original: c,
+            timestamp: (c.paymentDate ? new Date(c.paymentDate) : new Date(c.createdAt)).getTime()
+        })),
+        ...loans.map(l => ({
+            type: 'LOAN' as const,
+            id: l.id,
+            amount: Number(l.amountApproved || l.amountRequested),
+            date: new Date(l.createdAt),
+            status: l.status,
+            groupName: l.group.name,
+            original: l,
+            timestamp: new Date(l.createdAt).getTime()
+        }))
+    ].sort((a, b) => b.timestamp - a.timestamp)
+
+    const filteredItems = financialItems.filter(item => {
+        // Search Filter
+        if (searchTerm) {
+            const searchLower = searchTerm.toLowerCase()
+            if (!item.groupName.toLowerCase().includes(searchLower)) return false
+        }
+
+        // Type Filter
+        if (filter === 'ALL') return true
+        if (filter === 'INCOME') return item.type === 'CONTRIBUTION'
+        if (filter === 'OUTFLOW') return item.type === 'LOAN'
+        return true
+    })
 
     return (
         <motion.div
@@ -79,274 +116,221 @@ export function VaultClient({
             animate="animate"
             className="space-y-6 sm:space-y-8 pb-20"
         >
-            {/* Hero Card - Vault Command Center */}
+            {/* 1. Simplified Hero Section */}
             <motion.div variants={itemFadeIn}>
                 <div className="zen-card overflow-hidden">
-                    {/* Top Identity Section */}
-                    <div className="relative p-5 sm:p-6">
-                        <div className="flex flex-col md:flex-row justify-between items-start gap-6">
-                            <div className="space-y-4">
+                    <div className="p-6 bg-gradient-to-b from-white/40 to-white/10 dark:from-slate-900/40 dark:to-slate-900/10 border-b border-white/10">
+                        <div className="mb-6">
+                            <h1 className="text-3xl font-black text-foreground tracking-tighter mb-2">
+                                {t('common.vault')}
+                            </h1>
+                            <p className="text-sm font-medium text-muted-foreground opacity-80 max-w-xl">
+                                {t('vault.unified_community_hub')}
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {/* Net Savings */}
+                            <div className="p-5 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl flex items-center justify-between">
                                 <div>
-                                    <h1 className="text-3xl sm:text-4xl font-black text-foreground tracking-tighter leading-tight mb-2">
-                                        {t('common.vault')}
-                                    </h1>
-                                    <p className="text-sm font-medium text-muted-foreground line-clamp-2 max-w-xl leading-relaxed flex flex-wrap items-center gap-1.5 opacity-80">
-                                        {t('vault.unified_community_hub')}
-                                        <span className="text-blue-600 dark:text-banana font-bold">{t('vault.zen_edition_lifecycle')}</span>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600 mb-1 opacity-70">
+                                        {t('vault.net_savings')}
                                     </p>
+                                    <p className="text-3xl font-black text-foreground">{formatCurrency(totalSaved)}</p>
+                                </div>
+                                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
+                                    <Wallet className="w-6 h-6 text-emerald-500" />
                                 </div>
                             </div>
 
-                            <div className="flex gap-3 shrink-0">
-                                <Link href="/contributions/new">
-                                    <Button variant="outline" className="rounded-xl font-black border-2 h-12">
-                                        <Plus className="w-4 h-4 mr-2" />
-                                        {t('common.contributions')}
-                                    </Button>
-                                </Link>
-                                {eligibilityChecks.some(c => c.eligible) && (
-                                    <Link href="/loans/new">
-                                        <Button variant="default" className="rounded-xl font-black shadow-lg shadow-blue-500/20 h-12">
-                                            <Zap className="w-4 h-4 mr-2" />
-                                            {t('common.loans')}
-                                        </Button>
-                                    </Link>
-                                )}
+                            {/* Active Debt */}
+                            <div className="p-5 bg-blue-500/5 border border-blue-500/10 rounded-2xl flex items-center justify-between">
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-banana mb-1 opacity-70">
+                                        {t('vault.active_liability')}
+                                    </p>
+                                    <p className="text-3xl font-black text-foreground">{formatCurrency(activeDebt)}</p>
+                                </div>
+                                <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center">
+                                    <CreditCard className="w-6 h-6 text-blue-600 dark:text-banana" />
+                                </div>
                             </div>
-                        </div>
-                    </div>
-
-                    {/* Stats Grid Divider */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-white/10 border-t border-white/10 bg-white/5 dark:bg-black/20">
-                        <div className="p-5 sm:p-6 space-y-1">
-                            <p className="zen-label opacity-50 flex items-center gap-2">
-                                <Wallet className="w-3 h-3" />
-                                {t('vault.net_savings')}
-                            </p>
-                            <p className="text-xl sm:text-2xl font-black text-foreground">{formatCurrency(totalSaved)}</p>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('vault.stakes', { count: contributions.filter(c => c.status === 'COMPLETED').length })}</p>
-                        </div>
-                        <div className="p-5 sm:p-6 space-y-1">
-                            <p className="zen-label opacity-50 flex items-center gap-2">
-                                <CreditCard className="w-3 h-3" />
-                                {t('vault.active_liability')}
-                            </p>
-                            <p className="text-stat-value text-blue-600 dark:text-banana">{formatCurrency(activeDebt)}</p>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('vault.agreements', { count: loans.filter(l => l.status === 'ACTIVE').length })}</p>
-                        </div>
-                        <div className="p-5 sm:p-6 space-y-1">
-                            <p className="zen-label opacity-50 flex items-center gap-2">
-                                <Clock className="w-3 h-3" />
-                                {t('vault.pending_review')}
-                            </p>
-                            <p className="text-stat-value text-foreground">{pendingReview}</p>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('vault.ledger_sync')}</p>
-                        </div>
-                        <div className="p-5 sm:p-6 space-y-1">
-                            <p className="zen-label opacity-50 flex items-center gap-2">
-                                <TrendingUp className="w-3 h-3" />
-                                {t('vault.credit_strength')}
-                            </p>
-                            <p className="text-stat-value text-emerald-500">
-                                {eligibilityChecks.filter(c => c.eligible).length > 0 ? t('vault.optimal') : t('vault.building')}
-                            </p>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('vault.portfolio_health')}</p>
                         </div>
                     </div>
                 </div>
             </motion.div>
 
-            {/* Main Content Area */}
-            <Tabs defaultValue="savings" onValueChange={setActiveTab} className="space-y-8">
-                <div className="flex items-center justify-between gap-4 overflow-x-auto no-scrollbar pb-2">
-                    <TabsList className="bg-transparent p-0 h-auto gap-2 shrink-0">
-                        <TabsTrigger
-                            value="savings"
-                            className="rounded-full px-8 h-12 text-tab-label data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 shadow-sm"
-                        >
-                            {t('vault.savings_ledger')}
-                        </TabsTrigger>
-                        <TabsTrigger
-                            value="credit"
-                            className="rounded-full px-8 h-12 text-tab-label data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-banana dark:data-[state=active]:text-blue-950 transition-all border border-border/50 shadow-sm"
-                        >
-                            {t('vault.credit_hub')}
-                        </TabsTrigger>
-                    </TabsList>
-                </div>
-
-                <TabsContent value="savings" className="m-0 focus-visible:ring-0">
-                    <motion.div variants={itemFadeIn}>
-                        <GlassCard className="p-0 overflow-hidden border-none shadow-none bg-transparent" hover={false}>
-                            {/* Reusing table logic from ContributionsClient but refined */}
-                            <div className="zen-card overflow-hidden">
-                                <Table>
-                                    <TableHeader className="bg-blue-600/5 dark:bg-white/5">
-                                        <TableRow className="border-white/10 dark:border-white/5 h-16">
-                                            <TableHead className="zen-label pl-8">Origin</TableHead>
-                                            <TableHead className="zen-label text-right">Stake</TableHead>
-                                            <TableHead className="zen-label text-center hidden md:table-cell">Period</TableHead>
-                                            <TableHead className="zen-label text-right pr-8">Status</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {contributions.map((c, idx) => (
-                                            <TableRow key={c.id} className="h-20 border-white/10 dark:border-white/5 hover:bg-blue-600/5 dark:hover:bg-white/5 transition-all">
-                                                <TableCell className="pl-8 font-black text-foreground">{c.group.name}</TableCell>
-                                                <TableCell className="text-right">
-                                                    <div className="flex flex-col items-end">
-                                                        <span className="font-black text-lg">{formatCurrency(Number(c.amount))}</span>
-                                                        <span className="zen-label lowercase opacity-40">Contribution</span>
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell className="text-center hidden md:table-cell">
-                                                    <span className="bg-blue-500/5 dark:bg-white/5 px-4 py-2 rounded-xl border border-white/20 dark:border-white/5 font-black text-[10px] uppercase tracking-[0.2em] opacity-60">
-                                                        {new Date(c.year, c.month - 1).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
-                                                    </span>
-                                                </TableCell>
-                                                <TableCell className="text-right pr-8">
-                                                    <Badge variant={c.status === 'COMPLETED' ? 'success' : c.status === 'PENDING' ? 'warning' : 'error'} className="text-tab-label">
-                                                        {c.status}
-                                                    </Badge>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                                {pagination.totalPages > 1 && (
-                                    <div className="p-4 border-t border-white/10 dark:border-white/5 flex items-center justify-between">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">
-                                            Page {pagination.currentPage} of {pagination.totalPages} ({pagination.totalItems} records)
-                                        </p>
-                                        <div className="flex gap-2">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                disabled={pagination.currentPage <= 1}
-                                                className="rounded-xl h-10 px-4 font-bold border-white/10"
-                                                onClick={() => {
-                                                    const newParams = new URLSearchParams(window.location.search)
-                                                    newParams.set('page', (pagination.currentPage - 1).toString())
-                                                    window.location.search = newParams.toString()
-                                                }}
-                                            >
-                                                <ChevronLeft className="w-4 h-4 mr-2" />
-                                                Previous
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                disabled={pagination.currentPage >= pagination.totalPages}
-                                                className="rounded-xl h-10 px-4 font-bold border-white/10"
-                                                onClick={() => {
-                                                    const newParams = new URLSearchParams(window.location.search)
-                                                    newParams.set('page', (pagination.currentPage + 1).toString())
-                                                    window.location.search = newParams.toString()
-                                                }}
-                                            >
-                                                Next
-                                                <ChevronRight className="w-4 h-4 ml-2" />
-                                            </Button>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </GlassCard>
-                    </motion.div>
-                </TabsContent>
-
-                <TabsContent value="credit" className="m-0 focus-visible:ring-0 space-y-12">
-                    {/* Eligibility Row */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {eligibilityChecks.map((check) => (
-                            <motion.div key={check.group.id} variants={itemFadeIn}>
-                                <div className={cn("zen-card p-8 group h-full flex flex-col", check.eligible ? "border-banana/30 ring-4 ring-banana/5" : "opacity-60")}>
-                                    <div className="flex justify-between items-start mb-8">
-                                        <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 shadow-inner", check.eligible ? "bg-banana/20 text-yellow-600 dark:text-banana" : "bg-muted/20 text-muted-foreground")}>
-                                            <Zap className="w-7 h-7" fill={check.eligible ? "currentColor" : "none"} />
-                                        </div>
-                                        <Badge variant={check.eligible ? 'success' : 'outline'} className="text-tab-label rounded-lg">
-                                            {check.eligible ? t('vault.verified') : t('vault.building')}
-                                        </Badge>
-                                    </div>
-                                    <div className="space-y-2 mb-8">
-                                        <h3 className="text-xl font-black tracking-tight">{check.group.name}</h3>
-                                        <div className="zen-label lowercase opacity-60">
-                                            {check.eligible ? t('vault.credit_line_active') : t('vault.protocol_requirement_pending')}
-                                        </div>
-                                    </div>
-                                    <div className="pt-8 border-t border-white/10 dark:border-white/5 mt-auto">
-                                        {check.eligible ? (
-                                            <Link href={`/loans/new?groupId=${check.group.id}`}>
-                                                <Button className="w-full h-14 rounded-2xl font-black bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-600 dark:text-white shadow-xl shadow-blue-500/10 transition-all hover:-translate-y-1">
-                                                    {t('vault.deploy_capital')}
-                                                </Button>
-                                            </Link>
-                                        ) : (
-                                            <div className="space-y-4">
-                                                <div className="flex justify-between zen-label">
-                                                    <span>{t('vault.staking_protocol')}</span>
-                                                    <span>{check.contributionsCount}/3 mo</span>
-                                                </div>
-                                                <div className="w-full h-1.5 bg-muted/20 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-muted-foreground/30 rounded-full" style={{ width: `${(check.contributionsCount / 3) * 100}%` }} />
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
+            {/* 2. Unified Timeline & Controls */}
+            <motion.div variants={itemFadeIn}>
+                <GlassCard className="p-0 overflow-hidden" hover={false}>
+                    {/* Controls Bar */}
+                    <div className="px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5">
+                        {/* Search & Filter */}
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-4 w-full sm:w-auto">
+                            <div className="relative w-full sm:w-56">
+                                <input
+                                    type="text"
+                                    placeholder="Search groups..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full h-10 pl-10 pr-4 rounded-xl bg-slate-100 dark:bg-slate-900/50 border-none text-xs font-bold focus:ring-2 focus:ring-blue-500/50"
+                                />
+                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                                    <Search className="w-4 h-4" />
                                 </div>
-                            </motion.div>
-                        ))}
+                            </div>
+
+                            <div className="flex items-center p-1 bg-slate-100/50 dark:bg-slate-900/30 rounded-xl self-start sm:self-auto overflow-x-auto no-scrollbar max-w-full">
+                                {(['ALL', 'INCOME', 'OUTFLOW'] as const).map((f) => (
+                                    <button
+                                        key={f}
+                                        onClick={() => setFilter(f)}
+                                        className={cn(
+                                            "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap",
+                                            filter === f
+                                                ? "bg-white dark:bg-slate-800 text-foreground shadow-sm"
+                                                : "text-muted-foreground hover:text-foreground hover:bg-white/50"
+                                        )}
+                                    >
+                                        {f === 'INCOME' ? t('common.contributions') : f === 'OUTFLOW' ? t('common.loans') : 'All History'}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+                            <Link href="/contributions/new" className="flex-1 sm:flex-none">
+                                <Button size="sm" className="w-full sm:w-auto h-10 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20">
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    <span className="text-[10px] uppercase tracking-wide">{t('common.contributions')}</span>
+                                </Button>
+                            </Link>
+                            <Link href="/loans/new" className="flex-1 sm:flex-none">
+                                <Button size="sm" variant="outline" className="w-full sm:w-auto h-10 border-indigo-200 dark:border-indigo-900 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 font-bold rounded-xl">
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    <span className="text-[10px] uppercase tracking-wide">{t('common.loans')}</span>
+                                </Button>
+                            </Link>
+                        </div>
                     </div>
 
-                    {/* Loan History */}
-                    <motion.div variants={itemFadeIn}>
-                        <div className="zen-card overflow-hidden">
-                            <div className="p-8 border-b border-white/10 dark:border-white/5 bg-blue-600/5 dark:bg-white/5 flex items-center justify-between">
-                                <h2 className="text-lg font-black flex items-center gap-3">
-                                    <History className="w-5 h-5 text-blue-600 dark:text-banana" />
-                                    {t('vault.credit_ledger')}
-                                </h2>
-                                <Badge variant="outline" className="zen-label border-none">{t('vault.unified_history')}</Badge>
-                            </div>
-                            <Table>
-                                <TableHeader className="bg-transparent">
-                                    <TableRow className="border-white/10 dark:border-white/5 h-16">
-                                        <TableHead className="zen-label pl-8">Fund</TableHead>
-                                        <TableHead className="zen-label text-right">Value</TableHead>
-                                        <TableHead className="zen-label text-right pr-8">Status</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {loans.map((l) => (
-                                        <TableRow key={l.id} className="h-20 border-white/10 dark:border-white/5 hover:bg-blue-600/5 dark:hover:bg-white/5 transition-all">
-                                            <TableCell className="pl-8 font-black text-foreground">{l.group.name}</TableCell>
-                                            <TableCell className="text-right font-black text-lg">
-                                                {formatCurrency(Number(l.amountApproved || l.amountRequested))}
-                                            </TableCell>
-                                            <TableCell className="text-right pr-8">
-                                                <Badge variant={l.status === 'ACTIVE' ? 'success' : l.status === 'COMPLETED' ? 'info' : 'warning'}>
-                                                    {l.status}
+                    {/* Timeline List */}
+                    <div className="p-3 bg-slate-50/50 dark:bg-transparent min-h-[400px]">
+                        <AnimatePresence mode='wait'>
+                            {filteredItems.length > 0 ? (
+                                <div className="space-y-2">
+                                    {filteredItems.map((item) => (
+                                        <div
+                                            key={`${item.type}-${item.id}`}
+                                            className="group p-4 bg-white dark:bg-slate-900/60 border border-slate-100 dark:border-white/5 rounded-2xl flex items-center justify-between hover:shadow-md hover:border-slate-200 dark:hover:border-white/10 transition-all cursor-default"
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div className={cn(
+                                                    "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border",
+                                                    item.type === 'CONTRIBUTION'
+                                                        ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600"
+                                                        : "bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-banana"
+                                                )}>
+                                                    {item.type === 'CONTRIBUTION' ? <Wallet className="w-6 h-6" /> : <CreditCard className="w-6 h-6" />}
+                                                </div>
+
+                                                <div>
+                                                    <div className="flex items-center gap-2">
+                                                        <p className="font-black text-sm text-foreground">
+                                                            {item.groupName}
+                                                        </p>
+                                                        <span className={cn(
+                                                            "text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider",
+                                                            item.type === 'CONTRIBUTION' ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                                                        )}>
+                                                            {item.type === 'CONTRIBUTION' ? 'Deposit' : 'Loan'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                                                            <Calendar className="w-3 h-3" />
+                                                            {item.date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                        </p>
+                                                        {item.status === 'PENDING' && (
+                                                            <span className="text-[9px] font-bold text-orange-500 bg-orange-500/10 px-1.5 rounded-sm">
+                                                                Pending
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="text-right">
+                                                <p className={cn(
+                                                    "text-lg font-black tracking-tight",
+                                                    item.type === 'CONTRIBUTION' ? "text-emerald-600 dark:text-emerald-400" : "text-foreground"
+                                                )}>
+                                                    {item.type === 'CONTRIBUTION' ? '+' : ''} {formatCurrency(item.amount)}
+                                                </p>
+                                                <Badge className={cn(
+                                                    "text-[9px] px-2 py-0.5 border-0 mt-1",
+                                                    item.status === 'COMPLETED' || item.status === 'ACTIVE'
+                                                        ? "bg-slate-100 dark:bg-slate-800 text-slate-500"
+                                                        : item.status === 'PENDING'
+                                                            ? "bg-orange-100 dark:bg-orange-900/30 text-orange-600"
+                                                            : "bg-red-100 dark:bg-red-900/30 text-red-600"
+                                                )}>
+                                                    {item.status}
                                                 </Badge>
-                                            </TableCell>
-                                        </TableRow>
+                                            </div>
+                                        </div>
                                     ))}
-                                </TableBody>
-                            </Table>
-                            {loans.length === 0 && (
-                                <div className="p-8">
-                                    <EmptyState
-                                        icon={History}
-                                        title={t('vault.no_active_credit')}
-                                        description={t('loans.no_loans_desc')}
-                                        variant="compact"
-                                    />
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center py-20 text-muted-foreground/50">
+                                    <History className="w-12 h-12 mb-4 opacity-20" />
+                                    <p className="text-sm font-bold uppercase tracking-widest">{t('vault.no_records')}</p>
                                 </div>
                             )}
+                        </AnimatePresence>
+                    </div>
+
+                    {/* Pagination (Kept from existing) */}
+                    {pagination.totalPages > 1 && (
+                        <div className="p-4 border-t border-white/10 dark:border-white/5 flex items-center justify-between bg-zinc-50/50 dark:bg-white/5">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">
+                                Page {pagination.currentPage} of {pagination.totalPages}
+                            </p>
+                            <div className="flex gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={pagination.currentPage <= 1}
+                                    className="rounded-xl h-9 px-4 font-bold border-white/10"
+                                    onClick={() => {
+                                        const newParams = new URLSearchParams(window.location.search)
+                                        newParams.set('page', (pagination.currentPage - 1).toString())
+                                        window.location.search = newParams.toString()
+                                    }}
+                                >
+                                    <ChevronLeft className="w-4 h-4 mr-2" />
+                                    Previous
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={pagination.currentPage >= pagination.totalPages}
+                                    className="rounded-xl h-9 px-4 font-bold border-white/10"
+                                    onClick={() => {
+                                        const newParams = new URLSearchParams(window.location.search)
+                                        newParams.set('page', (pagination.currentPage + 1).toString())
+                                        window.location.search = newParams.toString()
+                                    }}
+                                >
+                                    Next
+                                    <ChevronRight className="w-4 h-4 ml-2" />
+                                </Button>
+                            </div>
                         </div>
-                    </motion.div>
-                </TabsContent>
-            </Tabs>
+                    )}
+                </GlassCard>
+            </motion.div>
         </motion.div>
     )
 }

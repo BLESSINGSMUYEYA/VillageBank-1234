@@ -88,6 +88,7 @@
     "no_groups": "No Groups Yet",
     "no_groups_desc": "You haven't joined any village banking groups yet.",
     "cycle_duration": "Cycle Duration",
+    "cycle_progress": "Cycle Progress",
     "next_30_days": "Next 30 Days",
     "max_loan_cap": "Max Loan Cap",
     "configuration": "Group Configuration",

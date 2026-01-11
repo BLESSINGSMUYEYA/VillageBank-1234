@@ -1,3 +1,5 @@
+'use client'
+
 import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger, ZenTabsList, ZenTabsTrigger } from '@/components/ui/tabs'
 import GroupMembersList from '@/components/groups/GroupMembersList'
