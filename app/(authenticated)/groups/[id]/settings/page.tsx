@@ -7,8 +7,9 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/GlassCard'
 
-export default async function GroupSettingsPage({ params }: { params: { id: string } }) {
-  const session = await getSession()
+export default async function GroupSettingsPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
+  const session = await getSession() as any
   if (!session?.user) redirect('/login')
 
   const group = await prisma.group.findUnique({
