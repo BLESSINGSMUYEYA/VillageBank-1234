@@ -1,16 +1,18 @@
 import { type Metadata, type Viewport } from 'next'
 
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Inter, Outfit } from 'next/font/google'
 import './globals.css'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const inter = Inter({
+  variable: '--font-sans',
   subsets: ['latin'],
+  display: 'swap',
 })
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const outfit = Outfit({
+  variable: '--font-heading',
   subsets: ['latin'],
+  display: 'swap',
 })
 
 export const viewport: Viewport = {
@@ -34,7 +36,7 @@ export const metadata: Metadata = {
 
 import { AuthProvider } from '@/components/providers/AuthProvider'
 import { LanguageProvider } from '@/components/providers/LanguageProvider'
-import { Toaster } from 'sonner'
+import { Toaster } from '@/components/ui/sonner'
 import { ServiceWorkerRegister } from '@/components/providers/ServiceWorkerRegister'
 
 export default function RootLayout({
@@ -44,7 +46,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${inter.variable} ${outfit.variable} antialiased font-sans`}>
         <AuthProvider>
           <LanguageProvider>
             {children}

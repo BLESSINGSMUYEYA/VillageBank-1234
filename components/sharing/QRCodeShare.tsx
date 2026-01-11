@@ -1,21 +1,18 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/button' // Lowercase button
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Copy, Download, Share2, Users, Clock, Shield, QrCode } from 'lucide-react'
+import { Copy, Share2, Shield, Clock, Lock } from 'lucide-react'
 import { toast } from 'sonner'
 import { InlineLogoLoader } from '@/components/ui/LogoLoader'
 import { GlassCard } from '@/components/ui/GlassCard'
-import { SectionHeader } from '@/components/ui/section-header'
-import { FormGroup } from '@/components/ui/form-group'
 import { PremiumInput } from '@/components/ui/premium-input'
 import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
 import { AnimatePresence, motion } from 'framer-motion'
 
-// ...
-// Function to generate a high-res branded QR code data URL
+// ... Keep existing generateHighResQR function ...
 const generateHighResQR = async (text: string): Promise<string> => {
   try {
     const QRCodeLib = (await import('qrcode')).default
@@ -81,7 +78,6 @@ const generateHighResQR = async (text: string): Promise<string> => {
   }
 }
 
-
 interface QRCodeShareProps {
   groupId: string
   groupName: string
@@ -94,10 +90,21 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
   const [maxUses, setMaxUses] = useState('50')
   const [customMessage, setCustomMessage] = useState('')
   const [shareData, setShareData] = useState<any>(null)
-  // Derived state or safe access
+
+  // Validation State
+  const [maxUsesError, setMaxUsesError] = useState('')
+
+  // Derived state
   const groupTag = shareData?.groupTag
 
   const generateQRCode = async () => {
+    // Basic Validation
+    if (parseInt(maxUses) < 1 || parseInt(maxUses) > 100) {
+      setMaxUsesError('Must be between 1 and 100')
+      return;
+    }
+    setMaxUsesError('') // Clear error
+
     setLoading(true)
     try {
       const expiresAt = expiresIn === 'never' ? null :
@@ -382,28 +389,6 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
     }
   }
 
-  const getPermissionBadge = (permission: string) => {
-    const variants: Record<string, string> = {
-      VIEW_ONLY: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
-      REQUEST_JOIN: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
-      LIMITED_ACCESS: 'bg-orange-500/10 text-orange-600 border-orange-500/20',
-      FULL_PREVIEW: 'bg-purple-500/10 text-purple-600 border-purple-500/20',
-    }
-
-    const labels: Record<string, string> = {
-      VIEW_ONLY: 'View Only',
-      REQUEST_JOIN: 'Join Permitted',
-      LIMITED_ACCESS: 'Limited',
-      FULL_PREVIEW: 'Full Access',
-    }
-
-    return (
-      <Badge variant="outline" className={`font-black uppercase tracking-widest px-3 py-1 rounded-lg ${variants[permission] || ''}`}>
-        {labels[permission] || permission}
-      </Badge>
-    )
-  }
-
 
   return (
     <motion.div
@@ -463,6 +448,8 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
                   value={maxUses}
                   onChange={(e) => setMaxUses(e.target.value)}
                   className="h-12 bg-white/40 dark:bg-black/20 rounded-xl"
+                  error={!!maxUsesError}
+                  errorMessage={maxUsesError}
                 />
               </div>
             </div>
@@ -480,19 +467,11 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
 
             <Button
               onClick={generateQRCode}
-              disabled={loading}
-              className="w-full h-14 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20 font-black tracking-tight text-base mt-4 transition-all active:scale-[0.98]"
+              isLoading={loading}
+              variant="primary"
+              className="w-full h-14 rounded-2xl shadow-lg mt-4 text-base font-bold tracking-tight"
             >
-              {loading ? (
-                <>
-                  <InlineLogoLoader size="sm" />
-                  <span className="ml-2">Generating Key...</span>
-                </>
-              ) : (
-                <>
-                  Generate Invitation
-                </>
-              )}
+              Generate Invitation
             </Button>
           </div>
         </GlassCard>
@@ -521,15 +500,15 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 text-xs font-medium text-muted-foreground">
-                  <span className="flex items-center gap-1.5 bg-zinc-100 dark:bg-white/5 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-white/5">
+                <div className="flex items-center gap-2 sm:gap-4 text-xs font-medium text-muted-foreground">
+                  <div className="flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 px-3 py-1.5 rounded-lg border border-emerald-100 dark:border-emerald-900/50">
                     <Shield className="w-3.5 h-3.5" />
-                    {shareData.permissions === 'VIEW_ONLY' ? 'View Only' : 'Join Access'}
-                  </span>
-                  <span className="flex items-center gap-1.5 bg-zinc-100 dark:bg-white/5 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-white/5">
+                    <span>Secure & Verified</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 bg-zinc-100 dark:bg-white/5 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-white/5">
                     <Clock className="w-3.5 h-3.5" />
                     {shareData.expiresAt ? new Date(shareData.expiresAt).toLocaleDateString() : 'Permanent'}
-                  </span>
+                  </div>
                 </div>
               </div>
 
@@ -537,14 +516,15 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
                 <Button
                   onClick={copyShareLink}
                   variant="outline"
-                  className="h-12 rounded-xl font-bold border-zinc-200 dark:border-white/10 hover:bg-white hover:text-blue-600 transition-colors"
+                  className="h-12 w-full rounded-xl font-bold border-zinc-200 dark:border-white/10 hover:bg-white hover:text-blue-600 transition-colors"
                 >
                   <Copy className="w-4 h-4 mr-2" />
                   Copy Link
                 </Button>
                 <Button
                   onClick={handleShare}
-                  className="h-12 rounded-xl font-bold bg-zinc-900 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 shadow-lg"
+                  variant="primary" // Explicitly primary
+                  className="h-12 w-full rounded-xl font-bold bg-zinc-900 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 shadow-lg"
                 >
                   <Share2 className="w-4 h-4 mr-2" />
                   Share
@@ -557,4 +537,3 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
     </motion.div>
   )
 }
-

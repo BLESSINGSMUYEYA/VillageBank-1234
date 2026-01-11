@@ -155,7 +155,7 @@ export default function GroupDetailsClient({
                                     )}
 
                                     <Link href="/contributions/new" className={isAdmin ? "" : "col-span-2"}>
-                                        <Button variant="default" className="w-full h-11 rounded-xl px-4 sm:px-8 font-black text-xs gap-2 shadow-lg shadow-blue-500/20 active:scale-95 transition-all bg-blue-600 hover:bg-blue-500 text-white">
+                                        <Button variant="primary" className="w-full h-11 rounded-xl px-4 sm:px-8 font-black text-xs gap-2 shadow-lg shadow-blue-500/20 active:scale-95 transition-all bg-blue-600 hover:bg-blue-500 text-white">
                                             <DollarSign className="w-4 h-4" />
                                             <span className="truncate">Contribute</span>
                                         </Button>
