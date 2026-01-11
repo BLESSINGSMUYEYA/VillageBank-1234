@@ -22,11 +22,11 @@ export function GrowthLoader({
     showText = false,
 }: LoaderProps) {
     const sizeMap = {
-        xs: { width: 45, height: 30 },
-        sm: { width: 60, height: 40 },
-        md: { width: 100, height: 67 },
-        lg: { width: 150, height: 100 },
-        xl: { width: 200, height: 133 }
+        xs: { width: 55, height: 36 },
+        sm: { width: 75, height: 50 },
+        md: { width: 125, height: 84 },
+        lg: { width: 180, height: 120 },
+        xl: { width: 250, height: 166 }
     }
 
     const dimensions = sizeMap[size as keyof typeof sizeMap] || sizeMap.lg
