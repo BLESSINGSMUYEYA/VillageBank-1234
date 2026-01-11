@@ -404,96 +404,97 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
     )
   }
 
+
   return (
     <motion.div
       variants={staggerContainer}
       initial="initial"
       animate="animate"
-      className="space-y-10 max-w-4xl mx-auto"
+      className="space-y-8 max-w-2xl mx-auto"
     >
       <motion.div variants={itemFadeIn}>
-        <GlassCard className="p-8 sm:p-12 space-y-10" hover={false}>
-          <SectionHeader
-            title="Invitation Protocol"
-            description="Configure secure access parameters for this share link"
-            icon={Share2}
-          />
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <FormGroup label="Access Level">
-              <Select value={permissions} onValueChange={setPermissions}>
-                <SelectTrigger className="w-full h-14 rounded-2xl bg-white/40 dark:bg-black/20 border-white/10 shadow-inner backdrop-blur-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/30 transition-all font-bold text-foreground hover:bg-white/50 dark:hover:bg-white/5 px-5">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="rounded-2xl border-white/10 bg-white/90 dark:bg-slate-950/90 backdrop-blur-3xl shadow-2xl p-1">
-                  <SelectItem value="VIEW_ONLY" className="font-bold rounded-xl focus:bg-blue-500/10 focus:text-blue-600 cursor-pointer py-3">View Only</SelectItem>
-                  <SelectItem value="REQUEST_JOIN" className="font-bold rounded-xl focus:bg-blue-500/10 focus:text-blue-600 cursor-pointer py-3">Can Request to Join</SelectItem>
-                  <SelectItem value="LIMITED_ACCESS" className="font-bold rounded-xl focus:bg-blue-500/10 focus:text-blue-600 cursor-pointer py-3">Limited Access</SelectItem>
-                  <SelectItem value="FULL_PREVIEW" className="font-bold rounded-xl focus:bg-blue-500/10 focus:text-blue-600 cursor-pointer py-3">Full Preview</SelectItem>
-                </SelectContent>
-              </Select>
-            </FormGroup>
-
-            <FormGroup label="Persistence">
-              <Select value={expiresIn} onValueChange={setExpiresIn}>
-                <SelectTrigger className="w-full h-14 rounded-2xl bg-white/40 dark:bg-black/20 border-white/10 shadow-inner backdrop-blur-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500/30 transition-all font-bold text-foreground hover:bg-white/50 dark:hover:bg-white/5 px-5">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="rounded-2xl border-white/10 bg-white/90 dark:bg-slate-950/90 backdrop-blur-3xl shadow-2xl p-1">
-                  <SelectItem value="1" className="font-bold rounded-xl focus:bg-blue-500/10 focus:text-blue-600 cursor-pointer py-3">1 Day</SelectItem>
-                  <SelectItem value="7" className="font-bold rounded-xl focus:bg-blue-500/10 focus:text-blue-600 cursor-pointer py-3">7 Days</SelectItem>
-                  <SelectItem value="30" className="font-bold rounded-xl focus:bg-blue-500/10 focus:text-blue-600 cursor-pointer py-3">30 Days</SelectItem>
-                  <SelectItem value="never" className="font-bold rounded-xl focus:bg-blue-500/10 focus:text-blue-600 cursor-pointer py-3">Permanent</SelectItem>
-                </SelectContent>
-              </Select>
-            </FormGroup>
-
-            <FormGroup label="Capacity Limit">
-              <PremiumInput
-                type="number"
-                min="1"
-                max="100"
-                value={maxUses}
-                onChange={(e) => setMaxUses(e.target.value)}
-                className="bg-white/40 dark:bg-black/20"
-              />
-            </FormGroup>
+        <GlassCard className="p-8 sm:p-10 space-y-8" hover={false}>
+          {/* Header */}
+          <div className="text-center space-y-2">
+            <h2 className="text-2xl font-black tracking-tight text-foreground">Invites</h2>
+            <p className="text-sm font-medium text-muted-foreground/80">Configure secure access for {groupName}</p>
           </div>
 
-          <FormGroup label="Custom Invitation Message">
-            <PremiumInput
-              placeholder="Add a personal touch to your invitation..."
-              value={customMessage}
-              onChange={(e) => setCustomMessage(e.target.value.slice(0, 100))}
-              maxLength={100}
-              className="bg-white/40 dark:bg-black/20"
-            />
-            <div className="flex justify-end pt-2">
-              <span className="text-[10px] uppercase tracking-widest font-black text-muted-foreground opacity-50">
-                {customMessage.length} / 100
-              </span>
+          <div className="space-y-6">
+            {/* Main Configuration */}
+            <div className="space-y-2">
+              <label className="text-xs font-black uppercase tracking-wider text-muted-foreground ml-1">Access Level</label>
+              <Select value={permissions} onValueChange={setPermissions}>
+                <SelectTrigger className="w-full h-12 rounded-xl bg-white/40 dark:bg-black/20 border-white/10 shadow-sm backdrop-blur-md focus:ring-2 focus:ring-blue-500/10 font-bold px-4">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-white/10 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl p-1">
+                  <SelectItem value="VIEW_ONLY" className="font-bold rounded-lg cursor-pointer py-2.5">View Only</SelectItem>
+                  <SelectItem value="REQUEST_JOIN" className="font-bold rounded-lg cursor-pointer py-2.5">Can Request to Join</SelectItem>
+                  <SelectItem value="LIMITED_ACCESS" className="font-bold rounded-lg cursor-pointer py-2.5">Limited Access</SelectItem>
+                  <SelectItem value="FULL_PREVIEW" className="font-bold rounded-lg cursor-pointer py-2.5">Full Preview</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          </FormGroup>
 
-          <Button
-            onClick={generateQRCode}
-            disabled={loading}
-            size="xl"
-            variant="default"
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-xl shadow-blue-500/20 h-16 rounded-2xl border-t border-white/20 font-black tracking-tight text-lg transition-all active:scale-[0.98]"
-          >
-            {loading ? (
-              <>
-                <InlineLogoLoader size="sm" />
-                <span className="ml-2">Encoding protocol...</span>
-              </>
-            ) : (
-              <>
-                <QrCode className="mr-3 h-5 w-5" />
-                Generate Secure Key
-              </>
-            )}
-          </Button>
+            {/* Advanced Options Toggle (Simplified as a grid for now) */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-xs font-black uppercase tracking-wider text-muted-foreground ml-1">Expires In</label>
+                <Select value={expiresIn} onValueChange={setExpiresIn}>
+                  <SelectTrigger className="w-full h-12 rounded-xl bg-white/40 dark:bg-black/20 border-white/10 shadow-sm backdrop-blur-md focus:ring-2 focus:ring-blue-500/10 font-bold px-4">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border-white/10 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl p-1">
+                    <SelectItem value="1" className="font-bold rounded-lg cursor-pointer py-2.5">1 Day</SelectItem>
+                    <SelectItem value="7" className="font-bold rounded-lg cursor-pointer py-2.5">7 Days</SelectItem>
+                    <SelectItem value="30" className="font-bold rounded-lg cursor-pointer py-2.5">30 Days</SelectItem>
+                    <SelectItem value="never" className="font-bold rounded-lg cursor-pointer py-2.5">Permanent</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-black uppercase tracking-wider text-muted-foreground ml-1">Max Uses</label>
+                <PremiumInput
+                  type="number"
+                  min="1"
+                  max="100"
+                  value={maxUses}
+                  onChange={(e) => setMaxUses(e.target.value)}
+                  className="h-12 bg-white/40 dark:bg-black/20 rounded-xl"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-black uppercase tracking-wider text-muted-foreground ml-1">Personal Message</label>
+              <PremiumInput
+                placeholder="Optional greeting..."
+                value={customMessage}
+                onChange={(e) => setCustomMessage(e.target.value.slice(0, 100))}
+                maxLength={100}
+                className="h-12 bg-white/40 dark:bg-black/20 rounded-xl"
+              />
+            </div>
+
+            <Button
+              onClick={generateQRCode}
+              disabled={loading}
+              className="w-full h-14 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20 font-black tracking-tight text-base mt-4 transition-all active:scale-[0.98]"
+            >
+              {loading ? (
+                <>
+                  <InlineLogoLoader size="sm" />
+                  <span className="ml-2">Generating Key...</span>
+                </>
+              ) : (
+                <>
+                  Generate Invitation
+                </>
+              )}
+            </Button>
+          </div>
         </GlassCard>
       </motion.div>
 
@@ -505,103 +506,51 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
             animate="animate"
             exit={{ opacity: 0, scale: 0.95 }}
           >
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:items-start">
-              {/* QR Code Card */}
-              <GlassCard className="p-8 flex flex-col items-center justify-center space-y-8 bg-gradient-to-br from-white/40 to-white/10 dark:from-slate-900/60 dark:to-slate-900/20" hover={true}>
-                <div className="relative group cursor-pointer" onClick={downloadQRCode}>
-                  <div className="absolute -inset-8 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-700 animate-pulse" />
-                  <div className="relative p-6 bg-white rounded-[32px] shadow-2xl border border-white/20 transform group-hover:scale-[1.02] transition-transform duration-500">
+            <GlassCard className="p-0 overflow-hidden" hover={false}>
+              <div className="p-8 flex flex-col items-center justify-center space-y-6 bg-gradient-to-b from-blue-50/50 to-transparent dark:from-blue-900/10">
+                <div className="relative group cursor-pointer transform hover:scale-[1.02] transition-transform duration-300" onClick={downloadQRCode}>
+                  <div className="p-4 bg-white rounded-3xl shadow-xl border border-white/50">
                     <img
                       src={shareData.qrCode}
-                      alt="Group QR Code"
-                      className="w-full max-w-[260px] h-auto aspect-square object-contain"
+                      alt="QR Code"
+                      className="w-48 h-48 object-contain rounded-xl"
                     />
                   </div>
-                </div>
-                <div className="text-center space-y-1.5">
-                  <h4 className="text-xl font-black tracking-tight text-foreground">{groupName}</h4>
-                  <p className="text-[10px] font-black text-blue-500 uppercase tracking-[0.2em]">Secure Entry Point</p>
-                </div>
-              </GlassCard>
-
-              {/* Details & Actions Card */}
-              <GlassCard className="p-8 sm:p-10 space-y-8" hover={false}>
-                <div className="flex items-center justify-between border-b border-border/10 pb-6">
-                  <div className="space-y-1">
-                    <h4 className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground">Permissions</h4>
-                    <p className="text-xs text-muted-foreground/60 font-medium">Access level configuration</p>
-                  </div>
-                  {getPermissionBadge(shareData.permissions)}
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-4 bg-blue-500/5 hover:bg-blue-500/10 transition-colors rounded-2xl border border-blue-500/10 group">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Users className="h-4 w-4 text-blue-600" />
-                      </div>
-                      <span className="text-xs font-black uppercase tracking-wider text-muted-foreground group-hover:text-blue-600 transition-colors">Capacity</span>
-                    </div>
-                    <span className="text-sm font-bold">{shareData.currentUses} / {shareData.maxUses} uses</span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-4 bg-orange-500/5 hover:bg-orange-500/10 transition-colors rounded-2xl border border-orange-500/10 group">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Clock className="h-4 w-4 text-orange-600" />
-                      </div>
-                      <span className="text-xs font-black uppercase tracking-wider text-muted-foreground group-hover:text-orange-600 transition-colors">Expires</span>
-                    </div>
-                    <span className="text-sm font-bold">
-                      {shareData.expiresAt
-                        ? new Date(shareData.expiresAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
-                        : 'Never'
-                      }
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-4 bg-emerald-500/5 hover:bg-emerald-500/10 transition-colors rounded-2xl border border-emerald-500/10 group">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Shield className="h-4 w-4 text-emerald-600" />
-                      </div>
-                      <span className="text-xs font-black uppercase tracking-wider text-muted-foreground group-hover:text-emerald-600 transition-colors">Security</span>
-                    </div>
-                    <span className="text-sm font-bold text-emerald-600">SHA-256 Verified</span>
+                  <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-black/80 text-white text-[10px] font-bold px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    Click to Download
                   </div>
                 </div>
 
-                <div className="pt-2 grid grid-cols-2 gap-3">
-                  <Button
-                    onClick={copyShareLink}
-                    variant="outline"
-                    className="h-12 font-bold rounded-xl border-border/20 hover:bg-white/5 hover:text-blue-600 hover:border-blue-500/30 transition-all text-xs uppercase tracking-wider"
-                  >
-                    <Copy className="h-4 w-4 mr-2" />
-                    Copy Link
-                  </Button>
-                  <Button
-                    onClick={downloadQRCode}
-                    variant="outline"
-                    className="h-12 font-bold rounded-xl border-border/20 hover:bg-white/5 hover:text-blue-600 hover:border-blue-500/30 transition-all text-xs uppercase tracking-wider"
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Download
-                  </Button>
+                <div className="flex items-center gap-4 text-xs font-medium text-muted-foreground">
+                  <span className="flex items-center gap-1.5 bg-zinc-100 dark:bg-white/5 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-white/5">
+                    <Shield className="w-3.5 h-3.5" />
+                    {shareData.permissions === 'VIEW_ONLY' ? 'View Only' : 'Join Access'}
+                  </span>
+                  <span className="flex items-center gap-1.5 bg-zinc-100 dark:bg-white/5 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-white/5">
+                    <Clock className="w-3.5 h-3.5" />
+                    {shareData.expiresAt ? new Date(shareData.expiresAt).toLocaleDateString() : 'Permanent'}
+                  </span>
                 </div>
+              </div>
 
+              <div className="p-6 bg-zinc-50/50 dark:bg-black/20 border-t border-zinc-100 dark:border-white/5 grid grid-cols-2 gap-3">
+                <Button
+                  onClick={copyShareLink}
+                  variant="outline"
+                  className="h-12 rounded-xl font-bold border-zinc-200 dark:border-white/10 hover:bg-white hover:text-blue-600 transition-colors"
+                >
+                  <Copy className="w-4 h-4 mr-2" />
+                  Copy Link
+                </Button>
                 <Button
                   onClick={handleShare}
-                  variant="default"
-                  size="xl"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/25 group h-14 rounded-2xl font-black tracking-tight"
-                  disabled={loading}
+                  className="h-12 rounded-xl font-bold bg-zinc-900 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 shadow-lg"
                 >
-                  <Share2 className="h-5 w-5 mr-3 group-hover:scale-110 transition-transform" />
-                  {loading ? 'Processing...' : 'Share Invitation'}
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Share
                 </Button>
-              </GlassCard>
-            </div>
+              </div>
+            </GlassCard>
           </motion.div>
         )}
       </AnimatePresence>
