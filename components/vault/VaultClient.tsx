@@ -57,7 +57,7 @@ export function VaultClient({
     const [activeTab, setActiveTab] = useState('savings') // Keeping for safety, though unused in new layout? No, remove it.
     const [filter, setFilter] = useState<'ALL' | 'INCOME' | 'OUTFLOW'>('ALL')
     const [searchTerm, setSearchTerm] = useState('')
-    const [showStats, setShowStats] = useState(true)
+    const [showStats, setShowStats] = useState(false)
 
     // Unified Stats calculation
     const totalSaved = contributions
