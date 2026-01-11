@@ -223,53 +223,60 @@ export function VaultClient({
                                     {filteredItems.map((item) => (
                                         <div
                                             key={`${item.type}-${item.id}`}
-                                            className="group p-4 bg-white dark:bg-slate-900/60 border border-slate-100 dark:border-white/5 rounded-2xl flex items-center justify-between hover:shadow-md hover:border-slate-200 dark:hover:border-white/10 transition-all cursor-default"
+                                            className="group p-3 sm:p-4 bg-white dark:bg-slate-900/60 border border-slate-100 dark:border-white/5 rounded-2xl flex items-center justify-between gap-3 hover:shadow-md hover:border-slate-200 dark:hover:border-white/10 transition-all cursor-default"
                                         >
-                                            <div className="flex items-center gap-4">
+                                            <div className="flex items-center gap-3 sm:gap-4 min-w-0 overflow-hidden">
                                                 <div className={cn(
-                                                    "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border",
+                                                    "w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 border",
                                                     item.type === 'CONTRIBUTION'
                                                         ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600"
                                                         : "bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-banana"
                                                 )}>
-                                                    {item.type === 'CONTRIBUTION' ? <Wallet className="w-6 h-6" /> : <CreditCard className="w-6 h-6" />}
+                                                    {item.type === 'CONTRIBUTION' ? <Wallet className="w-5 h-5 sm:w-6 sm:h-6" /> : <CreditCard className="w-5 h-5 sm:w-6 sm:h-6" />}
                                                 </div>
 
-                                                <div>
-                                                    <div className="flex items-center gap-2">
-                                                        <p className="font-black text-sm text-foreground">
+                                                <div className="min-w-0 truncate">
+                                                    <div className="flex items-center gap-2 mb-0.5 sm:mb-0">
+                                                        <p className="font-black text-xs sm:text-sm text-foreground truncate">
                                                             {item.groupName}
                                                         </p>
                                                         <span className={cn(
-                                                            "text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider",
+                                                            "hidden sm:inline-flex text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider shrink-0",
                                                             item.type === 'CONTRIBUTION' ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
                                                         )}>
                                                             {item.type === 'CONTRIBUTION' ? 'Deposit' : 'Loan'}
                                                         </span>
                                                     </div>
-                                                    <div className="flex items-center gap-2 mt-1">
-                                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1 shrink-0">
                                                             <Calendar className="w-3 h-3" />
                                                             {item.date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                                         </p>
                                                         {item.status === 'PENDING' && (
-                                                            <span className="text-[9px] font-bold text-orange-500 bg-orange-500/10 px-1.5 rounded-sm">
+                                                            <span className="text-[9px] font-bold text-orange-500 bg-orange-500/10 px-1.5 rounded-sm shrink-0">
                                                                 Pending
                                                             </span>
                                                         )}
+                                                        {/* Mobile Type Badge (Only shown on small screens) */}
+                                                        <span className={cn(
+                                                            "sm:hidden text-[9px] font-black px-1.5 py-0 rounded-full uppercase tracking-wider shrink-0",
+                                                            item.type === 'CONTRIBUTION' ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                                                        )}>
+                                                            {item.type === 'CONTRIBUTION' ? 'Dep' : 'Loan'}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div className="text-right">
+                                            <div className="text-right shrink-0">
                                                 <p className={cn(
-                                                    "text-lg font-black tracking-tight",
+                                                    "text-sm sm:text-lg font-black tracking-tight",
                                                     item.type === 'CONTRIBUTION' ? "text-emerald-600 dark:text-emerald-400" : "text-foreground"
                                                 )}>
                                                     {item.type === 'CONTRIBUTION' ? '+' : ''} {formatCurrency(item.amount)}
                                                 </p>
                                                 <Badge className={cn(
-                                                    "text-[9px] px-2 py-0.5 border-0 mt-1",
+                                                    "text-[9px] px-1.5 sm:px-2 py-0 sm:py-0.5 border-0 mt-0.5 sm:mt-1",
                                                     item.status === 'COMPLETED' || item.status === 'ACTIVE'
                                                         ? "bg-slate-100 dark:bg-slate-800 text-slate-500"
                                                         : item.status === 'PENDING'
