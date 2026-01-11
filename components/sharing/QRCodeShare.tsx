@@ -36,8 +36,9 @@ const generateHighResQR = async (text: string): Promise<string> => {
     // 2. Create Gradient for QR Modules
     // We want to recolor the black pixels to a brand gradient
     const gradient = ctx.createLinearGradient(0, 0, size, size)
+
     gradient.addColorStop(0, '#2563eb') // blue-600
-    gradient.addColorStop(1, '#ca8a04') // yellow-600 (banana-dark)
+    gradient.addColorStop(1, '#EAB308') // yellow-500 (Brand Banana)
 
     // Use composite operation to colorize
     ctx.globalCompositeOperation = 'source-in'
@@ -211,7 +212,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
 
         // 2. Glass Card Container
         const cardWidth = 900
-        const cardHeight = 1200
+        const cardHeight = 1300 // Slightly taller for better spacing
         const cardX = (width - cardWidth) / 2
         const cardY = (height - cardHeight) / 2
         const cardRadius = 60
@@ -251,7 +252,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
 
         // Tagline - Golden
         currentY += 50
-        ctx.fillStyle = '#ca8a04' // Yellow-600
+        ctx.fillStyle = '#EAB308' // Yellow-500 (Brand Banana)
         ctx.font = '800 24px Inter, system-ui, sans-serif'
         ctx.letterSpacing = '0.3rem'
         const tagline = 'SECURE GROUP ACCESS'
@@ -469,7 +470,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
               onClick={generateQRCode}
               isLoading={loading}
               variant="primary"
-              className="w-full h-14 rounded-2xl shadow-lg mt-4 text-base font-bold tracking-tight"
+              className="w-full h-14 rounded-2xl shadow-lg mt-4 text-base font-bold tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white border-0"
             >
               Generate Invitation
             </Button>

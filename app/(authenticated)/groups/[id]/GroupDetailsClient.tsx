@@ -145,7 +145,10 @@ export default function GroupDetailsClient({
                                                     <span className="truncate">Invite</span>
                                                 </Button>
                                             </DialogTrigger>
-                                            <DialogContent className="sm:max-w-md border-none bg-transparent p-0 shadow-none">
+                                            <DialogContent
+                                                overlayClassName="bg-black/10 backdrop-blur-xs"
+                                                className="sm:max-w-md border-none bg-transparent p-0 shadow-none max-h-[85vh] overflow-y-auto no-scrollbar"
+                                            >
                                                 <DialogTitle className="sr-only">Share Group Access Card</DialogTitle>
                                                 <div className="zen-card p-8">
                                                     <QRCodeShare groupId={group.id} groupName={group.name} />

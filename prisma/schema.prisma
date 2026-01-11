@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,30 +8,245 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  ubankTag      String?   @unique // UPI-like unique ID (e.g. @john.doe)
-  firstName     String?
-  lastName      String?
-  phoneNumber   String?
-  region        String?
-  role          UserRole  @default(MEMBER)
-  emailVerified DateTime? @default(now())
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  password      String?
-  resetToken    String?   @unique
-  resetTokenExpiry DateTime?
-  
-  groupMembers      GroupMember[]
+  id                String             @id @default(cuid())
+  email             String             @unique
+  ubankTag          String?            @unique
+  firstName         String?
+  lastName          String?
+  phoneNumber       String?
+  region            String?
+  role              UserRole           @default(MEMBER)
+  emailVerified     DateTime?          @default(now())
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  password          String?
+  resetToken        String?            @unique
+  resetTokenExpiry  DateTime?
+  activities        Activity[]
   contributions     Contribution[]
+  groupMembers      GroupMember[]
+  groupShares       GroupShare[]
   loans             Loan[]
   loanRepayments    LoanRepayment[]
-  activities        Activity[]
-  notifications     Notification[]
-  groupShares       GroupShare[]
-  pushSubscriptions PushSubscription[]
   memberBankDetails MemberBankDetail[]
+  notifications     Notification[]
+  pushSubscriptions PushSubscription[]
+}
+
+model Group {
+  id                       String           @id @default(cuid())
+  name                     String
+  ubankTag                 String?          @unique
+  description              String?
+  region                   Region
+  meetingFrequency         MeetingFrequency @default(MONTHLY)
+  monthlyContribution      Float
+  socialFundAmount         Float            @default(0)
+  maxLoanMultiplier        Int              @default(3)
+  interestRate             Float            @default(10)
+  loanInterestType         InterestType     @default(FLAT_RATE)
+  penaltyAmount            Float            @default(0)
+  lateContributionFee      Float            @default(0)
+  lateMeetingFine          Float            @default(0)
+  missedMeetingFine        Float            @default(0)
+  contributionDueDay       Int              @default(5)
+  contributionDeadlineType MeetingFrequency @default(MONTHLY)
+  loanGracePeriodDays      Int              @default(0)
+  isActive                 Boolean          @default(true)
+  createdById              String
+  createdAt                DateTime         @default(now())
+  updatedAt                DateTime         @updatedAt
+  activities               Activity[]
+  contributions            Contribution[]
+  members                  GroupMember[]
+  groupShares              GroupShare[]
+  loans                    Loan[]
+  paymentMethods           PaymentMethod[]
+}
+
+model GroupMember {
+  id              String       @id @default(cuid())
+  groupId         String
+  userId          String
+  role            GroupRole    @default(MEMBER)
+  status          MemberStatus @default(PENDING)
+  joinedAt        DateTime     @default(now())
+  balance         Float        @default(0)
+  unpaidPenalties Float        @default(0)
+  group           Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+}
+
+model Contribution {
+  id              String        @id @default(cuid())
+  groupId         String
+  userId          String
+  amount          Float
+  month           Int
+  year            Int
+  paymentDate     DateTime      @default(now())
+  paymentMethod   String?
+  transactionRef  String?
+  receiptUrl      String?
+  status          PaymentStatus @default(PENDING)
+  penaltyApplied  Float         @default(0)
+  isLate          Boolean       @default(false)
+  reviewedById    String?
+  reviewDate      DateTime?
+  rejectionReason String?
+  createdAt       DateTime      @default(now())
+  group           Group         @relation(fields: [groupId], references: [id])
+  user            User          @relation(fields: [userId], references: [id])
+
+  @@index([groupId, userId, month, year])
+  @@index([status])
+  @@index([userId, status])
+}
+
+model Loan {
+  id                        String             @id @default(cuid())
+  groupId                   String
+  userId                    String
+  amountRequested           Float
+  amountApproved            Float?
+  interestRate              Float
+  repaymentPeriodMonths     Int
+  status                    LoanStatus         @default(PENDING)
+  approvedById              String?
+  approvedAt                DateTime?
+  rejectedById              String?
+  rejectedAt                DateTime?
+  rejectionReason           String?
+  createdAt                 DateTime           @default(now())
+  updatedAt                 DateTime           @updatedAt
+  disbursementMethod        PaymentMethodType?
+  disbursementAccountName   String?
+  disbursementAccountNumber String?
+  disbursementBankName      String?
+  group                     Group              @relation(fields: [groupId], references: [id])
+  user                      User               @relation(fields: [userId], references: [id])
+  repayments                LoanRepayment[]
+
+  @@index([groupId, status])
+  @@index([userId, status])
+}
+
+model LoanRepayment {
+  id             String   @id @default(cuid())
+  loanId         String
+  userId         String
+  amount         Float
+  paymentMethod  String?
+  transactionRef String?
+  paidAt         DateTime @default(now())
+  createdAt      DateTime @default(now())
+  loan           Loan     @relation(fields: [loanId], references: [id])
+  user           User     @relation(fields: [userId], references: [id])
+}
+
+model PaymentMethod {
+  id            String            @id @default(cuid())
+  groupId       String
+  type          PaymentMethodType
+  accountNumber String
+  accountName   String
+  isActive      Boolean           @default(true)
+  addedById     String
+  createdAt     DateTime          @default(now())
+  group         Group             @relation(fields: [groupId], references: [id])
+}
+
+model Activity {
+  id          String   @id @default(cuid())
+  userId      String
+  groupId     String?
+  actionType  String
+  description String
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  group       Group?   @relation(fields: [groupId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, groupId, createdAt])
+  @@index([groupId, createdAt])
+}
+
+model Notification {
+  id         String           @id @default(cuid())
+  userId     String
+  type       NotificationType @default(INFO)
+  title      String
+  message    String
+  read       Boolean          @default(false)
+  actionUrl  String?
+  actionText String?
+  createdAt  DateTime         @default(now())
+  user       User             @relation(fields: [userId], references: [id])
+
+  @@index([userId, read])
+  @@index([userId, createdAt])
+}
+
+model GroupShare {
+  id            String          @id @default(cuid())
+  groupId       String
+  sharedById    String
+  shareToken    String          @unique
+  shareType     ShareType       @default(QR_CODE)
+  permissions   SharePermission @default(REQUEST_JOIN)
+  expiresAt     DateTime?
+  maxUses       Int?            @default(10)
+  currentUses   Int             @default(0)
+  customMessage String?
+  isActive      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  group         Group           @relation(fields: [groupId], references: [id])
+  sharedBy      User            @relation(fields: [sharedById], references: [id])
+  qrAnalytics   QrAnalytics[]
+
+  @@index([shareToken])
+  @@index([groupId])
+}
+
+model QrAnalytics {
+  id                String     @id @default(cuid())
+  groupShareId      String
+  scannedAt         DateTime   @default(now())
+  ipAddress         String?
+  userAgent         String?
+  location          String?
+  convertedToMember Boolean    @default(false)
+  groupShare        GroupShare @relation(fields: [groupShareId], references: [id], onDelete: Cascade)
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model MemberBankDetail {
+  id            String            @id @default(cuid())
+  userId        String
+  type          PaymentMethodType
+  bankName      String?
+  accountNumber String
+  accountName   String
+  isPrimary     Boolean           @default(false)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 enum UserRole {
@@ -60,55 +272,6 @@ enum InterestType {
   REDUCING_BALANCE
 }
 
-model Group {
-  id                      String   @id @default(cuid())
-  name                    String
-  ubankTag                String?  @unique // UPI-like unique ID (e.g. @my.group)
-  description             String?
-  region                  Region
-  meetingFrequency        MeetingFrequency @default(MONTHLY)
-  monthlyContribution     Float
-  socialFundAmount        Float    @default(0)
-  maxLoanMultiplier       Int      @default(3)
-  interestRate            Float    @default(10)
-  loanInterestType        InterestType @default(FLAT_RATE)
-  penaltyAmount           Float    @default(0) // Default late payment penalty (general)
-  lateContributionFee     Float    @default(0) // Specific fee for late contributions
-  lateMeetingFine         Float    @default(0)
-  missedMeetingFine       Float    @default(0)
-  contributionDueDay      Int      @default(5)
-  contributionDeadlineType MeetingFrequency @default(MONTHLY)
-  loanGracePeriodDays     Int      @default(0)
-  isActive                Boolean  @default(true)
-  createdById             String
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
-  
-  members                 GroupMember[]
-  contributions           Contribution[]
-  loans                   Loan[]
-  paymentMethods          PaymentMethod[]
-  activities              Activity[]
-  groupShares             GroupShare[]
-}
-
-model GroupMember {
-  id        String           @id @default(cuid())
-  groupId   String
-  userId    String
-  role      GroupRole        @default(MEMBER)
-  status    MemberStatus     @default(PENDING)
-  joinedAt  DateTime         @default(now())
-  
-  group     Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  balance          Float @default(0) // (+) for overpayment/credit, (-) for debt/owed
-  unpaidPenalties  Float @default(0) // Total accumulated penalties not yet paid
-  
-  @@unique([groupId, userId])
-}
-
 enum GroupRole {
   ADMIN
   TREASURER
@@ -122,69 +285,11 @@ enum MemberStatus {
   SUSPENDED
 }
 
-model Contribution {
-  id                  String             @id @default(cuid())
-  groupId             String
-  userId              String
-  amount              Float
-  month               Int
-  year                Int
-  paymentDate         DateTime           @default(now())
-  paymentMethod       String?
-  transactionRef      String?
-  receiptUrl          String?
-  status              PaymentStatus      @default(PENDING)
-  penaltyApplied      Float              @default(0)
-  isLate              Boolean            @default(false)
-  reviewedById        String?
-  reviewDate          DateTime?
-  rejectionReason     String?
-  createdAt           DateTime           @default(now())
-  
-  group               Group   @relation(fields: [groupId], references: [id])
-  user                User    @relation(fields: [userId], references: [id])
-  
-  @@index([groupId, userId, month, year])
-  @@index([status])
-  @@index([userId, status])
-}
-
 enum PaymentStatus {
   PENDING
   COMPLETED
   FAILED
   REJECTED
-}
-
-model Loan {
-  id                    String       @id @default(cuid())
-  groupId               String
-  userId                String
-  amountRequested       Float
-  amountApproved        Float?
-  interestRate          Float
-  repaymentPeriodMonths Int
-  status                LoanStatus   @default(PENDING)
-  approvedById          String?
-  approvedAt            DateTime?
-  rejectedById          String?
-  rejectedAt            DateTime?
-  rejectionReason           String?
-  createdAt                 DateTime     @default(now())
-  updatedAt                 DateTime     @updatedAt
-  
-  // Disbursement account details - where to send the loan funds
-  disbursementMethod        PaymentMethodType?
-  disbursementAccountName   String?
-  disbursementAccountNumber String?
-  disbursementBankName      String?       // Only for BANK_CARD type
-  
-  group                 Group          @relation(fields: [groupId], references: [id])
-  user                  User           @relation(fields: [userId], references: [id])
-  repayments            LoanRepayment[]
-
-  @@index([groupId, status])
-  @@index([userId, status])
 }
 
 enum LoanStatus {
@@ -196,70 +301,10 @@ enum LoanStatus {
   DEFAULTED
 }
 
-model LoanRepayment {
-  id              String   @id @default(cuid())
-  loanId          String
-  userId          String
-  amount          Float
-  paymentMethod   String?
-  transactionRef  String?
-  paidAt          DateTime @default(now())
-  createdAt       DateTime @default(now())
-  
-  loan            Loan     @relation(fields: [loanId], references: [id])
-  user            User     @relation(fields: [userId], references: [id])
-}
-
-model PaymentMethod {
-  id            String              @id @default(cuid())
-  groupId       String
-  type          PaymentMethodType
-  accountNumber String
-  accountName   String
-  isActive      Boolean             @default(true)
-  addedById     String
-  createdAt     DateTime            @default(now())
-  
-  group         Group               @relation(fields: [groupId], references: [id])
-}
-
 enum PaymentMethodType {
   AIRTEL_MONEY
   MPAMBA
   BANK_CARD
-}
-
-model Activity {
-  id          String   @id @default(cuid())
-  userId      String
-  groupId     String?
-  actionType  String
-  description String
-  metadata    Json?
-  createdAt   DateTime @default(now())
-  
-  user        User     @relation(fields: [userId], references: [id])
-  group       Group?   @relation(fields: [groupId], references: [id])
-
-  @@index([userId, groupId, createdAt])
-  @@index([groupId, createdAt])
-}
-
-model Notification {
-  id         String              @id @default(cuid())
-  userId     String
-  type       NotificationType    @default(INFO)
-  title      String
-  message    String
-  read       Boolean             @default(false)
-  actionUrl  String?
-  actionText String?
-  createdAt  DateTime            @default(now())
-  
-  user       User                @relation(fields: [userId], references: [id])
-
-  @@index([userId, read])
-  @@index([userId, createdAt])
 }
 
 enum NotificationType {
@@ -269,70 +314,6 @@ enum NotificationType {
   ERROR
 }
 
-model GroupShare {
-  id          String      @id @default(cuid())
-  groupId     String
-  sharedById  String
-  shareToken  String      @unique
-  shareType   ShareType   @default(QR_CODE)
-  permissions SharePermission @default(REQUEST_JOIN)
-  expiresAt   DateTime?
-  maxUses     Int?        @default(10)
-  currentUses Int         @default(0)
-  customMessage String?   @db.Text
-  isActive    Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  
-  group       Group       @relation(fields: [groupId], references: [id])
-  sharedBy    User        @relation(fields: [sharedById], references: [id])
-  qrAnalytics QrAnalytics[]
-  
-  @@index([shareToken])
-  @@index([groupId])
-}
-
-model QrAnalytics {
-  id           String   @id @default(cuid())
-  groupShareId String
-  scannedAt    DateTime @default(now())
-  ipAddress    String?
-  userAgent    String?
-  location     String?
-  convertedToMember Boolean @default(false)
-  
-  groupShare   GroupShare @relation(fields: [groupShareId], references: [id], onDelete: Cascade)
-}
-
-model PushSubscription {
-  id        String   @id @default(cuid())
-  userId    String
-  endpoint  String   @unique
-  p256dh    String
-  auth      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-}
-
-model MemberBankDetail {
-  id            String            @id @default(cuid())
-  userId        String
-  type          PaymentMethodType
-  bankName      String?           // Only required for BANK_CARD type
-  accountNumber String
-  accountName   String
-  isPrimary     Boolean           @default(false)
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
-  
-  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@index([userId])
-}
-
 enum ShareType {
   QR_CODE
   DIRECT_LINK
@@ -340,8 +321,8 @@ enum ShareType {
 }
 
 enum SharePermission {
-  VIEW_ONLY        // Can only see group info
-  REQUEST_JOIN     // Can view and request to join
-  LIMITED_ACCESS   // Can view some features
-  FULL_PREVIEW     // Can see most features except sensitive data
+  VIEW_ONLY
+  REQUEST_JOIN
+  LIMITED_ACCESS
+  FULL_PREVIEW
 }
