@@ -38,28 +38,50 @@ export function GroupsContent({ userGroups }: GroupsContentProps) {
             animate="animate"
             className="space-y-6 sm:space-y-10 pb-10"
         >
-            <PageHeader
-                title={t('groups.my_groups')}
-                description={
-                    <span className="flex flex-wrap items-center gap-1.5 opacity-80">
-                        {t('groups.manage_circles_desc')}
-                        <span className="text-blue-600 dark:text-banana font-bold">
-                            {t('groups.track_growth')}
-                        </span>
-                    </span>
-                }
-                action={
-                    <div className="flex flex-wrap items-center gap-3">
-                        <JoinGroupQR />
-                        <Link href="/groups/new">
-                            <Button variant="outline" className="shadow-lg group px-6 border-blue-500/20 hover:bg-blue-500/5">
-                                <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" />
-                                {t('groups.create_group')}
-                            </Button>
-                        </Link>
+            {/* Premium Hero Section */}
+            <div className="zen-card overflow-hidden">
+                <div className="p-6 sm:p-8 bg-gradient-to-b from-white/40 to-white/10 dark:from-slate-900/40 dark:to-slate-900/10 border-b border-white/10">
+                    <div className="flex flex-col md:flex-row justify-between items-start gap-8">
+                        <div className="space-y-4 max-w-2xl">
+                            <div>
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.2 }}
+                                >
+                                    <h1 className="text-3xl font-black tracking-tighter mb-2">
+                                        <span className="text-foreground">{t('groups.my_groups')}</span>
+                                        <span className="text-blue-600 dark:text-banana">.</span>
+                                    </h1>
+                                </motion.div>
+                                <p className="text-sm font-medium text-muted-foreground opacity-80 leading-relaxed max-w-xl">
+                                    {t('groups.manage_circles_desc')} <span className="text-blue-600 dark:text-banana font-bold">{t('groups.track_growth')}</span>
+                                </p>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <div className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/10 flex items-center gap-2">
+                                    <Shield className="w-3.5 h-3.5 text-blue-600 dark:text-banana" />
+                                    <span className="text-[10px] uppercase font-black tracking-widest text-blue-600 dark:text-banana">
+                                        {userGroups.length} {userGroups.length === 1 ? 'Active Group' : 'Active Groups'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="w-full md:w-auto grid grid-cols-2 md:flex items-center gap-3 mt-4 md:mt-0">
+                            <JoinGroupQR />
+                            <Link href="/groups/new" className="block w-full md:w-auto">
+                                <Button className="w-full md:w-auto relative h-11 bg-blue-600 hover:bg-blue-500 text-white border-0 rounded-xl px-4 sm:px-6 font-black tracking-wide shadow-xl shadow-blue-500/20">
+                                    <div className="bg-shimmer-slide" />
+                                    <Plus className="w-5 h-5 mr-2" />
+                                    <span className="truncate">{t('groups.create_group')}</span>
+                                </Button>
+                            </Link>
+                        </div>
                     </div>
-                }
-            />
+                </div>
+            </div>
 
             {userGroups.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8">

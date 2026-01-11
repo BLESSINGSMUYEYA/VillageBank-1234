@@ -158,9 +158,9 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                     {/* Identity Glass Card */}
                     <motion.div variants={itemFadeIn}>
                         <GlassCard className="p-0 overflow-hidden border-none shadow-xl shadow-blue-900/5 dark:shadow-none" hover={false}>
-                            {/* Modern Soft Gradient Banner */}
-                            <div className="h-32 bg-gradient-to-b from-blue-500/10 via-indigo-500/5 to-transparent relative overflow-hidden">
-                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.1),transparent_50%)]" />
+                            {/* Modern Neutral Banner */}
+                            <div className="h-32 bg-gradient-to-b from-zinc-500/5 to-transparent dark:from-white/5 relative overflow-hidden">
+                                {/* Subtle pattern or noise could go here, but keeping it clean for now */}
                             </div>
 
                             <CardContent className="relative pt-0 px-6 pb-8">
@@ -201,8 +201,8 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                                     </Button>
                                                 </div>
                                             ) : (
-                                                <div className="group flex items-center gap-1 px-3 py-1 rounded-full hover:bg-blue-500/5 transition-colors cursor-pointer" onClick={() => setIsEditingTag(true)}>
-                                                    <span className="text-sm font-bold text-muted-foreground group-hover:text-blue-600 transition-colors">
+                                                <div className="group flex items-center gap-1 px-3 py-1 rounded-full hover:bg-zinc-100 dark:hover:bg-white/5 transition-colors cursor-pointer" onClick={() => setIsEditingTag(true)}>
+                                                    <span className="text-sm font-bold text-muted-foreground group-hover:text-foreground transition-colors">
                                                         @{profile.ubankTag || 'claim_handle'}
                                                     </span>
                                                     <Edit2 className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-50 transition-opacity ml-1" />
@@ -228,7 +228,7 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                             { icon: Calendar, label: 'Member Since', value: profile?.joinedAt ? new Date(profile.joinedAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) : '---' }
                                         ].map((item, idx) => (
                                             <div key={idx} className="flex items-center gap-4 group/item">
-                                                <div className="w-8 h-8 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-muted-foreground group-hover/item:text-blue-500 group-hover/item:bg-blue-50 dark:group-hover/item:bg-blue-900/20 transition-colors shrink-0">
+                                                <div className="w-8 h-8 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-muted-foreground group-hover/item:text-foreground group-hover/item:bg-slate-100 dark:group-hover/item:bg-white/10 transition-colors shrink-0">
                                                     <item.icon className="w-4 h-4" />
                                                 </div>
                                                 <div className="min-w-0">
@@ -287,7 +287,7 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                     label="Net Capital"
                                     value={formatCurrency(financials?.totalContributions || 0)}
                                     description="Manage in Vault"
-                                    className="h-full hover:border-blue-500/30 transition-colors"
+                                    className="h-full hover:bg-zinc-50/50 dark:hover:bg-white/5 transition-colors"
                                 />
                             </Link>
                             <Link href="/vault" className="block">
@@ -298,7 +298,7 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                     label="Trust Score"
                                     value={`${financials?.eligibilityScore}%`}
                                     description="Credit Health: Excellent" // Mocked based on score being high
-                                    className="h-full hover:border-emerald-500/30 transition-colors"
+                                    className="h-full hover:bg-zinc-50/50 dark:hover:bg-white/5 transition-colors"
                                 />
                             </Link>
                         </div>

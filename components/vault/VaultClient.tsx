@@ -131,27 +131,27 @@ export function VaultClient({
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {/* Net Savings */}
-                            <div className="p-5 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl flex items-center justify-between">
+                            <div className="p-5 bg-zinc-50/50 dark:bg-white/5 border border-zinc-100 dark:border-white/5 rounded-2xl flex items-center justify-between group hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors">
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600 mb-1 opacity-70">
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1 opacity-70">
                                         {t('vault.net_savings')}
                                     </p>
-                                    <p className="text-3xl font-black text-foreground">{formatCurrency(totalSaved)}</p>
+                                    <p className="text-3xl font-black text-emerald-600 dark:text-emerald-400">{formatCurrency(totalSaved)}</p>
                                 </div>
-                                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
+                                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <Wallet className="w-6 h-6 text-emerald-500" />
                                 </div>
                             </div>
 
                             {/* Active Debt */}
-                            <div className="p-5 bg-blue-500/5 border border-blue-500/10 rounded-2xl flex items-center justify-between">
+                            <div className="p-5 bg-zinc-50/50 dark:bg-white/5 border border-zinc-100 dark:border-white/5 rounded-2xl flex items-center justify-between group hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors">
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-banana mb-1 opacity-70">
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1 opacity-70">
                                         {t('vault.active_liability')}
                                     </p>
-                                    <p className="text-3xl font-black text-foreground">{formatCurrency(activeDebt)}</p>
+                                    <p className="text-3xl font-black text-blue-600 dark:text-banana">{formatCurrency(activeDebt)}</p>
                                 </div>
-                                <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center">
+                                <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <CreditCard className="w-6 h-6 text-blue-600 dark:text-banana" />
                                 </div>
                             </div>
@@ -201,7 +201,7 @@ export function VaultClient({
                         {/* Actions */}
                         <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
                             <Link href="/contributions/new" className="flex-1 sm:flex-none">
-                                <Button size="sm" className="w-full sm:w-auto h-10 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20">
+                                <Button size="sm" className="w-full sm:w-auto h-10 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20">
                                     <Plus className="w-4 h-4 mr-2" />
                                     <span className="text-[10px] uppercase tracking-wide">{t('common.contributions')}</span>
                                 </Button>

@@ -5,11 +5,8 @@ import { useEffect } from 'react'
 export function ServiceWorkerRegister() {
     useEffect(() => {
         if ('serviceWorker' in navigator) {
-            const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            const isProduction = process.env.NODE_ENV === 'production'
-
-            if (isProduction || isLocal) {
-                // Register SW in production
+            // Only register SW in production to avoid hydration mismatch and stale cache in dev
+            if (process.env.NODE_ENV === 'production') {
                 navigator.serviceWorker
                     .register('/sw.js')
                     .then((registration) => {
@@ -19,7 +16,7 @@ export function ServiceWorkerRegister() {
                         console.error('ServiceWorker registration failed: ', err)
                     })
             } else {
-                // Unregister in dev/local
+                // Aggressively unregister in dev to clean up any stale workers
                 navigator.serviceWorker.getRegistrations().then((registrations) => {
                     for (const registration of registrations) {
                         registration.unregister()

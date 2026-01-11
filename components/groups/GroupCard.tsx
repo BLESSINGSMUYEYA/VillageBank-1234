@@ -42,7 +42,15 @@ export function GroupCard({ membership }: GroupCardProps) {
             className="flex flex-col h-full overflow-hidden group border-white/20 dark:border-white/10"
             hover={true}
         >
-            <Link href={`/groups/${membership.groupId}`} className="flex flex-col h-full">
+            {/* Main Overlay Link - Resolves Nested Link Hydration Error */}
+            <Link
+                href={`/groups/${membership.groupId}`}
+                className="absolute inset-0 z-0 focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded-[inherit]"
+                aria-label={`View ${group.name}`}
+            />
+
+            {/* Content Container - pointer-events-none so clicks fall through to the main link */}
+            <div className="relative z-10 flex flex-col h-full pointer-events-none">
                 {/* Top Branding & Header */}
                 <div className="relative p-5 sm:p-6 flex-1">
                     {/* Simplified Glow */}
@@ -82,7 +90,8 @@ export function GroupCard({ membership }: GroupCardProps) {
                         </div>
 
                         {membership.role === 'ADMIN' && (
-                            <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                            /* Pointer Events Auto to enable clicking this nested button */
+                            <div className="pointer-events-auto relative z-20">
                                 <Link href={`/groups/${membership.groupId}/settings`}>
                                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground/50 hover:text-blue-600 hover:bg-blue-500/10 transition-all">
                                         <Settings className="w-4 h-4" />
@@ -150,7 +159,7 @@ export function GroupCard({ membership }: GroupCardProps) {
                         <ChevronRight className="w-4 h-4" />
                     </div>
                 </div>
-            </Link>
+            </div>
         </GlassCard>
     )
 }

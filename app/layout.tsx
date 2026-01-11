@@ -52,6 +52,20 @@ export default function RootLayout({
             <ServiceWorkerRegister />
           </LanguageProvider>
         </AuthProvider>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                // FORCE UNREGISTER ALL SERVICE WORKERS TO FIX DEV ENVIRONMENT
+                navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                  for(let registration of registrations) {
+                    registration.unregister();
+                  }
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   )
