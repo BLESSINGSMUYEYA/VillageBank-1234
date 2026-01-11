@@ -1,35 +1,46 @@
-
 'use client'
 
 import { motion } from 'framer-motion'
-import { TrendingUp } from 'lucide-react'
+import { TrendingUp, ArrowUpRight, BarChart3, PieChart } from 'lucide-react'
 import { GlassCard } from '@/components/ui/GlassCard'
+import Link from 'next/link'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { itemFadeIn } from '@/lib/motions'
 
-interface FinancialOverviewProps {
-    charts: React.ReactNode
-}
-
-export function FinancialOverview({ charts }: FinancialOverviewProps) {
+export function FinancialOverview() {
     const { t } = useLanguage()
 
     return (
-        <section className="space-y-4">
-            <motion.div variants={itemFadeIn}>
-                <div className="flex items-center justify-between px-1 mb-2">
-                    <h3 className="text-lg font-black uppercase tracking-tight text-muted-foreground flex items-center gap-2">
-                        <TrendingUp className="w-4 h-4 text-blue-500" />
-                        {t('dashboard.growth_and_analytics') || 'Growth & Analytics'}
-                    </h3>
-                </div>
+        <motion.div variants={itemFadeIn}>
+            <Link href="/analytics" className="group">
+                <GlassCard
+                    className="relative overflow-hidden p-6 flex items-center justify-between group-hover:bg-blue-500/5 dark:group-hover:bg-banana/5 transition-colors duration-500"
+                    hover={true}
+                >
+                    {/* Background Decorative Elements */}
+                    <div className="absolute -right-10 -top-10 w-40 h-40 bg-blue-500/10 dark:bg-banana/10 rounded-full blur-3xl group-hover:bg-blue-500/20 dark:group-hover:bg-banana/20 transition-all duration-500" />
 
-                <GlassCard className="flex flex-col p-5 sm:p-6 overflow-hidden" hover={false}>
-                    <div className="rounded-2xl overflow-hidden bg-white/5 dark:bg-black/20 backdrop-blur-3xl min-h-[400px]">
-                        {charts}
+                    <div className="flex items-center gap-5 relative z-10">
+                        <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-banana group-hover:scale-110 transition-transform duration-300">
+                            <TrendingUp className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-black text-foreground tracking-tight flex items-center gap-2">
+                                Growth & Analytics
+                                <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300" />
+                            </h3>
+                            <p className="text-sm font-medium text-muted-foreground group-hover:text-blue-600 dark:group-hover:text-banana transition-colors">
+                                View detailed financial reports and projections
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="hidden sm:flex items-center gap-3 relative z-10 opacity-50 group-hover:opacity-100 transition-opacity duration-300">
+                        <BarChart3 className="w-5 h-5 text-muted-foreground" />
+                        <PieChart className="w-5 h-5 text-muted-foreground" />
                     </div>
                 </GlassCard>
-            </motion.div>
-        </section>
+            </Link>
+        </motion.div>
     )
 }

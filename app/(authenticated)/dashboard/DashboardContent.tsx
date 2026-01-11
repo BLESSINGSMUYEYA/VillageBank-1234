@@ -18,6 +18,8 @@ interface DashboardContentProps {
     charts: React.ReactNode
 }
 
+
+
 export function DashboardContent({
     user,
     stats,
@@ -55,7 +57,8 @@ export function DashboardContent({
             <div className="space-y-6 sm:space-y-8">
 
                 {/* 1. Performance (Growth & Analytics) */}
-                <FinancialOverview charts={charts} />
+                <FinancialOverview />
+                {charts}
 
                 {/* 2. Live Feed (Recent Activity) */}
                 <ActivityFeed recentActivity={recentActivity} />

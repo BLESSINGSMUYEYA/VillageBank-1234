@@ -5,11 +5,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatCurrency(amount: number): string {
+export function formatCurrency(amount: number, currency: string = 'MWK', compact: boolean = false): string {
   return new Intl.NumberFormat('en-MW', {
     style: 'currency',
-    currency: 'MWK',
-    minimumFractionDigits: 2,
+    currency: currency,
+    minimumFractionDigits: compact ? 0 : 2,
+    maximumFractionDigits: compact ? 1 : 2,
+    notation: compact ? 'compact' : 'standard',
   }).format(amount)
 }
 
