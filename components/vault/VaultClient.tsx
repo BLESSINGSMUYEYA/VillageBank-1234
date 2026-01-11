@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Plus, Calendar, Search, Filter, Wallet, AlertCircle, ArrowRight, History, Zap, CreditCard, CheckCircle, TrendingUp, Clock, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Plus, Calendar, Search, Filter, Wallet, AlertCircle, ArrowRight, History, Zap, CreditCard, CheckCircle, TrendingUp, Clock, ChevronLeft, ChevronRight, X, Link as LinkIcon } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { formatCurrency, formatDate, cn } from '@/lib/utils'
@@ -57,6 +57,7 @@ export function VaultClient({
     const [activeTab, setActiveTab] = useState('savings') // Keeping for safety, though unused in new layout? No, remove it.
     const [filter, setFilter] = useState<'ALL' | 'INCOME' | 'OUTFLOW'>('ALL')
     const [searchTerm, setSearchTerm] = useState('')
+    const [showStats, setShowStats] = useState(true)
 
     // Unified Stats calculation
     const totalSaved = contributions
@@ -118,46 +119,80 @@ export function VaultClient({
         >
             {/* 1. Simplified Hero Section */}
             <motion.div variants={itemFadeIn}>
-                <div className="zen-card overflow-hidden">
-                    <div className="p-6 bg-gradient-to-b from-white/40 to-white/10 dark:from-slate-900/40 dark:to-slate-900/10 border-b border-white/10">
-                        <div className="mb-6">
-                            <h1 className="text-3xl font-black text-foreground tracking-tighter mb-2">
-                                {t('common.vault')}
-                            </h1>
-                            <p className="text-sm font-medium text-muted-foreground opacity-80 max-w-xl">
-                                {t('vault.unified_community_hub')}
-                            </p>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {/* Net Savings */}
-                            <div className="p-5 bg-zinc-50/50 dark:bg-white/5 border border-zinc-100 dark:border-white/5 rounded-2xl flex items-center justify-between group hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors">
-                                <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1 opacity-70">
-                                        {t('vault.net_savings')}
-                                    </p>
-                                    <p className="text-3xl font-black text-emerald-600 dark:text-emerald-400">{formatCurrency(totalSaved)}</p>
+                <AnimatePresence mode="wait">
+                    {showStats ? (
+                        <motion.div
+                            key="stats-visible"
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20, height: 0 }}
+                            className="zen-card overflow-hidden"
+                        >
+                            <div className="relative p-4 sm:p-6 bg-gradient-to-b from-white/40 to-white/10 dark:from-slate-900/40 dark:to-slate-900/10 border-b border-white/10">
+                                {/* Hide Button */}
+                                <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-10">
+                                    <button
+                                        onClick={() => setShowStats(false)}
+                                        className="w-6 h-6 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-muted-foreground hover:bg-slate-200 dark:hover:bg-white/20 transition-colors"
+                                    >
+                                        <X className="w-3 h-3" />
+                                    </button>
                                 </div>
-                                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                    <Wallet className="w-6 h-6 text-emerald-500" />
+
+                                <div className="mb-4 sm:mb-6 pl-8 sm:pl-10">
+                                    <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tighter mb-1 sm:mb-2">
+                                        {t('common.vault')}
+                                    </h1>
+                                    <p className="text-xs sm:text-sm font-medium text-muted-foreground opacity-80 max-w-xl">
+                                        {t('vault.unified_community_hub')}
+                                    </p>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                    {/* Net Savings */}
+                                    <div className="p-3.5 sm:p-5 bg-zinc-50/50 dark:bg-white/5 border border-zinc-100 dark:border-white/5 rounded-2xl flex items-center justify-between group hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors">
+                                        <div>
+                                            <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1 opacity-70">
+                                                {t('vault.net_savings')}
+                                            </p>
+                                            <p className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">{formatCurrency(totalSaved)}</p>
+                                        </div>
+                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <Wallet className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500" />
+                                        </div>
+                                    </div>
+
+                                    {/* Active Debt */}
+                                    <div className="p-3.5 sm:p-5 bg-zinc-50/50 dark:bg-white/5 border border-zinc-100 dark:border-white/5 rounded-2xl flex items-center justify-between group hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors">
+                                        <div>
+                                            <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1 opacity-70">
+                                                {t('vault.active_liability')}
+                                            </p>
+                                            <p className="text-2xl sm:text-3xl font-black text-blue-600 dark:text-banana">{formatCurrency(activeDebt)}</p>
+                                        </div>
+                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-banana" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-
-                            {/* Active Debt */}
-                            <div className="p-5 bg-zinc-50/50 dark:bg-white/5 border border-zinc-100 dark:border-white/5 rounded-2xl flex items-center justify-between group hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors">
-                                <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1 opacity-70">
-                                        {t('vault.active_liability')}
-                                    </p>
-                                    <p className="text-3xl font-black text-blue-600 dark:text-banana">{formatCurrency(activeDebt)}</p>
-                                </div>
-                                <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                    <CreditCard className="w-6 h-6 text-blue-600 dark:text-banana" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                        </motion.div>
+                    ) : (
+                        <motion.div
+                            key="stats-hidden"
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
+                        >
+                            <button
+                                onClick={() => setShowStats(true)}
+                                className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 shadow-sm flex items-center justify-center text-blue-600 dark:text-banana hover:scale-110 transition-all"
+                            >
+                                <LinkIcon className="w-5 h-5" />
+                            </button>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </motion.div>
 
             {/* 2. Unified Timeline & Controls */}
