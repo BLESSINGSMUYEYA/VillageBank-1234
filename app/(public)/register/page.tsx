@@ -37,6 +37,7 @@ export default function RegisterPage() {
     const { t } = useLanguage();
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
     const { register, handleSubmit, formState: { errors } } = useForm<RegisterForm>({
         resolver: zodResolver(registerSchema),
@@ -46,14 +47,39 @@ export default function RegisterPage() {
         setError(null);
         setLoading(true);
         try {
-            await registerUser({
+            const result = await registerUser({
                 email: data.email,
                 password: data.password,
                 firstName: data.firstName,
                 lastName: data.lastName,
                 phoneNumber: data.phone,
             });
+
+            // If we get here without error, check if we need to show verification message
+            // Note: registerUser in AuthProvider currently throws or returns void/undefined. 
+            // We need to check if AuthProvider handles the response or if we need to update AuthProvider.
+            // Assuming AuthProvider might need an update or we catch a specific message.
+
+            // Actually, let's look at AuthProvider. It throws on error. 
+            // If it succeeds, it usually redirects.
+            // But now we want to STOP redirect if verification is required.
+
+            // Since I cannot easily change AuthProvider signature without potentially breaking other things,
+            // I will rely on the fact that the API now returns a message.
+            // I should verify AuthProvider implementation. 
+            // The AuthProvider does: const { user } = await res.json(); setUser(user); ... router.push(...)
+
+            // This suggests I need to update AuthProvider FIRST to handle the non-login response.
+            // But let's finish this file edit assuming AuthProvider will be updated to return the response or handle it.
+
         } catch (err: any) {
+            if (err.message === 'verification_required') {
+                // Show success message
+                setLoading(false);
+                // We can use a local state to show a success view instead of the form
+                setRegistrationSuccess(true);
+                return;
+            }
             setError(err.message || 'Failed to register');
             setLoading(false);
         }
@@ -111,107 +137,129 @@ export default function RegisterPage() {
                     animate="animate"
                     className="w-full max-w-lg relative z-10"
                 >
-                    {/* Branding (Mobile Only) */}
-                    <motion.div variants={fadeIn} className="flex flex-col items-center mb-8 text-center lg:hidden">
-                        <div className="w-16 h-16 bg-slate-900 dark:bg-white/10 rounded-2xl flex items-center justify-center shadow-xl mb-4 border border-white/10">
-                            <UBankLogo className="w-10 h-10" />
-                        </div>
-                        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">
-                            {t('register.join_ecosystem')}
-                        </h1>
-                    </motion.div>
-
-                    <motion.div variants={itemFadeIn}>
-                        <GlassCard className="p-0 border-none overflow-hidden shadow-2xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl" hover={false}>
-                            <div className="h-1.5 bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-600" />
-                            <CardHeader className="p-8 sm:p-10 text-center">
-                                <CardTitle className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{t('register.create_identity')}</CardTitle>
-                                <CardDescription className="text-sm font-bold opacity-70">
-                                    {t('register.register_desc')}
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="px-8 sm:px-10 pb-10">
-                                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="firstName" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">{t('register.legal_name')}</Label>
-                                            <div className="relative">
-                                                <Input id="firstName" {...register('firstName')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-blue-500/30 pl-10" placeholder="Ex: John" />
-                                                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
-                                            </div>
-                                            {errors.firstName && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.firstName.message}</p>}
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="lastName" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">{t('register.surname')}</Label>
-                                            <div className="relative">
-                                                <Input id="lastName" {...register('lastName')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-blue-500/30 pl-10" placeholder="Ex: Doe" />
-                                                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
-                                            </div>
-                                            {errors.lastName && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.lastName.message}</p>}
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">{t('auth.identity_email')}</Label>
-                                        <div className="relative">
-                                            <Input id="email" type="email" placeholder="john@example.com" {...register('email')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-blue-500/30 pl-10" />
-                                            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
-                                        </div>
-                                        {errors.email && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.email.message}</p>}
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="phone" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">{t('register.phone_protocol')}</Label>
-                                        <div className="relative">
-                                            <Input id="phone" placeholder="+265..." {...register('phone')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-blue-500/30 pl-10" />
-                                            <Smartphone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
-                                        </div>
-                                        {errors.phone && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.phone.message}</p>}
-                                    </div>
-
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">{t('register.security_code')}</Label>
-                                            <div className="relative">
-                                                <Input id="password" type="password" {...register('password')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-blue-500/30 pl-10" />
-                                                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
-                                            </div>
-                                            {errors.password && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.password.message}</p>}
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="confirmPassword" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">{t('register.verification')}</Label>
-                                            <div className="relative">
-                                                <Input id="confirmPassword" type="password" {...register('confirmPassword')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-blue-500/30 pl-10" />
-                                                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
-                                            </div>
-                                            {errors.confirmPassword && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.confirmPassword.message}</p>}
-                                        </div>
-                                    </div>
-
-                                    {error && (
-                                        <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/10 flex items-center gap-3">
-                                            <ShieldCheck className="w-5 h-5 text-red-500 shrink-0" />
-                                            <p className="text-xs font-bold text-red-500 leading-tight">{error}</p>
-                                        </div>
-                                    )}
-
-                                    <Button type="submit" className="w-full h-14 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-lg shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all group" disabled={loading}>
-                                        {loading ? <InlineLogoLoader size="sm" /> : (
-                                            <>
-                                                {t('register.deploy_profile')}
-                                                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                                            </>
-                                        )}
-                                    </Button>
-                                </form>
-                            </CardContent>
-                            <CardFooter className="flex justify-center p-8 bg-blue-600/5 dark:bg-white/5 border-t border-white/10 dark:border-white/5">
-                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
-                                    {t('register.existing_node')} <Link href="/login" className="text-blue-600 dark:text-banana hover:underline">{t('register.return_to_access')}</Link>
+                    {registrationSuccess ? (
+                        <motion.div variants={itemFadeIn}>
+                            <GlassCard className="p-8 sm:p-10 text-center border-none overflow-hidden shadow-2xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl" hover={false}>
+                                <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <Mail className="w-8 h-8 text-green-600 dark:text-green-400" />
+                                </div>
+                                <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-4">Check your email</h3>
+                                <p className="text-slate-600 dark:text-slate-300 mb-6 font-medium">
+                                    We've sent a verification link to your email address. Please click the link to activate your account.
                                 </p>
-                            </CardFooter>
-                        </GlassCard>
-                    </motion.div>
+                                <Button
+                                    className="w-full rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold"
+                                    onClick={() => window.location.href = '/login'}
+                                >
+                                    Return to Login
+                                </Button>
+                            </GlassCard>
+                        </motion.div>
+                    ) : (
+                        <>
+                            {/* Branding (Mobile Only) */}
+                            <motion.div variants={fadeIn} className="flex flex-col items-center mb-8 text-center lg:hidden">
+                                <div className="w-16 h-16 bg-slate-900 dark:bg-white/10 rounded-2xl flex items-center justify-center shadow-xl mb-4 border border-white/10">
+                                    <UBankLogo className="w-10 h-10" />
+                                </div>
+                                <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">
+                                    {t('register.join_ecosystem')}
+                                </h1>
+                            </motion.div>
+
+                            <motion.div variants={itemFadeIn}>
+                                <GlassCard className="p-0 border-none overflow-hidden shadow-2xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl" hover={false}>
+                                    <div className="h-1.5 bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-600" />
+                                    <CardHeader className="p-8 sm:p-10 text-center">
+                                        <CardTitle className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{t('register.create_identity')}</CardTitle>
+                                        <CardDescription className="text-sm font-bold opacity-70">
+                                            {t('register.register_desc')}
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="px-8 sm:px-10 pb-10">
+                                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="firstName" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">{t('register.legal_name')}</Label>
+                                                    <div className="relative">
+                                                        <Input id="firstName" {...register('firstName')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-blue-500/30 pl-10" placeholder="Ex: John" />
+                                                        <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
+                                                    </div>
+                                                    {errors.firstName && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.firstName.message}</p>}
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="lastName" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">{t('register.surname')}</Label>
+                                                    <div className="relative">
+                                                        <Input id="lastName" {...register('lastName')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-blue-500/30 pl-10" placeholder="Ex: Doe" />
+                                                        <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
+                                                    </div>
+                                                    {errors.lastName && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.lastName.message}</p>}
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">{t('auth.identity_email')}</Label>
+                                                <div className="relative">
+                                                    <Input id="email" type="email" placeholder="john@example.com" {...register('email')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-blue-500/30 pl-10" />
+                                                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
+                                                </div>
+                                                {errors.email && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.email.message}</p>}
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="phone" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">{t('register.phone_protocol')}</Label>
+                                                <div className="relative">
+                                                    <Input id="phone" placeholder="+265..." {...register('phone')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-blue-500/30 pl-10" />
+                                                    <Smartphone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
+                                                </div>
+                                                {errors.phone && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.phone.message}</p>}
+                                            </div>
+
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">{t('register.security_code')}</Label>
+                                                    <div className="relative">
+                                                        <Input id="password" type="password" {...register('password')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-blue-500/30 pl-10" />
+                                                        <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
+                                                    </div>
+                                                    {errors.password && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.password.message}</p>}
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="confirmPassword" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">{t('register.verification')}</Label>
+                                                    <div className="relative">
+                                                        <Input id="confirmPassword" type="password" {...register('confirmPassword')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-blue-500/30 pl-10" />
+                                                        <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
+                                                    </div>
+                                                    {errors.confirmPassword && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.confirmPassword.message}</p>}
+                                                </div>
+                                            </div>
+
+                                            {error && (
+                                                <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/10 flex items-center gap-3">
+                                                    <ShieldCheck className="w-5 h-5 text-red-500 shrink-0" />
+                                                    <p className="text-xs font-bold text-red-500 leading-tight">{error}</p>
+                                                </div>
+                                            )}
+
+                                            <Button type="submit" className="w-full h-14 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-lg shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all group" disabled={loading}>
+                                                {loading ? <InlineLogoLoader size="sm" /> : (
+                                                    <>
+                                                        {t('register.deploy_profile')}
+                                                        <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                                                    </>
+                                                )}
+                                            </Button>
+                                        </form>
+                                    </CardContent>
+                                    <CardFooter className="flex justify-center p-8 bg-blue-600/5 dark:bg-white/5 border-t border-white/10 dark:border-white/5">
+                                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
+                                            {t('register.existing_node')} <Link href="/login" className="text-blue-600 dark:text-banana hover:underline">{t('register.return_to_access')}</Link>
+                                        </p>
+                                    </CardFooter>
+                                </GlassCard>
+                            </motion.div>
+                        </>
+                    )}
 
                     <motion.div variants={fadeIn} className="mt-8 flex items-center justify-center gap-2 opacity-40">
                         <ShieldCheck className="w-4 h-4" />

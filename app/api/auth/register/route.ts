@@ -30,6 +30,9 @@ export async function POST(req: Request) {
         const hashedPassword = await hashPassword(password);
         const ubankTag = await generateUniqueUserTag(firstName, lastName);
 
+        // Generate verification token
+        const verificationToken = crypto.randomUUID();
+
         const user = await prisma.user.create({
             data: {
                 email,
@@ -38,21 +41,22 @@ export async function POST(req: Request) {
                 lastName,
                 phoneNumber,
                 ubankTag,
+                verificationToken,
+                // emailVerified is null by default now
             },
         });
 
-        const token = await signToken({ userId: user.id, email: user.email, role: user.role });
+        // Send verification email
+        // We import dynamically to avoid circular deps if any, or just standard import
+        const { sendVerificationEmail } = await import('@/lib/mail');
+        await sendVerificationEmail(email, verificationToken);
 
-        // Set cookie
-        (await cookies()).set('auth_token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: 86400, // 1 day
-            path: '/',
+        // DO NOT log the user in automatically
+
+        return NextResponse.json({
+            message: 'verification_required',
+            user: { id: user.id, email: user.email }
         });
-
-        return NextResponse.json({ user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role } });
     } catch (error) {
         console.error('Registration error:', error);
         return NextResponse.json(

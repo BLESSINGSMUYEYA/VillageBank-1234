@@ -347,5 +347,48 @@
     "vision_desc": "A future where financial inclusion is not just a buzzword, but a reality for every household in Malawi.",
     "team_title": "The Team",
     "team_desc": "A dedicated team of Malawian developers and financial experts passionate about technology and social impact."
+  },
+  "auth": {
+    "authorized_access": "Authorized Access Only",
+    "welcome_back": "Welcome Back",
+    "sync_ledger": "Syncing your group ledger...",
+    "identity_email": "Your Email",
+    "encryption_key": "Password",
+    "secure_badge": "Your connection is secure",
+    "new_to_ecosystem": "New to the ecosystem?",
+    "create_id": "Create Account"
+  },
+  "register": {
+    "join_ecosystem": "Join the ecosystem",
+    "create_identity": "Create Your Identity",
+    "register_desc": "Register to start saving and borrowing in your group.",
+    "legal_name": "First Name",
+    "surname": "Last Name",
+    "phone_protocol": "Phone Number",
+    "security_code": "Create Password",
+    "verification": "Confirm Password",
+    "deploy_profile": "Create Account",
+    "existing_node": "Already have an account?",
+    "return_to_access": "Sign In"
+  },
+  "forgot": {
+    "title": "Restore Access",
+    "subtitle": "Enter your email to receive a secure recovery link.",
+    "email_label": "Registered Email",
+    "send_link": "Request Recovery Link",
+    "back_to_login": "Back to Login",
+    "success_title": "Link Sent",
+    "success_desc": "If an account exists for {email}, you will receive a link shortly.",
+    "error_user_not_found": "No account found with this email."
+  },
+  "reset": {
+    "title": "Secure New Password",
+    "subtitle": "Create a strong password for your village bank profile.",
+    "new_password": "New Password",
+    "confirm_password": "Confirm New Password",
+    "update_password": "Update & Sync",
+    "success_title": "Profile Secured",
+    "success_desc": "Your password has been successfully updated. You can now login.",
+    "error_invalid_token": "This recovery link is invalid or has expired."
   }
 }

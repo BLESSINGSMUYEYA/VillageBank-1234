@@ -76,7 +76,16 @@ export async function POST(
     // Generate QR Code URL
     const host = request.headers.get('host') || 'localhost:3000'
     const protocol = request.headers.get('x-forwarded-proto') || 'http'
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host}`
+
+    let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+
+    if (!baseUrl && process.env.NEXT_PUBLIC_VERCEL_URL) {
+      baseUrl = `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
+    } else if (!baseUrl && process.env.VERCEL_URL) {
+      baseUrl = `https://${process.env.VERCEL_URL}`;
+    } else if (!baseUrl) {
+      baseUrl = `${protocol}://${host}`;
+    }
     const shareUrl = `${baseUrl}/shared/${shareToken}`
 
     // Generate simple QR code

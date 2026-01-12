@@ -92,12 +92,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             body: JSON.stringify(data),
         });
 
+        const responseData = await res.json();
+
         if (!res.ok) {
-            const error = await res.json();
-            throw new Error(error.error || 'Registration failed');
+            throw new Error(responseData.error || 'Registration failed');
         }
 
-        const { user } = await res.json();
+        if (responseData.message === 'verification_required') {
+            // Throw a special error or return a specific value to signal the component
+            // to show the verification message. 
+            // Since this function returns Promise<void>, throwing is a clean way to stop execution
+            // and let the caller handle the specific case.
+            throw new Error('verification_required');
+        }
+
+        const { user } = responseData;
         setUser(user);
 
         if (user.role === 'REGIONAL_ADMIN') {
