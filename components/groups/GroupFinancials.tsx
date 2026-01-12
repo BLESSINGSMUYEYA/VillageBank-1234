@@ -54,9 +54,19 @@ interface Loan {
     }
 }
 
+interface PaymentMethod {
+    id: string
+    type: 'AIRTEL_MONEY' | 'MPAMBA' | 'BANK_CARD'
+    accountNumber: string
+    accountName: string
+    bankName?: string | null
+    isActive: boolean
+}
+
 interface GroupFinancialsProps {
     contributions: Contribution[]
     loans: Loan[]
+    paymentMethods?: PaymentMethod[]
     groupId: string
     currentUserRole?: string
     searchTerm?: string
@@ -64,7 +74,7 @@ interface GroupFinancialsProps {
 
 type FilterType = 'ALL' | 'INCOME' | 'OUTFLOW'
 
-export default function GroupFinancials({ contributions, loans, groupId, currentUserRole, searchTerm = '' }: GroupFinancialsProps) {
+export default function GroupFinancials({ contributions, loans, paymentMethods = [], groupId, currentUserRole, searchTerm = '' }: GroupFinancialsProps) {
     const [filter, setFilter] = useState<FilterType>('ALL')
     // const [searchTerm, setSearchTerm] = useState('') // Removed local state
 
@@ -179,6 +189,39 @@ export default function GroupFinancials({ contributions, loans, groupId, current
                         </motion.div>
                     )}
                 </div>
+
+                {/* Group Accounts Display */}
+                {paymentMethods.length > 0 && (
+                    <div className="px-5 py-4 border-b border-white/5 bg-slate-50/50 dark:bg-white/5">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-1.5">
+                            <Landmark className="w-3 h-3" />
+                            Group Accounts
+                        </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {paymentMethods.map((method) => (
+                                <div key={method.id} className="p-3 bg-white dark:bg-black/20 border border-slate-100 dark:border-white/5 rounded-xl flex items-center gap-3">
+                                    <div className={cn(
+                                        "w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border",
+                                        method.type === 'AIRTEL_MONEY' ? "bg-red-500/10 border-red-500/20 text-red-500" :
+                                            method.type === 'MPAMBA' ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-500" :
+                                                "bg-blue-500/10 border-blue-500/20 text-blue-500"
+                                    )}>
+                                        {method.type === 'BANK_CARD' ? <Landmark className="w-5 h-5" /> : <Wallet className="w-5 h-5" />}
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-xs font-bold truncate">
+                                            {method.type === 'BANK_CARD' ? method.bankName || 'Bank Account' : method.type === 'AIRTEL_MONEY' ? 'Airtel Money' : 'Mpamba'}
+                                        </p>
+                                        <div className="flex items-center gap-1.5 opacity-80">
+                                            <p className="text-[10px] font-mono select-all bg-slate-100 dark:bg-white/10 px-1 rounded">{method.accountNumber}</p>
+                                            <p className="text-[10px] truncate max-w-[100px]">{method.accountName}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* Controls & Filter Bar */}
                 <div className="px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5">

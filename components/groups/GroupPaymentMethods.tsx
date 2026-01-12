@@ -105,6 +105,7 @@ export function GroupPaymentMethods({
         type: 'AIRTEL_MONEY' as 'AIRTEL_MONEY' | 'MPAMBA' | 'BANK_CARD',
         accountNumber: '',
         accountName: '',
+        bankName: '',
     })
 
     const fetchPaymentMethods = useCallback(async () => {
@@ -151,6 +152,7 @@ export function GroupPaymentMethods({
                 type: 'AIRTEL_MONEY',
                 accountNumber: '',
                 accountName: '',
+                bankName: '',
             })
             fetchPaymentMethods()
             setTimeout(() => setSuccess(null), 3000)
@@ -370,6 +372,20 @@ export function GroupPaymentMethods({
                                 required
                             />
                         </div>
+
+                        {formData.type === 'BANK_CARD' && (
+                            <div className="space-y-2">
+                                <Label>Bank Name</Label>
+                                <Input
+                                    placeholder="e.g. National Bank"
+                                    value={formData.bankName}
+                                    onChange={(e) =>
+                                        setFormData({ ...formData, bankName: e.target.value })
+                                    }
+                                    required
+                                />
+                            </div>
+                        )}
 
                         <div className="space-y-2">
                             <Label>

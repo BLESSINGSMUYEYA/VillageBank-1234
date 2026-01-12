@@ -147,12 +147,14 @@ model LoanRepayment {
   user           User     @relation(fields: [userId], references: [id])
 }
 
+
 model PaymentMethod {
   id            String            @id @default(cuid())
   groupId       String
   type          PaymentMethodType
   accountNumber String
   accountName   String
+  bankName      String?
   isActive      Boolean           @default(true)
   addedById     String
   createdAt     DateTime          @default(now())

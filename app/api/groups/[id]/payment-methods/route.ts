@@ -8,6 +8,7 @@ const createPaymentMethodSchema = z.object({
     type: z.enum(['AIRTEL_MONEY', 'MPAMBA', 'BANK_CARD']),
     accountNumber: z.string().min(8, 'Account number must be at least 8 characters'),
     accountName: z.string().min(2, 'Account name must be at least 2 characters'),
+    bankName: z.string().optional(),
 })
 
 // GET - Fetch group's payment methods (visible to all members)
@@ -112,6 +113,7 @@ export async function POST(
                 type: validatedData.type,
                 accountNumber: validatedData.accountNumber,
                 accountName: validatedData.accountName,
+                bankName: validatedData.bankName,
                 addedById: userId as string,
                 isActive: true,
             },

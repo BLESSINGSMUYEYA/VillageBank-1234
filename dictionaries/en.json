@@ -356,7 +356,9 @@
     "encryption_key": "Password",
     "secure_badge": "Your connection is secure",
     "new_to_ecosystem": "New to the ecosystem?",
-    "create_id": "Create Account"
+    "create_id": "Create Account",
+    "register_banner_title": "Start Your Journey.",
+    "register_banner_desc": "Create your identity and begin managing your village bank with confidence."
   },
   "register": {
     "join_ecosystem": "Join the ecosystem",

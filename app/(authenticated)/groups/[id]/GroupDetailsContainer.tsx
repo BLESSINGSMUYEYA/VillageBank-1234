@@ -63,6 +63,7 @@ export default function GroupDetailsContainer({
                     <GroupFinancials
                         contributions={group.contributions}
                         loans={group.loans}
+                        paymentMethods={group.paymentMethods || []}
                         groupId={group.id}
                         currentUserRole={currentUserMember?.role}
                     />

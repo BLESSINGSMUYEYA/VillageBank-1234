@@ -74,6 +74,11 @@ export async function getGroupDetails(groupId: string, userId: string) {
                 },
                 take: 20,
             },
+            paymentMethods: {
+                where: {
+                    isActive: true,
+                },
+            },
             _count: {
                 select: {
                     members: true,
