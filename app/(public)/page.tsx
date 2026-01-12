@@ -1,59 +1,22 @@
 'use client'
 
-import { useAuth } from '@/components/providers/AuthProvider'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-import Link from 'next/link'
+import React from 'react' // Explicitly import React
 import { Button } from '@/components/ui/button'
-import { Users, DollarSign, TrendingUp, Shield, Clock, Award, ArrowRight, Zap, Globe, Sparkles, Menu } from 'lucide-react'
+import { Users, DollarSign, TrendingUp, ArrowRight, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { staggerContainer, itemFadeIn, fadeIn, hoverScale } from '@/lib/motions'
+import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { cn } from '@/lib/utils'
-import { UBankLogo } from '@/components/ui/Logo'
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
+import Link from 'next/link'
+import { MarketingHeader } from '@/components/marketing/MarketingHeader'
+import { MarketingFooter } from '@/components/marketing/MarketingFooter'
 
 export default function Home() {
-    // Client-side authentication check removed.
-    // Redirection for authenticated users is handled by middleware.ts (verified)
-    // to prevent content flash.
-    // const { isAuthenticated, loading } = useAuth() -> We still need loading state maybe?
-    // Actually, middleware redirects BEFORE rendering, so we might not even reach here if logged in.
-    // But if we do reach here, it means we are NOT logged in (or middleware failed).
-    // Let's keep useAuth hooks if used elsewhere, but remove the useEffect redirect.
-
-    // Original code:
-    // const { isAuthenticated, loading } = useAuth()
-    // ... useEffect ...
-
     const { t } = useLanguage()
-    // removed local router usage for redirect
-    // const router = useRouter()
-
-    // The following blocks are removed because we are not doing client-side auth checks for redirection anymore.
-    // middleware.ts handles it.
-    /*
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
-                <div className="relative">
-                    <div className="w-20 h-20 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-10 h-10 bg-blue-600 rounded-full animate-pulse" />
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
-    if (isAuthenticated) {
-        return null
-    }
-    */
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 selection:bg-blue-500/30 overflow-x-hidden">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 selection:bg-blue-500/30 overflow-x-hidden font-sans">
             {/* Ambient Background */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden">
                 <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-blue-600/10 dark:bg-blue-600/20 rounded-full blur-[120px] animate-pulse-slow" />
@@ -62,80 +25,7 @@ export default function Home() {
             </div>
 
             <div className="relative z-10">
-                {/* Navbar */}
-                <header className="container mx-auto px-6 py-8 flex items-center justify-between relative z-50">
-                    <div className="flex items-center gap-3 group cursor-pointer">
-                        <div className="w-10 h-10 bg-slate-900 dark:bg-white/10 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform border border-white/5">
-                            <UBankLogo className="w-6 h-6" />
-                        </div>
-                        <span className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">
-                            uBank
-                        </span>
-                    </div>
-
-                    {/* Desktop Nav */}
-                    <div className="hidden md:flex items-center gap-8">
-                        <nav className="flex items-center gap-6">
-                            {['Ecosystem', 'Security', 'Features'].map((item) => (
-                                <Link key={item} href="#" className="text-sm font-black uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-banana transition-colors">
-                                    {t(`landing.${item.toLowerCase()}` as any) || item}
-                                </Link>
-                            ))}
-                        </nav>
-                        <Link href="/login">
-                            <Button className="bg-slate-950 dark:bg-white text-white dark:text-slate-950 font-black rounded-2xl px-8 h-12 hover:scale-105 transition-all">
-                                {t('landing.launch_app')}
-                            </Button>
-                        </Link>
-                    </div>
-
-                    {/* Mobile Nav Toggle */}
-                    <div className="md:hidden">
-                        <Sheet>
-                            <SheetTrigger asChild>
-                                <Button variant="ghost" size="icon" className="rounded-xl">
-                                    <Menu className="w-6 h-6 text-slate-900 dark:text-white" />
-                                </Button>
-                            </SheetTrigger>
-                            <SheetContent side="right" className="w-[300px] border-l border-white/10 bg-slate-950/95 backdrop-blur-xl">
-                                <SheetTitle className="hidden">Mobile Navigation</SheetTitle>
-                                <div className="flex flex-col h-full pt-10">
-                                    <div className="flex items-center gap-3 mb-10 px-2">
-                                        <div className="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg border border-white/10">
-                                            <UBankLogo className="w-6 h-6 invert" />
-                                        </div>
-                                        <span className="text-2xl font-black text-white tracking-tighter">
-                                            uBank
-                                        </span>
-                                    </div>
-                                    <nav className="flex flex-col gap-4">
-                                        {['Ecosystem', 'Security', 'Features'].map((item) => (
-                                            <Link
-                                                key={item}
-                                                href="#"
-                                                className="px-4 py-3 text-sm font-black uppercase tracking-widest text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
-                                            >
-                                                {t(`landing.${item.toLowerCase()}` as any) || item}
-                                            </Link>
-                                        ))}
-                                    </nav>
-                                    <div className="mt-auto pb-8 space-y-4">
-                                        <Link href="/login" className="block">
-                                            <Button className="w-full bg-blue-600 text-white font-black rounded-2xl h-14 hover:bg-blue-700 transition-all">
-                                                {t('landing.launch_app')}
-                                            </Button>
-                                        </Link>
-                                        <Link href="/register" className="block">
-                                            <Button variant="outline" className="w-full border-white/10 text-white hover:bg-white/5 font-black rounded-2xl h-14">
-                                                Create Account
-                                            </Button>
-                                        </Link>
-                                    </div>
-                                </div>
-                            </SheetContent>
-                        </Sheet>
-                    </div>
-                </header>
+                <MarketingHeader />
 
                 <main className="container mx-auto px-6 pt-12 pb-24">
                     <motion.div
@@ -152,20 +42,7 @@ export default function Home() {
 
                         {/* Main Title */}
                         <motion.h1 variants={fadeIn} className="text-5xl md:text-7xl lg:text-8xl font-black text-slate-900 dark:text-white tracking-tighter leading-[0.9] max-w-5xl mx-auto">
-                            {(() => {
-                                const title = t('landing.main_title');
-                                const hasComma = title.includes(',');
-                                const [first, ...rest] = hasComma ? title.split(',') : [title];
-                                const second = rest.join(',');
-                                return (
-                                    <>
-                                        {first}{hasComma ? ',' : ''} <br />
-                                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-600 bg-300% animate-shimmer">
-                                            {second}
-                                        </span>
-                                    </>
-                                );
-                            })()}
+                            {t('landing.main_title')}
                         </motion.h1>
 
                         {/* Subtitle */}
@@ -191,10 +68,10 @@ export default function Home() {
                         {/* Stats Preview */}
                         <motion.div variants={fadeIn} className="pt-20 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
                             {[
-                                { label: t('landing.active_members'), value: '12K+' },
-                                { label: t('landing.managed_capital'), value: '$2.4M' },
+                                { label: t('landing.active_members'), value: '100' },
+                                { label: t('landing.managed_capital'), value: 'MWK 25M' },
                                 { label: t('landing.success_rate'), value: '99.8%' },
-                                { label: t('landing.community_groups'), value: '450+' },
+                                { label: t('landing.community_groups'), value: '7+' },
                             ].map((stat, i) => (
                                 <div key={i} className="space-y-1">
                                     <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">{stat.value}</p>
@@ -205,46 +82,51 @@ export default function Home() {
                     </motion.div>
 
                     {/* Features Grid */}
-                    <motion.div
-                        variants={staggerContainer}
-                        initial="initial"
-                        whileInView="animate"
-                        viewport={{ once: true }}
-                        className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto"
-                    >
-                        {[
-                            {
-                                icon: Users,
-                                title: t('landing.circle_mgt'),
-                                desc: t('landing.circle_mgt_desc'),
-                                color: 'bg-blue-500'
-                            },
-                            {
-                                icon: DollarSign,
-                                title: t('landing.liquidity'),
-                                desc: t('landing.liquidity_desc'),
-                                color: 'bg-emerald-500'
-                            },
-                            {
-                                icon: TrendingUp,
-                                title: t('landing.staking'),
-                                desc: t('landing.staking_desc'),
-                                color: 'bg-indigo-500'
-                            }
-                        ].map((feature, i) => (
-                            <motion.div key={i} variants={itemFadeIn}>
-                                <GlassCard className="h-full p-10 flex flex-col items-center text-center group" hover={true}>
-                                    <div className={cn("w-20 h-20 rounded-3xl flex items-center justify-center mb-8 shadow-inner group-hover:rotate-6 transition-transform", feature.color)}>
-                                        <feature.icon className="w-10 h-10 text-white" />
-                                    </div>
-                                    <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">{feature.title}</h3>
-                                    <p className="text-slate-600 dark:text-slate-400 font-bold leading-relaxed">
-                                        {feature.desc}
-                                    </p>
-                                </GlassCard>
-                            </motion.div>
-                        ))}
-                    </motion.div>
+                    <div className="mb-20">
+                        <div className="text-center mb-16">
+                            <h2 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter mb-4">{t('landing.features_title')}</h2>
+                        </div>
+                        <motion.div
+                            variants={staggerContainer}
+                            initial="initial"
+                            whileInView="animate"
+                            viewport={{ once: true }}
+                            className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto"
+                        >
+                            {[
+                                {
+                                    icon: Users,
+                                    title: t('landing.circle_mgt'),
+                                    desc: t('landing.circle_mgt_desc'),
+                                    color: 'bg-blue-500'
+                                },
+                                {
+                                    icon: DollarSign,
+                                    title: t('landing.liquidity'),
+                                    desc: t('landing.liquidity_desc'),
+                                    color: 'bg-emerald-500'
+                                },
+                                {
+                                    icon: TrendingUp,
+                                    title: t('landing.staking'),
+                                    desc: t('landing.staking_desc'),
+                                    color: 'bg-indigo-500'
+                                }
+                            ].map((feature, i) => (
+                                <motion.div key={i} variants={itemFadeIn}>
+                                    <GlassCard className="h-full p-10 flex flex-col items-center text-center group" hover={true}>
+                                        <div className={cn("w-20 h-20 rounded-3xl flex items-center justify-center mb-8 shadow-inner group-hover:rotate-6 transition-transform", feature.color)}>
+                                            <feature.icon className="w-10 h-10 text-white" />
+                                        </div>
+                                        <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">{feature.title}</h3>
+                                        <p className="text-slate-600 dark:text-slate-400 font-bold leading-relaxed">
+                                            {feature.desc}
+                                        </p>
+                                    </GlassCard>
+                                </motion.div>
+                            ))}
+                        </motion.div>
+                    </div>
 
                     {/* Trust Section */}
                     <motion.div
@@ -258,22 +140,6 @@ export default function Home() {
                             <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto font-bold">
                                 {t('landing.trust_desc')}
                             </p>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                            {[
-                                { icon: Shield, title: t('landing.security_badge'), desc: t('landing.security_desc') },
-                                { icon: clock, title: t('landing.realtime_ledger'), desc: t('landing.realtime_desc') },
-                                { icon: Award, title: t('landing.elite_interface'), desc: t('landing.elite_interface_desc') }
-                            ].map((item, i) => (
-                                <div key={i} className="flex flex-col items-center text-center space-y-4">
-                                    <div className="w-12 h-12 bg-slate-900 dark:bg-white rounded-2xl flex items-center justify-center text-white dark:text-slate-950">
-                                        <item.icon className="w-6 h-6" />
-                                    </div>
-                                    <h4 className="font-black text-slate-900 dark:text-white tracking-tight">{item.title}</h4>
-                                    <p className="text-xs font-bold text-slate-500 leading-relaxed uppercase tracking-wider">{item.desc}</p>
-                                </div>
-                            ))}
                         </div>
                     </motion.div>
 
@@ -305,22 +171,9 @@ export default function Home() {
                     </div>
                 </main>
 
-                <footer className="container mx-auto px-6 py-12 border-t border-slate-200 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div className="flex items-center gap-2">
-                        <UBankLogo className="w-6 h-6" />
-                        <span className="font-black text-slate-900 dark:text-white tracking-tighter">uBank</span>
-                    </div>
-                    <p className="text-slate-500 text-sm font-black uppercase tracking-widest">
-                        © {new Date().getFullYear()} Malawian Financial Technologies.
-                    </p>
-                    <div className="flex items-center gap-6">
-                        <Globe className="w-5 h-5 text-slate-400" />
-                        <span className="text-xs font-black uppercase tracking-widest text-slate-400">Chichewa / English</span>
-                    </div>
-                </footer>
+                <MarketingFooter />
             </div>
         </div>
     )
 }
 
-const clock = Clock // Fix for lucide icon casing inconsistency
