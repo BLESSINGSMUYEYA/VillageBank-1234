@@ -60,7 +60,7 @@ export function GroupCard({ membership }: GroupCardProps) {
                         <div className="flex items-center gap-4">
                             <div className="relative">
                                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-all duration-500">
-                                    <span className="font-black text-white text-lg tracking-tighter">
+                                    <span className="font-black text-white text-base tracking-tighter">
                                         {group.name.substring(0, 1).toUpperCase()}
                                     </span>
                                 </div>
@@ -72,7 +72,7 @@ export function GroupCard({ membership }: GroupCardProps) {
                             </div>
 
                             <div className="min-w-0">
-                                <h3 className="font-black text-xl text-foreground leading-tight group-hover:text-blue-600 dark:group-hover:text-banana transition-colors truncate pr-2">
+                                <h3 className="font-black text-lg text-foreground leading-tight group-hover:text-blue-600 dark:group-hover:text-banana transition-colors truncate pr-2">
                                     {group.name}
                                 </h3>
                                 <div className="flex items-center gap-3 mt-1.5">
@@ -107,7 +107,7 @@ export function GroupCard({ membership }: GroupCardProps) {
                             <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
                                 {t('dashboard.monthly_contribution')}
                             </p>
-                            <p className="text-xl font-black text-foreground">
+                            <p className="text-lg font-black text-foreground">
                                 {formatCurrency(group.monthlyContribution)}
                             </p>
                         </div>
