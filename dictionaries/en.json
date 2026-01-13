@@ -392,5 +392,16 @@
     "success_title": "Profile Secured",
     "success_desc": "Your password has been successfully updated. You can now login.",
     "error_invalid_token": "This recovery link is invalid or has expired."
+  },
+  "footer": {
+    "desc": "Empowering communities with secure, transparent, and digital financial tools.",
+    "install_app": "Install App",
+    "platform": "Platform",
+    "support": "Support",
+    "help_center": "Help Center",
+    "privacy_policy": "Privacy Policy",
+    "terms_of_service": "Terms of Service",
+    "rights_reserved": "All rights reserved.",
+    "systems_operational": "Systems Operational"
   }
 }
