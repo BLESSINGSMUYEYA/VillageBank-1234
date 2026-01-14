@@ -3,6 +3,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { DollarSign, Wallet, Users, ArrowUpRight, ArrowRight, Eye, EyeOff, Shield } from 'lucide-react'
@@ -28,6 +30,7 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
     const { t } = useLanguage()
     const [isContributionsVisible, setIsContributionsVisible] = useState(false)
     const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false)
+    const router = useRouter()
 
     const handleToggleVisibility = () => {
         if (isContributionsVisible) {
@@ -68,15 +71,24 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                         </div>
 
                         <div className="flex gap-4 shrink-0 mt-2 md:mt-0">
-                            <Link href="/contributions/new">
-                                <Button
-                                    size="lg"
-                                    className="relative h-11 bg-blue-600 hover:bg-blue-500 text-white border-0 rounded-xl px-6 font-black tracking-wide shadow-xl shadow-blue-500/20"
-                                >
-                                    <DollarSign className="w-4 h-4 mr-2" />
-                                    {t('dashboard.make_contribution')}
-                                </Button>
-                            </Link>
+                            <Button
+                                size="lg"
+                                onClick={() => {
+                                    if (stats.totalGroups > 0) {
+                                        router.push('/contributions/new')
+                                    } else {
+                                        toast.info("Join a Group First", {
+                                            description: "You need to be a member of a group to make contributions.",
+                                            duration: 5000,
+                                        })
+                                        router.push('/groups')
+                                    }
+                                }}
+                                className="relative h-11 bg-blue-600 hover:bg-blue-500 text-white border-0 rounded-xl px-6 font-black tracking-wide shadow-xl shadow-blue-500/20"
+                            >
+                                <DollarSign className="w-4 h-4 mr-2" />
+                                {t('dashboard.make_contribution')}
+                            </Button>
                         </div>
                     </div>
 
