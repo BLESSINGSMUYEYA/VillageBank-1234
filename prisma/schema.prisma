@@ -308,6 +308,7 @@ enum PaymentMethodType {
   AIRTEL_MONEY
   MPAMBA
   BANK_CARD
+  CASH
 }
 
 enum NotificationType {

@@ -29,6 +29,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import { RecordCashModal } from '@/components/groups/RecordCashModal'
 
 interface GroupDetailsClientProps {
     group: any
@@ -157,7 +158,11 @@ export default function GroupDetailsClient({
                                         </Dialog>
                                     )}
 
-                                    <Link href="/contributions/new" className={isAdmin ? "" : "col-span-2"}>
+                                    {(isAdmin || isTreasurer) && (
+                                        <RecordCashModal groupId={group.id} members={group.members} />
+                                    )}
+
+                                    <Link href="/contributions/new" className={isAdmin || (!isTreasurer) ? "col-span-2" : ""}>
                                         <Button variant="primary" className="w-full h-11 rounded-xl px-4 sm:px-8 font-black text-xs gap-2 shadow-lg shadow-blue-500/20 active:scale-95 transition-all bg-blue-600 hover:bg-blue-500 text-white">
                                             <DollarSign className="w-4 h-4" />
                                             <span className="truncate">Contribute</span>
