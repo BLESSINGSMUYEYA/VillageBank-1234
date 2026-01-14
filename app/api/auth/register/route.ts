@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { signToken } from '@/lib/auth';
 import { hashPassword } from '@/lib/password';
-import { generateUniqueUserTag } from '@/lib/tag-generator';
+import { generateUniqueUbankId } from '@/lib/id-generator';
 import { cookies } from 'next/headers';
 
 export async function POST(req: Request) {
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
         }
 
         const hashedPassword = await hashPassword(password);
-        const ubankTag = await generateUniqueUserTag(firstName, lastName);
+        const ubankId = await generateUniqueUbankId(`${firstName}.${lastName}`, 'USER');
 
         // Generate verification token
         const verificationToken = crypto.randomUUID();
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
                 firstName,
                 lastName,
                 phoneNumber,
-                ubankTag,
+                ubankId,
                 verificationToken,
                 // emailVerified is null by default now
             },

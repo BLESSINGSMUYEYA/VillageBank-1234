@@ -152,11 +152,11 @@ export async function POST(
         // Fetch user details for the description
         const contributionUser = await prisma.user.findUnique({
             where: { id: contribution.userId },
-            select: { firstName: true, lastName: true, ubankTag: true }
+            select: { firstName: true, lastName: true, ubankId: true }
         })
 
         const userDisplayName = contributionUser
-            ? (contributionUser.ubankTag ? `@${contributionUser.ubankTag}` : `${contributionUser.firstName} ${contributionUser.lastName}`)
+            ? (contributionUser.ubankId ? `@${contributionUser.ubankId}` : `${contributionUser.firstName} ${contributionUser.lastName}`)
             : 'Unknown User'
 
         // Create activity log

@@ -358,7 +358,9 @@
     "new_to_ecosystem": "New to the ecosystem?",
     "create_id": "Create Account",
     "register_banner_title": "Start Your Journey.",
-    "register_banner_desc": "Create your identity and begin managing your village bank with confidence."
+    "register_banner_desc": "Create your identity and begin managing your village bank with confidence.",
+    "banner_title": "Grow Together.",
+    "banner_desc": "Join thousands of Malawians building wealth through community savings."
   },
   "register": {
     "join_ecosystem": "Join the ecosystem",

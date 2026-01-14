@@ -130,7 +130,7 @@ export async function getRecentActivity(): Promise<RecentActivity[]> {
             group: {
                 select: {
                     name: true,
-                    ubankTag: true,
+                    ubankId: true,
                 },
             },
         },
@@ -148,7 +148,7 @@ export async function getRecentActivity(): Promise<RecentActivity[]> {
         amount: (activity.metadata as any)?.amount as number | undefined,
         createdAt: activity.createdAt,
         groupName: activity.group?.name || 'Unknown Group',
-        groupTag: activity.group?.ubankTag || undefined,
+        groupTag: activity.group?.ubankId || undefined,
     }))
 }
 
@@ -169,7 +169,7 @@ export async function getAllActivities(): Promise<RecentActivity[]> {
             group: {
                 select: {
                     name: true,
-                    ubankTag: true,
+                    ubankId: true,
                 },
             },
         },
@@ -187,7 +187,7 @@ export async function getAllActivities(): Promise<RecentActivity[]> {
         amount: (activity.metadata as any)?.amount as number | undefined,
         createdAt: activity.createdAt,
         groupName: activity.group?.name || 'Unknown Group',
-        groupTag: activity.group?.ubankTag || undefined,
+        groupTag: activity.group?.ubankId || undefined,
     }))
 }
 

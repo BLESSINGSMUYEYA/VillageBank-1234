@@ -44,7 +44,7 @@ interface ProfileData {
     phoneNumber: string | null
     role: string
     region: string | null
-    ubankTag: string | null
+    ubankId: string | null
     joinedAt: Date
     isActive: boolean
 }
@@ -87,38 +87,6 @@ interface ProfileClientProps {
 
 export function ProfileClient({ profile, memberships, financials }: ProfileClientProps) {
     const { t } = useLanguage()
-    const [isEditingTag, setIsEditingTag] = useState(false)
-    const [tagValue, setTagValue] = useState(profile.ubankTag || '')
-    const [isSavingTag, setIsSavingTag] = useState(false)
-
-    const handleSaveTag = async () => {
-        if (!tagValue) return
-
-        setIsSavingTag(true)
-        try {
-            const res = await fetch('/api/user/tag', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tag: tagValue }),
-            })
-
-            const data = await res.json()
-
-            if (!res.ok) {
-                toast.error(data.error || 'Failed to update tag')
-                return
-            }
-
-            toast.success('uBank Tag updated successfully')
-            setIsEditingTag(false)
-            // Ideally we'd update the local profile state here or trigger a revalidate
-            profile.ubankTag = data.tag
-        } catch (error) {
-            toast.error('Something went wrong')
-        } finally {
-            setIsSavingTag(false)
-        }
-    }
 
     return (
         <motion.div
@@ -179,35 +147,16 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                             {profile?.firstName} {profile?.lastName}
                                         </h2>
 
-                                        {/* Editable uBank Tag */}
+                                        {/* Verified uBank ID */}
                                         <div className="flex items-center justify-center h-8">
-                                            {isEditingTag ? (
-                                                <div className="flex items-center gap-2 animate-in fade-in zoom-in duration-200">
-                                                    <div className="relative">
-                                                        <AtSign className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-                                                        <Input
-                                                            value={tagValue}
-                                                            onChange={(e) => setTagValue(e.target.value)}
-                                                            className="h-8 w-40 pl-8 text-xs font-bold bg-muted/50 border-transparent focus:bg-background transition-colors"
-                                                            placeholder="your.handle"
-                                                            autoFocus
-                                                        />
-                                                    </div>
-                                                    <Button size="icon" className="h-8 w-8 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full" onClick={handleSaveTag} disabled={isSavingTag}>
-                                                        {isSavingTag ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
-                                                    </Button>
-                                                    <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full" onClick={() => { setIsEditingTag(false); setTagValue(profile.ubankTag || '') }}>
-                                                        <XIcon className="w-3 h-3" />
-                                                    </Button>
-                                                </div>
-                                            ) : (
-                                                <div className="group flex items-center gap-1 px-3 py-1 rounded-full hover:bg-zinc-100 dark:hover:bg-white/5 transition-colors cursor-pointer" onClick={() => setIsEditingTag(true)}>
-                                                    <span className="text-sm font-bold text-muted-foreground group-hover:text-foreground transition-colors">
-                                                        @{profile.ubankTag || 'claim_handle'}
-                                                    </span>
-                                                    <Edit2 className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-50 transition-opacity ml-1" />
-                                                </div>
-                                            )}
+                                            <div className="group flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/5">
+                                                <Badge variant="secondary" className="font-bold text-[9px] uppercase tracking-widest bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border-0 px-1.5 py-0 h-5">
+                                                    ID
+                                                </Badge>
+                                                <span className="text-xs font-bold text-foreground tracking-wide font-mono">
+                                                    {profile.ubankId || '---'}
+                                                </span>
+                                            </div>
                                         </div>
 
                                         <div className="flex flex-wrap items-center justify-center gap-2 pt-1">

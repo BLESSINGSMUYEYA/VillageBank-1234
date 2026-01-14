@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { TrendingUp, ArrowUpRight, BarChart3, PieChart } from 'lucide-react'
+import { TrendingUp, ArrowUpRight } from 'lucide-react'
 import { GlassCard } from '@/components/ui/GlassCard'
 import Link from 'next/link'
 import { useLanguage } from '@/components/providers/LanguageProvider'
@@ -35,10 +35,7 @@ export function FinancialOverview() {
                         </div>
                     </div>
 
-                    <div className="hidden sm:flex items-center gap-3 relative z-10 opacity-50 group-hover:opacity-100 transition-opacity duration-300">
-                        <BarChart3 className="w-5 h-5 text-muted-foreground" />
-                        <PieChart className="w-5 h-5 text-muted-foreground" />
-                    </div>
+
                 </GlassCard>
             </Link>
         </motion.div>

@@ -21,7 +21,7 @@ export async function getGroupDetails(groupId: string, userId: string) {
                             lastName: true,
                             email: true,
                             phoneNumber: true,
-                            ubankTag: true,
+                            ubankId: true,
                         },
                     },
                 },
@@ -35,7 +35,7 @@ export async function getGroupDetails(groupId: string, userId: string) {
                         select: {
                             firstName: true,
                             lastName: true,
-                            ubankTag: true,
+                            ubankId: true,
                         },
                     },
                 },
@@ -50,7 +50,7 @@ export async function getGroupDetails(groupId: string, userId: string) {
                         select: {
                             firstName: true,
                             lastName: true,
-                            ubankTag: true,
+                            ubankId: true,
                         },
                     },
                 },
@@ -65,7 +65,7 @@ export async function getGroupDetails(groupId: string, userId: string) {
                         select: {
                             firstName: true,
                             lastName: true,
-                            ubankTag: true,
+                            ubankId: true,
                         },
                     },
                 },

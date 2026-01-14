@@ -10,7 +10,7 @@ datasource db {
 model User {
   id                String             @id @default(cuid())
   email             String             @unique
-  ubankTag          String?            @unique
+  ubankId                 String?          @unique
   firstName         String?
   lastName          String?
   phoneNumber       String?
@@ -37,7 +37,7 @@ model User {
 model Group {
   id                       String           @id @default(cuid())
   name                     String
-  ubankTag                 String?          @unique
+  ubankId                 String?          @unique
   description              String?
   region                   Region
   meetingFrequency         MeetingFrequency @default(MONTHLY)

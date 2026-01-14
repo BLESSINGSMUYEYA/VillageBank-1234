@@ -98,7 +98,7 @@ export default async function ProfilePage() {
     role: user.role,
     region: user.region,
     joinedAt: user.createdAt,
-    ubankTag: user.ubankTag,
+    ubankId: user.ubankId,
     isActive: true, // Assuming active if they can login
   }
 

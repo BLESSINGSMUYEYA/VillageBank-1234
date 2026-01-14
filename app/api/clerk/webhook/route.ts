@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { generateUniqueUserTag } from '@/lib/tag-generator'
+import { generateUniqueUbankId } from '@/lib/id-generator'
 import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 
@@ -65,7 +65,7 @@ async function handleUserCreated(data: any) {
   const primaryEmail = email_addresses[0]?.email_address
   const primaryPhone = phone_numbers[0]?.phone_number
 
-  const ubankTag = await generateUniqueUserTag(first_name || 'User', last_name || 'Member')
+  const ubankId = await generateUniqueUbankId(`${first_name || 'User'}.${last_name || 'Member'}`, 'USER')
 
   await prisma.user.create({
     data: {
@@ -76,7 +76,7 @@ async function handleUserCreated(data: any) {
       phoneNumber: primaryPhone || '',
       role: public_metadata?.role || 'MEMBER',
       region: public_metadata?.region || 'CENTRAL',
-      ubankTag,
+      ubankId,
     },
   })
 }
