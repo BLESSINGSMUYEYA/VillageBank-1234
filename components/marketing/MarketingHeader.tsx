@@ -27,6 +27,7 @@ export function MarketingHeader() {
         { label: 'features', path: '/features' },
         { label: 'pricing', path: '/pricing' },
         { label: 'about', path: '/about' },
+        { label: 'help', path: '/help' },
     ]
 
     return (

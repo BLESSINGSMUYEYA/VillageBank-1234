@@ -329,6 +329,109 @@
         "success_desc": "Mawu anu achinsinsi asinthidwa bwino. Mutha kulowa tsopano.",
         "error_invalid_token": "Ulalo wabwezeretserawu ndi wolakwika kapena watha nthawi yake."
     },
+    "help": {
+        "title": "Momwe Village Bank Imagwirira Ntchito",
+        "subtitle": "Zowongolera mwatsatanetsatane za udindo uliwonse mu banki yanu ya m'mudzi.",
+        "for_members": "Za Mamembala",
+        "for_treasurers": "Za Asungichuma",
+        "for_admins": "Za Atsogoleri",
+        "need_help_title": "Muli ndi mafunso ena?",
+        "need_help_desc": "Gulu lathu lothandizira lili okonzeka kukuthandizani pa nkhani iliyonse yomwe sinatchulidwe m'mabukuwa.",
+        "email_support": "Tumizani Imelo",
+        "call_us": "Tiimbireni",
+        "member_section": {
+            "dashboard_title": "Tsamba Lanu Loyamba",
+            "dashboard_desc": "Malo apakati pazochitika zanu zonse zakubanki. Kuyang'anira ndalama zanu ndi ngongole kwakhala kosavuta.",
+            "dashboard_steps": {
+                "overview": "Mwachidule",
+                "overview_desc": "Onani Ndalama Zonse Zosungidwa, Ngongole Zotsala, ndi Zochitika Zaposachedwa mwachangu.",
+                "navigation": "Mayendedwe",
+                "navigation_desc": "Gwiritsani ntchito menyu yakumbali (kapena pansi pa foni) kusintha pakati pa Magulu, Zopereka, ndi Ngongole.",
+                "notifications": "Zidziwitso",
+                "notifications_desc": "Onani chizindikiro cha belu kuti mudziwe zofunika monga kuvomerezedwa kwa ngongole kapena zikumbutso za zopereka."
+            },
+            "joining_title": "Kulowa & Kupanga Magulu",
+            "joining_desc": "Village banking ndi nkhani ya anthu amodzi. Umu ndi momwe mungalumikizane ndi ena.",
+            "joining_steps": {
+                "join": "Lowani mu Gulu",
+                "join_desc": "Pezani ulalo wopemphera kulowa kuchokera kwa membala kapena mtsogoleri. Dinani kuti mupemphe kulowa.",
+                "create": "Pangani Gulu",
+                "create_desc": "Pitani patsamba la Magulu, dinani 'Pangani Gulu Latsopano', ndikukhazikitsa malamulo (ndalama zopereka, chiwongoladzanja).",
+                "details": "Zambiri za Gulu",
+                "details_desc": "Dinani pa khadi la gulu lililonse kuti muwone mamembala ake, ndalama zonse, ndi mbiri yanu m'gululo."
+            },
+            "contributions_title": "Kupereka Zopereka",
+            "contributions_desc": "Kusunga pafupipafupi kumateteza tsogolo lanu lazachuma. Timathandizira njira zingapozosunga.",
+            "contributions_steps": {
+                "select": "Sankhani Gulu",
+                "select_desc": "Pitani patsamba la Zopereka ndikusankha gulu lomwe mukufuna kuperekako.",
+                "method": "Sankhani Njira",
+                "method_desc": "Mutha kulipira kudzera pa Mobile Money (Airtel/TNM) kapena kulipira Cash kwa Msungichuma wanu.",
+                "verify": "Tsimikizirani Kulipira",
+                "verify_desc": "Mukalipira pa intaneti, mudzalandira chitsimikizo nthawi yomweyo. Mukalipira cash, Msungichuma wanu ayenera kulemba pamanja."
+            },
+            "loans_title": "Kupempha Ngongole",
+            "loans_desc": "Pezani ndalama pomwe mukuzifuna kwambiri, kutengera mbiri yanu yosunga.",
+            "loans_steps": {
+                "check": "Onani Kuyenera",
+                "check_desc": "Gwiritsani ntchito chowunikira kuyenera patsamba la Ngongole kuti muwone malire anuobwereka.",
+                "apply": "Pemphani",
+                "apply_desc": "Dinani 'Pemphani Ngongole', Ikani ndalama, ndikusankha nthawi yobwerera.",
+                "wait": "Dikira Kuvomerezedwa",
+                "wait_desc": "Atsogoleri/Asungichuma adzaunika pempho lanu. Mukaloledwa, ndalama zidzatulutsidwa."
+            }
+        },
+        "treasurer_section": {
+            "responsibilities_title": "Udindo wa Msungichuma",
+            "responsibilities_desc": "Monga msungichuma, ndinu woyang'anira chuma cha gulu. Kulondola kwanu kumatsegula njira ya chikhulupiriro m'gulu. Muli ndi mwayi wapadera wolemba ndalama zoperekedwa m'manja.",
+            "recording_title": "Kulemba Ndalama za Cash",
+            "recording_desc": "Pamene membalaakupatsani ndalama za cash, muyenera kuzilemba nthawi yomweyo kuti musinthe akaunti yawo.",
+            "recording_steps": {
+                "open": "Tsegulani Cholembera",
+                "open_desc": "Pitani patsamba la Gulu ndikuyang'ana batani la 'Lembani Cash' (lowoneka kwa Asungichuma okha).",
+                "select_member": "Sankhani Membala",
+                "select_member_desc": "Sakani membala yemwe wakupatsani ndalamazo.",
+                "enter_details": "Lowetsani Zambiri",
+                "enter_details_desc": "Ikani Ndalama, Mwezi/Chaka chomwe malipirowa akukhudza, ndi kufotokoza mwachidule.",
+                "confirm": "Tsimikizani",
+                "confirm_desc": "Tumizani fomu. Membala adzawona izi zikuwonekera patsamba lawo nthawi yomweyo."
+            },
+            "verifying_title": "Kuwunika & Kugwirizanitsa",
+            "verifying_desc": "Onetsetsani kuti ndalama za cash zomwe zili m'bokosi zikufanana ndi mbiri ya mu makina.",
+            "verifying_steps": {
+                "check": "Kuwunika kwa Tsiku/Mlungu",
+                "check_desc": "Yerekezerani chiwerengero cha 'Total Cash' mu app ndi ndalama zenizeni zomwe muli nazo.",
+                "log": "Mbiri ya Audit",
+                "log_desc": "Onani tabu ya 'Mbiri' kuti muwone zochitika zonse zolembetsedwa ndikuwona zolakwika.",
+                "discrepancies": "Kusagwirizana",
+                "discrepancies_desc": "Ngati ziwerengero sizikugwirizana, onani ngati pali zopereka zaposachedwa zomwe sizinaperekedwe kapena zalembedwa kawiri."
+            }
+        },
+        "admin_section": {
+            "responsibilities_title": "Udindo wa Mtsogoleri wa Gulu",
+            "responsibilities_desc": "Monga Mtsogoleri wa Gulu, ndinu mtsogoleri wa gulu lanu losunga ndalama. Mumakhazikitsa malamulo, kuvomereza mamembala, ndikuyang'anira ndondomeko yobwereka kuti gulu lipambane.",
+            "member_mgt_title": "Kasamalidwe ka Mamembala",
+            "member_mgt_desc": "Mangani gulu lochita zinthu limodzi mosamalitsa omwe akulowa m'gulumu.",
+            "member_mgt_steps": {
+                "review": "Unikani Zopempha",
+                "review_desc": "Pamene wina agwiritsa ntchito ulalo wanu woitanira, muyenera kuwavomereza asanalowe.",
+                "manage": "Samalirani Mamembala",
+                "manage_desc": "Onani zambiri za mamembala ndikuchotsa aliyense amene akuphwanya malamulo a gulu.",
+                "roles": "Perekani Maudindo",
+                "roles_desc": "Kwezani mamembala odalirika kukhala Msungichuma kapena Mlembi kuti akuthandizeni ntchito."
+            },
+            "loan_oversight_title": "Kuyang'anira Ngongole",
+            "loan_oversight_desc": "Tetezani chuma cha gulu powunika mapemphero a ngongole.",
+            "loan_oversight_steps": {
+                "review": "Unikani Mapemphero",
+                "review_desc": "Onani zopempha za ngongole pa kuchuluka, cholinga, ndi kuthekera kwa membala kubweza.",
+                "approve": "Vomerezani/Kanani",
+                "approve_desc": "Pangani chisankho chomaliza. Ngongole zovomerezedwa zimalowa pamzere kuti zitulutsidwe.",
+                "monitor": "Yanganirani Kubweza",
+                "monitor_desc": "Tsata ngongole zomwe zilipo ndikutsata zolipirira zilizonse zomwe zaphonya."
+            }
+        }
+    },
     "footer": {
         "desc": "Kupatsa mphamvu anthu a m'madera ndi zida zachuma zowonekera bwino, zosavuta, komanso zamakono. Yomangidwira tsogolo la Malawi.",
         "install_app": "Ikani App",

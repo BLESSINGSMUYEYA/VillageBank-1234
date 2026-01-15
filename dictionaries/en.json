@@ -395,6 +395,109 @@
     "success_desc": "Your password has been successfully updated. You can now login.",
     "error_invalid_token": "This recovery link is invalid or has expired."
   },
+  "help": {
+    "title": "How Village Bank Works",
+    "subtitle": "Detailed guides and lessons for every role in your community bank.",
+    "for_members": "For Members",
+    "for_treasurers": "For Treasurers",
+    "for_admins": "For Admins",
+    "need_help_title": "Still have questions?",
+    "need_help_desc": "Our support team is always ready to help you with any issues not covered in these guides.",
+    "email_support": "Email Support",
+    "call_us": "Call Us",
+    "member_section": {
+      "dashboard_title": "Your Dashboard",
+      "dashboard_desc": "The central hub for all your banking activities. Tracking your savings and loans has never been easier.",
+      "dashboard_steps": {
+        "overview": "Overview",
+        "overview_desc": "View your Total Savings, Outstanding Loans, and Recent Activity at a glance.",
+        "navigation": "Navigation",
+        "navigation_desc": "Use the sidebar (or bottom menu on mobile) to switch between Groups, Contributions, and Loans.",
+        "notifications": "Notifications",
+        "notifications_desc": "Check the bell icon for important updates like loan approvals or contribution reminders."
+      },
+      "joining_title": "Joining & Creating Groups",
+      "joining_desc": "Village banking is about community. Here is how you connect with others.",
+      "joining_steps": {
+        "join": "Join a Group",
+        "join_desc": "Get a joining link from an existing member or admin. Click it to request access.",
+        "create": "Create a Group",
+        "create_desc": "Go to the Groups page, click 'Create New Group', and set the rules (contribution amount, interest rates).",
+        "details": "Group Details",
+        "details_desc": "Click on any group card to see its members, total capital, and your specific history within it."
+      },
+      "contributions_title": "Making Contributions",
+      "contributions_desc": "Regular savings build your financial future. We support multiple ways to save.",
+      "contributions_steps": {
+        "select": "Select Group",
+        "select_desc": "Navigate to the Contributions page and pick the group you want to contribute to.",
+        "method": "Choose Method",
+        "method_desc": "You can pay via Mobile Money (Airtel/TNM) or pay Cash physically to your Treasurer.",
+        "verify": "Verify Payment",
+        "verify_desc": "For online payments, you'll get instant confirmation. For cash, your Treasurer must record it manually."
+      },
+      "loans_title": "Applying for Loans",
+      "loans_desc": "Access capital when you need it most, based on your savings history.",
+      "loans_steps": {
+        "check": "Check Eligibility",
+        "check_desc": "Use the eligibility checker on the Loans page to see your maximum borrowing limit.",
+        "apply": "Apply",
+        "apply_desc": "Click 'Apply for Loan', enter the amount, and choose a repayment period.",
+        "wait": "Wait for Approval",
+        "wait_desc": "Admins/Treasurers will review your request. Once approved, funds are disbursed."
+      }
+    },
+    "treasurer_section": {
+      "responsibilities_title": "Treasurer Responsibilities",
+      "responsibilities_desc": "As a treasurer, you are the guardian of the group's manufacturing capital. Your accuracy ensures trust within the group. You have special access to record cash transactions that members hand to you physically.",
+      "recording_title": "Recording Cash Payments",
+      "recording_desc": "When a member hands you physical cash, you must record it immediately to update their balance.",
+      "recording_steps": {
+        "open": "Open Recorder",
+        "open_desc": "Go to the Group page and look for the 'Record Cash' button (visible only to Treasurers).",
+        "select_member": "Select Member",
+        "select_member_desc": "Search for the member who gave you the money.",
+        "enter_details": "Enter Details",
+        "enter_details_desc": "Input the Amount, the Month/Year this payment covers, and a short description.",
+        "confirm": "Confirm",
+        "confirm_desc": "Submit the form. The member will instantly see this reflected in their dashboard."
+      },
+      "verifying_title": "Verifying & Reconciling",
+      "verifying_desc": "Ensure the physical cash in the box matches the system records.",
+      "verifying_steps": {
+        "check": "Daily/Weekly Check",
+        "check_desc": "Compare the 'Total Cash' figure in the app with the actual cash on hand.",
+        "log": "Audit Log",
+        "log_desc": "Review the 'History' tab to see all recorded transactions and spot any errors.",
+        "discrepancies": "Discrepancies",
+        "discrepancies_desc": "If figures don't match, check if a recent cash handout was not recorded or double-counted."
+      }
+    },
+    "admin_section": {
+      "responsibilities_title": "Group Admin Responsibilities",
+      "responsibilities_desc": "As a Group Admin, you are the leader of your savings circle. You set the rules, approve members, and oversee the lending process to ensure the group's success.",
+      "member_mgt_title": "Member Management",
+      "member_mgt_desc": "Build a trusted circle by carefully managing who joins your group.",
+      "member_mgt_steps": {
+        "review": "Review Requests",
+        "review_desc": "When someone uses your invite link, you must approve them before they can join.",
+        "manage": "Manage Members",
+        "manage_desc": "View member details and remove anyone who violates group rules.",
+        "roles": "Assign Roles",
+        "roles_desc": "Promote trusted members to Treasurer or Secretary to help manage the workload."
+      },
+      "loan_oversight_title": "Loan Oversight",
+      "loan_oversight_desc": "Protect the group's capital by vetting loan applications.",
+      "loan_oversight_steps": {
+        "review": "Review Applications",
+        "review_desc": "Check loan requests for amount, purpose, and the member's repayment capacity.",
+        "approve": "Approve/Reject",
+        "approve_desc": "Make the final decision. Approved loans are automatically queued for disbursement.",
+        "monitor": "Monitor Repayments",
+        "monitor_desc": "Track active loans and follow up on any missed payments."
+      }
+    }
+  },
   "footer": {
     "desc": "Empowering communities with secure, transparent, and digital financial tools.",
     "install_app": "Install App",

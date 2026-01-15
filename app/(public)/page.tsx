@@ -128,6 +128,56 @@ export default function Home() {
                         </motion.div>
                     </div>
 
+                    {/* University / Help Promo Section */}
+                    <div className="mb-40 relative">
+                        <div className="absolute inset-0 bg-blue-600/5 dark:bg-white/5 skew-y-3 transform -z-10 rounded-3xl" />
+                        <div className="py-20 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-12 max-w-7xl mx-auto">
+                            <div className="md:w-1/2 space-y-6">
+                                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 dark:bg-white/10 text-blue-700 dark:text-banana font-bold text-xs uppercase tracking-widest">
+                                    <Sparkles className="w-4 h-4" />
+                                    <span>New: uBank University</span>
+                                </div>
+                                <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-tight">
+                                    Master Your Community Finances
+                                </h2>
+                                <p className="text-lg text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
+                                    Whether you are a Treasurer needing to record cash, or a Member looking for a loan, our detailed step-by-step guides have you covered.
+                                </p>
+                                <div className="pt-4">
+                                    <Link href="/help">
+                                        <Button className="h-14 px-8 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-950 font-black text-base shadow-xl hover:scale-105 transition-all flex items-center gap-2">
+                                            Start Learning
+                                            <ArrowRight className="w-5 h-5" />
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </div>
+                            <div className="md:w-1/2">
+                                <GlassCard className="p-8 rotate-3 hover:rotate-0 transition-transform duration-500 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md border-white/20">
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-4 border-b border-slate-200 dark:border-white/10 pb-4">
+                                            <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold">1</div>
+                                            <div className="font-bold text-slate-700 dark:text-slate-200">Create a Group</div>
+                                        </div>
+                                        <div className="flex items-center gap-4 border-b border-slate-200 dark:border-white/10 pb-4">
+                                            <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold">2</div>
+                                            <div className="font-bold text-slate-700 dark:text-slate-200">Invite Members</div>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold">3</div>
+                                            <div className="font-bold text-slate-700 dark:text-slate-200">Grow Capital</div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-8 pt-6 border-t border-slate-200 dark:border-white/10 text-center">
+                                        <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+                                            Available for all roles
+                                        </p>
+                                    </div>
+                                </GlassCard>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Trust Section */}
                     <motion.div
                         initial={{ opacity: 0, y: 40 }}
