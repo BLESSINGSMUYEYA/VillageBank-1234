@@ -34,22 +34,22 @@ export default function HelpPage() {
 
         <Tabs defaultValue="members" className="w-full">
           <div className="flex justify-center mb-8">
-            <TabsList className="bg-white dark:bg-gray-800 p-1 rounded-full border border-gray-200 dark:border-gray-700 shadow-sm">
+            <TabsList className="bg-white dark:bg-gray-800 p-1.5 rounded-full border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col sm:flex-row h-auto w-full sm:w-auto">
               <TabsTrigger
                 value="members"
-                className="rounded-full px-6 py-2.5 data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all"
+                className="rounded-full px-4 py-2 sm:px-6 sm:py-2.5 w-full sm:w-auto data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all"
               >
                 {t('help.for_members')}
               </TabsTrigger>
               <TabsTrigger
                 value="treasurers"
-                className="rounded-full px-6 py-2.5 data-[state=active]:bg-purple-600 data-[state=active]:text-white transition-all"
+                className="rounded-full px-4 py-2 sm:px-6 sm:py-2.5 w-full sm:w-auto data-[state=active]:bg-purple-600 data-[state=active]:text-white transition-all"
               >
                 {t('help.for_treasurers')}
               </TabsTrigger>
               <TabsTrigger
                 value="admins"
-                className="rounded-full px-6 py-2.5 data-[state=active]:bg-amber-600 data-[state=active]:text-white transition-all"
+                className="rounded-full px-4 py-2 sm:px-6 sm:py-2.5 w-full sm:w-auto data-[state=active]:bg-amber-600 data-[state=active]:text-white transition-all"
               >
                 {t('help.for_admins')}
               </TabsTrigger>
@@ -210,12 +210,12 @@ export default function HelpPage() {
           <p className="text-gray-600 dark:text-gray-300 mb-6">
             {t('help.need_help_desc')}
           </p>
-          <div className="inline-flex gap-4 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-            <div className="text-left px-4 border-r border-gray-200 dark:border-gray-700">
+          <div className="inline-flex flex-col sm:flex-row gap-4 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm w-full sm:w-auto">
+            <div className="text-left px-4 pb-4 sm:pb-0 sm:border-r border-b sm:border-b-0 border-gray-200 dark:border-gray-700">
               <div className="text-xs text-gray-500 uppercase font-semibold">{t('help.email_support')}</div>
-              <div className="text-blue-600 font-medium">support@villagebanking.com</div>
+              <div className="text-blue-600 font-medium break-all">support@villagebanking.com</div>
             </div>
-            <div className="text-left px-4">
+            <div className="text-left px-4 pt-2 sm:pt-0">
               <div className="text-xs text-gray-500 uppercase font-semibold">{t('help.call_us')}</div>
               <div className="text-blue-600 font-medium">+265 123 456 789</div>
             </div>
