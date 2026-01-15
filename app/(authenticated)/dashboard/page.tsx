@@ -15,6 +15,7 @@ import { ActivityFeedLoader } from '@/components/dashboard/server/ActivityFeedLo
 import { FinancialOverviewLoader } from '@/components/dashboard/server/FinancialOverviewLoader'
 import { QuickActions } from '@/components/dashboard/QuickActions'
 import { HeroSkeleton, ActivitySkeleton, ChartsSkeleton } from '@/components/dashboard/skeletons'
+import { DashboardBannerCarousel } from '@/components/dashboard/DashboardBannerCarousel'
 
 export default async function DashboardPage() {
   const session = await getSession()
@@ -33,6 +34,8 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6 sm:space-y-10 pb-10">
+      <DashboardBannerCarousel />
+
       <Suspense fallback={<HeroSkeleton />}>
         <DashboardHeroLoader user={user} />
       </Suspense>
