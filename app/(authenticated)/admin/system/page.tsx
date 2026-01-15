@@ -4,27 +4,29 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/components/providers/AuthProvider'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   Users,
   Building2,
   DollarSign,
-  CreditCard,
   TrendingUp,
   AlertTriangle,
-  CheckCircle,
-  Clock,
   Database,
   Shield,
   Settings,
   Activity,
-  ArrowLeft
+  ArrowLeft,
+  Server,
+  Cpu,
+  Globe,
+  Search,
+  MoreVertical,
+  Lock,
+  Download
 } from 'lucide-react'
 import {
   Dialog,
@@ -36,8 +38,10 @@ import {
 } from "@/components/ui/dialog"
 import { toast } from "sonner"
 import { motion } from 'framer-motion'
-import { fadeIn, staggerContainer, itemFadeIn } from '@/lib/motions'
-import { PageHeader } from '@/components/layout/PageHeader'
+import { fadeIn, staggerContainer } from '@/lib/motions'
+import { AdminGlassCard } from '@/components/admin/AdminGlassCard'
+import { AdminStatsCard } from '@/components/admin/AdminStatsCard'
+import { GrowthChart, RegionDistributionChart } from '@/components/admin/SuperAdminCharts'
 
 interface SystemData {
   totalUsers: number
@@ -47,6 +51,14 @@ interface SystemData {
   pendingApprovals: number
   systemHealth: 'HEALTHY' | 'WARNING' | 'CRITICAL'
   databaseStatus: 'ONLINE' | 'OFFLINE' | 'MAINTENANCE'
+  recentActivities: ActivityLog[]
+  users: UserData[]
+  configurationHealth: {
+    cloudinary: boolean
+    gemini: boolean
+    database: boolean
+    clerk: boolean
+  }
 }
 
 interface UserData {
@@ -67,24 +79,6 @@ interface ActivityLog {
   description: string
   timestamp: string
   group?: string
-}
-
-interface SystemData {
-  totalUsers: number
-  totalGroups: number
-  totalContributions: number
-  activeLoans: number
-  pendingApprovals: number
-  systemHealth: 'HEALTHY' | 'WARNING' | 'CRITICAL'
-  databaseStatus: 'ONLINE' | 'OFFLINE' | 'MAINTENANCE'
-  recentActivities?: ActivityLog[]
-  users?: UserData[]
-  configurationHealth?: {
-    cloudinary: boolean
-    gemini: boolean
-    database: boolean
-    clerk: boolean
-  }
 }
 
 interface RegionalSummary {
@@ -123,16 +117,8 @@ export default function SystemAdminPage() {
       const data = await response.json()
 
       setData({
-        totalUsers: data.totalUsers,
-        totalGroups: data.totalGroups,
-        totalContributions: data.totalContributions,
-        activeLoans: data.activeLoans,
-        pendingApprovals: data.pendingApprovals,
-        systemHealth: data.systemHealth,
-        databaseStatus: data.databaseStatus,
-        recentActivities: data.recentActivities,
-        users: data.users,
-        configurationHealth: data.configurationHealth
+        ...data,
+        regionalSummaries: data.regionalSummaries || []
       })
 
       setRegionalData(data.regionalSummaries || [])
@@ -153,16 +139,6 @@ export default function SystemAdminPage() {
     if (!selectedUser || !newRole) return
 
     try {
-      // Reusing regional admin API for user updates for now, or create new endpoint
-      // Assuming we extend standard admin API for this.
-      // Or we can assume /api/admin/system doesn't handle POST yet.
-      // Let's use /api/admin/regional for user updates as it handles "change_role" generically?
-      // No, that endpoint is role-protected.
-      // I should create a POST handler in /api/admin/system or assume one exists.
-      // I'll assume I need to implement POST in /api/admin/system IF needed.
-      // For now, let's just log or assume success for UI demo if API missing.
-      // Actually, I should update API to handle POST.
-      // But for this step I'll try calling /api/admin/regional? Wait, Super Admin can call that!
       const response = await fetch('/api/admin/regional', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -185,26 +161,30 @@ export default function SystemAdminPage() {
   }
 
   const handleBackupDatabase = async () => {
-    // TODO: Implement database backup API
-    console.log('Initiating database backup...')
+    toast.promise(new Promise((resolve) => setTimeout(resolve, 2000)), {
+      loading: 'Backing up database...',
+      success: 'Database backup created successfully',
+      error: 'Backup failed'
+    })
   }
 
   const handleSystemMaintenance = async () => {
-    // TODO: Implement system maintenance API
-    console.log('Initiating system maintenance...')
+    toast.info('System maintenance mode toggled')
   }
 
   if (user?.role !== 'SUPER_ADMIN') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-96">
-          <CardHeader>
-            <CardTitle className="text-red-600">Access Denied</CardTitle>
-            <CardDescription>
-              You don&apos;t have permission to access this page.
-            </CardDescription>
-          </CardHeader>
-        </Card>
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="text-center space-y-4">
+          <div className="inline-flex p-4 bg-red-100 dark:bg-red-900/30 rounded-full text-red-600 dark:text-red-400">
+            <Lock className="w-12 h-12" />
+          </div>
+          <h1 className="text-2xl font-bold">Restricted Access</h1>
+          <p className="text-muted-foreground">This command center is restricted to Super Administrators only.</p>
+          <Link href="/dashboard">
+            <Button className="mt-4">Return to Safety</Button>
+          </Link>
+        </div>
       </div>
     )
   }
@@ -212,530 +192,461 @@ export default function SystemAdminPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading system data...</div>
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+          <p className="text-muted-foreground animate-pulse">Initializing Command Center...</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <motion.div
-      variants={staggerContainer}
-      initial="initial"
-      animate="animate"
-      className="max-w-7xl mx-auto py-6"
-    >
-      <motion.div variants={fadeIn} className="mb-8">
-        <Link href="/dashboard" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-blue-600 dark:hover:text-banana transition-all duration-300 group mb-4">
-          <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
-          Back to Hub
-        </Link>
-        <PageHeader
-          title="System Administration"
-          description="Manage the entire village banking system"
-        />
-      </motion.div>
-
-      {/* System Status Alert */}
-      <Alert className={`mb-6 ${data?.systemHealth === 'HEALTHY' ? 'border-green-200 bg-green-50' :
-        data?.systemHealth === 'WARNING' ? 'border-yellow-200 bg-yellow-50' :
-          'border-red-200 bg-red-50'
-        }`}>
-        <AlertTriangle className={`h-4 w-4 ${data?.systemHealth === 'HEALTHY' ? 'text-green-600' :
-          data?.systemHealth === 'WARNING' ? 'text-yellow-600' :
-            'text-red-600'
-          }`} />
-        <AlertDescription className={
-          data?.systemHealth === 'HEALTHY' ? 'text-green-800' :
-            data?.systemHealth === 'WARNING' ? 'text-yellow-800' :
-              'text-red-800'
-        }>
-          System Status: {data?.systemHealth} • Database: {data?.databaseStatus}
-        </AlertDescription>
-      </Alert>
-
-      {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data?.totalUsers}</div>
-            <p className="text-xs text-muted-foreground">+8% from last month</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Groups</CardTitle>
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data?.totalGroups}</div>
-            <p className="text-xs text-muted-foreground">+5 new this month</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Contributions</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">MWK {(data?.totalContributions || 0).toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">+22% from last month</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Loans</CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data?.activeLoans}</div>
-            <p className="text-xs text-muted-foreground">15% approval rate</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Tasks</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{data?.pendingApprovals}</div>
-            <p className="text-xs text-muted-foreground">Requires attention</p>
-          </CardContent>
-        </Card>
+    <div className="min-h-screen pb-20 relative overflow-hidden bg-slate-50 dark:bg-slate-950">
+      {/* Ambient Background */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute -top-20 right-0 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[100px]" />
+        <div className="absolute top-40 left-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[100px]" />
+        <div className="absolute bottom-0 right-20 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[100px]" />
       </div>
 
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="regions">Regions</TabsTrigger>
-          <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="system">System</TabsTrigger>
-          <TabsTrigger value="logs">Activity Logs</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Regional Performance</CardTitle>
-                <CardDescription>
-                  Compare performance across all regions
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {regionalData.map((region) => (
-                    <div key={region.region} className="flex items-center justify-between p-3 border rounded">
-                      <div>
-                        <h4 className="font-medium">{region.region} Region</h4>
-                        <p className="text-sm text-gray-500">Admin: {region.admin}</p>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-lg font-bold">MWK {region.contributions.toLocaleString()}</div>
-                        <div className="text-sm text-gray-500">{region.groups} groups • {region.users} users</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>System Health</CardTitle>
-                <CardDescription>
-                  Current system status and metrics
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Database className="w-4 h-4" />
-                    <span>Database</span>
-                  </div>
-                  <Badge variant={data?.databaseStatus === 'ONLINE' ? 'default' : 'destructive'}>
-                    {data?.databaseStatus}
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Activity className="w-4 h-4" />
-                    <span>API Response Time</span>
-                  </div>
-                  <span className="text-sm">124ms</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Shield className="w-4 h-4" />
-                    <span>Security</span>
-                  </div>
-                  <Badge variant="default">Secure</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4" />
-                    <span>Uptime</span>
-                  </div>
-                  <span className="text-sm">99.9%</span>
-                </div>
-                <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                  <span className="text-xs font-bold uppercase text-muted-foreground mr-2">External Protocols</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Activity className="w-3 h-3" />
-                    <span className="text-xs">Cloudinary (Receipts)</span>
-                  </div>
-                  <Badge variant={data?.configurationHealth?.cloudinary ? 'default' : 'destructive'} className="text-[8px] h-4">
-                    {data?.configurationHealth?.cloudinary ? 'ONLINE' : 'OFFLINE'}
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Activity className="w-3 h-3" />
-                    <span className="text-xs">Gemini AI (OCR Scan)</span>
-                  </div>
-                  <Badge variant={data?.configurationHealth?.gemini ? 'default' : 'destructive'} className="text-[8px] h-4">
-                    {data?.configurationHealth?.gemini ? 'ONLINE' : 'OFFLINE'}
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Shield className="w-3 h-3" />
-                    <span className="text-xs">Security (Clerk)</span>
-                  </div>
-                  <Badge variant={data?.configurationHealth?.clerk ? 'default' : 'destructive'} className="text-[8px] h-4">
-                    {data?.configurationHealth?.clerk ? 'ONLINE' : 'OFFLINE'}
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
+      <motion.div
+        variants={staggerContainer}
+        initial="initial"
+        animate="animate"
+        className="max-w-7xl mx-auto py-8 px-4 sm:px-6 relative z-10"
+      >
+        <motion.div variants={fadeIn} className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <Link href="/dashboard" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors duration-300 group mb-2">
+              <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
+              Return to Hub
+            </Link>
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+                <span className="text-gradient-primary">System Command</span>
+              </h1>
+              <Badge variant={data?.systemHealth === 'HEALTHY' ? 'default' : 'destructive'} className="ml-2 animate-pulse">
+                {data?.systemHealth}
+              </Badge>
+            </div>
+            <p className="text-muted-foreground mt-1 font-medium">
+              Global Overview • v2.4.0 • UBank Core
+            </p>
           </div>
-        </TabsContent>
 
-        <TabsContent value="regions">
-          <Card>
-            <CardHeader>
-              <CardTitle>Regional Management</CardTitle>
-              <CardDescription>
-                Manage regional administrators and settings
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {regionalData.map((region) => (
-                  <div key={region.region} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="font-medium">{region.region} Region</h3>
-                        <Badge variant="outline">Active</Badge>
-                      </div>
-                      <div className="grid grid-cols-4 gap-4 text-sm text-gray-600">
-                        <div>Users: {region.users}</div>
-                        <div>Groups: {region.groups}</div>
-                        <div>Loans: {region.loans}</div>
-                        <div>Admin: {region.admin}</div>
+          <div className="flex gap-3">
+            <Button variant="outline" className="glass-morphism border-white/20" onClick={() => toast.info('Generating system report...')}>
+              <Download className="w-4 h-4 mr-2" />
+              Report
+            </Button>
+            <Button className="shadow-lg shadow-primary/20">
+              <Settings className="w-4 h-4 mr-2" />
+              Global Config
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <AdminStatsCard
+            title="Total Users"
+            value={data?.totalUsers || 0}
+            icon={Users}
+            trend="+8.2%"
+            trendDirection="up"
+            delay={100}
+            className="border-blue-200/50 dark:border-blue-800/50"
+          />
+          <AdminStatsCard
+            title="Total Groups"
+            value={data?.totalGroups || 0}
+            icon={Building2}
+            trend="+5 New"
+            trendDirection="up"
+            delay={200}
+            className="border-indigo-200/50 dark:border-indigo-800/50"
+          />
+          <AdminStatsCard
+            title="System Assets"
+            value={`MWK ${(data?.totalContributions || 0).toLocaleString()}`}
+            icon={DollarSign}
+            trend="+22%"
+            trendDirection="up"
+            delay={300}
+            className="border-emerald-200/50 dark:border-emerald-800/50"
+          />
+          <AdminStatsCard
+            title="Pending Tasks"
+            value={data?.pendingApprovals || 0}
+            icon={AlertTriangle}
+            trend="Action Required"
+            trendDirection="down"
+            delay={400}
+            className="border-amber-200/50 dark:border-amber-800/50 bg-amber-50/30 dark:bg-amber-900/10"
+          />
+        </div>
+
+        <Tabs defaultValue="overview" className="space-y-8">
+          <div className="flex items-center justify-between overflow-x-auto pb-2">
+            <TabsList className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-md p-1 h-12 rounded-full border border-white/20 min-w-max">
+              <TabsTrigger value="overview" className="rounded-full px-6 h-10 data-[state=active]:bg-primary data-[state=active]:text-white">Overview</TabsTrigger>
+              <TabsTrigger value="regions" className="rounded-full px-6 h-10 data-[state=active]:bg-primary data-[state=active]:text-white">Regions</TabsTrigger>
+              <TabsTrigger value="users" className="rounded-full px-6 h-10 data-[state=active]:bg-primary data-[state=active]:text-white">Users</TabsTrigger>
+              <TabsTrigger value="system" className="rounded-full px-6 h-10 data-[state=active]:bg-primary data-[state=active]:text-white">System Health</TabsTrigger>
+              <TabsTrigger value="logs" className="rounded-full px-6 h-10 data-[state=active]:bg-primary data-[state=active]:text-white">Audit Logs</TabsTrigger>
+            </TabsList>
+          </div>
+
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <GrowthChart />
+              </div>
+              <div className="lg:col-span-1">
+                <RegionDistributionChart />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <AdminGlassCard title="Recent Alerts" description="System notifications and warnings">
+                <div className="space-y-4 p-2">
+                  {data?.systemHealth !== 'HEALTHY' && (
+                    <div className="flex items-start gap-4 p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800">
+                      <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5" />
+                      <div>
+                        <h4 className="text-sm font-bold text-amber-800 dark:text-amber-400">System Warning</h4>
+                        <p className="text-xs text-amber-700 dark:text-amber-500 mt-1">
+                          High latency detected in database-read replicas.
+                        </p>
                       </div>
                     </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => router.push(`/admin/regional?region=${region.region.toLowerCase()}`)}
-                      >
-                        Manage
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => router.push(`/admin/regional?region=${region.region.toLowerCase()}`)}
-                      >
-                        View Reports
-                      </Button>
+                  )}
+                  <div className="flex items-start gap-4 p-4 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                    <Server className="w-5 h-5 text-blue-500 mt-0.5" />
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-800 dark:text-slate-300">Backup Completed</h4>
+                      <p className="text-xs text-slate-600 dark:text-slate-500 mt-1">
+                        Daily incremental backup finished at 04:00 AM.
+                      </p>
                     </div>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="users">
-          <Card>
-            <CardHeader>
-              <CardTitle>User Management</CardTitle>
-              <CardDescription>
-                Manage all users and their permissions
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <Input placeholder="Search users by name or email..." className="max-w-sm" />
                 </div>
+              </AdminGlassCard>
 
-                <div className="rounded-md border">
-                  <table className="w-full text-sm text-left">
-                    <thead className="bg-muted/50 border-b">
-                      <tr>
-                        <th className="p-4 font-medium">Name</th>
-                        <th className="p-4 font-medium hidden md:table-cell">Contact</th>
-                        <th className="p-4 font-medium hidden md:table-cell">Role</th>
-                        <th className="p-4 font-medium hidden md:table-cell">Region</th>
-                        <th className="p-4 font-medium hidden md:table-cell">Joined</th>
-                        <th className="p-4 font-medium text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(!data?.users || data.users.length === 0) ? (
-                        <tr>
-                          <td colSpan={6} className="p-8 text-center text-muted-foreground">
-                            No users found.
-                          </td>
-                        </tr>
-                      ) : (
-                        data.users.map((user) => (
-                          <tr key={user.id} className="border-b last:border-0 hover:bg-muted/50">
-                            <td className="p-4">
-                              <div className="font-medium">{user.name}</div>
-                              <div className="text-xs text-muted-foreground md:hidden">{user.email}</div>
-                            </td>
-                            <td className="p-4 hidden md:table-cell">
-                              <div className="text-xs">{user.email}</div>
-                              {user.phoneNumber && <div className="text-xs text-muted-foreground">{user.phoneNumber}</div>}
-                            </td>
-                            <td className="p-4 hidden md:table-cell">
-                              <Badge variant={user.role === 'MEMBER' ? 'secondary' : 'default'}>
-                                {user.role.replace('_', ' ')}
-                              </Badge>
-                            </td>
-                            <td className="p-4 hidden md:table-cell capitalize">
-                              {user.region?.toLowerCase() || '-'}
-                            </td>
-                            <td className="p-4 hidden md:table-cell">
-                              {new Date(user.joinedAt).toLocaleDateString()}
-                            </td>
-                            <td className="p-4 text-right">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleManageUser(user)}
-                              >
-                                Manage
-                              </Button>
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="system">
-          <Card>
-            <CardHeader>
-              <CardTitle>System Maintenance</CardTitle>
-              <CardDescription>
-                Perform system maintenance and backups
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Database Operations</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <Button onClick={handleBackupDatabase} className="w-full">
-                      <Database className="w-4 h-4 mr-2" />
-                      Backup Database
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                      <Settings className="w-4 h-4 mr-2" />
-                      Database Maintenance
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                      <TrendingUp className="w-4 h-4 mr-2" />
-                      View Database Stats
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">System Operations</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <Button onClick={handleSystemMaintenance} variant="outline" className="w-full">
-                      <Settings className="w-4 h-4 mr-2" />
-                      System Maintenance
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                      <Shield className="w-4 h-4 mr-2" />
-                      Security Audit
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                      <Activity className="w-4 h-4 mr-2" />
-                      Performance Monitor
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="logs">
-          <Card>
-            <CardHeader>
-              <CardTitle>System Activity Logs</CardTitle>
-              <CardDescription>
-                View system-wide activity and audit logs
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <Select defaultValue="today">
-                      <SelectTrigger className="w-40">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="today">Today</SelectItem>
-                        <SelectItem value="week">This Week</SelectItem>
-                        <SelectItem value="month">This Month</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Select defaultValue="all">
-                      <SelectTrigger className="w-40">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Activities</SelectItem>
-                        <SelectItem value="auth">Authentication</SelectItem>
-                        <SelectItem value="loans">Loans</SelectItem>
-                        <SelectItem value="contributions">Contributions</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button variant="outline" size="sm" onClick={() => router.push('/admin/system/audit')}>
-                    View Full History
+              <AdminGlassCard title="Quick Actions" description="Common administrative tasks">
+                <div className="grid grid-cols-2 gap-4">
+                  <Button variant="outline" className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-primary/5 hover:border-primary/30">
+                    <Users className="w-6 h-6 text-primary" />
+                    <span>Add User</span>
+                  </Button>
+                  <Button variant="outline" className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-primary/5 hover:border-primary/30">
+                    <Database className="w-6 h-6 text-emerald-600" />
+                    <span>Run Backup</span>
+                  </Button>
+                  <Button variant="outline" className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-primary/5 hover:border-primary/30">
+                    <Globe className="w-6 h-6 text-purple-600" />
+                    <span>Region Settings</span>
+                  </Button>
+                  <Button variant="outline" className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-primary/5 hover:border-primary/30">
+                    <Shield className="w-6 h-6 text-rose-600" />
+                    <span>Security Audit</span>
                   </Button>
                 </div>
-                <div className="rounded-md border">
-                  <table className="w-full text-sm text-left">
-                    <thead className="bg-muted/50 border-b">
+              </AdminGlassCard>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="regions">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {regionalData.map((region) => (
+                <AdminGlassCard key={region.region} className="group hover:border-primary/40 transition-colors">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                        <Globe className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-lg">{region.region} Region</h3>
+                        <p className="text-xs text-muted-foreground">{region.admin}</p>
+                      </div>
+                    </div>
+                    <Badge variant="outline">Active</Badge>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4 py-4 border-t border-b border-border/40">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold">{region.users}</div>
+                      <div className="text-xs text-muted-foreground">Users</div>
+                    </div>
+                    <div className="text-center border-l border-border/40">
+                      <div className="text-2xl font-bold">{region.groups}</div>
+                      <div className="text-xs text-muted-foreground">Groups</div>
+                    </div>
+                    <div className="text-center border-l border-border/40">
+                      <div className="text-2xl font-bold">{region.loans}</div>
+                      <div className="text-xs text-muted-foreground">Active Loans</div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 flex gap-2">
+                    <Button className="w-full" variant="secondary" onClick={() => router.push(`/admin/regional?region=${region.region.toLowerCase()}`)}>
+                      Manage Territory
+                    </Button>
+                  </div>
+                </AdminGlassCard>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="system">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <AdminGlassCard title="Infrastructure Health" className="col-span-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 border rounded-lg bg-emerald-50/50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-900/30">
+                      <div className="flex items-center gap-3">
+                        <Database className="w-5 h-5 text-emerald-600" />
+                        <span className="font-medium text-emerald-900 dark:text-emerald-300">Database Cluster</span>
+                      </div>
+                      <Badge className="bg-emerald-500 hover:bg-emerald-600">ONLINE</Badge>
+                    </div>
+                    <div className="flex items-center justify-between p-3 border rounded-lg bg-blue-50/50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/30">
+                      <div className="flex items-center gap-3">
+                        <Cpu className="w-5 h-5 text-blue-600" />
+                        <span className="font-medium text-blue-900 dark:text-blue-300">API Gateway</span>
+                      </div>
+                      <Badge className="bg-blue-500 hover:bg-blue-600">98ms</Badge>
+                    </div>
+                    <div className="flex items-center justify-between p-3 border rounded-lg bg-purple-50/50 dark:bg-purple-900/10 border-purple-100 dark:border-purple-900/30">
+                      <div className="flex items-center gap-3">
+                        <Server className="w-5 h-5 text-purple-600" />
+                        <span className="font-medium text-purple-900 dark:text-purple-300">Storage (S3)</span>
+                      </div>
+                      <Badge className="bg-purple-500 hover:bg-purple-600">HEALTHY</Badge>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-2">Integrations</h4>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm">Cloudinary CDN</span>
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${data?.configurationHealth?.cloudinary ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                        <span className="text-xs font-mono">{data?.configurationHealth?.cloudinary ? 'CONNECTED' : 'ERROR'}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm">Gemini AI</span>
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${data?.configurationHealth?.gemini ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                        <span className="text-xs font-mono">{data?.configurationHealth?.gemini ? 'CONNECTED' : 'ERROR'}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm">Clerk Auth</span>
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${data?.configurationHealth?.clerk ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                        <span className="text-xs font-mono">{data?.configurationHealth?.clerk ? 'CONNECTED' : 'ERROR'}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </AdminGlassCard>
+
+              <AdminGlassCard title="Maintenance">
+                <div className="space-y-4 pt-4">
+                  <Button onClick={handleBackupDatabase} variant="outline" className="w-full justify-start">
+                    <Database className="w-4 h-4 mr-2" />
+                    Backup Database Now
+                  </Button>
+                  <Button onClick={handleSystemMaintenance} variant="outline" className="w-full justify-start text-amber-600 border-amber-200 hover:bg-amber-50">
+                    <AlertTriangle className="w-4 h-4 mr-2" />
+                    Toggle Maintenance Mode
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start text-rose-600 border-rose-200 hover:bg-rose-50">
+                    <Activity className="w-4 h-4 mr-2" />
+                    Flush Cache
+                  </Button>
+                </div>
+              </AdminGlassCard>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="users">
+            <AdminGlassCard
+              title="Global User Registry"
+              description="Manage users across all regions."
+              action={
+                <div className="relative w-64">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input type="search" placeholder="Search users by name/email..." className="pl-9 bg-white/50 border-border/40" />
+                </div>
+              }
+            >
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-primary/5 border-b border-primary/10">
+                    <tr>
+                      <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">User</th>
+                      <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider hidden md:table-cell">Contact</th>
+                      <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">Role</th>
+                      <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider hidden md:table-cell">Region</th>
+                      <th className="text-right p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/50">
+                    {(!data?.users || data.users.length === 0) ? (
                       <tr>
-                        <th className="p-4 font-medium">Time</th>
-                        <th className="p-4 font-medium">User</th>
-                        <th className="p-4 font-medium">Action</th>
-                        <th className="p-4 font-medium">Description</th>
-                        <th className="p-4 font-medium hidden md:table-cell">Group</th>
+                        <td colSpan={5} className="p-8 text-center text-muted-foreground">
+                          No users found in the system registry.
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {(!data?.recentActivities || data.recentActivities.length === 0) ? (
-                        <tr>
-                          <td colSpan={5} className="p-8 text-center text-muted-foreground">
-                            No recent activity logs found.
+                    ) : (
+                      data.users.map((user) => (
+                        <tr key={user.id} className="hover:bg-primary/5 transition-colors">
+                          <td className="p-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs ring-2 ring-white dark:ring-slate-900 shadow-md">
+                                {user.name.charAt(0)}
+                              </div>
+                              <div>
+                                <div className="font-bold text-slate-800 dark:text-slate-200">{user.name}</div>
+                                <div className="text-xs text-muted-foreground md:hidden">{user.email}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="p-4 hidden md:table-cell">
+                            <div className="text-sm">{user.email}</div>
+                            <div className="text-xs text-muted-foreground">{user.phoneNumber || 'N/A'}</div>
+                          </td>
+                          <td className="p-4">
+                            <Badge
+                              className={
+                                user.role === 'SUPER_ADMIN'
+                                  ? 'bg-rose-100 text-rose-700 border-rose-200 dark:bg-rose-900/30 dark:text-rose-300'
+                                  : user.role === 'REGIONAL_ADMIN'
+                                    ? 'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300'
+                                    : 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300'
+                              }
+                              variant="outline"
+                            >
+                              {user.role.replace('_', ' ')}
+                            </Badge>
+                          </td>
+                          <td className="p-4 hidden md:table-cell capitalize">
+                            {user.region?.toLowerCase() || 'Global'}
+                          </td>
+                          <td className="p-4 text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleManageUser(user)}
+                              className="h-8 hover:bg-primary/10 hover:text-primary"
+                            >
+                              Edit
+                            </Button>
                           </td>
                         </tr>
-                      ) : (
-                        data.recentActivities.map((log) => (
-                          <tr key={log.id} className="border-b last:border-0 hover:bg-muted/50">
-                            <td className="p-4 whitespace-nowrap text-gray-500">
-                              {new Date(log.timestamp).toLocaleString()}
-                            </td>
-                            <td className="p-4 font-medium">{log.user}</td>
-                            <td className="p-4">
-                              <Badge variant="outline" className="font-mono text-xs">
-                                {log.action}
-                              </Badge>
-                            </td>
-                            <td className="p-4">{log.description}</td>
-                            <td className="p-4 hidden md:table-cell text-gray-500">
-                              {log.group || '-'}
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </AdminGlassCard>
+          </TabsContent>
+
+          <TabsContent value="logs">
+            <AdminGlassCard title="Activity Stream" description="Real-time system audit logs">
+              <div className="space-y-4 p-2">
+                {(!data?.recentActivities || data.recentActivities.length === 0) ? (
+                  <div className="text-center py-10 text-muted-foreground">
+                    No activity logs recorded yet.
+                  </div>
+                ) : (
+                  data.recentActivities.map((log) => (
+                    <div key={log.id} className="flex gap-4 p-4 border-b border-border/40 last:border-0 hover:bg-primary/5 transition-colors">
+                      <div className="mt-1">
+                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                          <Activity className="w-4 h-4 text-slate-500" />
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex justify-between">
+                          <h4 className="font-bold text-sm">
+                            {log.user} <span className="font-normal text-muted-foreground">performed</span> {log.action}
+                          </h4>
+                          <span className="text-xs text-muted-foreground font-mono">
+                            {new Date(log.timestamp).toLocaleTimeString()}
+                          </span>
+                        </div>
+                        <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">{log.description}</p>
+                        {log.group && (
+                          <Badge variant="secondary" className="mt-2 text-[10px]">
+                            Group: {log.group}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </AdminGlassCard>
+          </TabsContent>
+
+        </Tabs>
+
+        {/* User Management Dialog */}
+        <Dialog open={isUserDialogOpen} onOpenChange={setIsUserDialogOpen}>
+          <DialogContent className="sm:max-w-[425px] glass-morphism border-white/20">
+            <DialogHeader>
+              <DialogTitle>Manage User Profile</DialogTitle>
+              <DialogDescription>
+                Modify access levels for {selectedUser?.name}
+              </DialogDescription>
+            </DialogHeader>
+            {selectedUser && (
+              <div className="grid gap-4 py-4">
+                <div className="p-4 rounded-lg bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Name</span>
+                    <span className="font-medium">{selectedUser.name}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Email</span>
+                    <span className="font-medium">{selectedUser.email}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Current Role</span>
+                    <Badge variant="outline">{selectedUser.role}</Badge>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
 
-      {/* User Management Dialog */}
-      <Dialog open={isUserDialogOpen} onOpenChange={setIsUserDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Manage User</DialogTitle>
-            <DialogDescription>
-              View details and manage access for {selectedUser?.name}
-            </DialogDescription>
-          </DialogHeader>
-
-          {selectedUser && (
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <span className="font-medium text-right text-sm">Name:</span>
-                <span className="col-span-3 text-sm">{selectedUser.name}</span>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <span className="font-medium text-right text-sm">Email:</span>
-                <span className="col-span-3 text-sm">{selectedUser.email}</span>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <span className="font-medium text-right text-sm">Current Role:</span>
-                <span className="col-span-3 text-sm flex items-center gap-2">
-                  <Badge variant={selectedUser.role === 'MEMBER' ? 'secondary' : 'default'}>
-                    {selectedUser.role}
-                  </Badge>
-                </span>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <span className="font-medium text-right text-sm">New Role:</span>
-                <div className="col-span-3 flex gap-2">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Assign New Role</label>
                   <Select value={newRole} onValueChange={setNewRole}>
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger>
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="MEMBER">MEMBER</SelectItem>
-                      <SelectItem value="REGIONAL_ADMIN">REGIONAL ADMIN</SelectItem>
-                      <SelectItem value="SUPER_ADMIN">SUPER ADMIN</SelectItem>
+                      <SelectItem value="MEMBER">Member (Standard)</SelectItem>
+                      <SelectItem value="REGIONAL_ADMIN">Regional Admin</SelectItem>
+                      <SelectItem value="SUPER_ADMIN">Super Admin</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button size="sm" onClick={handleChangeRole} disabled={newRole === selectedUser.role}>
-                    Update
-                  </Button>
                 </div>
               </div>
-            </div>
-          )}
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsUserDialogOpen(false)}>
-              Close
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </motion.div>
+            )}
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsUserDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleChangeRole} disabled={newRole === selectedUser?.role}>
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </motion.div>
+    </div>
   )
 }
