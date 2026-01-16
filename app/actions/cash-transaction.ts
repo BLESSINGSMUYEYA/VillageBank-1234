@@ -1,6 +1,6 @@
 'use server'
 
-import { auth } from '@clerk/nextjs/server'
+import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 
@@ -22,7 +22,8 @@ export async function recordCashTransaction({
     description
 }: RecordCashTransactionParams) {
     try {
-        const { userId: currentUserId } = await auth()
+        const session = await getSession()
+        const currentUserId = session?.userId as string
 
         if (!currentUserId) {
             return { success: false, error: 'Unauthorized: You must be logged in.' }

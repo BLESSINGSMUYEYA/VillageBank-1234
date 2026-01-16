@@ -3,7 +3,7 @@
 import { prisma } from '@/lib/prisma';
 import * as XLSX from 'xlsx';
 import { revalidatePath } from 'next/cache';
-import { auth } from '@clerk/nextjs/server';
+import { getSession } from '@/lib/auth';
 
 export type ImportPreviewRow = {
     rowNumber: number;
@@ -34,7 +34,8 @@ export async function parseAndValidateImport(
     groupId: string
 ): Promise<ImportResult> {
     try {
-        const { userId } = await auth();
+        const session = await getSession();
+        const userId = session?.userId;
         if (!userId) {
             return { success: false, error: 'Unauthorized' };
         }
@@ -158,7 +159,8 @@ export async function commitImport(
     groupId: string
 ): Promise<{ success: boolean; count?: number; error?: string }> {
     try {
-        const { userId } = await auth();
+        const session = await getSession();
+        const userId = session?.userId;
         if (!userId) {
             return { success: false, error: 'Unauthorized' };
         }

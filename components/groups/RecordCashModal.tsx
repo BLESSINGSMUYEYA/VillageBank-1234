@@ -198,6 +198,7 @@ export function RecordCashModal({ groupId, members }: RecordCashModalProps) {
                                         <Input
                                             type="number"
                                             {...field}
+                                            value={isNaN(field.value) ? '' : field.value}
                                             onChange={e => field.onChange(e.target.valueAsNumber)}
                                         />
                                     </FormControl>
