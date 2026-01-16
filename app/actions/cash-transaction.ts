@@ -21,27 +21,27 @@ export async function recordCashTransaction({
     year,
     description
 }: RecordCashTransactionParams) {
-    const { userId: currentUserId } = await auth()
-
-    if (!currentUserId) {
-        throw new Error('Unauthorized')
-    }
-
-    // Verify current user is an admin or treasurer of the group
-    const currentUserMember = await prisma.groupMember.findUnique({
-        where: {
-            groupId_userId: {
-                groupId,
-                userId: currentUserId
-            }
-        }
-    })
-
-    if (!currentUserMember || !['ADMIN', 'TREASURER'].includes(currentUserMember.role)) {
-        throw new Error('Only admins or treasurers can record cash transactions')
-    }
-
     try {
+        const { userId: currentUserId } = await auth()
+
+        if (!currentUserId) {
+            return { success: false, error: 'Unauthorized: You must be logged in.' }
+        }
+
+        // Verify current user is an admin or treasurer of the group
+        const currentUserMember = await prisma.groupMember.findUnique({
+            where: {
+                groupId_userId: {
+                    groupId,
+                    userId: currentUserId
+                }
+            }
+        })
+
+        if (!currentUserMember || !['ADMIN', 'TREASURER'].includes(currentUserMember.role)) {
+            return { success: false, error: 'Permission Denied: Only admins or treasurers can record cash transactions.' }
+        }
+
         const result = await prisma.$transaction(async (tx) => {
             // 1. Get the target member to update
             const member = await tx.groupMember.findUnique({
@@ -54,7 +54,7 @@ export async function recordCashTransaction({
                 include: { group: true }
             })
 
-            if (!member) throw new Error('Target member not found in this group')
+            if (!member) return { success: false, error: 'Target member not found in this group.' }
 
             // 2. Check for existing contributions to determine fees/penalties logic
             // Check if monthly fee is already paid for this month
@@ -69,16 +69,7 @@ export async function recordCashTransaction({
             })
 
             // Check if penalty for this month is already applied (if late)
-            // Logic: Is it late now?
             const now = new Date()
-            const isLate = now.getDate() > member.group.contributionDueDay
-            // If paying for a past month, it's definitely late unless we add complex month logic. 
-            // For simplicity, we use the current date vs due day if matching current month, 
-            // or if month < currentMonth (assuming same year) it's late. 
-            // But usually treasurers record "now". Let's stick to simple "isLate" based on day if current month.
-            // Actually, let's trust the Treasurer's intent - usually cash is "on time" if they are recording it, 
-            // or "late" if they say so. But system rule:
-            // If strictly enforcing rules:
             let isContributionLate = false
             if (year < now.getFullYear() || (year === now.getFullYear() && month < now.getMonth() + 1)) {
                 isContributionLate = true
@@ -124,8 +115,6 @@ export async function recordCashTransaction({
 
             // If fee hasn't been paid for this month yet, we "charge" it by decrementing the unexpected balance 
             // (or rather, we consider the contribution as covering it).
-            // The standard logic seems to be: Balance = Balance + Contribution - Obligations
-            // If obligation (Fee) exists and wasn't met, we deduct it.
             if (!feeAlreadyApplied) {
                 balanceAdjustment -= member.group.monthlyContribution
             }
@@ -167,7 +156,12 @@ export async function recordCashTransaction({
             return contribution
         })
 
-        // Log activity outside transaction (or inside, doesn't matter much, but keeping it consistent)
+        // Check for error returned from transaction (if mapped that way, but here we throw in transaction so catch handles it)
+        if ('error' in result) {
+            return result
+        }
+
+        // Log activity outside transaction
         await prisma.activity.create({
             data: {
                 userId: currentUserId,
@@ -187,8 +181,9 @@ export async function recordCashTransaction({
         revalidatePath('/dashboard')
 
         return { success: true, data: result }
-    } catch (error) {
+    } catch (error: any) {
         console.error('Failed to record cash transaction:', error)
-        throw new Error('Failed to record cash transaction')
+        // Return the specific error message if available
+        return { success: false, error: error.message || 'Failed to record cash transaction due to an unknown error.' }
     }
 }

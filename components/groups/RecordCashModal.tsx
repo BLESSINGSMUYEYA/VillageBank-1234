@@ -119,7 +119,7 @@ export function RecordCashModal({ groupId, members }: RecordCashModalProps) {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            await recordCashTransaction({
+            const result = await recordCashTransaction({
                 groupId,
                 userId: values.userId,
                 amount: values.amount,
@@ -128,15 +128,21 @@ export function RecordCashModal({ groupId, members }: RecordCashModalProps) {
                 description: values.description,
             })
 
-            toast.success('Transaction Recorded', {
-                description: 'Cash contribution has been successfully recorded.',
-            })
-            setOpen(false)
-            form.reset()
-            router.refresh()
+            if (result.success) {
+                toast.success('Transaction Recorded', {
+                    description: 'Cash contribution has been successfully recorded.',
+                })
+                setOpen(false)
+                form.reset()
+                router.refresh()
+            } else {
+                toast.error('Failed to Record', {
+                    description: result.error || 'An unexpected error occurred.',
+                })
+            }
         } catch (error) {
-            toast.error('Error', {
-                description: 'Failed to record transaction. Please try again.',
+            toast.error('System Error', {
+                description: 'A network or system error occurred. Please try again.',
             })
         }
     }
