@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -7,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Plus, Calendar, Search, Filter, Wallet, AlertCircle, ArrowRight, History } from 'lucide-react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import { useEffect } from 'react'
 import { formatCurrency } from '@/lib/utils'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { PageHeader } from '@/components/layout/PageHeader'
@@ -16,6 +20,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { EmptyState } from '@/components/ui/empty-state'
+import { ContributionModal } from '@/components/contributions/ContributionModal'
 
 type ContributionWithGroup = Contribution & { group: Group }
 type GroupMemberWithGroup = GroupMember & { group: Group }
@@ -34,6 +39,15 @@ interface ContributionsClientProps {
 
 export function ContributionsClient({ contributions, userGroups, params }: ContributionsClientProps) {
     const { t } = useLanguage()
+    const [isContributionModalOpen, setIsContributionModalOpen] = useState(false)
+    const searchParams = useSearchParams()
+
+    // Auto-open modal if shared receipt detected
+    useEffect(() => {
+        if (searchParams.get('shared') === 'true' || searchParams.get('receiptUrl')) {
+            setIsContributionModalOpen(true)
+        }
+    }, [searchParams])
 
     // Calculate stats
     const completedContributions = contributions.filter(c => c.status === 'COMPLETED')
@@ -65,12 +79,15 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                     }
                     action={
                         userGroups.length > 0 && (
-                            <Link href="/contributions/new">
-                                <Button variant="default" size="xl" className="shadow-blue-500/20 px-8 group">
-                                    <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" />
-                                    {t('contributions.make_contribution')}
-                                </Button>
-                            </Link>
+                            <Button
+                                variant="default"
+                                size="xl"
+                                className="shadow-blue-500/20 px-8 group"
+                                onClick={() => setIsContributionModalOpen(true)}
+                            >
+                                <Plus className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" />
+                                {t('contributions.make_contribution')}
+                            </Button>
                         )
                     }
                 />
@@ -93,7 +110,7 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                                         </p>
                                         <p className="text-xs text-muted-foreground font-medium mt-1">Please settle this along with your next contribution to maintain a healthy stakeholder standing.</p>
                                     </div>
-                                    <Link href={`/contributions/new?groupId=${membership.groupId}`} className="w-full sm:w-auto">
+                                    <Link href="#" onClick={(e) => { e.preventDefault(); setIsContributionModalOpen(true) }} className="w-full sm:w-auto">
                                         <Button variant="outline" size="sm" className="w-full sm:w-auto rounded-xl font-bold border-red-500/20 hover:bg-red-500/10 text-red-600">
                                             Settle Now
                                         </Button>
@@ -118,7 +135,7 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                                     </p>
                                     <p className="text-xs text-muted-foreground font-medium mt-1">Keep your streak alive and help your community grow by making your contribution today.</p>
                                 </div>
-                                <Link href="/contributions/new" className="w-full sm:w-auto">
+                                <Link href="#" onClick={(e) => { e.preventDefault(); setIsContributionModalOpen(true) }} className="w-full sm:w-auto">
                                     <Button variant="banana" size="sm" className="w-full sm:w-auto rounded-xl font-bold">
                                         Record Stake
                                     </Button>
@@ -231,83 +248,140 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                     <GlassCard className="p-0 border-white/20 dark:border-white/5 shadow-2xl relative overflow-hidden" hover={false}>
                         {contributions.length > 0 ? (
                             <div className="overflow-x-auto overflow-y-visible">
-                                <Table className="relative pb-24">
-                                    <TableHeader className="bg-blue-600/5 dark:bg-white/5">
-                                        <TableRow className="hover:bg-transparent border-white/10 dark:border-white/5 h-16">
-                                            <TableHead className="font-black text-foreground text-[10px] uppercase tracking-[0.2em] pl-8">Transaction Origin</TableHead>
-                                            <TableHead className="font-black text-foreground text-[10px] uppercase tracking-[0.2em] text-right">Settled Amount</TableHead>
-                                            <TableHead className="font-black text-foreground text-[10px] uppercase tracking-[0.2em] hidden md:table-cell px-8 text-center">Date & Time</TableHead>
-                                            <TableHead className="font-black text-foreground text-[10px] uppercase tracking-[0.2em] hidden sm:table-cell px-8 text-center">Protocol Period</TableHead>
-                                            <TableHead className="font-black text-foreground text-[10px] uppercase tracking-[0.2em] text-right pr-8">Ledger Status</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        <AnimatePresence mode="popLayout">
-                                            {contributions.map((contribution, idx) => (
-                                                <motion.tr
-                                                    key={contribution.id}
-                                                    initial={{ opacity: 0, y: 10 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    transition={{ delay: idx * 0.05 }}
-                                                    className="hover:bg-blue-600/5 dark:hover:bg-white/5 transition-all border-white/10 dark:border-white/5 group h-20"
-                                                >
-                                                    <TableCell className="pl-8">
-                                                        <div className="flex items-center gap-4">
-                                                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600/20 to-indigo-700/5 flex items-center justify-center text-xs font-black text-blue-700 dark:text-blue-300 shadow-sm border border-blue-500/10 group-hover:scale-110 group-hover:rotate-6 transition-transform">
-                                                                {contribution.group.name.substring(0, 1).toUpperCase()}
+                                {/* Desktop/Tablet Table View */}
+                                <div className="hidden md:block">
+                                    <Table className="relative pb-24">
+                                        <TableHeader className="bg-blue-600/5 dark:bg-white/5">
+                                            <TableRow className="hover:bg-transparent border-white/10 dark:border-white/5 h-16">
+                                                <TableHead className="font-black text-foreground text-[10px] uppercase tracking-[0.2em] pl-8">Transaction Origin</TableHead>
+                                                <TableHead className="font-black text-foreground text-[10px] uppercase tracking-[0.2em] text-right">Settled Amount</TableHead>
+                                                <TableHead className="font-black text-foreground text-[10px] uppercase tracking-[0.2em] px-8 text-center">Date & Time</TableHead>
+                                                <TableHead className="font-black text-foreground text-[10px] uppercase tracking-[0.2em] text-center px-8">Protocol Period</TableHead>
+                                                <TableHead className="font-black text-foreground text-[10px] uppercase tracking-[0.2em] text-right pr-8">Ledger Status</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            <AnimatePresence mode="popLayout">
+                                                {contributions.map((contribution, idx) => (
+                                                    <motion.tr
+                                                        key={contribution.id}
+                                                        initial={{ opacity: 0, y: 10 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        transition={{ delay: idx * 0.05 }}
+                                                        className="hover:bg-blue-600/5 dark:hover:bg-white/5 transition-all border-white/10 dark:border-white/5 group h-20"
+                                                    >
+                                                        <TableCell className="pl-8">
+                                                            <div className="flex items-center gap-4">
+                                                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600/20 to-indigo-700/5 flex items-center justify-center text-xs font-black text-blue-700 dark:text-blue-300 shadow-sm border border-blue-500/10 group-hover:scale-110 group-hover:rotate-6 transition-transform">
+                                                                    {contribution.group.name.substring(0, 1).toUpperCase()}
+                                                                </div>
+                                                                <div className="space-y-0.5">
+                                                                    <p className="font-black text-base text-foreground tracking-tight">{contribution.group.name}</p>
+                                                                </div>
                                                             </div>
-                                                            <div className="space-y-0.5">
-                                                                <p className="font-black text-base text-foreground tracking-tight">{contribution.group.name}</p>
-                                                                <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-60 tracking-widest sm:hidden">
-                                                                    {new Date(contribution.year, contribution.month - 1).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
-                                                                </p>
+                                                        </TableCell>
+                                                        <TableCell className="text-right">
+                                                            <div className="inline-flex flex-col items-end">
+                                                                <span className="font-black text-lg text-foreground tracking-tight">
+                                                                    {formatCurrency(Number(contribution.amount))}
+                                                                </span>
+                                                                <div className="flex items-center gap-1.5">
+                                                                    {contribution.isLate && (
+                                                                        <Badge variant="error" className="text-[8px] h-4 px-1.2 py-0 font-black uppercase tracking-tighter animate-pulse flex items-center justify-center">LATE</Badge>
+                                                                    )}
+                                                                    <span className="text-[10px] font-bold text-muted-foreground opacity-40 uppercase tracking-tighter">Verified Stake</span>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell className="text-right">
-                                                        <div className="inline-flex flex-col items-end">
-                                                            <span className="font-black text-lg text-foreground tracking-tight">
-                                                                {formatCurrency(Number(contribution.amount))}
-                                                            </span>
-                                                            <div className="flex items-center gap-1.5">
-                                                                {contribution.isLate && (
-                                                                    <Badge variant="error" className="text-[8px] h-4 px-1.2 py-0 font-black uppercase tracking-tighter animate-pulse flex items-center justify-center">LATE</Badge>
-                                                                )}
-                                                                <span className="text-[10px] font-bold text-muted-foreground opacity-40 uppercase tracking-tighter">Verified Stake</span>
+                                                        </TableCell>
+                                                        <TableCell className="hidden md:table-cell text-center px-8">
+                                                            <div className="inline-flex flex-col items-center">
+                                                                <span className="text-sm font-black text-foreground">
+                                                                    {new Date((contribution as any).paymentDate || (contribution as any).createdAt).toLocaleDateString()}
+                                                                </span>
+                                                                <span className="text-[10px] font-bold text-muted-foreground opacity-60 uppercase tracking-widest">
+                                                                    {new Date((contribution as any).paymentDate || (contribution as any).createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                </span>
                                                             </div>
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell className="hidden md:table-cell text-center px-8">
-                                                        <div className="inline-flex flex-col items-center">
-                                                            <span className="text-sm font-black text-foreground">
-                                                                {new Date((contribution as any).paymentDate || (contribution as any).createdAt).toLocaleDateString()}
+                                                        </TableCell>
+                                                        <TableCell className="hidden sm:table-cell text-center px-8">
+                                                            <span className="text-sm font-black text-foreground bg-blue-500/5 dark:bg-white/5 px-4 py-2 rounded-xl border border-white/20 dark:border-white/5">
+                                                                {new Date(contribution.year, contribution.month - 1).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
                                                             </span>
-                                                            <span className="text-[10px] font-bold text-muted-foreground opacity-60 uppercase tracking-widest">
-                                                                {new Date((contribution as any).paymentDate || (contribution as any).createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                            </span>
+                                                        </TableCell>
+                                                        <TableCell className="text-right pr-8">
+                                                            <Badge variant={
+                                                                contribution.status === 'COMPLETED'
+                                                                    ? 'success'
+                                                                    : contribution.status === 'PENDING'
+                                                                        ? 'warning'
+                                                                        : 'error'
+                                                            }>
+                                                                {contribution.status}
+                                                            </Badge>
+                                                        </TableCell>
+                                                    </motion.tr>
+                                                ))}
+                                            </AnimatePresence>
+                                        </TableBody>
+                                    </Table>
+                                </div>
+
+                                {/* Mobile Card View */}
+                                <div className="md:hidden space-y-3 p-4">
+                                    <AnimatePresence mode="popLayout">
+                                        {contributions.map((contribution, idx) => (
+                                            <motion.div
+                                                key={contribution.id}
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: idx * 0.05 }}
+                                                className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3"
+                                            >
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600/20 to-indigo-700/5 flex items-center justify-center text-xs font-black text-blue-700 dark:text-blue-300 shadow-sm border border-blue-500/10">
+                                                            {contribution.group.name.substring(0, 1).toUpperCase()}
                                                         </div>
-                                                    </TableCell>
-                                                    <TableCell className="hidden sm:table-cell text-center px-8">
-                                                        <span className="text-sm font-black text-foreground bg-blue-500/5 dark:bg-white/5 px-4 py-2 rounded-xl border border-white/20 dark:border-white/5">
-                                                            {new Date(contribution.year, contribution.month - 1).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
+                                                        <div>
+                                                            <p className="font-black text-sm text-foreground tracking-tight">{contribution.group.name}</p>
+                                                            <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-60 tracking-widest">
+                                                                {new Date(contribution.year, contribution.month - 1).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <Badge variant={
+                                                        contribution.status === 'COMPLETED'
+                                                            ? 'success'
+                                                            : contribution.status === 'PENDING'
+                                                                ? 'warning'
+                                                                : 'error'
+                                                    } className="h-6 px-2">
+                                                        {contribution.status}
+                                                    </Badge>
+                                                </div>
+
+                                                <div className="h-px bg-white/5 w-full" />
+
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[10px] font-bold text-muted-foreground uppercase opacity-60 tracking-widest">Paid On</span>
+                                                        <span className="text-xs font-black text-foreground">
+                                                            {new Date((contribution as any).paymentDate || (contribution as any).createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                                                         </span>
-                                                    </TableCell>
-                                                    <TableCell className="text-right pr-8">
-                                                        <Badge variant={
-                                                            contribution.status === 'COMPLETED'
-                                                                ? 'success'
-                                                                : contribution.status === 'PENDING'
-                                                                    ? 'warning'
-                                                                    : 'error'
-                                                        }>
-                                                            {contribution.status}
-                                                        </Badge>
-                                                    </TableCell>
-                                                </motion.tr>
-                                            ))}
-                                        </AnimatePresence>
-                                    </TableBody>
-                                </Table>
+                                                    </div>
+                                                    <div className="flex flex-col items-end">
+                                                        <span className="font-black text-lg text-foreground tracking-tight">
+                                                            {formatCurrency(Number(contribution.amount))}
+                                                        </span>
+                                                        {contribution.isLate && (
+                                                            <Badge variant="error" className="text-[8px] h-4 px-1.2 py-0 font-black uppercase tracking-tighter animate-pulse">LATE</Badge>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                    </AnimatePresence>
+                                </div>
                             </div>
                         ) : (
                             <div className="p-12">
@@ -317,12 +391,15 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                                     description={t('contributions.no_contributions_desc')}
                                     action={
                                         userGroups.length > 0 ? (
-                                            <Link href="/contributions/new">
-                                                <Button variant="default" size="xl" className="px-12 group h-auto py-7">
-                                                    <Plus className="w-6 h-6 mr-3 group-hover:rotate-90 transition-transform" />
-                                                    {t('contributions.first_contribution')}
-                                                </Button>
-                                            </Link>
+                                            <Button
+                                                variant="default"
+                                                size="xl"
+                                                className="px-12 group h-auto py-7"
+                                                onClick={() => setIsContributionModalOpen(true)}
+                                            >
+                                                <Plus className="w-6 h-6 mr-3 group-hover:rotate-90 transition-transform" />
+                                                {t('contributions.first_contribution')}
+                                            </Button>
                                         ) : (
                                             <Link href="/groups/new">
                                                 <Button variant="outline" className="rounded-2xl font-black border-2 border-dashed border-blue-500/20 h-16 w-full hover:border-blue-500/40 hover:bg-blue-500/5 transition-all">
@@ -336,8 +413,13 @@ export function ContributionsClient({ contributions, userGroups, params }: Contr
                             </div>
                         )}
                     </GlassCard>
-                </motion.div>
-            </div>
-        </motion.div>
+                </motion.div >
+            </div >
+
+            <ContributionModal
+                isOpen={isContributionModalOpen}
+                onClose={() => setIsContributionModalOpen(false)}
+            />
+        </motion.div >
     )
 }

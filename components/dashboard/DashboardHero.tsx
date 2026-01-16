@@ -12,6 +12,7 @@ import { useLanguage } from '@/components/providers/LanguageProvider'
 import { formatCurrency, cn } from '@/lib/utils'
 import { itemFadeIn } from '@/lib/motions'
 import { SecurityVerificationModal } from '@/app/(authenticated)/dashboard/SecurityVerificationModal'
+import { ContributionModal } from '@/components/contributions/ContributionModal'
 
 interface DashboardHeroProps {
     user: {
@@ -30,6 +31,7 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
     const { t } = useLanguage()
     const [isContributionsVisible, setIsContributionsVisible] = useState(false)
     const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false)
+    const [isContributionModalOpen, setIsContributionModalOpen] = useState(false)
     const router = useRouter()
 
     const handleToggleVisibility = () => {
@@ -75,7 +77,7 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                                 size="lg"
                                 onClick={() => {
                                     if (stats.totalGroups > 0) {
-                                        router.push('/contributions/new')
+                                        setIsContributionModalOpen(true)
                                     } else {
                                         toast.info("Join a Group First", {
                                             description: "You need to be a member of a group to make contributions.",
@@ -168,6 +170,11 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                 open={isVerificationModalOpen}
                 onOpenChange={setIsVerificationModalOpen}
                 onVerified={handleVerified}
+            />
+
+            <ContributionModal
+                isOpen={isContributionModalOpen}
+                onClose={() => setIsContributionModalOpen(false)}
             />
         </motion.div>
     )

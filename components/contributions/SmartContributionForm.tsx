@@ -28,7 +28,12 @@ interface Group {
     contributionDueDay: number
 }
 
-export default function SmartContributionForm() {
+interface SmartContributionFormProps {
+    isModal?: boolean
+    onClose?: () => void
+}
+
+export default function SmartContributionForm({ isModal, onClose }: SmartContributionFormProps) {
     const router = useRouter()
     const searchParams = useSearchParams()
     // [MODIFIED] Added step 3 to type
@@ -72,7 +77,7 @@ export default function SmartContributionForm() {
                     toast.error("Failed to load shared receipt")
                 } finally {
                     toast.dismiss()
-                    router.replace('/contributions/new')
+                    router.replace(window.location.pathname)
                 }
             } else if (isShared) {
                 try {
@@ -84,7 +89,7 @@ export default function SmartContributionForm() {
                 } catch (e) {
                     console.error("Failed to load shared file", e)
                 }
-                router.replace('/contributions/new')
+                router.replace(window.location.pathname)
             }
         }
         checkShared()
@@ -207,6 +212,9 @@ export default function SmartContributionForm() {
                 // [MODIFIED] Success Handler: Set step 3 and delay redirect
                 setStep(3)
                 setTimeout(() => {
+                    if (isModal && onClose) {
+                        onClose()
+                    }
                     router.push('/contributions')
                 }, 2500)
 
@@ -239,6 +247,9 @@ export default function SmartContributionForm() {
                     // [MODIFIED] Offline Success also shows success screen
                     setStep(3)
                     setTimeout(() => {
+                        if (isModal && onClose) {
+                            onClose()
+                        }
                         router.push('/contributions')
                     }, 2500)
 
@@ -257,7 +268,7 @@ export default function SmartContributionForm() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto px-4">
+        <div className={cn("mx-auto px-4", isModal ? "max-w-full" : "max-w-4xl")}>
             {/* Step Indicator - Hidden on Success Step for cleaner look */}
             {step < 3 && (
                 <div className="flex items-center justify-center mb-12 gap-4">
@@ -289,7 +300,19 @@ export default function SmartContributionForm() {
                         <div className="text-center space-y-2">
                             <h2 className="text-3xl font-black text-foreground">Upload Receipt</h2>
                             <p className="text-muted-foreground font-medium">Upload your proof of payment for treasurer verification.</p>
-                            <p className="text-sm text-yellow-600 dark:text-yellow-500 font-bold">Note: Auto-scan temporarily unavailable. Please enter details manually in Step 2.</p>
+
+                            {/* Skip Toggle */}
+                            <div className="flex justify-center pt-2">
+                                <Button
+                                    variant="link"
+                                    onClick={() => setStep(2)}
+                                    className="text-xs font-bold text-blue-500 hover:text-blue-600 dark:text-blue-400"
+                                >
+                                    Don&apos;t have a receipt? Skip to manual entry
+                                </Button>
+                            </div>
+
+                            <p className="text-sm text-yellow-600 dark:text-yellow-500 font-bold hidden">Note: Auto-scan temporarily unavailable. Please enter details manually in Step 2.</p>
                         </div>
 
                         <GlassCard className="p-2 overflow-hidden border-white/20 shadow-2xl" hover={false}>

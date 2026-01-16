@@ -22,6 +22,7 @@ import Link from 'next/link'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { motion, AnimatePresence } from 'framer-motion'
 import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
+import { ContributionModal } from '@/components/contributions/ContributionModal'
 
 // --- Types (Mirrored from original files) ---
 interface Contribution {
@@ -75,6 +76,7 @@ interface GroupFinancialsProps {
 type FilterType = 'ALL' | 'INCOME' | 'OUTFLOW'
 
 export default function GroupFinancials({ contributions, loans, paymentMethods = [], groupId, currentUserRole, searchTerm = '' }: GroupFinancialsProps) {
+    const [isContributionModalOpen, setIsContributionModalOpen] = useState(false)
     const [filter, setFilter] = useState<FilterType>('ALL')
     // const [searchTerm, setSearchTerm] = useState('') // Removed local state
 
@@ -253,12 +255,16 @@ export default function GroupFinancials({ contributions, loans, paymentMethods =
                         {(currentUserRole === 'ADMIN' || currentUserRole === 'TREASURER') && (
                             <ExcelImportModal groupId={groupId} />
                         )}
-                        <Link href="/contributions/new" className="flex-1 sm:flex-none">
-                            <Button size="sm" className="w-full sm:w-auto h-9 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20">
+                        <div className="flex-1 sm:flex-none">
+                            <Button
+                                onClick={() => setIsContributionModalOpen(true)}
+                                size="sm"
+                                className="w-full sm:w-auto h-9 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20"
+                            >
                                 <Plus className="w-3.5 h-3.5 mr-1.5" />
                                 <span className="text-[10px] uppercase tracking-wide">Deposit</span>
                             </Button>
-                        </Link>
+                        </div>
                         <Link href={`/loans/new?groupId=${groupId}`} className="flex-1 sm:flex-none">
                             <Button size="sm" variant="outline" className="w-full sm:w-auto h-9 border-indigo-200 dark:border-indigo-900 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 font-bold rounded-xl">
                                 <Plus className="w-3.5 h-3.5 mr-1.5" />
@@ -356,6 +362,11 @@ export default function GroupFinancials({ contributions, loans, paymentMethods =
                     </AnimatePresence>
                 </div>
             </GlassCard>
+
+            <ContributionModal
+                isOpen={isContributionModalOpen}
+                onClose={() => setIsContributionModalOpen(false)}
+            />
         </motion.div>
     )
 }

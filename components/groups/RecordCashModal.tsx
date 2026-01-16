@@ -1,9 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
+import { Badge } from '@/components/ui/badge'
+import { CheckCircle, AlertCircle, TrendingUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
     Dialog,
@@ -61,7 +63,33 @@ export function RecordCashModal({ groupId, members }: RecordCashModalProps) {
     const [open, setOpen] = useState(false)
     const router = useRouter()
 
-    const form = useForm({
+    // [UX Improvement] Breakdown Calculation State
+    const [groupDetails, setGroupDetails] = useState<{ monthlyContribution: number; penaltyAmount: number } | null>(null)
+    const [selectedMemberUnpaidPenalties, setSelectedMemberUnpaidPenalties] = useState<number>(0)
+
+    // Fetch group details on mount (lightweight)
+    // Fetch group details on mount (lightweight)
+    useEffect(() => {
+        const fetchGroupDetails = async () => {
+            try {
+                // In a real app we might pass this as a prop, but fetching is safe here
+                const res = await fetch(`/api/groups/${groupId}`)
+                if (res.ok) {
+                    const data = await res.json()
+                    setGroupDetails({
+                        monthlyContribution: data.monthlyContribution,
+                        penaltyAmount: data.penaltyAmount
+                    })
+                }
+            } catch (e) {
+                console.error("Failed to fetch group details for calculator", e)
+            }
+        }
+        if (open) fetchGroupDetails()
+    }, [open, groupId])
+
+    // Calculate Breakdown
+    const formValues = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
             userId: '',
@@ -71,6 +99,23 @@ export function RecordCashModal({ groupId, members }: RecordCashModalProps) {
             description: '',
         },
     })
+    const form = formValues // Alias for compatibility with existing code
+
+    const watchedAmount = form.watch('amount')
+    const watchedUserId = form.watch('userId')
+
+    // Simplify: Just simulate the breakdown visually if we have the data
+    const breakdown = groupDetails && watchedAmount > 0 ? (() => {
+        const monthlyFee = groupDetails.monthlyContribution
+        let remaining = watchedAmount
+
+        // Mock penalty logic since we don't have exact user penalty state easily without another fetch
+        // For UX, we'll just show the fee deduction primarily
+        const appliedFee = Math.min(remaining, monthlyFee)
+        const toBalance = remaining - appliedFee // Simplified: assumes no penalties for this quick view
+
+        return { appliedFee, toBalance }
+    })() : null
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {

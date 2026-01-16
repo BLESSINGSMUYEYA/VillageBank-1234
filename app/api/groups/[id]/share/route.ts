@@ -74,17 +74,22 @@ export async function POST(
     })
 
     // Generate QR Code URL
-    const host = request.headers.get('host') || 'localhost:3000'
-    const protocol = request.headers.get('x-forwarded-proto') || 'http'
-
+    // Generate QR Code URL
     let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
 
-    if (!baseUrl && process.env.NEXT_PUBLIC_VERCEL_URL) {
-      baseUrl = `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
-    } else if (!baseUrl && process.env.VERCEL_URL) {
-      baseUrl = `https://${process.env.VERCEL_URL}`;
-    } else if (!baseUrl) {
-      baseUrl = `${protocol}://${host}`;
+    if (!baseUrl) {
+      // Use request.nextUrl.origin which is generally more reliable in Next.js App Router
+      baseUrl = request.nextUrl.origin;
+    }
+
+    // Fallback logic for environments where origin might be localhost but we want the Vercel URL
+    // (e.g. if the node server sees localhost but we want the public URL)
+    if ((!baseUrl || baseUrl.includes('localhost')) && !process.env.NEXT_PUBLIC_APP_URL) {
+      if (process.env.NEXT_PUBLIC_VERCEL_URL) {
+        baseUrl = `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`;
+      } else if (process.env.VERCEL_URL) {
+        baseUrl = `https://${process.env.VERCEL_URL}`;
+      }
     }
     const shareUrl = `${baseUrl}/shared/${shareToken}`
 

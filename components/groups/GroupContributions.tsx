@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatCurrency, cn } from '@/lib/utils'
@@ -8,6 +10,7 @@ import Link from 'next/link'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { motion } from 'framer-motion'
 import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
+import { ContributionModal } from '@/components/contributions/ContributionModal'
 
 interface Contribution {
   id: string
@@ -35,6 +38,7 @@ interface GroupContributionsProps {
 }
 
 export default function GroupContributions({ contributions, groupId, currentUserRole }: GroupContributionsProps) {
+  const [isContributionModalOpen, setIsContributionModalOpen] = useState(false)
   const completedContributions = contributions.filter(c => c.status === 'COMPLETED')
   const pendingContributions = contributions.filter(c => c.status === 'PENDING')
 
@@ -75,12 +79,14 @@ export default function GroupContributions({ contributions, groupId, currentUser
         {/* Simplified Action Header */}
         {/* Actions */}
         <motion.div variants={itemFadeIn} className="flex flex-col sm:flex-row gap-2 w-full">
-          <Link href="/contributions/new" className="flex-1">
-            <Button variant="default" className="w-full shadow-xl shadow-blue-500/10 group h-9 rounded-xl px-4 font-black tracking-tight text-[10px] uppercase">
-              <Plus className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform" />
-              New Entry
-            </Button>
-          </Link>
+          <Button
+            variant="default"
+            className="w-full sm:flex-1 shadow-xl shadow-blue-500/10 group h-9 rounded-xl px-4 font-black tracking-tight text-[10px] uppercase"
+            onClick={() => setIsContributionModalOpen(true)}
+          >
+            <Plus className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform" />
+            New Entry
+          </Button>
           {(currentUserRole === 'TREASURER' || currentUserRole === 'ADMIN') && (
             <Link href="/treasurer/approvals" className="flex-1">
               <Button variant="outline" className="w-full border font-black tracking-tight text-[10px] uppercase rounded-xl h-9 px-4 hover:bg-slate-50 dark:hover:bg-white/5 transition-all">
@@ -166,7 +172,7 @@ export default function GroupContributions({ contributions, groupId, currentUser
                   <Wallet className="w-10 h-10 text-muted-foreground/30" />
                 </div>
                 <p className="text-section-title text-muted-foreground mb-8">No contribution records detected.</p>
-                <Link href="/contributions/new">
+                <Link href="#" onClick={(e) => { e.preventDefault(); setIsContributionModalOpen(true); }}>
                   <Button className="bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl px-10 shadow-xl shadow-blue-500/20 h-11">
                     Create First Entry
                     <ArrowUpRight className="w-4 h-4 ml-2" />
@@ -177,6 +183,11 @@ export default function GroupContributions({ contributions, groupId, currentUser
           </div>
         </motion.div>
       </GlassCard>
-    </motion.div>
+
+      <ContributionModal
+        isOpen={isContributionModalOpen}
+        onClose={() => setIsContributionModalOpen(false)}
+      />
+    </motion.div >
   )
 }

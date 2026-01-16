@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -30,6 +31,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { RecordCashModal } from '@/components/groups/RecordCashModal'
+import { ContributionModal } from '@/components/contributions/ContributionModal'
 
 interface GroupDetailsClientProps {
     group: any
@@ -47,6 +49,7 @@ export default function GroupDetailsClient({
     currentUserMember
 }: GroupDetailsClientProps) {
     const { t } = useLanguage()
+    const [isContributionModalOpen, setIsContributionModalOpen] = useState(false)
 
     return (
         <motion.div
@@ -162,12 +165,16 @@ export default function GroupDetailsClient({
                                         <RecordCashModal groupId={group.id} members={group.members} />
                                     )}
 
-                                    <Link href="/contributions/new" className={isAdmin || (!isTreasurer) ? "col-span-2" : ""}>
-                                        <Button variant="primary" className="w-full h-11 rounded-xl px-4 sm:px-8 font-black text-xs gap-2 shadow-lg shadow-blue-500/20 active:scale-95 transition-all bg-blue-600 hover:bg-blue-500 text-white">
+                                    <div className={isAdmin || (!isTreasurer) ? "col-span-2" : ""}>
+                                        <Button
+                                            onClick={() => setIsContributionModalOpen(true)}
+                                            variant="primary"
+                                            className="w-full h-11 rounded-xl px-4 sm:px-8 font-black text-xs gap-2 shadow-lg shadow-blue-500/20 active:scale-95 transition-all bg-blue-600 hover:bg-blue-500 text-white"
+                                        >
                                             <DollarSign className="w-4 h-4" />
                                             <span className="truncate">Contribute</span>
                                         </Button>
-                                    </Link>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -220,6 +227,10 @@ export default function GroupDetailsClient({
                     currentUserMember={currentUserMember}
                 />
             </motion.div>
+            <ContributionModal
+                isOpen={isContributionModalOpen}
+                onClose={() => setIsContributionModalOpen(false)}
+            />
         </motion.div>
     )
 }

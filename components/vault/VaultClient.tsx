@@ -17,6 +17,7 @@ import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Contribution, Group, Loan, LoanRepayment, GroupMember } from '@prisma/client'
+import { ContributionModal } from '@/components/contributions/ContributionModal'
 
 type ContributionWithGroup = Contribution & { group: Group }
 type LoanWithGroupAndRepayments = Loan & { group: Group, repayments: LoanRepayment[] }
@@ -58,6 +59,7 @@ export function VaultClient({
     const [filter, setFilter] = useState<'ALL' | 'INCOME' | 'OUTFLOW'>('ALL')
     const [searchTerm, setSearchTerm] = useState('')
     const [showStats, setShowStats] = useState(false)
+    const [isContributionModalOpen, setIsContributionModalOpen] = useState(false)
 
     // Unified Stats calculation
     const totalSaved = contributions
@@ -235,12 +237,16 @@ export function VaultClient({
 
                         {/* Actions */}
                         <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
-                            <Link href="/contributions/new" className="flex-1 sm:flex-none">
-                                <Button size="sm" className="w-full sm:w-auto h-10 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20">
+                            <div className="flex-1 sm:flex-none">
+                                <Button
+                                    onClick={() => setIsContributionModalOpen(true)}
+                                    size="sm"
+                                    className="w-full sm:w-auto h-10 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20"
+                                >
                                     <Plus className="w-4 h-4 mr-2" />
                                     <span className="text-[10px] uppercase tracking-wide">{t('common.contributions')}</span>
                                 </Button>
-                            </Link>
+                            </div>
                             <Link href="/loans/new" className="flex-1 sm:flex-none">
                                 <Button size="sm" variant="outline" className="w-full sm:w-auto h-10 border-indigo-200 dark:border-indigo-900 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 font-bold rounded-xl">
                                     <Plus className="w-4 h-4 mr-2" />
@@ -373,6 +379,11 @@ export function VaultClient({
                     )}
                 </GlassCard>
             </motion.div>
-        </motion.div>
+
+            <ContributionModal
+                isOpen={isContributionModalOpen}
+                onClose={() => setIsContributionModalOpen(false)}
+            />
+        </motion.div >
     )
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react' // [NEW] Link -> useState
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Zap, PiggyBank, Users, BellRing, ArrowRight } from 'lucide-react'
@@ -7,6 +8,7 @@ import { GlassCard } from '@/components/ui/GlassCard'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { itemFadeIn, staggerContainer } from '@/lib/motions'
 import { Button } from '@/components/ui/button'
+import { ContributionModal } from '@/components/contributions/ContributionModal' // [NEW] Import
 
 interface QuickActionsProps {
     pendingApprovals?: any[]
@@ -16,12 +18,13 @@ interface QuickActionsProps {
 export function QuickActions({ pendingApprovals = [], user }: QuickActionsProps) {
     const { t } = useLanguage()
     const hasPending = pendingApprovals.length > 0
+    const [isContributionModalOpen, setIsContributionModalOpen] = useState(false) // [NEW] State for modal
 
     const quickButtons = [
         {
             label: 'Contribute',
             icon: Zap,
-            href: '/contributions/new',
+            action: () => setIsContributionModalOpen(true), // [NEW] Open modal action
             color: 'text-blue-500',
             bg: 'bg-blue-500/10',
             border: 'border-blue-500/20'
@@ -87,19 +90,39 @@ export function QuickActions({ pendingApprovals = [], user }: QuickActionsProps)
                 {/* 4-Column Quick Buttons Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     {quickButtons.map((btn, idx) => (
-                        <Link href={btn.href} key={idx}>
-                            <GlassCard className={`group cursor-pointer p-4 h-full flex flex-col items-center justify-center gap-3 text-center transition-all hover:bg-white/5 ${btn.border}`} hover={true}>
-                                <div className={`p-3 rounded-2xl transition-transform group-hover:scale-110 ${btn.bg}`}>
-                                    <btn.icon className={`w-6 h-6 ${btn.color}`} />
-                                </div>
-                                <span className="text-xs font-bold text-foreground/80 group-hover:text-foreground">
-                                    {btn.label}
-                                </span>
-                            </GlassCard>
-                        </Link>
+                        // @ts-ignore - Dynamic check for action vs href
+                        btn.action ? (
+                            <div onClick={btn.action} key={idx} className="cursor-pointer h-full">
+                                <GlassCard className={`group cursor-pointer p-4 h-full flex flex-col items-center justify-center gap-3 text-center transition-all hover:bg-white/5 ${btn.border}`} hover={true}>
+                                    <div className={`p-3 rounded-2xl transition-transform group-hover:scale-110 ${btn.bg}`}>
+                                        <btn.icon className={`w-6 h-6 ${btn.color}`} />
+                                    </div>
+                                    <span className="text-xs font-bold text-foreground/80 group-hover:text-foreground">
+                                        {btn.label}
+                                    </span>
+                                </GlassCard>
+                            </div>
+                        ) : (
+                            <Link href={btn.href!} key={idx}>
+                                <GlassCard className={`group cursor-pointer p-4 h-full flex flex-col items-center justify-center gap-3 text-center transition-all hover:bg-white/5 ${btn.border}`} hover={true}>
+                                    <div className={`p-3 rounded-2xl transition-transform group-hover:scale-110 ${btn.bg}`}>
+                                        <btn.icon className={`w-6 h-6 ${btn.color}`} />
+                                    </div>
+                                    <span className="text-xs font-bold text-foreground/80 group-hover:text-foreground">
+                                        {btn.label}
+                                    </span>
+                                </GlassCard>
+                            </Link>
+                        )
                     ))}
                 </div>
             </motion.div>
+
+            {/* [NEW] Contribution Modal */}
+            <ContributionModal
+                isOpen={isContributionModalOpen}
+                onClose={() => setIsContributionModalOpen(false)}
+            />
         </section>
     )
 }

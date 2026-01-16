@@ -113,10 +113,10 @@ self.addEventListener('fetch', (event: any) => {
                         await saveSharedFile(file);
                     }
 
-                    return Response.redirect('/contributions/new?shared=true', 303);
+                    return Response.redirect('/contributions?shared=true', 303);
                 } catch (err) {
                     console.error('Share target failed', err);
-                    return Response.redirect('/contributions/new?error=share_failed', 303);
+                    return Response.redirect('/contributions?error=share_failed', 303);
                 }
             })()
         );
