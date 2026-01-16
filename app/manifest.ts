@@ -2,8 +2,8 @@ import { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: 'Village Banking',
-        short_name: 'VillageBank',
+        name: 'Ubank',
+        short_name: 'Ubank',
         description: 'Modern financial inclusion platform for community banking',
         start_url: '/',
         display: 'standalone',
