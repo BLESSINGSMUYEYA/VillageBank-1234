@@ -16,7 +16,41 @@ interface QuickActionsProps {
 export function QuickActions({ pendingApprovals = [], user }: QuickActionsProps) {
     const { t } = useLanguage()
     const hasPending = pendingApprovals.length > 0
-    const isAdmin = user?.role === 'ADMIN' || user?.role === 'TREASURER' // Simplified check, ideally check group roles
+
+    const quickButtons = [
+        {
+            label: 'Contribute',
+            icon: Zap,
+            href: '/contributions/new',
+            color: 'text-blue-500',
+            bg: 'bg-blue-500/10',
+            border: 'border-blue-500/20'
+        },
+        {
+            label: 'Borrow',
+            icon: PiggyBank,
+            href: '/loans/new',
+            color: 'text-orange-500',
+            bg: 'bg-orange-500/10',
+            border: 'border-orange-500/20'
+        },
+        {
+            label: 'Join',
+            icon: Users,
+            href: '/groups',
+            color: 'text-purple-500',
+            bg: 'bg-purple-500/10',
+            border: 'border-purple-500/20'
+        },
+        {
+            label: 'More',
+            icon: BellRing, // Using a placeholder icon for 'More' or generic grid
+            href: '/dashboard', // Placeholder link
+            color: 'text-emerald-500',
+            bg: 'bg-emerald-500/10',
+            border: 'border-emerald-500/20'
+        }
+    ]
 
     return (
         <section className="space-y-4">
@@ -24,63 +58,46 @@ export function QuickActions({ pendingApprovals = [], user }: QuickActionsProps)
                 <div className="flex items-center justify-between px-1 mb-2">
                     <h3 className="text-lg font-black uppercase tracking-tight text-muted-foreground flex items-center gap-2">
                         <Zap className="w-4 h-4 text-emerald-500" />
-                        {hasPending ? 'Priority Action' : t('common.workspace') || 'Next Steps'}
+                        {t('common.quick_actions') || 'Quick Actions'}
                     </h3>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* 1. Smart / Predictive Action Slot */}
-                    {hasPending ? (
+                {/* Priority / Pending Approvals Banner */}
+                {hasPending && (
+                    <div className="mb-4">
                         <Link href="/treasurer/approvals">
-                            <GlassCard className="group cursor-pointer p-5 sm:p-6 h-full flex flex-col justify-center border-orange-500/30 bg-orange-500/5 hover:bg-orange-500/10 transition-all" hover={true}>
-                                <div className="flex items-center gap-4">
-                                    <div className="bg-orange-500/20 p-3 rounded-xl group-hover:scale-95 transition-transform animate-pulse">
-                                        <BellRing className="w-6 h-6 text-orange-600 dark:text-orange-400" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="font-black text-base text-orange-700 dark:text-orange-300">
-                                            {pendingApprovals.length} Pending Requests
-                                        </h3>
-                                        <p className="text-xs text-orange-600/70 mt-0.5 font-medium">
-                                            Requires your approval
-                                        </p>
-                                    </div>
-                                    <Button size="icon" variant="ghost" className="shrink-0 text-orange-500">
-                                        <ArrowRight className="w-5 h-5" />
-                                    </Button>
+                            <GlassCard className="group cursor-pointer p-4 flex items-center gap-4 border-orange-500/30 bg-orange-500/5 hover:bg-orange-500/10 transition-all" hover={true}>
+                                <div className="bg-orange-500/20 p-2.5 rounded-xl animate-pulse">
+                                    <BellRing className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                                 </div>
+                                <div className="flex-1">
+                                    <h3 className="font-bold text-sm text-orange-700 dark:text-orange-300">
+                                        {pendingApprovals.length} Pending Requests
+                                    </h3>
+                                    <p className="text-[11px] text-orange-600/70 font-medium">
+                                        Action required
+                                    </p>
+                                </div>
+                                <ArrowRight className="w-4 h-4 text-orange-500 group-hover:translate-x-1 transition-transform" />
                             </GlassCard>
                         </Link>
-                    ) : (
-                        <Link href="/loans/new">
-                            <GlassCard className="group cursor-pointer p-5 sm:p-6 h-full flex flex-col justify-center hover:bg-white/5 transition-all" hover={true}>
-                                <div className="flex items-center gap-4">
-                                    <div className="bg-indigo-500/10 p-3 rounded-xl group-hover:scale-95 transition-transform">
-                                        <PiggyBank className="w-6 h-6 text-indigo-500" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-base text-foreground">{t('dashboard.apply_loan')}</h3>
-                                        <p className="text-xs text-muted-foreground/60 mt-0.5">Request capital</p>
-                                    </div>
-                                </div>
-                            </GlassCard>
-                        </Link>
-                    )}
+                    </div>
+                )}
 
-                    {/* 2. Standard Action Slot */}
-                    <Link href="/groups">
-                        <GlassCard className="group cursor-pointer p-5 sm:p-6 h-full flex flex-col justify-center hover:bg-white/5 transition-all" hover={true}>
-                            <div className="flex items-center gap-4">
-                                <div className="bg-emerald-500/10 p-3 rounded-xl group-hover:scale-95 transition-transform">
-                                    <Users className="w-6 h-6 text-emerald-500" />
+                {/* 4-Column Quick Buttons Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {quickButtons.map((btn, idx) => (
+                        <Link href={btn.href} key={idx}>
+                            <GlassCard className={`group cursor-pointer p-4 h-full flex flex-col items-center justify-center gap-3 text-center transition-all hover:bg-white/5 ${btn.border}`} hover={true}>
+                                <div className={`p-3 rounded-2xl transition-transform group-hover:scale-110 ${btn.bg}`}>
+                                    <btn.icon className={`w-6 h-6 ${btn.color}`} />
                                 </div>
-                                <div>
-                                    <h3 className="font-bold text-base text-foreground">{t('dashboard.manage_groups')}</h3>
-                                    <p className="text-xs text-muted-foreground/60 mt-0.5">View your networks</p>
-                                </div>
-                            </div>
-                        </GlassCard>
-                    </Link>
+                                <span className="text-xs font-bold text-foreground/80 group-hover:text-foreground">
+                                    {btn.label}
+                                </span>
+                            </GlassCard>
+                        </Link>
+                    ))}
                 </div>
             </motion.div>
         </section>
