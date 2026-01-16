@@ -99,26 +99,4 @@ async function syncContributions() {
     }
 }
 
-self.addEventListener('fetch', (event: any) => {
-    const url = new URL(event.request.url);
 
-    if (url.pathname === '/share-target' && event.request.method === 'POST') {
-        event.respondWith(
-            (async () => {
-                try {
-                    const formData = await event.request.formData();
-                    const file = formData.get('file');
-
-                    if (file && file instanceof File) {
-                        await saveSharedFile(file);
-                    }
-
-                    return Response.redirect('/contributions?shared=true', 303);
-                } catch (err) {
-                    console.error('Share target failed', err);
-                    return Response.redirect('/contributions?error=share_failed', 303);
-                }
-            })()
-        );
-    }
-});

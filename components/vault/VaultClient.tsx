@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -60,6 +60,13 @@ export function VaultClient({
     const [searchTerm, setSearchTerm] = useState('')
     const [showStats, setShowStats] = useState(false)
     const [isContributionModalOpen, setIsContributionModalOpen] = useState(false)
+
+    // Check for shared receipt to auto-open modal
+    useEffect(() => {
+        if (params?.receiptUrl) {
+            setIsContributionModalOpen(true)
+        }
+    }, [params])
 
     // Unified Stats calculation
     const totalSaved = contributions

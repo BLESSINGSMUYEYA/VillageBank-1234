@@ -7,14 +7,43 @@ export default function manifest(): MetadataRoute.Manifest {
         description: 'Modern financial inclusion platform for community banking',
         start_url: '/',
         display: 'standalone',
-        background_color: '#ffffff',
-        theme_color: '#3b82f6', // uBank Blue / Blue-500
+        orientation: 'portrait-primary',
+        categories: ['finance', 'productivity'],
         icons: [
             {
-                src: '/favicon.ico',
-                sizes: 'any',
-                type: 'image/x-icon',
+                src: '/icon-192x192.png',
+                sizes: '192x192',
+                type: 'image/png',
+                purpose: 'any',
+            },
+            {
+                src: '/icon-512x512.png',
+                sizes: '512x512',
+                type: 'image/png',
+                purpose: 'any',
+            },
+            {
+                src: '/icon-512x512.png',
+                sizes: '512x512',
+                type: 'image/png',
+                purpose: 'maskable',
             },
         ],
+        share_target: {
+            action: '/share-target',
+            method: 'POST',
+            enctype: 'multipart/form-data',
+            params: {
+                title: 'title',
+                text: 'text',
+                url: 'url',
+                files: [
+                    {
+                        name: 'file',
+                        accept: ['image/*', 'application/pdf'],
+                    },
+                ],
+            },
+        },
     }
 }

@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
 
         if (!file || !(file instanceof Blob)) {
             console.error("No file received in share target");
-            return NextResponse.redirect(new URL("/contributions", req.url));
+            return NextResponse.redirect(new URL("/vault", req.url));
         }
 
         // Upload to Cloudinary
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
         if (!cloudName) {
             console.error("Cloudinary config missing");
-            return NextResponse.redirect(new URL("/contributions?error=config_missing", req.url));
+            return NextResponse.redirect(new URL("/vault?error=config_missing", req.url));
         }
 
         const uploadFormData = new FormData();
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
 
         if (!res.ok) {
             console.error("Upload failed in share target", await res.text());
-            return NextResponse.redirect(new URL("/contributions?error=upload_failed", req.url));
+            return NextResponse.redirect(new URL("/vault?error=upload_failed", req.url));
         }
 
         const data = await res.json();
@@ -41,10 +41,10 @@ export async function POST(req: NextRequest) {
 
         // Redirect to contributions page with the uploaded image URL
         // We encode it to ensure it passes safely
-        return NextResponse.redirect(new URL(`/contributions?receiptUrl=${encodeURIComponent(secureUrl)}`, req.url), 303);
+        return NextResponse.redirect(new URL(`/vault?receiptUrl=${encodeURIComponent(secureUrl)}`, req.url), 303);
 
     } catch (error) {
         console.error("Error in share target:", error);
-        return NextResponse.redirect(new URL("/contributions?error=server_error", req.url));
+        return NextResponse.redirect(new URL("/vault?error=server_error", req.url));
     }
 }

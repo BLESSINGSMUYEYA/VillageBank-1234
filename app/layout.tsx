@@ -26,7 +26,6 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: 'uBank - Your Personal & Group Wealth Manager',
   description: 'The modern way to save together. Personal wallets and village banking groups in one app.',
-  manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -54,22 +53,7 @@ export default function RootLayout({
             <ServiceWorkerRegister />
           </LanguageProvider>
         </AuthProvider>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                // FORCE UNREGISTER ALL SERVICE WORKERS TO FIX DEV ENVIRONMENT
-                navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                  for(let registration of registrations) {
-                    registration.unregister();
-                  }
-                });
-              }
-            `,
-          }}
-        />
       </body>
-    </html>
+    </html >
   )
 }
-
