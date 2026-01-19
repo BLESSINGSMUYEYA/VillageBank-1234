@@ -1,111 +1,120 @@
 'use client'
 
 import Link from 'next/link'
-import { Github, Mail, Download } from 'lucide-react'
+import { Github, Mail, Download, ArrowRight, Twitter, Linkedin } from 'lucide-react'
 import { useInstallPrompt } from '@/hooks/useInstallPrompt'
 import { Button } from '@/components/ui/button'
 import { useLanguage } from '@/components/providers/LanguageProvider'
+import { UBankLogo } from '@/components/ui/Logo'
 
 export function Footer() {
   const { showInstallPrompt, promptToInstall } = useInstallPrompt()
   const { t } = useLanguage()
 
   return (
-    <footer className="border-t border-border/50 bg-background/50 backdrop-blur-xl mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          <div className="col-span-1 md:col-span-2">
-            <Link href="/" className="inline-block mb-4">
-              <h3 className="text-xl font-black bg-gradient-to-r from-blue-900 to-indigo-800 dark:from-white dark:to-blue-200 bg-clip-text text-transparent">
-                uBank Platform
-              </h3>
+    <footer className="border-t border-border/50 bg-white/50 dark:bg-slate-950/50 backdrop-blur-xl mt-auto z-10 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 sm:gap-8 mb-12">
+          {/* Brand Column */}
+          <div className="col-span-1 md:col-span-2 space-y-6">
+            <Link href="/" className="inline-block group">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center p-2 rounded-xl bg-[#1B4332] group-hover:scale-105 transition-transform shadow-lg shadow-emerald-900/20">
+                  <UBankLogo className="w-6 h-6 brightness-200" />
+                </div>
+                <div className="flex flex-col">
+                  <h3 className="text-xl font-black text-[#1B4332] dark:text-white leading-none tracking-tighter italic">uBank</h3>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 leading-none">Global Platform</p>
+                </div>
+              </div>
             </Link>
-            <p className="text-muted-foreground text-sm mb-6 max-w-sm leading-relaxed">
+            <p className="text-slate-500 text-sm max-w-sm leading-relaxed font-medium">
               {t('footer.desc')}
             </p>
-            <div className="flex items-center gap-3">
-              <span className="p-2 rounded-full bg-muted/50 text-muted-foreground/30 cursor-not-allowed" title="Coming Soon">
-                <Github className="w-5 h-5" />
-              </span>
-              <span className="p-2 rounded-full bg-muted/50 text-muted-foreground/30 cursor-not-allowed" title="Coming Soon">
-                <Mail className="w-5 h-5" />
-              </span>
 
+            <div className="flex items-center gap-2 pt-2">
               {/* Install App Button */}
               {showInstallPrompt && (
                 <Button
                   onClick={promptToInstall}
                   size="sm"
-                  className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold shadow-lg shadow-amber-500/25 ml-2"
+                  variant="outline"
+                  className="rounded-xl border-emerald-200 text-emerald-700 bg-emerald-50/50 hover:bg-emerald-100 dark:border-emerald-800 dark:text-emerald-400 dark:bg-emerald-950/30 dark:hover:bg-emerald-950/50 font-bold"
                 >
-                  <Download className="w-4 h-4 mr-1.5" />
+                  <Download className="w-4 h-4 mr-2" />
                   {t('footer.install_app') || 'Install App'}
                 </Button>
               )}
+
+              <div className="flex items-center gap-2">
+                <Link href="#" className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-400 hover:text-[#1B4332] dark:hover:text-emerald-400 hover:scale-110 transition-all">
+                  <Twitter className="w-4 h-4" />
+                </Link>
+                <Link href="#" className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-400 hover:text-[#1B4332] dark:hover:text-emerald-400 hover:scale-110 transition-all">
+                  <Linkedin className="w-4 h-4" />
+                </Link>
+                <Link href="#" className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-400 hover:text-[#1B4332] dark:hover:text-emerald-400 hover:scale-110 transition-all">
+                  <Github className="w-4 h-4" />
+                </Link>
+              </div>
+
             </div>
           </div>
 
+          {/* Links Column */}
           <div>
-            <h4 className="text-sm font-black text-foreground mb-4 uppercase tracking-widest">{t('footer.platform')}</h4>
-            <ul className="space-y-3">
-              <li>
-                <Link href="/dashboard" className="text-muted-foreground hover:text-banana text-sm font-medium transition-colors">
-                  {t('common.dashboard')}
-                </Link>
-              </li>
-              <li>
-                <Link href="/groups" className="text-muted-foreground hover:text-banana text-sm font-medium transition-colors">
-                  {t('common.groups')}
-                </Link>
-              </li>
-              <li>
-                <Link href="/vault" className="text-muted-foreground hover:text-banana text-sm font-medium transition-colors">
-                  {t('common.contributions')}
-                </Link>
-              </li>
+            <h4 className="text-xs font-black text-[#1B4332] dark:text-white mb-6 uppercase tracking-widest flex items-center gap-2">
+              Platform
+              <div className="h-px flex-1 bg-gradient-to-r from-emerald-500 to-transparent opacity-30" />
+            </h4>
+            <ul className="space-y-3.5">
+              {[
+                { label: 'common.dashboard', href: '/dashboard' },
+                { label: 'common.groups', href: '/groups' },
+                { label: 'common.contributions', href: '/vault' },
+              ].map((link, i) => (
+                <li key={i}>
+                  <Link href={link.href} className="group flex items-center text-sm font-bold text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 transition-colors">
+                    <ArrowRight className="w-3 h-3 mr-2 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all text-emerald-500" />
+                    {t(link.label)}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
+          {/* Support Column */}
           <div>
-            <h4 className="text-sm font-black text-foreground mb-4 uppercase tracking-widest">{t('footer.support')}</h4>
-            <ul className="space-y-3">
-              <li>
-                <Link href="/help" className="text-muted-foreground hover:text-banana text-sm font-medium transition-colors">
-                  {t('footer.help_center')}
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="text-muted-foreground hover:text-banana text-sm font-medium transition-colors">
-                  {t('footer.privacy_policy')}
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms" className="text-muted-foreground hover:text-banana text-sm font-medium transition-colors">
-                  {t('footer.terms_of_service')}
-                </Link>
-              </li>
+            <h4 className="text-xs font-black text-[#1B4332] dark:text-white mb-6 uppercase tracking-widest flex items-center gap-2">
+              Support
+              <div className="h-px flex-1 bg-gradient-to-r from-emerald-500 to-transparent opacity-30" />
+            </h4>
+            <ul className="space-y-3.5">
+              {[
+                { label: 'footer.help_center', href: '/help' },
+                { label: 'footer.privacy_policy', href: '/privacy' },
+                { label: 'footer.terms_of_service', href: '/terms' },
+              ].map((link, i) => (
+                <li key={i}>
+                  <Link href={link.href} className="group flex items-center text-sm font-bold text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 transition-colors">
+                    <ArrowRight className="w-3 h-3 mr-2 opacity-0 -ml-5 group-hover:opacity-100 group-hover:ml-0 transition-all text-emerald-500" />
+                    {t(link.label)}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
 
         <div className="border-t border-border/50 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-muted-foreground text-xs font-medium">
-            © {new Date().getFullYear()} uBank. {t('footer.rights_reserved')}
+          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider text-center md:text-left">
+            © {new Date().getFullYear()} uBank Financial. {t('footer.rights_reserved')}
           </p>
-          <div className="flex items-center gap-4">
-            {/* Install button for bottom section (alternative placement) */}
-            {showInstallPrompt && (
-              <button
-                onClick={promptToInstall}
-                className="text-xs font-bold text-amber-500 hover:text-amber-400 transition-colors flex items-center gap-1.5 uppercase tracking-wider"
-              >
-                <Download className="w-3.5 h-3.5" />
-                {t('footer.install_app') || 'Install App'}
-              </button>
-            )}
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{t('footer.systems_operational')}</span>
+
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/50">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[9px] font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-widest">{t('footer.systems_operational')}</span>
             </div>
           </div>
         </div>

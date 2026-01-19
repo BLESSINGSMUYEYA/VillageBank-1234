@@ -17,8 +17,8 @@ export function MarketingHeader() {
     const getLinkClass = (path: string) => cn(
         "text-sm font-black uppercase tracking-widest transition-colors",
         pathname === path
-            ? "text-blue-600 dark:text-banana"
-            : "text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-banana"
+            ? "text-emerald-600 dark:text-emerald-400"
+            : "text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400"
     )
 
     const navItems = [
@@ -69,7 +69,7 @@ export function MarketingHeader() {
                         <SheetTitle className="hidden">Mobile Navigation</SheetTitle>
                         <div className="flex flex-col h-full pt-10">
                             <div className="flex items-center gap-3 mb-10 px-2">
-                                <div className="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg border border-white/10">
+                                <div className="w-10 h-10 bg-emerald-600 rounded-2xl flex items-center justify-center shadow-lg border border-white/10">
                                     <UBankLogo className="w-6 h-6 invert" />
                                 </div>
                                 <span className="text-2xl font-black text-white tracking-tighter">
@@ -94,7 +94,7 @@ export function MarketingHeader() {
                             </nav>
                             <div className="mt-auto pb-8 space-y-4">
                                 <Link href="/login" className="block">
-                                    <Button className="w-full bg-blue-600 text-white font-black rounded-2xl h-14 hover:bg-blue-700 transition-all">
+                                    <Button className="w-full bg-emerald-600 text-white font-black rounded-2xl h-14 hover:bg-emerald-700 transition-all">
                                         {t('landing.launch_app')}
                                     </Button>
                                 </Link>
