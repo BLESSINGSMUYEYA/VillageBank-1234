@@ -8,6 +8,7 @@ import { GlassCard } from '@/components/ui/GlassCard'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { itemFadeIn } from '@/lib/motions'
 import { ContributionModal } from '@/components/contributions/ContributionModal'
+import { JoinGroupQR } from '@/components/groups/JoinGroupQR'
 
 interface QuickActionsProps {
     pendingApprovals?: any[]
@@ -53,6 +54,17 @@ export function QuickActions({ pendingApprovals = [], user }: QuickActionsProps)
                                     <span className="text-xs font-bold text-[#1B4332] dark:text-emerald-50 whitespace-nowrap">{btn.label}</span>
                                 </>
                             )
+
+                            // Special handling for Join button to use the scanner
+                            if (btn.label === 'Join') {
+                                return (
+                                    <JoinGroupQR key={idx}>
+                                        <button className={commonStyles}>
+                                            {innerContent}
+                                        </button>
+                                    </JoinGroupQR>
+                                )
+                            }
 
                             return btn.action ? (
                                 <button key={idx} onClick={btn.action} className={commonStyles}>

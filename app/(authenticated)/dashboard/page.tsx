@@ -7,6 +7,7 @@ import {
   getRecentActivity,
   getPendingApprovals
 } from '@/lib/dashboard-service'
+import { getUpcomingReminders } from '@/lib/reminders'
 
 import { DashboardContent } from './DashboardContent'
 import { DashboardBannerCarousel } from '@/components/dashboard/DashboardBannerCarousel'
@@ -27,11 +28,14 @@ export default async function DashboardPage() {
   }
 
   // Fetch data for DashboardContent
-  const [stats, recentActivity, pendingApprovals] = await Promise.all([
+  const [stats, recentActivity, pendingApprovals, remindersResult] = await Promise.all([
     getDashboardStats(),
     getRecentActivity(),
-    getPendingApprovals()
+    getPendingApprovals(),
+    getUpcomingReminders(user.id)
   ])
+
+  const reminders = remindersResult.success ? remindersResult.data : []
 
   return (
     <div className="space-y-12">
@@ -42,6 +46,7 @@ export default async function DashboardPage() {
         stats={stats}
         recentActivity={recentActivity}
         pendingApprovals={pendingApprovals}
+        reminders={reminders}
       />
     </div>
   )

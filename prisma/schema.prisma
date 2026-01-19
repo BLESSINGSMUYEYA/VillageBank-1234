@@ -32,6 +32,7 @@ model User {
   memberBankDetails MemberBankDetail[]
   notifications     Notification[]
   pushSubscriptions PushSubscription[]
+  reminders         Reminder[]
 }
 
 model Group {
@@ -63,6 +64,7 @@ model Group {
   groupShares              GroupShare[]
   loans                    Loan[]
   paymentMethods           PaymentMethod[]
+  reminders                Reminder[]
 }
 
 model GroupMember {
@@ -329,4 +331,32 @@ enum SharePermission {
   REQUEST_JOIN
   LIMITED_ACCESS
   FULL_PREVIEW
+}
+
+model Reminder {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  datetime    DateTime
+  type        ReminderType @default(MEETING)
+  link        String? // For video calls etc
+
+  // Relations
+  userId  String // Creator or assignee
+  groupId String? // If group related
+
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group Group? @relation(fields: [groupId], references: [id])
+
+  @@index([userId, datetime])
+  @@index([groupId, datetime])
+}
+
+enum ReminderType {
+  MEETING
+  PAYMENT
+  GENERAL
 }

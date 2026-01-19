@@ -55,22 +55,22 @@ export function ActivityFeed({ recentActivity }: ActivityFeedProps) {
                                                 )}
                                             </div>
 
-                                            <div className="flex-1 min-w-0 flex items-center justify-between gap-4">
-                                                <div className="min-w-0">
-                                                    <p className="text-[13px] font-bold text-[#1B4332] truncate group-hover:text-emerald-700 transition-colors">
+                                            <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-4">
+                                                <div className="min-w-0 pr-2">
+                                                    <p className="text-[13px] font-bold text-[#1B4332] truncate group-hover:text-emerald-700 transition-colors leading-snug">
                                                         {activity.description}
                                                     </p>
-                                                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-tight mt-0.5">
+                                                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-tight mt-0.5 truncate">
                                                         {activity.groupTag ? `@${activity.groupTag}` : activity.groupName} • {new Date(activity.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                                                     </p>
                                                 </div>
-                                                <div className="text-right shrink-0">
+                                                <div className="text-left sm:text-right shrink-0 mt-1 sm:mt-0 flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 sm:gap-0">
                                                     {activity.amount && (
                                                         <p className="text-[13px] font-black text-[#1B4332] tabular-nums">
                                                             {formatCurrency(activity.amount)}
                                                         </p>
                                                     )}
-                                                    <div className="flex items-center justify-end gap-1 mt-0.5">
+                                                    <div className="flex items-center justify-end gap-1 mt-0 sm:mt-0.5">
                                                         <div className="w-1 h-1 rounded-full bg-emerald-500" />
                                                         <span className="text-[9px] font-bold text-emerald-600/80 uppercase tracking-tighter">Success</span>
                                                     </div>

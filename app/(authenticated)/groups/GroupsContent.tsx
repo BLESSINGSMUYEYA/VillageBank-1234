@@ -25,6 +25,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { JoinGroupQR } from '@/components/groups/JoinGroupQR'
 
 interface GroupsContentProps {
     userGroups: any[]
@@ -231,16 +232,19 @@ export function GroupsContent({ userGroups, userRole, pendingApprovalsCount = 0 
                         </div>
 
                         {/* Create Group Button */}
-                        <Link href="/groups/new" className="w-full sm:w-auto">
-                            <Button
-                                size="sm"
-                                variant="supporting"
-                                className="w-full sm:w-auto min-h-[44px] h-11 font-bold rounded-xl shadow-lg shadow-emerald-500/20"
-                            >
-                                <Plus className="w-4 h-4 mr-1 sm:mr-2" />
-                                <span className="text-[9px] sm:text-[10px] uppercase tracking-wide">{t('groups.create_group')}</span>
-                            </Button>
-                        </Link>
+                        <div className="flex items-center gap-3 w-full sm:w-auto">
+                            <JoinGroupQR />
+                            <Link href="/groups/new" className="w-full sm:w-auto">
+                                <Button
+                                    size="sm"
+                                    variant="supporting"
+                                    className="w-full sm:w-auto min-h-[44px] h-11 font-bold rounded-xl shadow-lg shadow-emerald-500/20"
+                                >
+                                    <Plus className="w-4 h-4 mr-1 sm:mr-2" />
+                                    <span className="text-[9px] sm:text-[10px] uppercase tracking-wide">{t('groups.create_group')}</span>
+                                </Button>
+                            </Link>
+                        </div>
                     </div>
 
                     {/* Groups Grid */}

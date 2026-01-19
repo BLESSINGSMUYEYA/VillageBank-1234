@@ -135,7 +135,7 @@ export function NotificationCenter({
       case 'ERROR':
         return <XCircle className="w-5 h-5 text-rose-500" />
       default:
-        return <Info className="w-5 h-5 text-blue-500" />
+        return <Info className="w-5 h-5 text-emerald-500" />
     }
   }
 
@@ -158,7 +158,7 @@ export function NotificationCenter({
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0 }}
-              className="absolute -top-0.5 -right-0.5 h-5 w-5 bg-blue-600 dark:bg-banana text-white dark:text-blue-950 text-[10px] font-black rounded-full flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-900"
+              className="absolute -top-0.5 -right-0.5 h-5 w-5 bg-blue-600 dark:bg-blue-500 text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-900"
             >
               {unreadCount > 9 ? '9+' : unreadCount}
             </motion.span>
@@ -264,7 +264,7 @@ export function NotificationCenter({
                           "p-4 transition-all relative group",
                           notification.actionUrl && "cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/80",
                           !notification.actionUrl && "hover:bg-slate-50/50 dark:hover:bg-slate-800/50",
-                          !notification.read && "bg-blue-50/50 dark:bg-banana/10"
+                          !notification.read && "bg-emerald-50/50 dark:bg-emerald-900/10"
                         )}
                         onClick={(e) => {
                           if (notification.actionUrl) {
@@ -281,7 +281,7 @@ export function NotificationCenter({
                         }}
                       >
                         {!notification.read && (
-                          <div className="absolute left-1 top-4 bottom-4 w-1 bg-blue-600 dark:bg-banana rounded-full shadow-[0_0_10px_rgba(37,99,235,0.5)]" />
+                          <div className="absolute left-1 top-4 bottom-4 w-1 bg-emerald-500 dark:bg-emerald-400 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
                         )}
                         <div className="flex items-start gap-4">
                           <div className="mt-1 shrink-0 p-2 rounded-xl bg-white/50 dark:bg-slate-800/50 shadow-sm">
@@ -328,7 +328,7 @@ export function NotificationCenter({
                             </div>
 
                             {notification.actionUrl && (
-                              <div className="mt-3 flex items-center gap-2 text-[10px] font-bold text-blue-600 dark:text-blue-400">
+                              <div className="mt-3 flex items-center gap-2 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
                                 <ExternalLink className="w-3 h-3" />
                                 <span className="uppercase tracking-widest">{notification.actionText || 'Click to view'}</span>
                               </div>

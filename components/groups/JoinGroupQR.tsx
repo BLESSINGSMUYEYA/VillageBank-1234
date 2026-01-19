@@ -16,7 +16,11 @@ import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 
-export function JoinGroupQR() {
+interface JoinGroupQRProps {
+    children?: React.ReactNode
+}
+
+export function JoinGroupQR({ children }: JoinGroupQRProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [isCameraReady, setIsCameraReady] = useState(false)
     const [isScanning, setIsScanning] = useState(false)
@@ -96,38 +100,77 @@ export function JoinGroupQR() {
         setError(null)
     }
 
+    const fileInputRef = useRef<HTMLInputElement>(null)
+
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const file = e.target.files[0]
+
+            // Stop camera if running
+            if (scannerRef.current && isScanning) {
+                try {
+                    await scannerRef.current.stop()
+                    setIsScanning(false)
+                    setIsCameraReady(false)
+                } catch (err) {
+                    console.error('Error stopping camera:', err)
+                }
+            }
+
+            const scanner = new Html5Qrcode(scannerId)
+
+            try {
+                const decodedText = await scanner.scanFile(file, true)
+                const url = new URL(decodedText)
+                if (url.pathname.includes('/shared/')) {
+                    toast.success('Group found! Redirecting...')
+                    router.push(url.pathname)
+                    setIsOpen(false)
+                } else {
+                    toast.error('Invalid QR code for this application')
+                }
+            } catch (err) {
+                console.error('File scan error:', err)
+                toast.error('Could not read QR code from image')
+            }
+        }
+    }
+
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-            {/* Target injected video styling without conflict */}
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                #${scannerId} video {
-                    width: 100% !important;
-                    height: 100% !important;
-                    object-fit: cover !important;
-                    border-radius: 1rem;
-                }
-                #${scannerId} {
-                    border: none !important;
-                }
-            ` }} />
-
             <DialogTrigger asChild>
-                <Button
-                    variant="default"
-                    className="shadow-yellow-500/20 group px-6 border-none"
-                    onClick={() => setIsOpen(true)}
-                >
-                    <ScanLine className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
-                    Scan QR to Join
-                </Button>
+                {children ? (
+                    <div onClick={() => setIsOpen(true)}>{children}</div>
+                ) : (
+                    <Button
+                        variant="outline"
+                        className="shadow-emerald-500/20 group px-6 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                        onClick={() => setIsOpen(true)}
+                    >
+                        <ScanLine className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
+                        Scan QR to Join
+                    </Button>
+                )}
             </DialogTrigger>
             <DialogContent className="sm:max-w-md bg-white dark:bg-slate-950 border-none shadow-2xl p-0 overflow-hidden">
+                {/* Target injected video styling without conflict */}
+                <style dangerouslySetInnerHTML={{
+                    __html: `
+                    #${scannerId} video {
+                        width: 100% !important;
+                        height: 100% !important;
+                        object-fit: cover !important;
+                        border-radius: 1rem;
+                    }
+                    #${scannerId} {
+                        border: none !important;
+                    }
+                ` }} />
                 <div className="p-6">
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-black flex items-center gap-2">
-                            <div className="w-10 h-10 rounded-xl bg-blue-600/10 dark:bg-banana/10 flex items-center justify-center">
-                                <Camera className="w-6 h-6 text-blue-600 dark:text-banana" />
+                            <div className="w-10 h-10 rounded-xl bg-emerald-600/10 dark:bg-emerald-400/10 flex items-center justify-center">
+                                <Camera className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                             </div>
                             Scan Group QR
                         </DialogTitle>
@@ -149,11 +192,11 @@ export function JoinGroupQR() {
                         <>
                             <div className="relative w-full max-w-[320px] aspect-square">
                                 {/* Scanner Frame Decorator */}
-                                <div className="absolute -inset-2 border-2 border-blue-600/20 dark:border-banana/20 rounded-[30px] pointer-events-none" />
-                                <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-blue-600 dark:border-banana rounded-tl-2xl z-10" />
-                                <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-blue-600 dark:border-banana rounded-tr-2xl z-10" />
-                                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-blue-600 dark:border-banana rounded-bl-2xl z-10" />
-                                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-blue-600 dark:border-banana rounded-br-2xl z-10" />
+                                <div className="absolute -inset-2 border-2 border-emerald-600/20 dark:border-emerald-400/20 rounded-[30px] pointer-events-none" />
+                                <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-emerald-600 dark:border-emerald-400 rounded-tl-2xl z-10" />
+                                <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-emerald-600 dark:border-emerald-400 rounded-tr-2xl z-10" />
+                                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-emerald-600 dark:border-emerald-400 rounded-bl-2xl z-10" />
+                                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-emerald-600 dark:border-emerald-400 rounded-br-2xl z-10" />
 
                                 {/* ROOT CONTAINER FOR HTML5QRCODE (SHOULD BE EMPTY FOR REACT) */}
                                 <div
@@ -174,7 +217,7 @@ export function JoinGroupQR() {
                                         initial={{ top: '10%' }}
                                         animate={{ top: '90%' }}
                                         transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                                        className="absolute left-0 right-0 h-1 bg-blue-600 dark:bg-banana shadow-[0_0_15px_rgba(37,99,235,0.8)] dark:shadow-[0_0_15px_rgba(251,191,36,0.8)] z-20"
+                                        className="absolute left-0 right-0 h-1 bg-emerald-600 dark:bg-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.8)] z-20"
                                     />
                                 )}
                             </div>
@@ -183,9 +226,26 @@ export function JoinGroupQR() {
                                 <p className="text-base font-black text-foreground">
                                     Align QR Code within the frame
                                 </p>
-                                <p className="text-[10px] uppercase tracking-[0.2em] font-black text-muted-foreground opacity-60">
-                                    Automatic detection enabled
+                                <p className="text-xs font-bold text-muted-foreground">
+                                    OR
                                 </p>
+                                <div className="flex justify-center">
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        className="hidden"
+                                        accept="image/*"
+                                        onChange={handleFileUpload}
+                                    />
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="text-[10px] uppercase tracking-widest font-black"
+                                        onClick={() => fileInputRef.current?.click()}
+                                    >
+                                        Upload QR Image
+                                    </Button>
+                                </div>
                             </div>
                         </>
                     )}
@@ -197,6 +257,6 @@ export function JoinGroupQR() {
                     </Button>
                 </div>
             </DialogContent>
-        </Dialog>
+        </Dialog >
     )
 }

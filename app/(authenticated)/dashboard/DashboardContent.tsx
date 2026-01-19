@@ -14,6 +14,7 @@ interface DashboardContentProps {
     stats: any
     recentActivity: any[]
     pendingApprovals: any[]
+    reminders: any[]
 }
 
 
@@ -25,7 +26,8 @@ export function DashboardContent({
     user,
     stats,
     recentActivity,
-    pendingApprovals
+    pendingApprovals,
+    reminders
 }: DashboardContentProps) {
 
     // Secure View State
@@ -59,7 +61,7 @@ export function DashboardContent({
                 {/* Left: Interactive Tools & Insights */}
                 <div className="lg:col-span-2 space-y-12">
                     <NextSteps key="dashboard-next-steps" user={user} stats={stats} />
-                    <DashboardWidgets key="dashboard-widgets" stats={stats} />
+                    <DashboardWidgets key="dashboard-widgets" stats={stats} reminders={reminders} userId={user.id} />
                 </div>
 
                 {/* Right: Unified Sidebar (Recent Activity) */}
