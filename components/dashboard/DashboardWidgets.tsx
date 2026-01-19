@@ -23,7 +23,7 @@ export function DashboardWidgets({ stats }: DashboardWidgetsProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
             {/* Reminders Widget */}
             <motion.div variants={fadeIn}>
-                <GlassCard className="p-6 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl shadow-emerald-900/5 flex flex-col justify-between min-h-[280px] sm:min-h-[320px] h-full border-white/20" blur="xl">
+                <GlassCard className="p-6 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl shadow-emerald-900/5 flex flex-col justify-between min-h-[280px] sm:min-h-[320px] h-full border-slate-200/60 dark:border-white/5 bg-slate-100/80 dark:bg-black/20" blur="xl">
                     <div>
                         <h3 className="text-[10px] sm:text-[11px] font-bold text-slate-400 mb-6 sm:mb-8 uppercase tracking-[0.2em]">Reminders</h3>
                         <div className="space-y-2">
@@ -48,7 +48,7 @@ export function DashboardWidgets({ stats }: DashboardWidgetsProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* Loan Progress */}
                 <motion.div variants={fadeIn}>
-                    <GlassCard className="p-6 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl shadow-emerald-900/5 flex flex-col justify-between min-h-[280px] sm:min-h-[320px] h-full border-white/20 bg-gradient-to-br from-white/40 to-emerald-50/10" blur="xl">
+                    <GlassCard className="p-6 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl shadow-emerald-900/5 flex flex-col justify-between min-h-[280px] sm:min-h-[320px] h-full border-slate-200/60 dark:border-white/5 bg-slate-100/80 dark:bg-black/20" blur="xl">
                         <h3 className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">Loan Health</h3>
                         <div className="flex flex-col items-center justify-center space-y-4 py-4">
                             <div className="relative">
@@ -74,7 +74,7 @@ export function DashboardWidgets({ stats }: DashboardWidgetsProps) {
 
                 {/* Pulse Health - System Score */}
                 <motion.div variants={fadeIn}>
-                    <GlassCard className="bg-main p-6 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl shadow-emerald-900/20 overflow-hidden relative group min-h-[280px] sm:min-h-[320px] h-full" blur="xl" hover={true} gradient={false}>
+                    <GlassCard className="bg-[#1B4332] dark:bg-emerald-950 p-6 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl shadow-emerald-900/20 overflow-hidden relative group min-h-[280px] sm:min-h-[320px] h-full border-none ring-1 ring-white/10" blur="xl" hover={true} gradient={false}>
                         <div className="absolute top-0 right-0 w-32 h-32 bg-banana/20 rounded-full blur-[60px]" />
                         <div className="relative z-10 flex flex-col justify-between h-full">
                             <div>

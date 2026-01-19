@@ -27,11 +27,12 @@ export function ActivityFeedClient({ activities }: ActivityFeedClientProps) {
     }
 
     return (
+
         <motion.div
             variants={staggerContainer}
             initial="initial"
             animate="animate"
-            className="space-y-4"
+            className="space-y-4 p-4 sm:p-6 rounded-[2.5rem] bg-slate-100/80 dark:bg-black/20 border border-slate-200/50 dark:border-white/5"
         >
             {activities.map((activity) => (
                 <motion.div
@@ -39,7 +40,7 @@ export function ActivityFeedClient({ activities }: ActivityFeedClientProps) {
                     variants={itemFadeIn}
                     className="group"
                 >
-                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 p-5 sm:p-6 rounded-[1.5rem] bg-slate-50/50 dark:bg-slate-800/20 border border-slate-100 dark:border-white/5 hover:bg-white dark:hover:bg-slate-800 transition-all hover:scale-[1.01] hover:shadow-xl hover:shadow-blue-900/5 cursor-default relative overflow-hidden">
+                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 p-5 sm:p-6 rounded-[1.5rem] bg-white dark:bg-slate-800 border-none ring-1 ring-black/5 dark:ring-white/10 hover:ring-emerald-500/50 dark:hover:ring-emerald-500/50 hover:shadow-xl hover:shadow-emerald-500/10 hover:-translate-y-0.5 transition-all cursor-default relative overflow-hidden">
                         {/* Status Stripe */}
                         <div className={cn(
                             "absolute left-0 top-0 bottom-0 w-1",

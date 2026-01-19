@@ -74,10 +74,10 @@ export function StatsCard({
                     <div className="absolute -right-4 -bottom-4 bg-white/20 w-24 h-24 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
                 )}
 
-                <CardHeader className="pb-2 p-3.5 sm:p-6 relative z-10">
+                <CardHeader className="pb-2 p-3 sm:p-4 relative z-10">
                     <div className="flex items-center justify-between">
                         <CardTitle className={cn(
-                            "text-[10px] font-black uppercase tracking-[0.2em] whitespace-normal break-words leading-tight",
+                            "text-[9px] font-black uppercase tracking-[0.2em] whitespace-normal break-words leading-tight",
                             variant === 'default' || variant === 'glass'
                                 ? 'text-muted-foreground'
                                 : variant === 'featured'
@@ -87,21 +87,21 @@ export function StatsCard({
                             {label}
                         </CardTitle>
                         {Icon && variant === 'default' && (
-                            <div className="p-2 bg-muted/50 rounded-xl">
-                                <Icon className="w-4 h-4 text-primary" />
+                            <div className="p-1.5 bg-muted/50 rounded-xl">
+                                <Icon className="w-3.5 h-3.5 text-primary" />
                             </div>
                         )}
                         {Icon && variant === 'glass' && (
-                            <div className="p-2 bg-white/20 dark:bg-slate-800/50 rounded-xl backdrop-blur-lg">
-                                <Icon className="w-4 h-4 text-blue-500 dark:text-blue-400" />
+                            <div className="p-1.5 bg-white/20 dark:bg-slate-800/50 rounded-xl backdrop-blur-lg">
+                                <Icon className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400" />
                             </div>
                         )}
                     </div>
                 </CardHeader>
 
-                <CardContent className="p-3.5 sm:p-6 pt-0 relative z-10">
+                <CardContent className="p-3 sm:p-4 pt-0 relative z-10">
                     <div className={cn(
-                        "text-2xl sm:text-3xl font-black break-words leading-none",
+                        "text-xl sm:text-2xl font-black break-words leading-none",
                         isColorVariant ? 'text-white' : 'text-foreground'
                     )}>
                         {value}

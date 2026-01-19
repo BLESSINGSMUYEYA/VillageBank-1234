@@ -1,6 +1,7 @@
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { GroupsContent } from './GroupsContent'
+import { getPendingApprovals } from '@/lib/dashboard-service'
 
 export default async function GroupsPage() {
   const session = await getSession()
@@ -10,32 +11,43 @@ export default async function GroupsPage() {
     return <div>Please sign in to access groups.</div>
   }
 
-  // Get user's groups
-  const userGroups = await prisma.groupMember.findMany({
-    where: {
-      userId: userId as string,
-    },
-    include: {
-      group: {
-        include: {
-          _count: {
-            select: {
-              members: true,
-              contributions: true,
-              loans: true
+  // Fetch user, groups, and pending approvals in parallel
+  const [user, userGroups, pendingApprovals] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: userId as string },
+      select: { role: true } // Only need the role
+    }),
+    prisma.groupMember.findMany({
+      where: {
+        userId: userId as string,
+      },
+      include: {
+        group: {
+          include: {
+            _count: {
+              select: {
+                members: true,
+                contributions: true,
+                loans: true
+              }
             }
           }
         }
+      },
+      orderBy: {
+        joinedAt: 'desc'
       }
-    },
-    orderBy: {
-      joinedAt: 'desc'
-    }
-  })
+    }),
+    getPendingApprovals()
+  ])
 
   return (
     <div className="w-full max-w-7xl mx-auto py-4 sm:py-8 px-0 sm:px-4 lg:px-8 pb-24 space-y-6">
-      <GroupsContent userGroups={userGroups} />
+      <GroupsContent
+        userGroups={userGroups}
+        userRole={user?.role}
+        pendingApprovalsCount={pendingApprovals.length}
+      />
     </div>
   )
 }

@@ -104,10 +104,10 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                     {/* Stats Grid - Premium Layout */}
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                         {/* Total Contributions - Large Card */}
-                        <div className="col-span-2 p-5 sm:p-6 bg-white/50 dark:bg-white/5 border border-white/40 dark:border-white/10 rounded-2xl sm:rounded-3xl flex items-center justify-between group hover:border-emerald-200 hover:shadow-lg transition-all">
+                        <div className="col-span-2 p-3 sm:p-4 bg-white/50 dark:bg-white/5 border border-white/40 dark:border-white/10 rounded-2xl sm:rounded-3xl flex items-center justify-between group hover:border-emerald-200 hover:shadow-lg transition-all">
                             <div className="space-y-2">
                                 <div className="flex items-center gap-3">
-                                    <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                                    <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
                                         {t('dashboard.total_contributions') || 'Total Savings'}
                                     </p>
                                     <button
@@ -117,7 +117,7 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                                         {isContributionsVisible ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                                     </button>
                                 </div>
-                                <p className="text-2xl sm:text-4xl font-black text-main tracking-tighter">
+                                <p className="text-xl sm:text-3xl font-black text-main tracking-tighter">
                                     {isContributionsVisible ? formatCurrency(stats.totalContributions) : '••••••'}
                                 </p>
                             </div>
@@ -127,9 +127,9 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                         </div>
 
                         {/* Active Groups */}
-                        <div className="p-4 sm:p-6 bg-white/50 dark:bg-white/5 border border-white/40 dark:border-white/10 rounded-2xl sm:rounded-3xl flex flex-col justify-between group hover:border-emerald-200 transition-all">
+                        <div className="p-3 sm:p-4 bg-white/50 dark:bg-white/5 border border-white/40 dark:border-white/10 rounded-2xl sm:rounded-3xl flex flex-col justify-between group hover:border-emerald-200 transition-all">
                             <div className="flex justify-between items-start">
-                                <p className="text-[9px] sm:text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                                <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
                                     {t('common.groups')}
                                 </p>
                                 <div className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-slate-50 dark:bg-white/5 text-slate-400 group-hover:text-emerald-600 transition-colors">
@@ -137,21 +137,21 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                                 </div>
                             </div>
                             <div className="mt-3 sm:mt-4">
-                                <p className="text-xl sm:text-3xl font-black text-main tracking-tight">{stats.totalGroups}</p>
-                                <p className="text-[8px] sm:text-[10px] font-bold text-slate-400 mt-1 uppercase">Memberships</p>
+                                <p className="text-lg sm:text-2xl font-black text-main tracking-tight">{stats.totalGroups}</p>
+                                <p className="text-[8px] sm:text-[9px] font-bold text-slate-400 mt-1 uppercase">Memberships</p>
                             </div>
                         </div>
 
                         {/* Status / Approvals */}
                         {isAdminOrTreasurer ? (
                             <Link href="/treasurer/approvals" className="block h-full group">
-                                <div className="p-4 sm:p-6 bg-white/50 dark:bg-white/5 border border-white/40 dark:border-white/10 rounded-2xl sm:rounded-3xl flex flex-col justify-between h-full hover:border-emerald-200 transition-all relative overflow-hidden">
+                                <div className="p-3 sm:p-4 bg-white/50 dark:bg-white/5 border border-white/40 dark:border-white/10 rounded-2xl sm:rounded-3xl flex flex-col justify-between h-full hover:border-emerald-200 transition-all relative overflow-hidden">
                                     {pendingApprovalsCount > 0 && (
                                         <div className="absolute top-0 right-0 w-24 h-24 bg-red-500/5 blur-3xl" />
                                     )}
                                     <div className="flex justify-between items-start">
                                         <p className={cn(
-                                            "text-[9px] sm:text-[11px] font-bold uppercase tracking-[0.2em]",
+                                            "text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em]",
                                             pendingApprovalsCount > 0 ? "text-red-500" : "text-slate-400"
                                         )}>
                                             {t('dashboard.pending_approvals') ? 'Pending' : 'Pending'}
@@ -165,19 +165,19 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                                     </div>
                                     <div className="mt-3 sm:mt-4 flex items-end justify-between">
                                         <div>
-                                            <p className={cn("text-xl sm:text-3xl font-black tracking-tight", pendingApprovalsCount > 0 ? "text-red-500" : "text-main")}>
+                                            <p className={cn("text-lg sm:text-2xl font-black tracking-tight", pendingApprovalsCount > 0 ? "text-red-500" : "text-main")}>
                                                 {pendingApprovalsCount}
                                             </p>
-                                            <p className="text-[8px] sm:text-[10px] font-bold text-slate-400 mt-1 uppercase">Pending</p>
+                                            <p className="text-[8px] sm:text-[9px] font-bold text-slate-400 mt-1 uppercase">Pending</p>
                                         </div>
                                         {pendingApprovalsCount > 0 && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse mb-1" />}
                                     </div>
                                 </div>
                             </Link>
                         ) : (
-                            <div className="p-4 sm:p-6 bg-white/50 dark:bg-white/5 border border-white/40 dark:border-white/10 rounded-2xl sm:rounded-3xl flex flex-col justify-between group hover:border-emerald-200 transition-all">
+                            <div className="p-3 sm:p-4 bg-white/50 dark:bg-white/5 border border-white/40 dark:border-white/10 rounded-2xl sm:rounded-3xl flex flex-col justify-between group hover:border-emerald-200 transition-all">
                                 <div className="flex justify-between items-start">
-                                    <p className="text-[9px] sm:text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                                    <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
                                         Status
                                     </p>
                                     <div className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600">
@@ -186,7 +186,7 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                                 </div>
                                 <div className="mt-3 sm:mt-4">
                                     <p className="text-base sm:text-2xl font-black text-emerald-600 tracking-tight uppercase">Healthy</p>
-                                    <p className="text-[8px] sm:text-[10px] font-bold text-slate-400 mt-1 uppercase">Verified</p>
+                                    <p className="text-[8px] sm:text-[9px] font-bold text-slate-400 mt-1 uppercase">Verified</p>
                                 </div>
                             </div>
                         )}

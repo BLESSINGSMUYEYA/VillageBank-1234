@@ -28,9 +28,11 @@ import { cn } from '@/lib/utils'
 
 interface GroupsContentProps {
     userGroups: any[]
+    userRole?: string
+    pendingApprovalsCount?: number
 }
 
-export function GroupsContent({ userGroups }: GroupsContentProps) {
+export function GroupsContent({ userGroups, userRole, pendingApprovalsCount = 0 }: GroupsContentProps) {
     const { t } = useLanguage()
     const [showStats, setShowStats] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
@@ -74,7 +76,7 @@ export function GroupsContent({ userGroups }: GroupsContentProps) {
                             exit={{ opacity: 0, y: -20, height: 0 }}
                             className="zen-card overflow-hidden"
                         >
-                            <div className="relative p-3 sm:p-4 md:p-6 bg-gradient-to-b from-white/40 to-white/10 dark:from-slate-900/40 dark:to-slate-900/10 border-b border-white/10">
+                            <div className="relative p-3 sm:p-4 md:p-6 bg-slate-100/80 dark:bg-black/40 backdrop-blur-xl border-b border-white/20 dark:border-white/5 shadow-sm">
                                 <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
                                     <button
                                         onClick={() => setShowStats(false)}
@@ -94,28 +96,73 @@ export function GroupsContent({ userGroups }: GroupsContentProps) {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 lg:gap-6">
+                                <div className={cn(
+                                    "grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 lg:gap-6",
+                                    (userRole === 'ADMIN' || userRole === 'TREASURER' || pendingApprovalsCount > 0) && "lg:grid-cols-4"
+                                )}>
                                     <StatsCard
                                         variant="glass"
                                         label={t('groups.total_groups') || 'Total Groups'}
                                         value={userGroups.length.toString()}
                                         icon={Users}
-                                        className="bg-white/40 dark:bg-slate-900/40"
+                                        className="bg-white dark:bg-slate-800 border-none shadow-sm ring-1 ring-black/5"
                                     />
                                     <StatsCard
                                         variant="glass"
                                         label={t('groups.monthly_commitment') || 'Monthly Commitment'}
                                         value={formatCurrency(totalCommitment)}
                                         icon={DollarSign}
-                                        className="bg-white/40 dark:bg-slate-900/40"
+                                        className="bg-white dark:bg-slate-800 border-none shadow-sm ring-1 ring-black/5"
                                     />
                                     <StatsCard
                                         variant="glass"
                                         label={t('groups.community_size') || 'Community Size'}
                                         value={totalMembers.toString()}
                                         icon={TrendingUp}
-                                        className="bg-white/40 dark:bg-slate-900/40"
+                                        className="bg-white dark:bg-slate-800 border-none shadow-sm ring-1 ring-black/5"
                                     />
+
+                                    {(userRole === 'ADMIN' || userRole === 'TREASURER' || pendingApprovalsCount > 0) && (
+                                        <Link href="/treasurer/approvals" className="block h-full group">
+                                            <div className={cn(
+                                                "relative p-3 rounded-2xl border transition-all duration-300 overflow-hidden h-full flex flex-col justify-between group-hover:-translate-y-1 group-hover:shadow-lg",
+                                                pendingApprovalsCount > 0
+                                                    ? "bg-red-500/10 border-red-500/20 hover:border-red-500/40"
+                                                    : "bg-white dark:bg-slate-800 border-none shadow-sm ring-1 ring-black/5 hover:ring-emerald-500/50"
+                                            )}>
+                                                {pendingApprovalsCount > 0 && (
+                                                    <div className="absolute top-0 right-0 w-20 h-20 bg-red-500/20 blur-2xl -mr-10 -mt-10 animate-pulse" />
+                                                )}
+
+                                                <div className="flex justify-between items-start mb-2 relative z-10">
+                                                    <p className={cn(
+                                                        "text-[9px] font-black uppercase tracking-[0.2em]",
+                                                        pendingApprovalsCount > 0 ? "text-red-500" : "text-slate-400"
+                                                    )}>
+                                                        Approvals
+                                                    </p>
+                                                    <div className={cn(
+                                                        "w-6 h-6 rounded-lg flex items-center justify-center transition-colors",
+                                                        pendingApprovalsCount > 0 ? "bg-red-500 text-white shadow-md shadow-red-500/20" : "bg-white/10 text-slate-400"
+                                                    )}>
+                                                        <Shield className="w-3.5 h-3.5" />
+                                                    </div>
+                                                </div>
+
+                                                <div className="mt-auto relative z-10">
+                                                    <p className={cn(
+                                                        "text-xl font-black tracking-tighter",
+                                                        pendingApprovalsCount > 0 ? "text-red-500" : "text-foreground"
+                                                    )}>
+                                                        {pendingApprovalsCount > 0 ? pendingApprovalsCount : 'Done'}
+                                                    </p>
+                                                    <p className="text-[9px] font-medium text-slate-500 mt-0.5">
+                                                        {pendingApprovalsCount > 0 ? 'Pending Compliance' : 'All Clear'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    )}
                                 </div>
                             </div>
                         </motion.div>
@@ -125,7 +172,7 @@ export function GroupsContent({ userGroups }: GroupsContentProps) {
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.8 }}
-                            className="flex justify-between items-center bg-white/50 dark:bg-white/5 p-4 rounded-3xl border border-white/20 backdrop-blur-md"
+                            className="flex justify-between items-center bg-slate-100/90 dark:bg-slate-900/90 p-4 rounded-3xl border border-white/20 dark:border-white/10 shadow-sm backdrop-blur-md"
                         >
                             <div>
                                 <h1 className="text-lg sm:text-xl font-black text-main tracking-tighter">
@@ -146,7 +193,7 @@ export function GroupsContent({ userGroups }: GroupsContentProps) {
 
             {/* Groups List with Controls */}
             <motion.div variants={itemFadeIn}>
-                <GlassCard className="p-0 overflow-hidden" hover={false}>
+                <GlassCard className="p-0 overflow-hidden bg-slate-100/80 dark:bg-black/40 border-slate-200/60 dark:border-white/5 shadow-md" hover={false}>
                     {/* Search & Filter Bar */}
                     <div className="px-3 py-3 sm:px-4 sm:py-4 md:px-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-white/5">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
@@ -197,7 +244,7 @@ export function GroupsContent({ userGroups }: GroupsContentProps) {
                     </div>
 
                     {/* Groups Grid */}
-                    <div className="p-3 bg-slate-50/50 dark:bg-transparent min-h-[400px]">
+                    <div className="p-3 bg-transparent min-h-[400px]">
                         {filteredGroups.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
                                 {filteredGroups.map((membership) => (
@@ -234,7 +281,7 @@ function GroupCardVault({ membership }: { membership: any }) {
     const { group } = membership
 
     return (
-        <div className="relative group p-3 sm:p-4 bg-white dark:bg-slate-900/60 border border-slate-100 dark:border-white/5 rounded-2xl hover:shadow-lg hover:border-emerald-200 dark:hover:border-emerald-500/30 hover:-translate-y-1 transition-all duration-300">
+        <div className="relative group p-3 sm:p-4 bg-white dark:bg-slate-800 border-none rounded-2xl shadow-sm ring-1 ring-black/5 hover:shadow-lg hover:ring-emerald-500/50 dark:hover:ring-emerald-500/50 hover:-translate-y-1 transition-all duration-300">
             {/* Overlay Link for Main Card Action */}
             <Link
                 href={`/groups/${membership.groupId}`}

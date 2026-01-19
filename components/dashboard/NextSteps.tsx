@@ -79,7 +79,7 @@ export function NextSteps({ user, stats }: NextStepsProps) {
         viewport={{ once: true }}
       >
         <GlassCard
-          className="rounded-[2.5rem] border-white/20 overflow-hidden relative shadow-2xl shadow-emerald-900/5 bg-gradient-to-br from-white/40 to-emerald-50/10"
+          className="rounded-[2.5rem] border-slate-200/60 dark:border-white/5 overflow-hidden relative shadow-2xl shadow-emerald-900/5 bg-slate-100/80 dark:bg-black/20"
           blur="xl"
           hover={false}
         >
