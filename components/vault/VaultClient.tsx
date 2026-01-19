@@ -15,6 +15,7 @@ import { useLanguage } from '@/components/providers/LanguageProvider'
 import { motion, AnimatePresence } from 'framer-motion'
 import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
 import { GlassCard } from '@/components/ui/GlassCard'
+import { StatsCard } from '@/components/ui/stats-card'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Contribution, Group, Loan, LoanRepayment, GroupMember } from '@prisma/client'
 import { ContributionModal } from '@/components/contributions/ContributionModal'
@@ -124,7 +125,7 @@ export function VaultClient({
             variants={staggerContainer}
             initial="initial"
             animate="animate"
-            className="space-y-6 sm:space-y-8 pb-20"
+            className="space-y-4 sm:space-y-6 animate-fade-in"
         >
             {/* 1. Simplified Hero Section */}
             <motion.div variants={itemFadeIn}>
@@ -137,52 +138,46 @@ export function VaultClient({
                             exit={{ opacity: 0, y: -20, height: 0 }}
                             className="zen-card overflow-hidden"
                         >
-                            <div className="relative p-4 sm:p-6 bg-gradient-to-b from-white/40 to-white/10 dark:from-slate-900/40 dark:to-slate-900/10 border-b border-white/10">
-                                {/* Hide Button */}
-                                <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-10">
+                            <div className="relative p-3 sm:p-4 md:p-6 bg-gradient-to-b from-white/40 to-white/10 dark:from-slate-900/40 dark:to-slate-900/10 border-b border-white/10">
+
+                                <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
                                     <button
                                         onClick={() => setShowStats(false)}
-                                        className="w-6 h-6 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-muted-foreground hover:bg-slate-200 dark:hover:bg-white/20 transition-colors"
+                                        className="shrink-0 w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-muted-foreground hover:bg-slate-200 dark:hover:bg-white/20 transition-colors"
                                     >
-                                        <X className="w-3 h-3" />
+                                        <X className="w-4 h-4" />
                                     </button>
-                                </div>
 
-                                <div className="mb-4 sm:mb-6 pl-8 sm:pl-10">
-                                    <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tighter mb-1 sm:mb-2">
-                                        {t('common.vault')}
-                                    </h1>
-                                    <p className="text-xs sm:text-sm font-medium text-muted-foreground opacity-80 max-w-xl">
-                                        {t('vault.unified_community_hub')}
-                                    </p>
-                                </div>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                                    {/* Net Savings */}
-                                    <div className="p-3.5 sm:p-5 bg-zinc-50/50 dark:bg-white/5 border border-zinc-100 dark:border-white/5 rounded-2xl flex items-center justify-between group hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors">
-                                        <div>
-                                            <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1 opacity-70">
-                                                {t('vault.net_savings')}
-                                            </p>
-                                            <p className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">{formatCurrency(totalSaved)}</p>
-                                        </div>
-                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                            <Wallet className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500" />
-                                        </div>
+                                    <div className="flex-1 min-w-0">
+                                        <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter text-main mb-1 sm:mb-2 text-left break-words">
+                                            {t('common.vault')}
+                                            <span className="text-banana">.</span>
+                                        </h1>
+                                        <p className="text-xs sm:text-sm md:text-base font-medium text-slate-500 leading-relaxed max-w-xl break-words">
+                                            {t('vault.unified_community_hub')}
+                                        </p>
                                     </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6">
+                                    {/* Net Savings */}
+                                    <StatsCard
+                                        variant="glass"
+                                        label={t('vault.net_savings')}
+                                        value={formatCurrency(totalSaved)}
+                                        icon={Wallet}
+                                        className="bg-white/40 dark:bg-slate-900/40"
+                                    />
 
                                     {/* Active Debt */}
-                                    <div className="p-3.5 sm:p-5 bg-zinc-50/50 dark:bg-white/5 border border-zinc-100 dark:border-white/5 rounded-2xl flex items-center justify-between group hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors">
-                                        <div>
-                                            <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1 opacity-70">
-                                                {t('vault.active_liability')}
-                                            </p>
-                                            <p className="text-2xl sm:text-3xl font-black text-blue-600 dark:text-banana">{formatCurrency(activeDebt)}</p>
-                                        </div>
-                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                            <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-banana" />
-                                        </div>
-                                    </div>
+                                    <StatsCard
+                                        variant="glass"
+                                        label={t('vault.active_liability')}
+                                        value={formatCurrency(activeDebt)}
+                                        icon={CreditCard}
+                                        className="bg-white/40 dark:bg-slate-900/40"
+                                    // Override icon color logic inside component if needed or rely on default
+                                    />
                                 </div>
                             </div>
                         </motion.div>
@@ -192,10 +187,17 @@ export function VaultClient({
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.8 }}
+                            className="flex justify-between items-center bg-white/50 dark:bg-white/5 p-4 rounded-3xl border border-white/20 backdrop-blur-md"
                         >
+                            <div>
+                                <h1 className="text-lg sm:text-xl font-black text-main tracking-tighter">
+                                    {t('common.vault')}
+                                    <span className="text-banana">.</span>
+                                </h1>
+                            </div>
                             <button
                                 onClick={() => setShowStats(true)}
-                                className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 shadow-sm flex items-center justify-center text-blue-600 dark:text-banana hover:scale-110 transition-all"
+                                className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 shadow-sm flex items-center justify-center text-emerald-600 dark:text-banana hover:scale-110 transition-all"
                             >
                                 <LinkIcon className="w-5 h-5" />
                             </button>
@@ -208,29 +210,30 @@ export function VaultClient({
             <motion.div variants={itemFadeIn}>
                 <GlassCard className="p-0 overflow-hidden" hover={false}>
                     {/* Controls Bar */}
-                    <div className="px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5">
+                    <div className="px-3 py-3 sm:px-4 sm:py-4 md:px-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-white/5">
                         {/* Search & Filter */}
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-4 w-full sm:w-auto">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 flex-1 sm:flex-initial min-w-0">
                             <div className="relative w-full sm:w-56">
                                 <input
                                     type="text"
                                     placeholder="Search groups..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full h-10 pl-10 pr-4 rounded-xl bg-slate-100 dark:bg-slate-900/50 border-none text-xs font-bold focus:ring-2 focus:ring-blue-500/50"
+                                    // Mobile: text-base (16px) prevents iOS zoom. Tablet+: text-sm.
+                                    className="w-full h-10 pl-9 pr-3 sm:pl-10 sm:pr-4 rounded-xl bg-slate-100 dark:bg-slate-900/50 border-none text-base sm:text-sm font-bold focus:ring-2 focus:ring-emerald-500/50"
                                 />
                                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                                     <Search className="w-4 h-4" />
                                 </div>
                             </div>
 
-                            <div className="flex items-center p-1 bg-slate-100/50 dark:bg-slate-900/30 rounded-xl self-start sm:self-auto overflow-x-auto no-scrollbar max-w-full">
+                            <div className="flex items-center p-1 bg-slate-100/50 dark:bg-slate-900/30 rounded-xl overflow-x-auto no-scrollbar max-w-full">
                                 {(['ALL', 'INCOME', 'OUTFLOW'] as const).map((f) => (
                                     <button
                                         key={f}
                                         onClick={() => setFilter(f)}
                                         className={cn(
-                                            "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap",
+                                            "px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-[9px] sm:text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap snap-start",
                                             filter === f
                                                 ? "bg-white dark:bg-slate-800 text-foreground shadow-sm"
                                                 : "text-muted-foreground hover:text-foreground hover:bg-white/50"
@@ -248,16 +251,17 @@ export function VaultClient({
                                 <Button
                                     onClick={() => setIsContributionModalOpen(true)}
                                     size="sm"
-                                    className="w-full sm:w-auto h-10 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20"
+                                    variant="banana"
+                                    className="w-full sm:w-auto min-h-[44px] h-11 font-bold rounded-xl shadow-lg shadow-emerald-500/20"
                                 >
-                                    <Plus className="w-4 h-4 mr-2" />
-                                    <span className="text-[10px] uppercase tracking-wide">{t('common.contributions')}</span>
+                                    <Plus className="w-4 h-4 mr-1 sm:mr-2" />
+                                    <span className="text-[9px] sm:text-[10px] uppercase tracking-wide">{t('common.contributions')}</span>
                                 </Button>
                             </div>
                             <Link href="/loans/new" className="flex-1 sm:flex-none">
-                                <Button size="sm" variant="outline" className="w-full sm:w-auto h-10 border-indigo-200 dark:border-indigo-900 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 font-bold rounded-xl">
-                                    <Plus className="w-4 h-4 mr-2" />
-                                    <span className="text-[10px] uppercase tracking-wide">{t('common.loans')}</span>
+                                <Button size="sm" variant="outline" className="w-full sm:w-auto min-h-[44px] h-11 border-indigo-200 dark:border-indigo-900 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 font-bold rounded-xl">
+                                    <Plus className="w-4 h-4 mr-1 sm:mr-2" />
+                                    <span className="text-[9px] sm:text-[10px] uppercase tracking-wide">{t('common.loans')}</span>
                                 </Button>
                             </Link>
                         </div>
@@ -271,32 +275,32 @@ export function VaultClient({
                                     {filteredItems.map((item) => (
                                         <div
                                             key={`${item.type}-${item.id}`}
-                                            className="group p-3 sm:p-4 bg-white dark:bg-slate-900/60 border border-slate-100 dark:border-white/5 rounded-2xl flex items-center justify-between gap-3 hover:shadow-md hover:border-slate-200 dark:hover:border-white/10 transition-all cursor-default"
+                                            className="group p-2.5 sm:p-3 md:p-4 bg-white dark:bg-slate-900/60 border border-slate-100 dark:border-white/5 rounded-2xl flex items-center justify-between gap-2 sm:gap-3 hover:shadow-lg hover:border-emerald-200 dark:hover:border-emerald-500/30 hover:-translate-y-1 transition-all duration-300 cursor-default"
                                         >
-                                            <div className="flex items-center gap-3 sm:gap-4 min-w-0 overflow-hidden">
+                                            <div className="flex items-center gap-2 sm:gap-3 md:gap-4 min-w-0 flex-1">
                                                 <div className={cn(
-                                                    "w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 border",
+                                                    "w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center shrink-0 border transition-colors",
                                                     item.type === 'CONTRIBUTION'
-                                                        ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600"
-                                                        : "bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-banana"
+                                                        ? "bg-emerald-50 border-emerald-100 text-emerald-600 dark:bg-emerald-900/20 dark:border-emerald-800"
+                                                        : "bg-slate-50 border-slate-100 text-slate-500 dark:bg-white/5 dark:border-white/10"
                                                 )}>
-                                                    {item.type === 'CONTRIBUTION' ? <Wallet className="w-5 h-5 sm:w-6 sm:h-6" /> : <CreditCard className="w-5 h-5 sm:w-6 sm:h-6" />}
+                                                    {item.type === 'CONTRIBUTION' ? <Wallet className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" /> : <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />}
                                                 </div>
 
-                                                <div className="min-w-0 truncate">
-                                                    <div className="flex items-center gap-2 mb-0.5 sm:mb-0">
-                                                        <p className="font-black text-xs sm:text-sm text-foreground truncate">
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-0">
+                                                        <p className="font-black text-[11px] sm:text-xs md:text-sm text-foreground truncate">
                                                             {item.groupName}
                                                         </p>
                                                         <span className={cn(
                                                             "hidden sm:inline-flex text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider shrink-0",
-                                                            item.type === 'CONTRIBUTION' ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                                                            item.type === 'CONTRIBUTION' ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
                                                         )}>
                                                             {item.type === 'CONTRIBUTION' ? 'Deposit' : 'Loan'}
                                                         </span>
                                                     </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <p className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1 shrink-0">
+                                                    <div className="flex items-center gap-1.5 sm:gap-2">
+                                                        <p className="text-[8px] sm:text-[9px] md:text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-0.5 sm:gap-1 shrink-0">
                                                             <Calendar className="w-3 h-3" />
                                                             {item.date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                                         </p>
@@ -308,7 +312,7 @@ export function VaultClient({
                                                         {/* Mobile Type Badge (Only shown on small screens) */}
                                                         <span className={cn(
                                                             "sm:hidden text-[9px] font-black px-1.5 py-0 rounded-full uppercase tracking-wider shrink-0",
-                                                            item.type === 'CONTRIBUTION' ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                                                            item.type === 'CONTRIBUTION' ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
                                                         )}>
                                                             {item.type === 'CONTRIBUTION' ? 'Dep' : 'Loan'}
                                                         </span>
@@ -318,13 +322,13 @@ export function VaultClient({
 
                                             <div className="text-right shrink-0">
                                                 <p className={cn(
-                                                    "text-sm sm:text-lg font-black tracking-tight",
-                                                    item.type === 'CONTRIBUTION' ? "text-emerald-600 dark:text-emerald-400" : "text-foreground"
+                                                    "text-xs sm:text-sm md:text-lg font-black tracking-tight",
+                                                    item.type === 'CONTRIBUTION' ? "text-main" : "text-slate-500"
                                                 )}>
                                                     {item.type === 'CONTRIBUTION' ? '+' : ''} {formatCurrency(item.amount)}
                                                 </p>
                                                 <Badge className={cn(
-                                                    "text-[9px] px-1.5 sm:px-2 py-0 sm:py-0.5 border-0 mt-0.5 sm:mt-1",
+                                                    "text-[8px] sm:text-[9px] px-1 sm:px-1.5 md:px-2 py-0 border-0 mt-0.5 sm:mt-1",
                                                     item.status === 'COMPLETED' || item.status === 'ACTIVE'
                                                         ? "bg-slate-100 dark:bg-slate-800 text-slate-500"
                                                         : item.status === 'PENDING'
@@ -338,48 +342,53 @@ export function VaultClient({
                                     ))}
                                 </div>
                             ) : (
-                                <div className="flex flex-col items-center justify-center py-20 text-muted-foreground/50">
-                                    <History className="w-12 h-12 mb-4 opacity-20" />
-                                    <p className="text-sm font-bold uppercase tracking-widest">{t('vault.no_records')}</p>
-                                </div>
+                                <EmptyState
+                                    icon={History}
+                                    title={t('vault.no_records')}
+                                    description={t('vault.no_records_desc') || "No contributions or loans found matching your criteria."}
+                                    variant="default"
+                                />
                             )}
                         </AnimatePresence>
                     </div>
 
+
                     {/* Pagination (Kept from existing) */}
                     {pagination.totalPages > 1 && (
-                        <div className="p-4 border-t border-white/10 dark:border-white/5 flex items-center justify-between bg-zinc-50/50 dark:bg-white/5">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">
+                        <div className="p-3 sm:p-4 border-t border-white/10 dark:border-white/5 flex items-center justify-between bg-zinc-50/50 dark:bg-white/5">
+                            <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">
                                 Page {pagination.currentPage} of {pagination.totalPages}
                             </p>
-                            <div className="flex gap-2">
+                            <div className="flex gap-1.5 sm:gap-2">
                                 <Button
                                     variant="outline"
                                     size="sm"
                                     disabled={pagination.currentPage <= 1}
-                                    className="rounded-xl h-9 px-4 font-bold border-white/10"
+                                    className="rounded-xl h-9 px-3 sm:px-4 font-bold border-white/10 text-xs"
                                     onClick={() => {
                                         const newParams = new URLSearchParams(window.location.search)
                                         newParams.set('page', (pagination.currentPage - 1).toString())
                                         window.location.search = newParams.toString()
                                     }}
                                 >
-                                    <ChevronLeft className="w-4 h-4 mr-2" />
-                                    Previous
+                                    <ChevronLeft className="w-4 h-4 mr-1 sm:mr-2" />
+                                    <span className="hidden sm:inline">Previous</span>
+                                    <span className="sm:hidden">Prev</span>
                                 </Button>
                                 <Button
                                     variant="outline"
                                     size="sm"
                                     disabled={pagination.currentPage >= pagination.totalPages}
-                                    className="rounded-xl h-9 px-4 font-bold border-white/10"
+                                    className="rounded-xl h-9 px-3 sm:px-4 font-bold border-white/10 text-xs"
                                     onClick={() => {
                                         const newParams = new URLSearchParams(window.location.search)
                                         newParams.set('page', (pagination.currentPage + 1).toString())
                                         window.location.search = newParams.toString()
                                     }}
                                 >
-                                    Next
-                                    <ChevronRight className="w-4 h-4 ml-2" />
+                                    <span className="hidden sm:inline">Next</span>
+                                    <span className="sm:hidden">Nxt</span>
+                                    <ChevronRight className="w-4 h-4 ml-1 sm:ml-2" />
                                 </Button>
                             </div>
                         </div>

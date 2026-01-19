@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
+import { GlassCard } from '@/components/ui/GlassCard'
 import { DollarSign, Wallet, Users, ArrowUpRight, ArrowRight, Eye, EyeOff, Shield } from 'lucide-react'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { formatCurrency, cn } from '@/lib/utils'
@@ -50,29 +51,33 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
 
     return (
         <motion.div variants={itemFadeIn} className="space-y-6">
-            <div className="zen-card overflow-hidden">
-                <div className="p-6 sm:p-8 bg-gradient-to-b from-white/40 to-white/10 dark:from-slate-900/40 dark:to-slate-900/10 border-b border-white/10">
+            <GlassCard
+                className="overflow-hidden p-0 rounded-[2.5rem] border-white/20 shadow-2xl shadow-emerald-900/5"
+                blur="xl"
+                hover={false}
+            >
+                <div className="p-5 sm:p-10 bg-gradient-to-br from-white/60 via-white/40 to-emerald-50/20 dark:from-slate-900/60 dark:to-emerald-900/10">
                     {/* Top Identity Section */}
-                    <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-8">
-                        <div className="space-y-3 max-w-2xl">
-                            <div>
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+                        <div className="space-y-4 max-w-2xl">
+                            <div className="space-y-1">
                                 <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.2 }}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ duration: 0.8, ease: "easeOut" }}
                                 >
-                                    <h1 className="text-3xl font-black tracking-tighter mb-2">
-                                        <span className="text-foreground">{t('common.dashboard')}</span>
-                                        <span className="text-blue-600 dark:text-banana">.</span>
+                                    <h1 className="text-3xl sm:text-5xl font-black tracking-tighter text-main">
+                                        {t('common.dashboard')}
+                                        <span className="text-banana">.</span>
                                     </h1>
                                 </motion.div>
-                                <p className="text-sm font-medium text-muted-foreground opacity-80 leading-relaxed max-w-xl">
-                                    {t('dashboard.welcome')}, <span className="text-foreground font-bold">{user.firstName}</span>
+                                <p className="text-sm sm:text-base font-medium text-slate-500 leading-relaxed max-w-xl">
+                                    {t('dashboard.welcome')}, <span className="text-main font-black">{user.firstName}</span>
                                 </p>
                             </div>
                         </div>
 
-                        <div className="flex gap-4 shrink-0 mt-2 md:mt-0">
+                        <div className="w-full md:w-auto shrink-0">
                             <Button
                                 size="lg"
                                 onClick={() => {
@@ -86,85 +91,108 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                                         router.push('/groups')
                                     }
                                 }}
-                                className="relative h-11 bg-blue-600 hover:bg-blue-500 text-white border-0 rounded-xl px-6 font-black tracking-wide shadow-xl shadow-blue-500/20"
+                                variant="banana"
+                                className="w-full md:w-auto h-12 rounded-2xl px-8 font-bold tracking-wide shadow-xl group/btn transition-all active:scale-95"
                             >
-                                <DollarSign className="w-4 h-4 mr-2" />
-                                {t('dashboard.make_contribution')}
+                                <DollarSign className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
+                                <span className="whitespace-nowrap">{t('dashboard.make_contribution')}</span>
+                                <ArrowRight className="w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                             </Button>
                         </div>
                     </div>
 
-                    {/* Stats Grid - Simplified & Clean */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                        {/* Total Contributions */}
-                        <div className="col-span-2 p-5 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl flex items-center justify-between group hover:bg-emerald-500/10 transition-colors">
-                            <div>
-                                <div className="flex items-center gap-2 mb-1">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600 opacity-70">
-                                        {t('dashboard.total_contributions') || 'Savings'}
+                    {/* Stats Grid - Premium Layout */}
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+                        {/* Total Contributions - Large Card */}
+                        <div className="col-span-2 p-5 sm:p-6 bg-white/50 dark:bg-white/5 border border-white/40 dark:border-white/10 rounded-2xl sm:rounded-3xl flex items-center justify-between group hover:border-emerald-200 hover:shadow-lg transition-all">
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-3">
+                                    <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                                        {t('dashboard.total_contributions') || 'Total Savings'}
                                     </p>
                                     <button
                                         onClick={handleToggleVisibility}
-                                        className="text-emerald-600/40 hover:text-emerald-600 transition-colors"
+                                        className="text-slate-300 hover:text-emerald-600 transition-colors p-1"
                                     >
-                                        {isContributionsVisible ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                                        {isContributionsVisible ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                                     </button>
                                 </div>
-                                <p className="text-3xl font-black text-foreground tracking-tight">
+                                <p className="text-2xl sm:text-4xl font-black text-main tracking-tighter">
                                     {isContributionsVisible ? formatCurrency(stats.totalContributions) : '••••••'}
                                 </p>
                             </div>
-                            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <Wallet className="w-6 h-6 text-emerald-500" />
+                            <div className="w-10 h-10 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-sm">
+                                <Wallet className="w-5 h-5 sm:w-8 sm:h-8 text-emerald-600" />
                             </div>
                         </div>
 
                         {/* Active Groups */}
-                        <div className="col-span-1 p-4 bg-zinc-50/50 dark:bg-white/5 border border-zinc-100 dark:border-white/5 rounded-2xl flex flex-col justify-between group hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors">
-                            <div className="flex justify-between items-start mb-2">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground opacity-70 truncate pr-2">
+                        <div className="p-4 sm:p-6 bg-white/50 dark:bg-white/5 border border-white/40 dark:border-white/10 rounded-2xl sm:rounded-3xl flex flex-col justify-between group hover:border-emerald-200 transition-all">
+                            <div className="flex justify-between items-start">
+                                <p className="text-[9px] sm:text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
                                     {t('common.groups')}
                                 </p>
-                                <Users className="w-4 h-4 text-blue-600 dark:text-banana group-hover:scale-110 transition-transform shrink-0" />
+                                <div className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-slate-50 dark:bg-white/5 text-slate-400 group-hover:text-emerald-600 transition-colors">
+                                    <Users className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform" />
+                                </div>
                             </div>
-                            <p className="text-2xl font-black text-foreground tracking-tight">{stats.totalGroups}</p>
+                            <div className="mt-3 sm:mt-4">
+                                <p className="text-xl sm:text-3xl font-black text-main tracking-tight">{stats.totalGroups}</p>
+                                <p className="text-[8px] sm:text-[10px] font-bold text-slate-400 mt-1 uppercase">Memberships</p>
+                            </div>
                         </div>
 
-                        {/* Pending Approvals / Status */}
+                        {/* Status / Approvals */}
                         {isAdminOrTreasurer ? (
-                            <Link href="/treasurer/approvals" className="block h-full col-span-1">
-                                <div className="p-4 bg-zinc-500/5 dark:bg-white/5 border border-zinc-500/10 dark:border-white/5 rounded-2xl flex flex-col justify-between group hover:bg-zinc-500/10 dark:hover:bg-white/10 transition-colors cursor-pointer h-full">
-                                    <div className="flex justify-between items-start mb-2">
+                            <Link href="/treasurer/approvals" className="block h-full group">
+                                <div className="p-4 sm:p-6 bg-white/50 dark:bg-white/5 border border-white/40 dark:border-white/10 rounded-2xl sm:rounded-3xl flex flex-col justify-between h-full hover:border-emerald-200 transition-all relative overflow-hidden">
+                                    {pendingApprovalsCount > 0 && (
+                                        <div className="absolute top-0 right-0 w-24 h-24 bg-red-500/5 blur-3xl" />
+                                    )}
+                                    <div className="flex justify-between items-start">
                                         <p className={cn(
-                                            "text-[9px] font-black uppercase tracking-widest opacity-70 truncate pr-2",
-                                            pendingApprovalsCount > 0 ? "text-red-500" : "text-muted-foreground"
+                                            "text-[9px] sm:text-[11px] font-bold uppercase tracking-[0.2em]",
+                                            pendingApprovalsCount > 0 ? "text-red-500" : "text-slate-400"
                                         )}>
-                                            {t('dashboard.pending_approvals')}
+                                            {t('dashboard.pending_approvals') ? 'Pending' : 'Pending'}
                                         </p>
-                                        <ArrowUpRight className={cn("w-4 h-4 group-hover:scale-110 transition-transform shrink-0", pendingApprovalsCount > 0 ? "text-red-500" : "text-muted-foreground")} />
+                                        <div className={cn(
+                                            "p-1.5 sm:p-2 rounded-lg sm:rounded-xl transition-all",
+                                            pendingApprovalsCount > 0 ? "bg-red-50 text-red-500" : "bg-slate-50 text-slate-400"
+                                        )}>
+                                            <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                        </div>
                                     </div>
-                                    <div className="flex items-end justify-between">
-                                        <p className={cn("text-2xl font-black tracking-tight", pendingApprovalsCount > 0 ? "text-red-500" : "text-foreground")}>
-                                            {pendingApprovalsCount}
-                                        </p>
-                                        {pendingApprovalsCount > 0 && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />}
+                                    <div className="mt-3 sm:mt-4 flex items-end justify-between">
+                                        <div>
+                                            <p className={cn("text-xl sm:text-3xl font-black tracking-tight", pendingApprovalsCount > 0 ? "text-red-500" : "text-main")}>
+                                                {pendingApprovalsCount}
+                                            </p>
+                                            <p className="text-[8px] sm:text-[10px] font-bold text-slate-400 mt-1 uppercase">Pending</p>
+                                        </div>
+                                        {pendingApprovalsCount > 0 && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse mb-1" />}
                                     </div>
                                 </div>
                             </Link>
                         ) : (
-                            <div className="col-span-1 p-4 bg-zinc-50/50 dark:bg-white/5 border border-zinc-100 dark:border-white/5 rounded-2xl flex flex-col justify-between group">
-                                <div className="flex justify-between items-start mb-2">
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground opacity-70 truncate pr-2">
+                            <div className="p-4 sm:p-6 bg-white/50 dark:bg-white/5 border border-white/40 dark:border-white/10 rounded-2xl sm:rounded-3xl flex flex-col justify-between group hover:border-emerald-200 transition-all">
+                                <div className="flex justify-between items-start">
+                                    <p className="text-[9px] sm:text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
                                         Status
                                     </p>
-                                    <Shield className="w-4 h-4 text-emerald-500 shrink-0" />
+                                    <div className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600">
+                                        <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
+                                    </div>
                                 </div>
-                                <p className="text-xl font-black text-emerald-500 tracking-tight truncate">Active</p>
+                                <div className="mt-3 sm:mt-4">
+                                    <p className="text-base sm:text-2xl font-black text-emerald-600 tracking-tight uppercase">Healthy</p>
+                                    <p className="text-[8px] sm:text-[10px] font-bold text-slate-400 mt-1 uppercase">Verified</p>
+                                </div>
                             </div>
                         )}
                     </div>
                 </div>
-            </div>
+            </GlassCard>
 
             <SecurityVerificationModal
                 open={isVerificationModalOpen}

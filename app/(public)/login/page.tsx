@@ -88,8 +88,8 @@ export default function LoginPage() {
             <div className="flex flex-col justify-center items-center p-6 relative bg-slate-50 dark:bg-slate-950">
                 {/* Ambient Background (Right side only) */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                    <div className="absolute top-1/4 -right-1/4 w-1/2 h-1/2 bg-blue-600/10 rounded-full blur-[120px] animate-pulse-slow" />
-                    <div className="absolute bottom-1/4 -left-1/4 w-1/2 h-1/2 bg-indigo-600/10 rounded-full blur-[120px] animate-pulse-slow delay-1000" />
+                    <div className="absolute top-1/4 -right-1/4 w-1/2 h-1/2 bg-emerald-600/10 rounded-full blur-[120px] animate-pulse-slow" />
+                    <div className="absolute bottom-1/4 -left-1/4 w-1/2 h-1/2 bg-teal-600/10 rounded-full blur-[120px] animate-pulse-slow delay-1000" />
                 </div>
 
                 <motion.div
@@ -110,7 +110,7 @@ export default function LoginPage() {
 
                     <motion.div variants={itemFadeIn}>
                         <GlassCard className="p-0 border-none overflow-hidden shadow-2xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl" hover={false}>
-                            <div className="h-1.5 bg-gradient-to-r from-blue-600 to-indigo-600" />
+                            <div className="h-1.5 bg-gradient-to-r from-emerald-600 to-teal-600" />
                             <CardHeader className="p-8 sm:p-10 text-center space-y-2">
                                 <CardTitle className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{t('auth.welcome_back')}</CardTitle>
                                 <CardDescription className="text-sm font-bold opacity-70">
@@ -128,7 +128,7 @@ export default function LoginPage() {
                                                     type="email"
                                                     placeholder="name@domain.com"
                                                     {...register('email')}
-                                                    className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-14 font-bold shadow-sm focus-visible:ring-blue-500/30 pl-12"
+                                                    className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-14 font-bold shadow-sm focus-visible:ring-emerald-500/30 pl-12"
                                                 />
                                                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/40" />
                                             </div>
@@ -137,14 +137,14 @@ export default function LoginPage() {
                                         <div className="space-y-2">
                                             <div className="flex items-center justify-between px-1">
                                                 <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{t('auth.encryption_key')}</Label>
-                                                <Link href="/forgot-password" className="text-[10px] font-black text-blue-600 dark:text-banana uppercase tracking-widest hover:underline opacity-80">{t('common.forgot_password')}</Link>
+                                                <Link href="/forgot-password" className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest hover:underline opacity-80">{t('common.forgot_password')}</Link>
                                             </div>
                                             <div className="relative">
                                                 <Input
                                                     id="password"
                                                     type="password"
                                                     {...register('password')}
-                                                    className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-14 font-bold shadow-sm focus-visible:ring-blue-500/30 pl-12"
+                                                    className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-14 font-bold shadow-sm focus-visible:ring-emerald-500/30 pl-12"
                                                 />
                                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/40" />
                                             </div>
@@ -157,7 +157,7 @@ export default function LoginPage() {
                                             <p className="text-xs font-bold text-red-500 leading-tight">{error}</p>
                                         </div>
                                     )}
-                                    <Button type="submit" className="w-full h-14 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-lg shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all group" disabled={loading}>
+                                    <Button type="submit" className="w-full h-14 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-lg shadow-xl shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all group" disabled={loading}>
                                         {loading ? <InlineLogoLoader size="sm" /> : (
                                             <>
                                                 {t('common.sign_in')}
@@ -169,7 +169,7 @@ export default function LoginPage() {
                             </CardContent>
                             <CardFooter className="flex justify-center p-8 bg-blue-600/5 dark:bg-white/5 border-t border-white/10 dark:border-white/5">
                                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
-                                    {t('auth.new_to_ecosystem')} <Link href="/register" className="text-blue-600 dark:text-banana hover:underline">{t('auth.create_id')}</Link>
+                                    {t('auth.new_to_ecosystem')} <Link href="/register" className="text-emerald-600 dark:text-emerald-400 hover:underline">{t('auth.create_id')}</Link>
                                 </p>
                             </CardFooter>
                         </GlassCard>

@@ -135,7 +135,7 @@ import { EmptyState } from '@/components/ui/empty-state'
   title="No Contributions Yet"
   description="Start contributing to build your financial portfolio."
   action={
-    <Link href="/contributions/new">
+    <Link href="/vault">
       <Button>Make First Contribution</Button>
     </Link>
   }

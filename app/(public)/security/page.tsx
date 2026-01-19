@@ -22,20 +22,20 @@ export default function SecurityPage() {
             icon: Eye,
             title: t('security_page.privacy_title'),
             desc: t('security_page.privacy_desc'),
-            color: "text-blue-500",
-            bg: "bg-blue-500/10"
+            color: "text-teal-500",
+            bg: "bg-teal-500/10"
         },
         {
             icon: Server,
             title: t('security_page.infra_title'),
             desc: t('security_page.infra_desc'),
-            color: "text-indigo-500",
-            bg: "bg-indigo-500/10"
+            color: "text-green-500",
+            bg: "bg-green-500/10"
         }
     ]
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 selection:bg-blue-500/30 font-sans">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 selection:bg-emerald-500/30 font-sans">
             <MarketingHeader />
 
             <main className="container mx-auto px-6 py-24">
@@ -45,7 +45,7 @@ export default function SecurityPage() {
                     animate="animate"
                     className="flex flex-col items-center text-center space-y-8 max-w-4xl mx-auto mb-32"
                 >
-                    <motion.div variants={fadeUp} className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center shadow-lg shadow-blue-600/20 mb-4">
+                    <motion.div variants={fadeUp} className="w-20 h-20 bg-emerald-600 rounded-3xl flex items-center justify-center shadow-lg shadow-emerald-500/20 mb-4">
                         <Shield className="w-10 h-10 text-white" />
                     </motion.div>
                     <motion.h1 variants={fadeUp} className="text-5xl md:text-7xl font-black text-slate-900 dark:text-white tracking-tighter">
@@ -64,7 +64,7 @@ export default function SecurityPage() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.1 }}
-                            className="p-8 rounded-3xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-blue-500/50 transition-colors group"
+                            className="p-8 rounded-3xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-emerald-500/50 transition-colors group"
                         >
                             <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 ${item.bg} ${item.color}`}>
                                 <item.icon className="w-7 h-7" />
@@ -85,13 +85,13 @@ export default function SecurityPage() {
                         <Database className="absolute -bottom-10 -right-10 w-64 h-64 text-white/5" />
                     </div>
 
-                    <div className="bg-blue-600 rounded-3xl p-8 flex flex-col justify-between text-white relative overflow-hidden group">
+                    <div className="bg-emerald-600 rounded-3xl p-8 flex flex-col justify-between text-white relative overflow-hidden group">
                         <div className="relative z-10">
                             <Smartphone className="w-10 h-10 mb-4" />
                             <h4 className="text-xl font-black mb-2">Device Auth</h4>
-                            <p className="text-blue-100 text-sm font-bold">Biometric security integration.</p>
+                            <p className="text-emerald-100 text-sm font-bold">Biometric security integration.</p>
                         </div>
-                        <div className="absolute inset-0 bg-gradient-to-tr from-blue-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="absolute inset-0 bg-gradient-to-tr from-emerald-600 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
 
                     <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 flex flex-col justify-center items-center text-center border border-slate-200 dark:border-white/10">

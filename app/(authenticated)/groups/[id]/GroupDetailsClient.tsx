@@ -13,15 +13,15 @@ import {
     Shield,
     DollarSign,
     Share2,
-    Info
+    Info,
+    CheckCircle2,
+    Lock
 } from 'lucide-react'
 import Link from 'next/link'
 import { formatCurrency } from '@/lib/utils'
 import GroupDetailsContainer from './GroupDetailsContainer'
-import { PageHeader } from '@/components/layout/PageHeader'
 import { motion } from 'framer-motion'
 import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
-import { useLanguage } from '@/components/providers/LanguageProvider'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { QRCodeShare } from '@/components/sharing/QRCodeShare'
 import {
@@ -48,7 +48,6 @@ export default function GroupDetailsClient({
     isTreasurer,
     currentUserMember
 }: GroupDetailsClientProps) {
-    const { t } = useLanguage()
     const [isContributionModalOpen, setIsContributionModalOpen] = useState(false)
 
     return (
@@ -56,61 +55,73 @@ export default function GroupDetailsClient({
             variants={staggerContainer}
             initial="initial"
             animate="animate"
-            className="space-y-8 sm:space-y-10 pb-20"
+            className="space-y-6 sm:space-y-8 pb-20"
         >
             {/* Header Section */}
             <motion.div variants={fadeIn}>
-                <Link href="/groups" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-blue-600 dark:hover:text-banana transition-all duration-300 group mb-4">
-                    <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
-                    {t('common.back') || 'Back'}
+                <Link href="/groups" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-emerald-600 dark:hover:text-banana transition-all duration-300 group mb-6">
+                    <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300 relative z-10" />
+                    Back to Hub
                 </Link>
-                <PageHeader
-                    title={t('groups.details_title') || 'Group Details'}
-                    description={
-                        <span className="flex flex-wrap items-center gap-1.5 opacity-80">
-                            <Shield className="w-4 h-4 text-blue-600 dark:text-banana" />
-                            Group Terminal & Ledger
-                        </span>
-                    }
-                />
+                <div className="hidden md:block mb-8">
+                    <div className="flex items-end justify-between gap-6">
+                        <div>
+                            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter text-main mb-2 text-left break-words">
+                                {group.name}
+                                <span className="text-banana">.</span>
+                            </h1>
+                            <p className="text-xs sm:text-sm md:text-base font-medium text-slate-500 leading-relaxed max-w-xl flex items-center gap-2">
+                                <Shield className="w-4 h-4 text-blue-600 dark:text-banana" />
+                                Group Terminal & Ledger
+                            </p>
+                        </div>
+                        {isAdmin && (
+                            <Link href={`/groups/${group.id}/settings`}>
+                                <Button variant="ghost" className="rounded-xl font-bold text-muted-foreground hover:text-emerald-600 dark:hover:text-banana hover:bg-emerald-500/10 transition-colors">
+                                    <Settings className="w-5 h-5 mr-2" />
+                                    Configure
+                                </Button>
+                            </Link>
+                        )}
+                    </div>
+                </div>
             </motion.div>
 
-            {/* Hero Card - Group Overview */}
+            {/* Main Content Card */}
             <motion.div variants={itemFadeIn}>
-                <div className="zen-card overflow-hidden">
-                    {/* Top Identity Section */}
-                    <div className="p-6 sm:p-8 bg-gradient-to-b from-white/40 to-white/10 dark:from-slate-900/40 dark:to-slate-900/10 border-b border-white/10">
-                        <div className="flex flex-col xl:flex-row justify-between items-start gap-6">
+                <GlassCard className="p-0 overflow-hidden" hover={false}>
+                    {/* Hero Identity Section */}
+                    <div className="relative border-b border-white/10 dark:border-white/5 p-6 sm:p-8 bg-slate-50/50 dark:bg-white/5">
+                        <div className="flex flex-col xl:flex-row justify-between items-start gap-8">
+
                             {/* Group Info Wrapper */}
-                            <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start min-w-0 w-full xl:w-auto">
-                                {/* Avatar */}
-                                <div className="w-20 h-20 sm:w-28 sm:h-28 shrink-0 rounded-[2rem] bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-banana dark:to-yellow-500 flex items-center justify-center text-white dark:text-blue-950 text-3xl sm:text-4xl font-black shadow-inner">
+                            <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start w-full xl:w-auto">
+                                <div className="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-[2rem] bg-gradient-to-br from-emerald-600 to-teal-700 dark:from-banana dark:to-yellow-500 flex items-center justify-center text-white dark:text-emerald-950 text-3xl sm:text-4xl font-black shadow-inner ring-1 ring-white/10">
                                     {group.name.substring(0, 2).toUpperCase()}
                                 </div>
+                                <div className="space-y-4 pt-1 w-full relative">
+                                    {/* Mobile Header Overlay */}
+                                    <div className="md:hidden flex items-center justify-between absolute -top-1 right-0 w-full sm:w-auto sm:relative sm:top-0">
+                                        {isAdmin && (
+                                            <Link href={`/groups/${group.id}/settings`} className="ml-auto">
+                                                <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full hover:bg-black/5 dark:hover:bg-white/10">
+                                                    <Settings className="w-4 h-4 text-muted-foreground" />
+                                                </Button>
+                                            </Link>
+                                        )}
+                                    </div>
 
-                                {/* Info */}
-                                <div className="space-y-4 pt-1 sm:pt-2 w-full">
                                     <div>
-                                        <div className="flex items-start justify-between gap-4">
-                                            <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-tighter leading-tight mb-2">
-                                                {group.name}
-                                            </h2>
-                                            {/* Mobile Settings Button (Admin Only) - Absolute or top right relative */}
-                                            {isAdmin && (
-                                                <Link href={`/groups/${group.id}/settings`} className="xl:hidden">
-                                                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-black/5 dark:hover:bg-white/10">
-                                                        <Settings className="w-5 h-5 text-muted-foreground" />
-                                                    </Button>
-                                                </Link>
-                                            )}
-                                        </div>
+                                        <h2 className="md:hidden text-2xl font-black text-foreground tracking-tighter mb-2 pr-10">
+                                            {group.name}
+                                        </h2>
                                         <p className="text-sm font-medium text-muted-foreground line-clamp-2 max-w-xl leading-relaxed">
                                             {group.description || 'A community focused savings circle dedicated to mutual growth and financial stability.'}
                                         </p>
                                     </div>
 
                                     <div className="flex flex-wrap gap-2">
-                                        <Badge variant="outline" className="rounded-lg border-blue-500/20 text-blue-600 dark:text-banana bg-blue-500/5 dark:bg-banana/5 font-black text-[10px] uppercase tracking-wider px-2.5 py-1 flex items-center gap-1.5">
+                                        <Badge variant="outline" className="rounded-lg border-emerald-500/20 text-emerald-600 dark:text-banana bg-emerald-500/5 dark:bg-banana/5 font-black text-[10px] uppercase tracking-wider px-2.5 py-1 flex items-center gap-1.5">
                                             <MapPin className="w-3 h-3" />
                                             {group.region}
                                         </Badge>
@@ -119,44 +130,32 @@ export default function GroupDetailsClient({
                                             Cycle {new Date().getFullYear()}
                                         </Badge>
                                         <Badge variant="outline" className="rounded-lg border-purple-500/20 text-purple-600 dark:text-purple-400 bg-purple-500/5 dark:bg-purple-950/20 font-black text-[10px] uppercase tracking-wider px-2.5 py-1 flex items-center gap-1.5">
-                                            <Shield className="w-3 h-3" />
+                                            <CheckCircle2 className="w-3 h-3" />
                                             Verified
                                         </Badge>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Actions */}
-                            <div className="flex flex-col gap-3 w-full xl:w-auto mt-2 xl:mt-0">
-                                {/* Desktop Settings (Admin Only) */}
-                                {isAdmin && (
-                                    <div className="hidden xl:flex justify-end mb-2">
-                                        <Link href={`/groups/${group.id}/settings`}>
-                                            <Button variant="ghost" size="sm" className="rounded-xl text-muted-foreground hover:text-foreground">
-                                                <Settings className="w-4 h-4 mr-2" />
-                                                Settings
-                                            </Button>
-                                        </Link>
-                                    </div>
-                                )}
-
-                                <div className="grid grid-cols-2 gap-3 w-full xl:w-auto">
+                            {/* Actions Toolbar */}
+                            <div className="flex flex-col gap-3 w-full xl:w-auto mt-2 xl:mt-0 xl:min-w-[300px]">
+                                <div className="grid grid-cols-2 gap-3">
                                     {isAdmin && (
                                         <Dialog>
                                             <DialogTrigger asChild>
-                                                <Button variant="outline" className="h-11 rounded-xl px-4 sm:px-6 border-zinc-200 dark:border-white/10 hover:bg-zinc-100 dark:hover:bg-white/10 font-bold text-xs gap-2">
-                                                    <Share2 className="w-4 h-4" />
+                                                <Button variant="outline" className="h-12 rounded-xl px-4 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 font-bold text-xs gap-2 group">
+                                                    <Share2 className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                                                     <span className="truncate">Invite</span>
                                                 </Button>
                                             </DialogTrigger>
                                             <DialogContent
-                                                overlayClassName="bg-black/10 backdrop-blur-xs"
+                                                overlayClassName="bg-black/10 backdrop-blur-sm"
                                                 className="sm:max-w-md border-none bg-transparent p-0 shadow-none max-h-[85vh] overflow-y-auto no-scrollbar"
                                             >
                                                 <DialogTitle className="sr-only">Share Group Access Card</DialogTitle>
-                                                <div className="zen-card p-8">
+                                                <GlassCard className="p-8" hover={false}>
                                                     <QRCodeShare groupId={group.id} groupName={group.name} />
-                                                </div>
+                                                </GlassCard>
                                             </DialogContent>
                                         </Dialog>
                                     )}
@@ -166,58 +165,74 @@ export default function GroupDetailsClient({
                                     )}
 
                                     <div className={isAdmin || (!isTreasurer) ? "col-span-2" : ""}>
-                                        <Button
-                                            onClick={() => setIsContributionModalOpen(true)}
-                                            variant="primary"
-                                            className="w-full h-11 rounded-xl px-4 sm:px-8 font-black text-xs gap-2 shadow-lg shadow-blue-500/20 active:scale-95 transition-all bg-blue-600 hover:bg-blue-500 text-white"
-                                        >
-                                            <DollarSign className="w-4 h-4" />
-                                            <span className="truncate">Contribute</span>
-                                        </Button>
+                                        <div className="relative group rounded-xl bg-gradient-to-b from-emerald-500 to-emerald-600 p-[1px] shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 transition-shadow">
+                                            <Button
+                                                onClick={() => setIsContributionModalOpen(true)}
+                                                className="relative w-full h-12 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs gap-2 overflow-hidden border-0"
+                                            >
+                                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out" />
+                                                <DollarSign className="w-4 h-4 relative z-10" />
+                                                <span className="truncate relative z-10">Make Contribution</span>
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Stats Grid - Cleaner Layout matching Dashboard */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 md:p-6 bg-white/5 dark:bg-black/5">
-                        <div className="p-4 rounded-2xl bg-zinc-50/50 dark:bg-white/5 border border-zinc-100 dark:border-white/5 flex flex-col justify-between group hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors">
+                    {/* Stats Grid - Pulse Style */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 md:p-6 lg:p-8 bg-slate-50/20 dark:bg-black/20">
+                        <div className="p-5 rounded-2xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/5 hover:border-emerald-500/20 transition-colors group">
                             <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground opacity-70 mb-2 flex items-center gap-1.5">
                                 <DollarSign className="w-3 h-3" />
-                                Share
+                                Monthly Share
                             </p>
-                            <p className="text-lg sm:text-2xl font-black text-foreground tracking-tight">{formatCurrency(group.monthlyContribution)}</p>
+                            <p className="text-xl sm:text-2xl font-black text-foreground tracking-tight group-hover:scale-105 transition-transform origin-left">
+                                {formatCurrency(group.monthlyContribution)}
+                            </p>
                         </div>
 
-                        <div className="p-4 rounded-2xl bg-zinc-50/50 dark:bg-white/5 border border-zinc-100 dark:border-white/5 flex flex-col justify-between group hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors">
+                        <div className="p-5 rounded-2xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/5 hover:border-emerald-500/20 transition-colors group">
                             <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground opacity-70 mb-2 flex items-center gap-1.5">
                                 <TrendingUp className="w-3 h-3" />
                                 Interest
                             </p>
-                            <p className="text-lg sm:text-2xl font-black text-blue-600 dark:text-banana tracking-tight">{group.interestRate}%</p>
+                            <p className="text-xl sm:text-2xl font-black text-blue-600 dark:text-banana tracking-tight group-hover:scale-105 transition-transform origin-left">
+                                {group.interestRate}%
+                            </p>
                         </div>
 
-                        <div className="p-4 rounded-2xl bg-zinc-50/50 dark:bg-white/5 border border-zinc-100 dark:border-white/5 flex flex-col justify-between group hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors">
+                        <div className="p-5 rounded-2xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/5 hover:border-emerald-500/20 transition-colors group">
                             <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground opacity-70 mb-2 flex items-center gap-1.5">
                                 <Users className="w-3 h-3" />
-                                Nodes
+                                Members
                             </p>
-                            <p className="text-lg sm:text-2xl font-black text-foreground tracking-tight">{group._count.members}</p>
+                            <p className="text-xl sm:text-2xl font-black text-foreground tracking-tight group-hover:scale-105 transition-transform origin-left">
+                                {group._count.members}
+                            </p>
                         </div>
 
-                        <div className="p-4 rounded-2xl bg-zinc-50/50 dark:bg-white/5 border border-zinc-100 dark:border-white/5 flex flex-col justify-between group hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors">
+                        <div className="p-5 rounded-2xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/5 hover:border-green-500/20 transition-colors group">
                             <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground opacity-70 mb-2 flex items-center gap-1.5">
-                                <Shield className="w-3 h-3 text-emerald-500" />
+                                <CheckCircle2 className="w-3 h-3 text-emerald-500" />
                                 Status
                             </p>
-                            <p className="text-lg sm:text-2xl font-black text-emerald-500 tracking-tight">Healthy</p>
+                            <div className="flex items-center gap-2">
+                                <span className="relative flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                </span>
+                                <p className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight group-hover:scale-105 transition-transform origin-left">
+                                    Active
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </GlassCard>
             </motion.div>
 
-            {/* Main Content Areas (Tabs) */}
+            {/* Tabs Content */}
             <motion.div variants={itemFadeIn}>
                 <GroupDetailsContainer
                     group={group}
@@ -227,6 +242,7 @@ export default function GroupDetailsClient({
                     currentUserMember={currentUserMember}
                 />
             </motion.div>
+
             <ContributionModal
                 isOpen={isContributionModalOpen}
                 onClose={() => setIsContributionModalOpen(false)}

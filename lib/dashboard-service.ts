@@ -108,7 +108,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
         totalContributions,
         totalLoans: activeLoans,
         pendingLoans,
-        monthlyContribution: monthlyContribution?.amount || 0,
+        monthlyContribution: monthlyContribution ? Number(monthlyContribution.amount) : 0,
         loanRepaymentProgress: repaymentProgress,
     }
 }
@@ -400,25 +400,34 @@ export async function getPendingApprovals() {
     })
 
     // Enrich with member balance and penalties
-    const enrichedPending = await Promise.all(pendingContributions.map(async (contribution) => {
-        const member = await prisma.groupMember.findUnique({
-            where: {
-                groupId_userId: {
-                    groupId: contribution.groupId,
-                    userId: contribution.userId
-                }
-            },
-            select: {
-                balance: true,
-                unpaidPenalties: true
-            }
-        })
+    // Optimization: Fetch all needed group members in one query instead of N+1
+    const memberKeys = pendingContributions.map(c => ({
+        groupId: c.groupId,
+        userId: c.userId
+    }));
 
+    const members = await prisma.groupMember.findMany({
+        where: {
+            OR: memberKeys.map(key => ({
+                groupId: key.groupId,
+                userId: key.userId
+            }))
+        },
+        select: {
+            groupId: true,
+            userId: true,
+            balance: true,
+            unpaidPenalties: true
+        }
+    });
+
+    const enrichedPending = pendingContributions.map(contribution => {
+        const member = members.find(m => m.groupId === contribution.groupId && m.userId === contribution.userId);
         return {
             ...contribution,
             member: member || { balance: 0, unpaidPenalties: 0 }
-        }
-    }))
+        };
+    });
 
     return enrichedPending
 }

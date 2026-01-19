@@ -6,7 +6,6 @@ import { motion } from 'framer-motion'
 import { staggerContainer } from '@/lib/motions'
 import { SecurityVerificationModal } from './SecurityVerificationModal'
 import { DashboardHero } from '@/components/dashboard/DashboardHero'
-import { FinancialOverview } from '@/components/dashboard/FinancialOverview'
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed'
 import { QuickActions } from '@/components/dashboard/QuickActions'
 
@@ -15,26 +14,25 @@ interface DashboardContentProps {
     stats: any
     recentActivity: any[]
     pendingApprovals: any[]
-    charts: React.ReactNode
 }
 
 
+
+import { DashboardWidgets } from '@/components/dashboard/DashboardWidgets'
+import { NextSteps } from '@/components/dashboard/NextSteps'
 
 export function DashboardContent({
     user,
     stats,
     recentActivity,
-    pendingApprovals,
-    charts
+    pendingApprovals
 }: DashboardContentProps) {
 
     // Secure View State
     const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false)
 
     const handleVerificationSuccess = () => {
-        // Logic to show sensitive data if we move it to a global context or pass down
-        // For now, the eye toggle inside DashboardHero manages its own local state for standard obscuring.
-        // If we want a global "Auth required to see balances" we would pass a prop.
+        // Logic
     }
 
     return (
@@ -42,31 +40,34 @@ export function DashboardContent({
             variants={staggerContainer}
             initial="initial"
             animate="animate"
-            className="space-y-6 sm:space-y-8 pb-10"
+            className="space-y-8 sm:space-y-12 pb-20"
         >
-
-            {/* Zen Hero Card - Dashboard Command Center */}
+            {/* 1. Hero / Metrics (Full Width) */}
             <DashboardHero
+                key="dashboard-hero"
                 user={user}
                 stats={stats}
                 pendingApprovalsCount={pendingApprovals.length}
                 recentActivityCount={recentActivity.length}
             />
 
-            {/* Main Content Area - Sequential Layout */}
-            <div className="space-y-6 sm:space-y-8">
+            {/* Quick Actions (Repositioned between Hero and Content) */}
+            <QuickActions key="dashboard-quick-actions" pendingApprovals={pendingApprovals} user={user} />
 
-                {/* 1. Performance (Growth & Analytics) */}
-                <FinancialOverview />
-                {charts}
+            {/* 2. Command Center: Insights + Widgets (Left) aligned with Activity Sidebar (Right) */}
+            <div key="dashboard-command-center" className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                {/* Left: Interactive Tools & Insights */}
+                <div className="lg:col-span-2 space-y-12">
+                    <NextSteps key="dashboard-next-steps" user={user} stats={stats} />
+                    <DashboardWidgets key="dashboard-widgets" stats={stats} />
+                </div>
 
-                {/* 2. Live Feed (Recent Activity) */}
-                <ActivityFeed recentActivity={recentActivity} />
-
-                {/* 3. Workspace (Quick Actions) */}
-                <QuickActions pendingApprovals={pendingApprovals} user={user} />
-
+                {/* Right: Unified Sidebar (Recent Activity) */}
+                <div className="space-y-8">
+                    <ActivityFeed recentActivity={recentActivity} />
+                </div>
             </div>
+
             {/* Password Verification Dialog */}
             <SecurityVerificationModal
                 open={isVerificationModalOpen}

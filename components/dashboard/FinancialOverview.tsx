@@ -2,40 +2,30 @@
 
 import { motion } from 'framer-motion'
 import { TrendingUp, ArrowUpRight } from 'lucide-react'
-import { GlassCard } from '@/components/ui/GlassCard'
 import Link from 'next/link'
-import { useLanguage } from '@/components/providers/LanguageProvider'
 import { itemFadeIn } from '@/lib/motions'
 
-export function FinancialOverview() {
-    const { t } = useLanguage()
+import { GlassCard } from '@/components/ui/GlassCard'
 
+export function FinancialOverview() {
     return (
         <motion.div variants={itemFadeIn}>
-            <Link href="/analytics" className="group">
-                <GlassCard
-                    className="relative overflow-hidden p-6 flex items-center justify-between group-hover:bg-blue-500/5 dark:group-hover:bg-banana/5 transition-colors duration-500"
-                    hover={true}
-                >
-                    {/* Background Decorative Elements */}
-                    <div className="absolute -right-10 -top-10 w-40 h-40 bg-blue-500/10 dark:bg-banana/10 rounded-full blur-3xl group-hover:bg-blue-500/20 dark:group-hover:bg-banana/20 transition-all duration-500" />
-
-                    <div className="flex items-center gap-5 relative z-10">
-                        <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-banana group-hover:scale-110 transition-transform duration-300">
-                            <TrendingUp className="w-6 h-6" />
+            <Link href="/analytics" className="group block">
+                <GlassCard className="p-7 rounded-[2rem] border-white/20 shadow-xl shadow-emerald-900/5 transition-all group-hover:shadow-2xl group-hover:shadow-emerald-900/10" blur="xl">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-5">
+                            <div className="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950 flex items-center justify-center text-emerald-600 shadow-sm transition-transform group-hover:scale-110 group-hover:rotate-3 duration-500">
+                                <TrendingUp className="w-7 h-7" />
+                            </div>
+                            <div>
+                                <h3 className="text-base font-black text-[#1B4332] dark:text-emerald-50">Growth & Analytics</h3>
+                                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Performance Intelligence</p>
+                            </div>
                         </div>
-                        <div>
-                            <h3 className="text-lg font-black text-foreground tracking-tight flex items-center gap-2">
-                                Growth & Analytics
-                                <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300" />
-                            </h3>
-                            <p className="text-sm font-medium text-muted-foreground group-hover:text-blue-600 dark:group-hover:text-banana transition-colors">
-                                View detailed financial reports and projections
-                            </p>
+                        <div className="p-2.5 rounded-full bg-slate-50 dark:bg-white/5 text-slate-300 group-hover:bg-emerald-500 group-hover:text-white transition-all transform group-hover:rotate-45">
+                            <ArrowUpRight className="w-5 h-5" />
                         </div>
                     </div>
-
-
                 </GlassCard>
             </Link>
         </motion.div>

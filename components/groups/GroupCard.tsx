@@ -39,124 +39,92 @@ export function GroupCard({ membership }: GroupCardProps) {
 
     return (
         <GlassCard
-            className="flex flex-col h-full overflow-hidden group border-white/20 dark:border-white/10"
+            className="flex flex-col h-full overflow-hidden group border-white/20 dark:border-white/10 p-0 min-h-[300px]"
             hover={true}
+            gradient={false}
+            blur="xl"
         >
-            {/* Main Overlay Link - Resolves Nested Link Hydration Error */}
+            {/* Main Overlay Link */}
             <Link
                 href={`/groups/${membership.groupId}`}
                 className="absolute inset-0 z-0 focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded-[inherit]"
                 aria-label={`View ${group.name}`}
             />
 
-            {/* Content Container - pointer-events-none so clicks fall through to the main link */}
-            <div className="relative z-10 flex flex-col h-full pointer-events-none">
-                {/* Top Branding & Header */}
-                <div className="relative p-5 sm:p-6 flex-1">
-                    {/* Simplified Glow */}
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-blue-600/5 dark:bg-blue-500/5 rounded-full blur-2xl -mr-12 -mt-12" />
-
-                    <div className="flex items-start justify-between relative z-10">
-                        <div className="flex items-center gap-4">
-                            <div className="relative">
-                                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-all duration-500">
-                                    <span className="font-black text-white text-base tracking-tighter">
-                                        {group.name.substring(0, 1).toUpperCase()}
-                                    </span>
-                                </div>
-                                {membership.status === 'ACTIVE' && (
-                                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-4 border-white dark:border-slate-900 flex items-center justify-center">
-                                        <div className="w-1.5 h-1.5 bg-white rounded-full" />
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="min-w-0">
-                                <h3 className="font-black text-lg text-foreground leading-tight group-hover:text-blue-600 dark:group-hover:text-banana transition-colors truncate pr-2">
-                                    {group.name}
-                                </h3>
-                                <div className="flex items-center gap-3 mt-1.5">
-                                    <p className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] flex items-center gap-1">
-                                        <Shield className="w-3 h-3" />
-                                        {membership.role}
-                                    </p>
-                                    <span className="text-border/60">|</span>
-                                    <p className="text-[10px] font-bold text-muted-foreground flex items-center gap-1">
-                                        <Users className="w-3 h-3" />
-                                        {group._count?.members || 0} Members
-                                    </p>
-                                </div>
+            {/* Content Container */}
+            <div className="relative z-10 flex flex-col h-full pointer-events-none p-6 sm:p-8">
+                {/* Header */}
+                <div className="flex items-start justify-between mb-6">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center shrink-0 border border-blue-500/10 group-hover:scale-105 transition-transform duration-300">
+                            <span className="font-black text-blue-600 dark:text-banana text-lg">
+                                {group.name.substring(0, 1).toUpperCase()}
+                            </span>
+                        </div>
+                        <div className="min-w-0">
+                            <h3 className="font-black text-lg sm:text-xl text-foreground leading-none group-hover:text-blue-600 dark:group-hover:text-banana transition-colors truncate mb-2">
+                                {group.name}
+                            </h3>
+                            <div className="flex items-center gap-2">
+                                <Badge variant="outline" className="border-blue-500/20 text-blue-600 dark:text-blue-400 bg-blue-500/5 text-[9px] uppercase tracking-widest px-2 h-5">
+                                    {membership.role}
+                                </Badge>
+                                <span className="text-[10px] font-bold text-muted-foreground flex items-center gap-1">
+                                    <Users className="w-3 h-3" />
+                                    {group._count?.members || 0}
+                                </span>
                             </div>
                         </div>
-
-                        {membership.role === 'ADMIN' && (
-                            /* Pointer Events Auto to enable clicking this nested button */
-                            <div className="pointer-events-auto relative z-20">
-                                <Link href={`/groups/${membership.groupId}/settings`}>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground/50 hover:text-blue-600 hover:bg-blue-500/10 transition-all">
-                                        <Settings className="w-4 h-4" />
-                                    </Button>
-                                </Link>
-                            </div>
-                        )}
                     </div>
 
-                    {/* Key Metric Highlight - Replaces Bento Grid */}
-                    <div className="mt-6 flex items-end justify-between border-t border-dashed border-border/50 pt-4">
+                    {membership.role === 'ADMIN' && (
+                        <div className="pointer-events-auto relative z-20">
+                            <Link href={`/groups/${membership.groupId}/settings`}>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground/50 hover:text-blue-600 hover:bg-blue-500/10 transition-all">
+                                    <Settings className="w-4 h-4" />
+                                </Button>
+                            </Link>
+                        </div>
+                    )}
+                </div>
+
+                {/* Metrics */}
+                <div className="flex-1 space-y-5">
+                    <div className="flex items-end justify-between p-5 rounded-2xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/5">
                         <div>
-                            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-1">
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 mb-2">
                                 {t('dashboard.monthly_contribution')}
                             </p>
-                            <p className="text-lg font-black text-foreground">
+                            <p className="text-2xl sm:text-3xl font-black text-foreground">
                                 {formatCurrency(group.monthlyContribution)}
                             </p>
                         </div>
-                        <div className="text-right">
-                            <span className={cn(
-                                "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wide",
-                                membership.status === 'ACTIVE'
-                                    ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
-                                    : "bg-yellow-500/10 text-yellow-600 border border-yellow-500/20"
-                            )}>
-                                <Activity className="w-3 h-3" />
-                                {membership.status}
-                            </span>
+                        <div className={cn(
+                            "flex items-center justify-center w-10 h-10 rounded-full",
+                            membership.status === 'ACTIVE' ? "bg-emerald-500/10 text-emerald-600" : "bg-yellow-500/10 text-yellow-600"
+                        )}>
+                            <Activity className="w-5 h-5" />
                         </div>
                     </div>
 
-                    <div className="mt-4 flex items-center justify-between border-t border-dashed border-border/50 pt-4">
-                        <div className="flex items-center gap-3">
-                            <div className="relative">
-                                <ProgressRing
-                                    radius={18}
-                                    stroke={3}
-                                    progress={65}
-                                    trackClassName="stroke-slate-200 dark:stroke-slate-800"
-                                    indicatorClassName="stroke-indigo-500"
-                                />
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <span className="text-[8px] font-black text-indigo-500">65%</span>
-                                </div>
-                            </div>
-                            <div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">
-                                    {t('groups.cycle_progress') || 'Cycle Progress'}
-                                </p>
-                                <p className="text-xs font-bold text-foreground">
-                                    12 Days Left
-                                </p>
-                            </div>
+                    <div className="flex items-center gap-4 p-3 rounded-xl bg-white/20 dark:bg-white/5">
+                        <div className="relative shrink-0">
+                            <ProgressRing
+                                radius={18}
+                                stroke={3}
+                                progress={65}
+                                trackClassName="stroke-slate-200 dark:stroke-slate-800"
+                                indicatorClassName="stroke-blue-500 dark:stroke-banana"
+                            />
                         </div>
-                    </div>
-                </div>
-
-                {/* Streamlined Footer */}
-                <div className="px-5 py-3 bg-white/5 border-t border-white/5 flex items-center justify-between group-hover:bg-blue-500/5 transition-colors">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                        Tap to view details
-                    </span>
-                    <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all transform group-hover:translate-x-1">
-                        <ChevronRight className="w-4 h-4" />
+                        <div>
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-1">
+                                {t('groups.cycle_status')}
+                            </p>
+                            <p className="text-sm font-black text-foreground">
+                                65% {t('groups.cycle_complete')}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

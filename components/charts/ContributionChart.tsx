@@ -77,44 +77,44 @@ interface ContributionChartProps extends ChartBaseProps {
   data: ContributionData[]
 }
 
-export function ContributionChart({ data, title = "Monthly Contributions", description = "Your contribution history over time" }: ContributionChartProps) {
+const ANALYTICS_COLORS = ['#D8F3DC', '#95D5B2', '#74C69D', '#52B788', '#40916C', '#2D6A4F', '#1B4332']
+
+export function ContributionChart({ data, title = "Project Analytics", description = "" }: ContributionChartProps) {
   return (
-    <motion.div variants={fadeIn} className="h-full">
+    <motion.div variants={fadeIn} className="h-full bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
       <div className="flex flex-col h-full">
-        <div className="mb-4 pl-1">
-          <h3 className="text-lg font-black text-foreground tracking-tight">{title}</h3>
-          <p className="text-xs font-medium text-muted-foreground">{description}</p>
+        <div className="flex justify-between items-center mb-8">
+          <h3 className="text-sm font-bold text-[#1B4332] tracking-tight">{title}</h3>
+          <div className="bg-[#F8FAFC] px-2 py-1 rounded-md border border-slate-100 flex items-center gap-1">
+            <span className="text-[10px] font-bold text-emerald-500">74%</span>
+            <TrendingUp className="w-3 h-3 text-emerald-500" />
+          </div>
         </div>
-        <div className="flex-1 w-full min-h-[300px]">
+        <div className="flex-1 w-full min-h-[180px]">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={THEME_COLORS.grid} />
-              <XAxis
-                dataKey="month"
-                stroke={THEME_COLORS.text}
-                fontSize={10}
-                tickLine={false}
-                axisLine={false}
-                fontFamily="inherit"
-                fontWeight={700}
-                dy={10}
-              />
-              <YAxis
-                tickFormatter={(value) => formatCurrency(value, 'MWK', true)}
-                stroke={THEME_COLORS.text}
-                fontSize={10}
-                tickLine={false}
-                axisLine={false}
-                fontFamily="inherit"
-                fontWeight={700}
-              />
-              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
+            <BarChart data={data} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
               <Bar
                 dataKey="amount"
-                fill={THEME_COLORS.primary}
-                radius={[6, 6, 0, 0]}
+                radius={[50, 50, 50, 50]}
                 animationDuration={1500}
                 animationEasing="ease-out"
+                barSize={24}
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`contribution-cell-${entry.month}-${index}`} fill={ANALYTICS_COLORS[index % ANALYTICS_COLORS.length]} />
+                ))}
+              </Bar>
+              <XAxis
+                dataKey="month"
+                stroke="#94a3b8"
+                fontSize={10}
+                tickLine={false}
+                axisLine={false}
+                fontFamily="inherit"
+                fontWeight={600}
+                dy={10}
+                tickFormatter={(val) => val.charAt(0)}
               />
             </BarChart>
           </ResponsiveContainer>

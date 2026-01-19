@@ -24,12 +24,12 @@ export function Footer() {
               {t('footer.desc')}
             </p>
             <div className="flex items-center gap-3">
-              <a href="#" className="p-2 rounded-full bg-muted/50 hover:bg-banana/10 text-muted-foreground hover:text-banana transition-colors">
+              <span className="p-2 rounded-full bg-muted/50 text-muted-foreground/30 cursor-not-allowed" title="Coming Soon">
                 <Github className="w-5 h-5" />
-              </a>
-              <a href="#" className="p-2 rounded-full bg-muted/50 hover:bg-banana/10 text-muted-foreground hover:text-banana transition-colors">
+              </span>
+              <span className="p-2 rounded-full bg-muted/50 text-muted-foreground/30 cursor-not-allowed" title="Coming Soon">
                 <Mail className="w-5 h-5" />
-              </a>
+              </span>
 
               {/* Install App Button */}
               {showInstallPrompt && (
@@ -59,7 +59,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/contributions" className="text-muted-foreground hover:text-banana text-sm font-medium transition-colors">
+                <Link href="/vault" className="text-muted-foreground hover:text-banana text-sm font-medium transition-colors">
                   {t('common.contributions')}
                 </Link>
               </li>

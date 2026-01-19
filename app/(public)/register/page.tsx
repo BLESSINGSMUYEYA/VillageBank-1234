@@ -127,8 +127,8 @@ export default function RegisterPage() {
             <div className="flex flex-col justify-center items-center p-6 py-12 relative bg-slate-50 dark:bg-slate-950 overflow-y-auto">
                 {/* Ambient Background */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                    <div className="absolute top-[5%] right-[5%] w-[40%] h-[40%] bg-blue-600/10 rounded-full blur-[120px] animate-pulse-slow" />
-                    <div className="absolute bottom-[5%] left-[5%] w-[30%] h-[30%] bg-indigo-600/10 rounded-full blur-[100px] animate-pulse-slow delay-1000" />
+                    <div className="absolute top-[5%] right-[5%] w-[40%] h-[40%] bg-emerald-600/10 rounded-full blur-[120px] animate-pulse-slow" />
+                    <div className="absolute bottom-[5%] left-[5%] w-[30%] h-[30%] bg-teal-600/10 rounded-full blur-[100px] animate-pulse-slow delay-1000" />
                 </div>
 
                 <motion.div
@@ -169,7 +169,7 @@ export default function RegisterPage() {
 
                             <motion.div variants={itemFadeIn}>
                                 <GlassCard className="p-0 border-none overflow-hidden shadow-2xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl" hover={false}>
-                                    <div className="h-1.5 bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-600" />
+                                    <div className="h-1.5 bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-600" />
                                     <CardHeader className="p-8 sm:p-10 text-center">
                                         <CardTitle className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{t('register.create_identity')}</CardTitle>
                                         <CardDescription className="text-sm font-bold opacity-70">
@@ -182,7 +182,7 @@ export default function RegisterPage() {
                                                 <div className="space-y-2">
                                                     <Label htmlFor="firstName" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">{t('register.legal_name')}</Label>
                                                     <div className="relative">
-                                                        <Input id="firstName" {...register('firstName')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-blue-500/30 pl-10" placeholder="Ex: John" />
+                                                        <Input id="firstName" {...register('firstName')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-emerald-500/30 pl-10" placeholder="Ex: John" />
                                                         <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
                                                     </div>
                                                     {errors.firstName && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.firstName.message}</p>}
@@ -190,7 +190,7 @@ export default function RegisterPage() {
                                                 <div className="space-y-2">
                                                     <Label htmlFor="lastName" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">{t('register.surname')}</Label>
                                                     <div className="relative">
-                                                        <Input id="lastName" {...register('lastName')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-blue-500/30 pl-10" placeholder="Ex: Doe" />
+                                                        <Input id="lastName" {...register('lastName')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-emerald-500/30 pl-10" placeholder="Ex: Doe" />
                                                         <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
                                                     </div>
                                                     {errors.lastName && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.lastName.message}</p>}
@@ -200,7 +200,7 @@ export default function RegisterPage() {
                                             <div className="space-y-2">
                                                 <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">{t('auth.identity_email')}</Label>
                                                 <div className="relative">
-                                                    <Input id="email" type="email" placeholder="john@example.com" {...register('email')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-blue-500/30 pl-10" />
+                                                    <Input id="email" type="email" placeholder="john@example.com" {...register('email')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-emerald-500/30 pl-10" />
                                                     <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
                                                 </div>
                                                 {errors.email && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.email.message}</p>}
@@ -209,7 +209,7 @@ export default function RegisterPage() {
                                             <div className="space-y-2">
                                                 <Label htmlFor="phone" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">{t('register.phone_protocol')}</Label>
                                                 <div className="relative">
-                                                    <Input id="phone" placeholder="+265..." {...register('phone')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-blue-500/30 pl-10" />
+                                                    <Input id="phone" placeholder="+265..." {...register('phone')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-emerald-500/30 pl-10" />
                                                     <Smartphone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
                                                 </div>
                                                 {errors.phone && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.phone.message}</p>}
@@ -219,7 +219,7 @@ export default function RegisterPage() {
                                                 <div className="space-y-2">
                                                     <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">{t('register.security_code')}</Label>
                                                     <div className="relative">
-                                                        <Input id="password" type="password" {...register('password')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-blue-500/30 pl-10" />
+                                                        <Input id="password" type="password" {...register('password')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-emerald-500/30 pl-10" />
                                                         <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
                                                     </div>
                                                     {errors.password && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.password.message}</p>}
@@ -227,7 +227,7 @@ export default function RegisterPage() {
                                                 <div className="space-y-2">
                                                     <Label htmlFor="confirmPassword" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">{t('register.verification')}</Label>
                                                     <div className="relative">
-                                                        <Input id="confirmPassword" type="password" {...register('confirmPassword')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-blue-500/30 pl-10" />
+                                                        <Input id="confirmPassword" type="password" {...register('confirmPassword')} className="rounded-2xl bg-white/50 dark:bg-slate-950/50 border-slate-200 dark:border-white/5 h-12 font-bold shadow-sm focus-visible:ring-emerald-500/30 pl-10" />
                                                         <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" />
                                                     </div>
                                                     {errors.confirmPassword && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.confirmPassword.message}</p>}
@@ -241,7 +241,7 @@ export default function RegisterPage() {
                                                 </div>
                                             )}
 
-                                            <Button type="submit" className="w-full h-14 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-lg shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all group" disabled={loading}>
+                                            <Button type="submit" className="w-full h-14 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-lg shadow-xl shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all group" disabled={loading}>
                                                 {loading ? <InlineLogoLoader size="sm" /> : (
                                                     <>
                                                         {t('register.deploy_profile')}
@@ -253,7 +253,7 @@ export default function RegisterPage() {
                                     </CardContent>
                                     <CardFooter className="flex justify-center p-8 bg-blue-600/5 dark:bg-white/5 border-t border-white/10 dark:border-white/5">
                                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
-                                            {t('register.existing_node')} <Link href="/login" className="text-blue-600 dark:text-banana hover:underline">{t('register.return_to_access')}</Link>
+                                            {t('register.existing_node')} <Link href="/login" className="text-emerald-600 dark:text-emerald-400 hover:underline">{t('register.return_to_access')}</Link>
                                         </p>
                                     </CardFooter>
                                 </GlassCard>

@@ -37,19 +37,19 @@ export default function HelpPage() {
             <TabsList className="bg-white dark:bg-gray-800 p-1.5 rounded-full border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col sm:flex-row h-auto w-full sm:w-auto">
               <TabsTrigger
                 value="members"
-                className="rounded-full px-4 py-2 sm:px-6 sm:py-2.5 w-full sm:w-auto data-[state=active]:bg-blue-600 data-[state=active]:text-white transition-all"
+                className="rounded-full px-4 py-2 sm:px-6 sm:py-2.5 w-full sm:w-auto data-[state=active]:bg-emerald-600 data-[state=active]:text-white transition-all"
               >
                 {t('help.for_members')}
               </TabsTrigger>
               <TabsTrigger
                 value="treasurers"
-                className="rounded-full px-4 py-2 sm:px-6 sm:py-2.5 w-full sm:w-auto data-[state=active]:bg-purple-600 data-[state=active]:text-white transition-all"
+                className="rounded-full px-4 py-2 sm:px-6 sm:py-2.5 w-full sm:w-auto data-[state=active]:bg-teal-600 data-[state=active]:text-white transition-all"
               >
                 {t('help.for_treasurers')}
               </TabsTrigger>
               <TabsTrigger
                 value="admins"
-                className="rounded-full px-4 py-2 sm:px-6 sm:py-2.5 w-full sm:w-auto data-[state=active]:bg-amber-600 data-[state=active]:text-white transition-all"
+                className="rounded-full px-4 py-2 sm:px-6 sm:py-2.5 w-full sm:w-auto data-[state=active]:bg-green-600 data-[state=active]:text-white transition-all"
               >
                 {t('help.for_admins')}
               </TabsTrigger>
@@ -123,12 +123,12 @@ export default function HelpPage() {
               />
             </div>
 
-            <div className="bg-purple-50 dark:bg-purple-900/20 p-6 rounded-xl border border-purple-100 dark:border-purple-800 mb-6">
-              <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-100 mb-2 flex items-center gap-2">
+            <div className="bg-teal-50 dark:bg-teal-900/20 p-6 rounded-xl border border-teal-100 dark:border-teal-800 mb-6">
+              <h3 className="text-lg font-semibold text-teal-900 dark:text-teal-100 mb-2 flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5" />
                 {t('help.treasurer_section.responsibilities_title')}
               </h3>
-              <p className="text-purple-800 dark:text-purple-200">
+              <p className="text-teal-800 dark:text-teal-200">
                 {t('help.treasurer_section.responsibilities_desc')}
               </p>
             </div>
@@ -169,12 +169,12 @@ export default function HelpPage() {
               />
             </div>
 
-            <div className="bg-amber-50 dark:bg-amber-900/20 p-6 rounded-xl border border-amber-100 dark:border-amber-800 mb-6">
-              <h3 className="text-lg font-semibold text-amber-900 dark:text-amber-100 mb-2 flex items-center gap-2">
+            <div className="bg-green-50 dark:bg-green-900/20 p-6 rounded-xl border border-green-100 dark:border-green-800 mb-6">
+              <h3 className="text-lg font-semibold text-green-900 dark:text-green-100 mb-2 flex items-center gap-2">
                 <UserCog className="w-5 h-5" />
                 {t('help.admin_section.responsibilities_title')}
               </h3>
-              <p className="text-amber-800 dark:text-amber-200">
+              <p className="text-green-800 dark:text-green-200">
                 {t('help.admin_section.responsibilities_desc')}
               </p>
             </div>
@@ -205,7 +205,7 @@ export default function HelpPage() {
           </TabsContent>
         </Tabs>
 
-        <div className="mt-12 bg-blue-50 dark:bg-blue-900/10 rounded-2xl p-8 text-center">
+        <div className="mt-12 bg-emerald-50 dark:bg-emerald-900/10 rounded-2xl p-8 text-center">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{t('help.need_help_title')}</h2>
           <p className="text-gray-600 dark:text-gray-300 mb-6">
             {t('help.need_help_desc')}
@@ -213,11 +213,11 @@ export default function HelpPage() {
           <div className="inline-flex flex-col sm:flex-row gap-4 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm w-full sm:w-auto">
             <div className="text-left px-4 pb-4 sm:pb-0 sm:border-r border-b sm:border-b-0 border-gray-200 dark:border-gray-700">
               <div className="text-xs text-gray-500 uppercase font-semibold">{t('help.email_support')}</div>
-              <div className="text-blue-600 font-medium break-all">support@villagebanking.com</div>
+              <div className="text-emerald-600 font-medium break-all">support@villagebanking.com</div>
             </div>
             <div className="text-left px-4 pt-2 sm:pt-0">
               <div className="text-xs text-gray-500 uppercase font-semibold">{t('help.call_us')}</div>
-              <div className="text-blue-600 font-medium">+265 123 456 789</div>
+              <div className="text-emerald-600 font-medium">+265 123 456 789</div>
             </div>
           </div>
         </div>

@@ -78,127 +78,93 @@ export function DashboardBannerCarousel() {
                     initial={{ opacity: 0, height: 0, marginBottom: 0 }}
                     animate={{ opacity: 1, height: 'auto', marginBottom: 24 }}
                     exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-                    className="relative w-full overflow-hidden rounded-3xl"
+                    className="relative w-full overflow-hidden rounded-[1.5rem] shadow-xl shadow-emerald-900/5"
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}
                 >
-                    <div className="relative h-[280px] sm:h-[320px] w-full bg-slate-900">
-                        {/* Close Button */}
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setIsVisible(false);
-                            }}
-                            className="absolute top-4 right-4 z-50 p-2 rounded-full bg-black/20 hover:bg-black/40 text-white/70 hover:text-white backdrop-blur-md transition-all"
-                            aria-label="Dismiss banner"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M18 6 6 18" />
-                                <path d="m6 6 12 12" />
-                            </svg>
-                        </button>
+                    <div className="relative h-28 sm:h-36 w-full bg-slate-900 overflow-hidden">
+                        {/* Subtle Background glow based on slide */}
+                        <div className={cn(
+                            "absolute inset-0 opacity-20 blur-3xl transition-colors duration-1000",
+                            currentSlide.accentColor
+                        )} />
 
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={currentSlide.id}
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -20 }}
-                                transition={{ duration: 0.5, ease: "easeInOut" }}
-                                className="absolute inset-0 w-full h-full"
+                                initial={{ opacity: 0, y: 15 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -15 }}
+                                transition={{ duration: 0.5, ease: "easeOut" }}
+                                className="absolute inset-0 w-full h-full flex items-center"
                             >
-                                {/* Background Layer */}
-                                <div className={cn(
-                                    "absolute inset-0 bg-cover bg-center transition-transform duration-[10s] ease-linear",
-                                    isHovered ? "scale-105" : "scale-100"
-                                )}
-                                    style={{
-                                        backgroundImage: `url(${currentSlide.image})`,
-                                        backgroundColor: currentSlide.id === '1'
-                                            ? '#1e3a8a'
-                                            : currentSlide.id === '2'
-                                                ? '#064e3b'
-                                                : '#312e81'
-                                    }}
-                                >
-                                    <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[0px]" />
-                                    {/* Gradient Overlay for Text Readability */}
-                                    <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/60 to-transparent" />
-
-                                    {/* Abstract Shapes for visual interest */}
-                                    <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-[80px] -mr-20 -mt-20 mix-blend-overlay" />
-                                    <div className="absolute bottom-0 left-1/2 w-64 h-64 bg-black/20 rounded-full blur-[60px]" />
-                                </div>
-
-                                {/* Content Layer */}
-                                <div className="relative h-full flex flex-col justify-center px-8 sm:px-12 max-w-2xl">
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.2 }}
-                                        className={cn(
-                                            "inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4 w-fit backdrop-blur-md border border-white/10",
+                                <div className="w-full px-4 sm:px-12 flex items-center justify-between gap-4 sm:gap-8">
+                                    {/* Left: Tag + Title + Desc Row */}
+                                    <div className="flex items-center gap-4 sm:gap-8 min-w-0">
+                                        <div className={cn(
+                                            "hidden xl:flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-white/20 whitespace-nowrap",
                                             currentSlide.accentColor,
                                             "bg-opacity-20 text-white"
-                                        )}
-                                    >
-                                        <span className="relative flex h-2 w-2">
-                                            <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75", currentSlide.accentColor)}></span>
-                                            <span className={cn("relative inline-flex rounded-full h-2 w-2", currentSlide.accentColor)}></span>
-                                        </span>
-                                        <span className="text-[10px] font-black uppercase tracking-widest pl-1">Featured Update</span>
-                                    </motion.div>
+                                        )}>
+                                            <span className="relative flex h-2 w-2">
+                                                <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75", currentSlide.accentColor)}></span>
+                                                <span className={cn("relative inline-flex rounded-full h-2 w-2", currentSlide.accentColor)}></span>
+                                            </span>
+                                            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Featured</span>
+                                        </div>
 
-                                    <motion.h2
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.3 }}
-                                        className="text-3xl sm:text-5xl font-black text-white tracking-tighter mb-4 leading-tight"
-                                    >
-                                        {currentSlide.title}
-                                    </motion.h2>
+                                        <div className="flex flex-col gap-0.5 sm:gap-1 overflow-hidden">
+                                            <h2 className="text-lg sm:text-2xl font-black text-white tracking-tighter leading-tight line-clamp-1 sm:line-clamp-none">
+                                                {currentSlide.title}
+                                            </h2>
+                                            <p className="text-xs sm:text-base text-slate-400 font-medium truncate opacity-60 max-w-[150px] xs:max-w-xs sm:max-w-xl">
+                                                {currentSlide.description}
+                                            </p>
+                                        </div>
+                                    </div>
 
-                                    <motion.p
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.4 }}
-                                        className="text-lg text-slate-300 font-medium mb-8 max-w-md leading-relaxed"
-                                    >
-                                        {currentSlide.description}
-                                    </motion.p>
-
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.5 }}
-                                    >
+                                    {/* Right: CTA + Navigation Shortcut */}
+                                    <div className="flex items-center gap-2 sm:gap-6 shrink-0">
                                         <Link href={currentSlide.ctaLink}>
-                                            <Button className="h-12 px-8 rounded-xl bg-white text-slate-900 font-bold hover:bg-slate-100 hover:scale-105 transition-all shadow-lg shadow-white/10">
-                                                {currentSlide.ctaText}
-                                                <ChevronRight className="w-4 h-4 ml-1" />
+                                            <Button className="h-9 sm:h-12 px-4 sm:px-8 rounded-xl sm:rounded-2xl bg-white text-slate-900 font-black text-[11px] sm:text-sm hover:bg-emerald-50 hover:scale-105 transition-all shadow-xl group/btn">
+                                                <span className="whitespace-nowrap">{currentSlide.ctaText}</span>
+                                                <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-1.5 sm:ml-2 group-hover/btn:translate-x-1 transition-transform" />
                                             </Button>
                                         </Link>
-                                    </motion.div>
+
+                                        {/* Simplified Dots for the Strip */}
+                                        <div className="hidden md:flex gap-1.5 ml-2">
+                                            {banners.map((_, index) => (
+                                                <button
+                                                    key={index}
+                                                    onClick={() => setCurrentIndex(index)}
+                                                    className={cn(
+                                                        "h-1 rounded-full transition-all duration-500",
+                                                        index === currentIndex
+                                                            ? "w-4 bg-white"
+                                                            : "w-1 bg-white/20 hover:bg-white/40"
+                                                    )}
+                                                />
+                                            ))}
+                                        </div>
+
+                                        {/* Dismiss Cross */}
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setIsVisible(false);
+                                            }}
+                                            className="p-1 sm:p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M18 6 6 18" />
+                                                <path d="m6 6 12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
                             </motion.div>
                         </AnimatePresence>
-                    </div>
-
-                    {/* Navigation Dots */}
-                    <div className="absolute bottom-6 right-8 flex gap-2 z-10">
-                        {banners.map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => setCurrentIndex(index)}
-                                className={cn(
-                                    "w-2 h-2 rounded-full transition-all duration-300",
-                                    index === currentIndex
-                                        ? "w-8 bg-white opacity-100"
-                                        : "bg-white/40 hover:bg-white/60"
-                                )}
-                                aria-label={`Go to slide ${index + 1}`}
-                            />
-                        ))}
                     </div>
                 </motion.div>
             )}

@@ -43,129 +43,120 @@ export function MobileNavigation() {
   })
 
   // Define member-specific navigation
-  const memberNavigation = [
+  const navigation = [
     { name: t('common.pulse'), href: '/dashboard', icon: Zap },
     { name: t('common.vault'), href: '/vault', icon: Landmark },
     { name: t('common.groups'), href: '/groups', icon: Users },
     { name: t('common.profile'), href: '/profile', icon: User },
   ]
 
-  const allNavigation = memberNavigation
-
   return (
     <div className="lg:hidden">
       {/* Mobile Header - Zen Mode (Hide on Scroll) */}
       <motion.div
         variants={{
-          visible: { y: 0 },
-          hidden: { y: -100 }
+          visible: { y: 0, opacity: 1 },
+          hidden: { y: -100, opacity: 0 }
         }}
         animate={isHidden ? "hidden" : "visible"}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-        className="fixed top-0 left-0 right-0 z-40 bg-white/60 dark:bg-slate-950/60 backdrop-blur-xl border-b border-white/20 dark:border-white/5 shadow-sm"
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        className="fixed top-0 left-0 right-0 z-40 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl border-b border-white/20 dark:border-white/5 shadow-sm"
       >
-        <div className="flex items-center justify-between p-4 px-4">
+        <div className="flex items-center justify-between p-4 px-5">
           <Link href="/dashboard" className="group">
-            {/* Logo and text as one unified word */}
-            <div className="flex items-end gap-0.5">
-              <div className="flex items-center justify-center group-active:scale-95 transition-transform">
-                <UBankLogo className="w-7 h-7" />
+            <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center p-1.5 rounded-xl bg-[#1B4332] group-active:scale-90 transition-transform shadow-lg shadow-emerald-900/20">
+                <UBankLogo className="w-5 h-5 brightness-200" />
               </div>
-              <h1 className="text-xl font-black bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent leading-none">Bank</h1>
+              <div className="flex flex-col">
+                <h1 className="text-lg font-black text-[#1B4332] dark:text-white leading-none tracking-tighter italic">uBank</h1>
+                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 leading-none">Global</p>
+              </div>
             </div>
-            <p className="text-tab-label text-muted-foreground/60 leading-none mt-1.5 ml-0.5">{t('common.premium_member')}</p>
           </Link>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <LanguageSwitcher />
             {user && <NotificationCenter />}
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-xl hover:bg-white/50 dark:hover:bg-slate-800/50 transition-all p-0">
-                    <Avatar className="h-9 w-9 border border-white/20 dark:border-white/10 rounded-xl">
-                      <AvatarFallback className="font-black text-xs text-blue-900 bg-banana-soft dark:text-banana dark:bg-slate-800">
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-xl hover:bg-white/50 dark:hover:bg-slate-800/50 transition-all p-0 overflow-hidden border border-slate-100 dark:border-white/5">
+                    <Avatar className="h-full w-full rounded-none">
+                      <AvatarFallback className="font-black text-xs text-emerald-900 bg-emerald-50 dark:text-emerald-400 dark:bg-[#1B4332]/20">
                         {user?.firstName?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-64 rounded-2xl p-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-white/20 dark:border-white/10" align="end" forceMount>
-                  <div className="flex flex-col space-y-1 p-3">
-                    <p className="font-black text-sm text-foreground">{user?.firstName} {user?.lastName}</p>
-                    <p className="truncate text-xs text-muted-foreground font-bold opacity-70">
+                <DropdownMenuContent className="w-64 rounded-3xl p-2 bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border-white/20 dark:border-white/10 shadow-2xl" align="end" forceMount>
+                  <div className="flex flex-col space-y-1 p-4">
+                    <p className="font-black text-sm text-[#1B4332] dark:text-white">{user?.firstName} {user?.lastName}</p>
+                    <p className="truncate text-[10px] text-slate-400 font-bold opacity-70">
                       {user?.email}
                     </p>
-                    <div className="mt-2 inline-flex items-center px-2 py-0.5 rounded-md text-tab-label bg-blue-500/10 text-blue-600 dark:bg-banana/10 dark:text-banana w-fit">
+                    <div className="mt-2 inline-flex items-center px-2.5 py-1 rounded-lg text-[9px] font-black uppercase bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 w-fit tracking-wider">
                       {user?.role?.replace('_', ' ')}
                     </div>
                   </div>
-                  <DropdownMenuSeparator className="bg-white/10" />
-                  <DropdownMenuItem asChild className="rounded-xl focus:bg-blue-600 focus:text-white dark:focus:bg-banana dark:focus:text-blue-900">
-                    <Link href="/profile" className="flex items-center p-2 font-bold">
-                      <User className="mr-3 h-4 w-4" />
-                      {t('common.profile')}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="rounded-xl focus:bg-blue-600 focus:text-white dark:focus:bg-banana dark:focus:text-blue-900">
-                    <Link href="/settings" className="flex items-center p-2 font-bold">
-                      <Settings className="mr-3 h-4 w-4" />
-                      {t('common.settings')}
-                    </Link>
-                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-slate-100 dark:bg-white/5 mx-2" />
+                  <div className="p-1 space-y-0.5">
+                    <DropdownMenuItem asChild className="rounded-2xl focus:bg-emerald-50 dark:focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:text-emerald-400 transition-colors">
+                      <Link href="/profile" className="flex items-center p-3 font-bold text-sm text-slate-600 dark:text-slate-300">
+                        <User className="mr-3 h-4 w-4 opacity-70" />
+                        {t('common.profile')}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild className="rounded-2xl focus:bg-emerald-50 dark:focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:text-emerald-400 transition-colors">
+                      <Link href="/settings" className="flex items-center p-3 font-bold text-sm text-slate-600 dark:text-slate-300">
+                        <Settings className="mr-3 h-4 w-4 opacity-70" />
+                        {t('common.settings')}
+                      </Link>
+                    </DropdownMenuItem>
 
-                  {/* Conditional Admin Links */}
-                  {(user?.role === 'REGIONAL_ADMIN' || user?.role === 'SUPER_ADMIN') && (
-                    <>
-                      <DropdownMenuSeparator className="bg-white/10" />
-                      <DropdownMenuItem asChild className="rounded-xl focus:bg-blue-600 focus:text-white dark:focus:bg-banana dark:focus:text-blue-900">
-                        <Link href="/admin/regional" className="flex items-center p-2 font-bold">
-                          <Shield className="mr-3 h-4 w-4" />
+                    {(user?.role === 'REGIONAL_ADMIN' || user?.role === 'SUPER_ADMIN') && (
+                      <DropdownMenuItem asChild className="rounded-2xl focus:bg-emerald-50 dark:focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:text-emerald-400">
+                        <Link href="/admin/regional" className="flex items-center p-3 font-bold text-sm text-slate-600 dark:text-slate-300">
+                          <Shield className="mr-3 h-4 w-4 opacity-70" />
                           {t('admin.regional')}
                         </Link>
                       </DropdownMenuItem>
-                    </>
-                  )}
-                  {user?.role === 'SUPER_ADMIN' && (
-                    <DropdownMenuItem asChild className="rounded-xl focus:bg-blue-600 focus:text-white dark:focus:bg-banana dark:focus:text-blue-900">
-                      <Link href="/admin/system" className="flex items-center p-2 font-bold">
-                        <Settings className="mr-3 h-4 w-4" />
-                        {t('admin.system')}
-                      </Link>
+                    )}
+                  </div>
+                  <DropdownMenuSeparator className="bg-slate-100 dark:bg-white/5 mx-2" />
+                  <div className="p-1">
+                    <DropdownMenuItem asChild className="rounded-2xl focus:bg-red-50 dark:focus:bg-red-500/10 focus:text-red-600">
+                      <button className="w-full text-left flex items-center p-3 font-bold text-sm text-red-500" onClick={() => logout()}>
+                        <LogOut className="mr-3 h-4 w-4" />
+                        {t('common.logout')}
+                      </button>
                     </DropdownMenuItem>
-                  )}
-                  <DropdownMenuSeparator className="bg-white/10" />
-                  <DropdownMenuItem asChild className="rounded-xl focus:bg-red-500 focus:text-white">
-                    <button className="w-full text-left flex items-center p-2 font-bold text-red-500" onClick={() => logout()}>
-                      <LogOut className="mr-3 h-4 w-4" />
-                      {t('common.logout')}
-                    </button>
-                  </DropdownMenuItem>
+                  </div>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <Link href="/login">
-                <Button size="sm" className="font-black rounded-xl bg-blue-600 text-white">{t('common.sign_in')}</Button>
+                <Button size="sm" className="font-black rounded-xl bg-[#1B4332] text-white h-9 px-5 text-xs shadow-lg shadow-emerald-900/20">{t('common.sign_in')}</Button>
               </Link>
             )}
           </div>
         </div>
       </motion.div>
 
-      {/* Spacer for Fixed Header - Dynamic height based on visibility could be jarring, so we keep static space 
-          but technically the content slides under. */}
+      {/* Spacer */}
       <div className="h-16" />
 
-      {/* Mobile Bottom Navigation - Tactile Glass Dock */}
+      {/* Mobile Bottom Navigation - Premium Dock */}
       {user && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden px-4 pb-4 sm:pb-6 pointer-events-none safe-area-bottom">
+        <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden px-6 pb-6 pointer-events-none safe-area-bottom">
           <motion.div
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/40 dark:border-white/10 shadow-lg shadow-slate-200/50 dark:shadow-black/50 rounded-[32px] px-2 py-2 pointer-events-auto mx-auto max-w-sm"
+            initial={{ y: 80, opacity: 0, scale: 0.9 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            transition={{ type: "spring", stiffness: 260, damping: 20 }}
+            className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border border-white/20 dark:border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-[2.5rem] p-1.5 pointer-events-auto mx-auto max-w-sm"
           >
-            <div className="flex items-center justify-around gap-1">
-              {allNavigation.slice(0, 5).map((item) => {
+            <div className="flex items-center justify-around">
+              {navigation.map((item) => {
                 const Icon = item.icon
                 const isActive = pathname === item.href
                 return (
@@ -173,44 +164,48 @@ export function MobileNavigation() {
                     key={item.name}
                     href={item.href}
                     className={cn(
-                      "relative flex flex-col items-center justify-center w-16 h-16 rounded-2xl transition-all duration-300 group",
-                      isActive
-                        ? 'text-blue-600 dark:text-banana'
-                        : 'text-muted-foreground hover:text-foreground'
+                      "relative flex flex-col items-center justify-center flex-1 h-14 rounded-[1.75rem] transition-all duration-500 group",
+                      isActive ? 'text-[#1B4332] dark:text-emerald-400' : 'text-slate-400 hover:text-slate-600'
                     )}
                   >
                     <AnimatePresence>
                       {isActive && (
                         <motion.div
-                          layoutId="mobile-dock-active"
-                          className="absolute top-1 left-1/2 -translate-x-1/2 w-9 h-9 rounded-full border border-blue-500/30 dark:border-banana/30 bg-blue-500/10 dark:bg-banana/10 shadow-[0_0_15px_rgba(59,130,246,0.3)] dark:shadow-[0_0_15px_rgba(255,200,0,0.2)] z-0"
+                          layoutId="mobile-nav-pill"
+                          className="absolute inset-0 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-[1.75rem] z-0"
                           transition={{ type: "spring", stiffness: 300, damping: 30 }}
                         />
                       )}
                     </AnimatePresence>
 
-                    {/* Icon with Press Animation - Increased Size */}
-                    <div className="relative z-10 group-active:scale-75 transition-transform duration-200">
+                    {/* Icon with Hover/Active Animation */}
+                    <div className="relative z-10 flex flex-col items-center group-active:scale-95 transition-transform duration-200">
                       <Icon className={cn(
-                        "w-5 h-5 transition-all duration-300 mb-0.5",
-                        isActive ? 'stroke-[2.5px] drop-shadow-sm' : 'opacity-70 group-hover:opacity-100'
+                        "w-5 h-5 transition-all duration-500",
+                        isActive ? 'stroke-[2.5px] scale-110' : 'stroke-[2px]'
                       )} />
+                      <span className={cn(
+                        "text-[9px] font-black uppercase tracking-widest mt-1.5 transition-all duration-500",
+                        isActive ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
+                      )}>
+                        {item.name}
+                      </span>
                     </div>
 
-                    <span className={cn(
-                      "text-[10px] font-bold capitalize tracking-wide relative z-10 transition-colors duration-300",
-                      isActive ? "text-blue-700 dark:text-banana" : "text-muted-foreground/60"
-                    )}>
-                      {item.name}
-                    </span>
+                    {/* Active Dot */}
+                    {isActive && (
+                      <motion.div
+                        layoutId="nav-dot"
+                        className="absolute -bottom-1 w-1 h-1 rounded-full bg-[#1B4332] dark:bg-emerald-400"
+                      />
+                    )}
                   </Link>
                 )
               })}
             </div>
           </motion.div>
-        </div >
-      )
-      }
-    </div >
+        </div>
+      )}
+    </div>
   )
 }

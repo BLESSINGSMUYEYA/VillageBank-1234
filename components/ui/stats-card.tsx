@@ -77,7 +77,7 @@ export function StatsCard({
                 <CardHeader className="pb-2 p-3.5 sm:p-6 relative z-10">
                     <div className="flex items-center justify-between">
                         <CardTitle className={cn(
-                            "text-[10px] font-black uppercase tracking-[0.2em]",
+                            "text-[10px] font-black uppercase tracking-[0.2em] whitespace-normal break-words leading-tight",
                             variant === 'default' || variant === 'glass'
                                 ? 'text-muted-foreground'
                                 : variant === 'featured'

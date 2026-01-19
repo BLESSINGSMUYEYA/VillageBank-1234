@@ -1,19 +1,18 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from '@/components/ui/dialog'
-import { Check, X, Eye, ArrowLeft, Image as ImageIcon, AlertTriangle, Wallet, History, Maximize2, ZoomIn, ZoomOut, RotateCw } from 'lucide-react'
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import { Check, ArrowLeft, Image as ImageIcon, AlertTriangle, Wallet, History, Maximize2, ZoomIn, ZoomOut, RotateCw, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency, cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useOptimistic, useTransition } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '@/lib/utils'
+import { motion } from 'framer-motion'
 import { GrowthLoader, InlineLogoLoader } from '@/components/ui/LogoLoader'
+import { GlassCard } from '@/components/ui/GlassCard'
+import { PremiumInput } from '@/components/ui/premium-input'
 
 export default function TreasurerApprovalsPage() {
     const [pending, setPending] = useState<any[]>([])
@@ -23,9 +22,6 @@ export default function TreasurerApprovalsPage() {
         (state, idToRemove: string) => state.filter(p => p.id !== idToRemove)
     )
     const [isPending, startTransition] = useTransition()
-
-    // Selection & Bulk
-    const [selectedContributions, setSelectedContributions] = useState<string[]>([])
 
     // Detailed Review Modal State
     const [reviewItem, setReviewItem] = useState<any | null>(null)
@@ -40,7 +36,6 @@ export default function TreasurerApprovalsPage() {
         fetchPending()
     }, [])
 
-    // Reset zoom and rotation when opening a new review item
     useEffect(() => {
         if (reviewItem) {
             setZoomLevel(1)
@@ -58,14 +53,6 @@ export default function TreasurerApprovalsPage() {
             toast.error('Failed to load pending approvals')
         } finally {
             setLoading(false)
-        }
-    }
-
-    const handleSelectContribution = (id: string, checked: boolean) => {
-        if (checked) {
-            setSelectedContributions(prev => [...prev, id])
-        } else {
-            setSelectedContributions(prev => prev.filter(cId => cId !== id))
         }
     }
 
@@ -114,133 +101,129 @@ export default function TreasurerApprovalsPage() {
             <div className="flex items-center justify-center min-h-[400px]">
                 <div className="text-center">
                     <GrowthLoader size="sm" className="mb-4" showText={false} />
-                    <p className="text-muted-foreground animate-pulse">Loading pending approvals...</p>
+                    <p className="text-muted-foreground animate-pulse font-medium">Synced with Vault...</p>
                 </div>
             </div>
         )
     }
 
     return (
-        <div className="space-y-6 max-w-6xl mx-auto px-4 py-8">
-            <Link href="/dashboard" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 group mb-4">
-                <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
-                Back to Dashboard
-            </Link>
-
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div>
-                    <h1 className="text-display font-black text-foreground">Contribution Approvals</h1>
-                    <p className="text-muted-foreground text-body max-w-lg">Review pending member contributions and verify payments before updating group balances.</p>
-                </div>
-                <div className="flex items-center gap-3">
-                    <Badge variant="outline" className="text-sm px-4 py-1.5 rounded-full font-bold bg-muted/30 border-border">
-                        {optimisticPending.length} Remaining
-                    </Badge>
+        <div className="space-y-6 sm:space-y-8 pb-20 max-w-6xl mx-auto">
+            {/* Header */}
+            <div>
+                <Link href="/dashboard" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-emerald-600 dark:hover:text-banana transition-all duration-300 group mb-6">
+                    <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300 relative z-10" />
+                    Back to Hub
+                </Link>
+                <div className="hidden md:block mb-8">
+                    <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter text-main mb-2 text-left break-words">
+                        Approvals
+                        <span className="text-banana">.</span>
+                    </h1>
+                    <p className="text-xs sm:text-sm md:text-base font-medium text-slate-500 leading-relaxed max-w-xl flex items-center gap-2">
+                        <ShieldCheck className="w-4 h-4 text-blue-600 dark:text-banana" />
+                        Financial Clearance & Audit
+                    </p>
                 </div>
             </div>
 
             {optimisticPending.length === 0 ? (
-                <Card className="bg-card border-border shadow-sm border-dashed">
-                    <CardContent className="flex flex-col items-center justify-center py-20 text-center">
-                        <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-6">
-                            <Check className="w-8 h-8 text-green-600 dark:text-green-400" />
-                        </div>
-                        <h3 className="text-2xl font-black text-foreground mb-2">Queue Clear!</h3>
-                        <p className="text-muted-foreground text-body max-w-sm">No pending contributions. Great job keeping up!</p>
-                    </CardContent>
-                </Card>
+                <GlassCard className="flex flex-col items-center justify-center py-20 text-center" hover={false}>
+                    <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mb-6 ring-1 ring-emerald-500/20">
+                        <Check className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                    <h3 className="text-2xl font-black text-foreground mb-2 tracking-tight">All Clear!</h3>
+                    <p className="text-muted-foreground font-medium max-w-sm">No pending contributions requiring verification.</p>
+                </GlassCard>
             ) : (
                 <div className="grid grid-cols-1 gap-4">
                     {optimisticPending.map((item) => (
-                        <Card key={item.id} className="overflow-hidden bg-card border-border shadow-sm hover:shadow-md transition-shadow group">
-                            <CardContent className="p-0">
-                                <div className="flex flex-col sm:flex-row">
-                                    {/* Receipt Teaser */}
-                                    <div className="w-full sm:w-[120px] bg-muted/30 border-r border-border h-[120px] sm:h-auto flex items-center justify-center relative overflow-hidden group-hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => setReviewItem(item)}>
-                                        {item.receiptUrl ? (
-                                            <>
-                                                <img src={item.receiptUrl} alt="Receipt" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
-                                                <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors">
-                                                    <Maximize2 className="w-6 h-6 text-white drop-shadow-md" />
-                                                </div>
-                                                <Badge className="absolute bottom-2 right-2 text-[8px] bg-black/60 pointer-events-none">PROOF</Badge>
-                                            </>
-                                        ) : (
-                                            <div className="text-center p-2 opacity-50">
-                                                <ImageIcon className="w-8 h-8 mx-auto mb-1 text-muted-foreground" />
-                                                <span className="text-[9px] font-bold uppercase text-muted-foreground">No Image</span>
+                        <GlassCard key={item.id} className="p-0 overflow-hidden group" hover={true} onClick={() => setReviewItem(item)}>
+                            <div className="flex flex-col sm:flex-row">
+                                {/* Receipt Teaser */}
+                                <div className="w-full sm:w-[140px] bg-slate-100/50 dark:bg-black/20 border-r border-white/10 h-[140px] sm:h-auto flex items-center justify-center relative overflow-hidden group-hover:bg-slate-100/80 transition-colors cursor-pointer">
+                                    {item.receiptUrl ? (
+                                        <>
+                                            <img src={item.receiptUrl} alt="Receipt" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500" />
+                                            <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors">
+                                                <Maximize2 className="w-6 h-6 text-white drop-shadow-md opacity-0 group-hover:opacity-100 transition-all transform scale-75 group-hover:scale-100" />
                                             </div>
-                                        )}
+                                            <Badge className="absolute bottom-2 right-2 text-[8px] bg-black/60 backdrop-blur-md border-0 pointer-events-none">PROOF</Badge>
+                                        </>
+                                    ) : (
+                                        <div className="text-center p-2 opacity-40">
+                                            <ImageIcon className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                                            <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">No Image</span>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Main Content */}
+                                <div className="flex-1 p-6 flex flex-col justify-between relative bg-white/40 dark:bg-transparent">
+                                    {/* Hover Gradient Overlay */}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out pointer-events-none" />
+
+                                    <div className="flex justify-between items-start mb-4 relative z-10">
+                                        <div>
+                                            <h3 className="text-lg font-black text-foreground tracking-tight">{item.user.firstName} {item.user.lastName}</h3>
+                                            <div className="flex items-center gap-2 mt-1.5">
+                                                <Badge variant="secondary" className="text-[9px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-700 dark:text-blue-300 border-0">{item.group.name}</Badge>
+                                                <span className="text-xs font-bold text-muted-foreground/70 flex items-center gap-1">
+                                                    <History className="w-3 h-3" /> {new Date(item.paymentDate || item.createdAt).toLocaleDateString()}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="text-2xl font-black text-blue-600 dark:text-banana tracking-tight">{formatCurrency(item.amount)}</div>
+                                        </div>
                                     </div>
 
-                                    {/* Main Content */}
-                                    <div className="flex-1 p-5 flex flex-col justify-between">
-                                        <div className="flex justify-between items-start mb-4">
-                                            <div>
-                                                <h3 className="text-lg font-black text-foreground">{item.user.firstName} {item.user.lastName}</h3>
-                                                <div className="flex items-center gap-2 mt-1">
-                                                    <Badge variant="secondary" className="text-[10px] font-bold uppercase tracking-wider">{item.group.name}</Badge>
-                                                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                                        <History className="w-3 h-3" /> {new Date(item.paymentDate || item.createdAt).toLocaleDateString()}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div className="text-right">
-                                                <div className="text-xl font-black text-blue-600 dark:text-blue-400">{formatCurrency(item.amount)}</div>
-                                            </div>
+                                    <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-200/50 dark:border-white/5 relative z-10">
+                                        <div className="flex flex-wrap gap-4 text-xs font-bold text-muted-foreground">
+                                            <span className="flex items-center gap-1.5"><Wallet className="w-3.5 h-3.5" /> Bal: <span className="text-foreground">{formatCurrency(item.member.balance)}</span></span>
+                                            {item.member.unpaidPenalties > 0 && <span className="flex items-center gap-1.5 text-red-500"><AlertTriangle className="w-3.5 h-3.5" /> Penalties: {formatCurrency(item.member.unpaidPenalties)}</span>}
                                         </div>
 
-                                        <div className="flex items-center justify-between mt-auto pt-4 border-t border-border/50">
-                                            <div className="flex gap-4 text-xs font-medium text-muted-foreground">
-                                                <span className="flex items-center gap-1.5"><Wallet className="w-3.5 h-3.5" /> Bal: {formatCurrency(item.member.balance)}</span>
-                                                {item.member.unpaidPenalties > 0 && <span className="flex items-center gap-1.5 text-red-500"><AlertTriangle className="w-3.5 h-3.5" /> Penalties: {formatCurrency(item.member.unpaidPenalties)}</span>}
-                                            </div>
-
-                                            <Button
-                                                size="sm"
-                                                className="rounded-full font-bold px-6 bg-blue-600 hover:bg-blue-700 text-white"
-                                                onClick={() => setReviewItem(item)}
-                                            >
-                                                Start Review
-                                            </Button>
-                                        </div>
+                                        <Button
+                                            size="sm"
+                                            className="rounded-xl font-black px-6 bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-500/20"
+                                        >
+                                            Review
+                                        </Button>
                                     </div>
                                 </div>
-                            </CardContent>
-                        </Card>
+                            </div>
+                        </GlassCard>
                     ))}
                 </div>
             )}
 
             {/* Side-by-Side Review Modal */}
             <Dialog open={!!reviewItem} onOpenChange={(open) => !open && setReviewItem(null)}>
-                <DialogContent className="max-w-[95vw] w-[600px] max-h-[85vh] p-0 gap-0 overflow-y-auto rounded-2xl border-none outline-none bg-background flex flex-col">
+                <DialogContent className="max-w-[95vw] w-[900px] max-h-[90vh] p-0 gap-0 overflow-hidden rounded-3xl border-white/20 bg-slate-900/95 backdrop-blur-xl flex flex-col md:flex-row shadow-2xl">
                     <DialogTitle className="sr-only">Contribution Review</DialogTitle>
                     <DialogDescription className="sr-only">
-                        Review and verify contribution for {reviewItem?.user?.firstName} {reviewItem?.user?.lastName}
+                        Review and verify contribution
                     </DialogDescription>
                     {reviewItem && (
                         <>
                             {/* Left Panel: Evidence (Zoomable Receipt) */}
-                            <div className="h-[500px] shrink-0 bg-black/5 dark:bg-black/40 relative flex items-center justify-center overflow-hidden border-b border-border">
+                            <div className="h-[300px] md:h-auto md:w-1/2 shrink-0 bg-black relative flex items-center justify-center overflow-hidden border-b md:border-b-0 md:border-r border-white/10">
                                 {reviewItem.receiptUrl ? (
                                     <>
                                         <div className="absolute top-4 left-4 z-10 flex gap-2">
-                                            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-white/90 shadow-sm hover:bg-white" onClick={() => setZoomLevel(prev => Math.min(prev + 0.5, 3))}>
-                                                <ZoomIn className="w-4 h-4 text-black" />
+                                            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/10" onClick={() => setZoomLevel(prev => Math.min(prev + 0.5, 3))}>
+                                                <ZoomIn className="w-4 h-4" />
                                             </Button>
-                                            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-white/90 shadow-sm hover:bg-white" onClick={() => setZoomLevel(prev => Math.max(prev - 0.5, 0.5))}>
-                                                <ZoomOut className="w-4 h-4 text-black" />
+                                            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/10" onClick={() => setZoomLevel(prev => Math.max(prev - 0.5, 0.5))}>
+                                                <ZoomOut className="w-4 h-4" />
                                             </Button>
-                                            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-white/90 shadow-sm hover:bg-white" onClick={() => setRotation(prev => prev + 90)}>
-                                                <RotateCw className="w-4 h-4 text-black" />
+                                            <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/10" onClick={() => setRotation(prev => prev + 90)}>
+                                                <RotateCw className="w-4 h-4" />
                                             </Button>
-                                            <div className="bg-black/60 text-white text-[10px] font-bold px-3 py-1.5 rounded-full backdrop-blur-sm self-center">
-                                                {Math.round(zoomLevel * 100)}%
-                                            </div>
                                         </div>
 
-                                        <div className="w-full h-full overflow-auto flex items-center justify-center p-8 cursor-grab active:cursor-grabbing">
+                                        <div className="w-full h-full overflow-auto flex items-center justify-center p-8 bg-grid-white/[0.05]">
                                             <motion.img
                                                 src={reviewItem.receiptUrl}
                                                 alt="Evidence"
@@ -251,69 +234,70 @@ export default function TreasurerApprovalsPage() {
                                     </>
                                 ) : (
                                     <div className="flex flex-col items-center opacity-40">
-                                        <ImageIcon className="w-16 h-16 mb-4" />
-                                        <p className="font-bold text-xl uppercase">No Receipt Attached</p>
+                                        <ImageIcon className="w-16 h-16 mb-4 text-white" />
+                                        <p className="font-black text-xl uppercase text-white tracking-widest">No Receipt</p>
                                     </div>
                                 )}
                             </div>
 
                             {/* Right Panel: Ledger / Action */}
-                            <div className="w-full h-auto bg-background flex flex-col border-t border-border shadow-xl z-20">
-                                <div className="p-6 border-b border-border bg-muted/10">
-                                    <h2 className="text-xl font-black text-foreground mb-1">Verification</h2>
-                                    <p className="text-sm text-muted-foreground">Compare the proof on the left with the claim below.</p>
+                            <div className="flex-1 h-full overflow-y-auto bg-white/5 md:w-1/2 flex flex-col">
+                                <div className="p-6 border-b border-white/5">
+                                    <h2 className="text-xl font-black text-white mb-1 tracking-tight">Verification</h2>
+                                    <p className="text-sm font-medium text-white/50">Verify transfer details against the proof.</p>
                                 </div>
 
-                                <div className="p-6 space-y-8">
+                                <div className="p-6 space-y-8 flex-1">
                                     {/* Amount Section */}
                                     <div className="space-y-2">
-                                        <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">Claimed Amount</p>
-                                        <div className="text-4xl font-black text-blue-600 dark:text-blue-400">
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Claimed Amount</p>
+                                        <div className="text-4xl sm:text-5xl font-black text-emerald-400 dark:text-banana tracking-tighter">
                                             {formatCurrency(reviewItem.amount)}
                                         </div>
                                     </div>
 
                                     {/* Meta Data */}
-                                    <div className="grid grid-cols-1 gap-4 p-4 rounded-xl bg-muted/30 border border-border">
-                                        <div>
-                                            <p className="text-[10px] font-bold uppercase text-muted-foreground">Contributor</p>
-                                            <p className="font-bold text-foreground">{reviewItem.user.firstName} {reviewItem.user.lastName}</p>
+                                    <div className="grid grid-cols-2 gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
+                                        <div className="col-span-2">
+                                            <p className="text-[9px] font-black uppercase text-white/40 mb-1">Contributor</p>
+                                            <p className="font-bold text-white text-lg">{reviewItem.user.firstName} {reviewItem.user.lastName}</p>
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-bold uppercase text-muted-foreground">Transaction Ref</p>
-                                            <p className="font-mono text-xs font-bold text-foreground break-all">{reviewItem.transactionRef || 'N/A'}</p>
+                                            <p className="text-[9px] font-black uppercase text-white/40 mb-1">Ref ID</p>
+                                            <p className="font-mono text-xs font-bold text-white/80 break-all">{reviewItem.transactionRef || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-bold uppercase text-muted-foreground">Date</p>
-                                            <p className="font-bold text-foreground">{new Date(reviewItem.paymentDate || reviewItem.createdAt).toLocaleDateString()} {new Date(reviewItem.paymentDate || reviewItem.createdAt).toLocaleTimeString()}</p>
+                                            <p className="text-[9px] font-black uppercase text-white/40 mb-1">Timestamp</p>
+                                            <p className="font-bold text-white/80 text-xs">{new Date(reviewItem.paymentDate || reviewItem.createdAt).toLocaleDateString()}</p>
                                         </div>
                                     </div>
 
                                     {/* Financial Context */}
                                     <div className="space-y-3">
-                                        <h3 className="text-xs font-black uppercase text-muted-foreground tracking-widest flex items-center gap-2">
-                                            <Wallet className="w-3 h-3" /> Member Standing
+                                        <h3 className="text-[10px] font-black uppercase text-white/40 tracking-widest flex items-center gap-2">
+                                            Member Standing
                                         </h3>
-                                        <div className="flex items-center justify-between p-3 rounded-lg border border-border">
-                                            <span className="text-sm font-medium">Unpaid Penalties</span>
-                                            <span className={cn("font-bold text-sm", reviewItem.member.unpaidPenalties > 0 ? "text-red-500" : "text-muted-foreground")}>
-                                                {formatCurrency(reviewItem.member.unpaidPenalties)}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center justify-between p-3 rounded-lg border border-border">
-                                            <span className="text-sm font-medium">Current Balance</span>
-                                            <span className="font-bold text-sm text-green-600 dark:text-green-500">
-                                                {formatCurrency(reviewItem.member.balance)}
-                                            </span>
+                                        <div className="space-y-2">
+                                            <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+                                                <span className="text-xs font-bold text-white/70">Unpaid Penalties</span>
+                                                <span className={cn("font-black text-sm", reviewItem.member.unpaidPenalties > 0 ? "text-red-400" : "text-white/30")}>
+                                                    {formatCurrency(reviewItem.member.unpaidPenalties)}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+                                                <span className="text-xs font-bold text-white/70">Current Balance</span>
+                                                <span className="font-black text-sm text-emerald-400">
+                                                    {formatCurrency(reviewItem.member.balance)}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
 
                                     {/* Rejection Form */}
-                                    <div className="pt-4 border-t border-border">
-                                        <p className="text-xs font-bold mb-2 text-muted-foreground">Notes / Rejection Reason</p>
+                                    <div className="pt-4 border-t border-white/10">
                                         <textarea
-                                            className="w-full min-h-[80px] p-3 rounded-lg border border-input bg-background text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-                                            placeholder="Optional: Leave a reason if rejecting..."
+                                            className="w-full min-h-[80px] p-4 rounded-xl border border-white/10 bg-black/20 text-sm font-medium text-white placeholder:text-white/20 focus:ring-2 focus:ring-emerald-500/50 outline-none resize-none transition-all"
+                                            placeholder="Add a note if rejecting (optional)..."
                                             value={rejectionReason}
                                             onChange={(e) => setRejectionReason(e.target.value)}
                                         />
@@ -321,30 +305,32 @@ export default function TreasurerApprovalsPage() {
                                 </div>
 
                                 {/* Footer Actions */}
-                                <div className="p-6 border-t border-border bg-muted/10">
-                                    <div className="grid grid-cols-2 gap-3">
+                                <div className="p-6 border-t border-white/10 bg-black/20">
+                                    <div className="grid grid-cols-2 gap-4">
                                         <Button
-                                            variant="destructive"
-                                            className="h-12 font-bold rounded-xl"
+                                            variant="ghost"
+                                            className="h-14 font-black rounded-2xl text-red-400 hover:text-red-300 hover:bg-red-500/10"
                                             onClick={() => handleReviewAction('REJECTED')}
                                             disabled={isSubmitting}
                                         >
                                             Reject
                                         </Button>
-                                        <Button
-                                            variant="default"
-                                            className="h-12 font-bold rounded-xl bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/20 transition-all"
-                                            onClick={() => handleReviewAction('COMPLETED')}
-                                            disabled={isSubmitting}
-                                        >
-                                            {isSubmitting ? (
-                                                <InlineLogoLoader size="xs" />
-                                            ) : (
-                                                <>
-                                                    <Check className="w-4 h-4 mr-2" /> Approve
-                                                </>
-                                            )}
-                                        </Button>
+                                        <div className="relative group rounded-2xl bg-gradient-to-b from-emerald-500 to-emerald-600 p-[1px] shadow-lg shadow-emerald-500/20 hover:shadow-blue-500/40 transition-shadow">
+                                            <Button
+                                                className="relative w-full h-14 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black overflow-hidden border-0"
+                                                onClick={() => handleReviewAction('COMPLETED')}
+                                                disabled={isSubmitting}
+                                            >
+                                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out" />
+                                                {isSubmitting ? (
+                                                    <InlineLogoLoader size="xs" />
+                                                ) : (
+                                                    <>
+                                                        <Check className="w-5 h-5 mr-2" /> Approve
+                                                    </>
+                                                )}
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

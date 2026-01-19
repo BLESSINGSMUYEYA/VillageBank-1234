@@ -86,7 +86,7 @@ function ResetPasswordForm() {
                     </CardDescription>
                 </div>
                 <Link href="/login" className="block">
-                    <Button className="w-full h-14 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-lg shadow-xl shadow-blue-500/20">
+                    <Button className="w-full h-14 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-lg shadow-xl shadow-emerald-500/20">
                         {t('common.sign_in')}
                     </Button>
                 </Link>
@@ -116,7 +116,7 @@ function ResetPasswordForm() {
                                     id="password"
                                     type="password"
                                     {...register('password')}
-                                    className="rounded-2xl bg-white/40 dark:bg-slate-900/40 border-none h-14 font-bold shadow-inner focus-visible:ring-blue-500/30 pl-12"
+                                    className="rounded-2xl bg-white/40 dark:bg-slate-900/40 border-none h-14 font-bold shadow-inner focus-visible:ring-emerald-500/30 pl-12"
                                 />
                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/40" />
                             </div>
@@ -132,7 +132,7 @@ function ResetPasswordForm() {
                                     id="confirmPassword"
                                     type="password"
                                     {...register('confirmPassword')}
-                                    className="rounded-2xl bg-white/40 dark:bg-slate-900/40 border-none h-14 font-bold shadow-inner focus-visible:ring-blue-500/30 pl-12"
+                                    className="rounded-2xl bg-white/40 dark:bg-slate-900/40 border-none h-14 font-bold shadow-inner focus-visible:ring-emerald-500/30 pl-12"
                                 />
                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/40" />
                             </div>
@@ -149,7 +149,7 @@ function ResetPasswordForm() {
 
                     <Button
                         type="submit"
-                        className="w-full h-14 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-lg shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all group"
+                        className="w-full h-14 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-lg shadow-xl shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all group"
                         disabled={status === 'loading' || !token}
                     >
                         {status === 'loading' ? <InlineLogoLoader size="sm" /> : (
@@ -169,8 +169,8 @@ export default function ResetPasswordPage() {
     return (
         <div className="min-h-[calc(100vh-100px)] flex flex-col justify-center items-center p-6 relative">
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-1/4 -left-1/4 w-1/2 h-1/2 bg-blue-600/10 rounded-full blur-[120px] animate-pulse-slow" />
-                <div className="absolute bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-indigo-600/10 rounded-full blur-[120px] animate-pulse-slow delay-1000" />
+                <div className="absolute top-1/4 -left-1/4 w-1/2 h-1/2 bg-emerald-600/10 rounded-full blur-[120px] animate-pulse-slow" />
+                <div className="absolute bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-teal-600/10 rounded-full blur-[120px] animate-pulse-slow delay-1000" />
             </div>
 
             <motion.div
@@ -187,7 +187,7 @@ export default function ResetPasswordPage() {
 
                 <motion.div variants={itemFadeIn}>
                     <GlassCard className="p-0 border-none overflow-hidden shadow-2xl" hover={false}>
-                        <div className="h-1.5 bg-gradient-to-r from-blue-600 to-indigo-600" />
+                        <div className="h-1.5 bg-gradient-to-r from-emerald-600 to-teal-600" />
                         <Suspense fallback={
                             <div className="p-20 flex justify-center">
                                 <InlineLogoLoader size="md" />

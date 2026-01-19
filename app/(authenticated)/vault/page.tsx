@@ -129,17 +129,19 @@ export default async function VaultPage({
     }
 
     return (
-        <VaultClient
-            contributions={filteredContributions}
-            loans={loans}
-            userGroups={userGroups}
-            eligibilityChecks={eligibilityChecks}
-            params={params}
-            pagination={{
-                currentPage: page,
-                totalPages: Math.ceil(totalContributions / limit),
-                totalItems: totalContributions
-            }}
-        />
+        <div className="w-full max-w-7xl mx-auto py-4 sm:py-8 px-0 sm:px-6 lg:px-8 pb-24 space-y-6">
+            <VaultClient
+                contributions={filteredContributions}
+                loans={loans}
+                userGroups={userGroups}
+                eligibilityChecks={eligibilityChecks}
+                params={params}
+                pagination={{
+                    currentPage: page,
+                    totalPages: Math.ceil(totalContributions / limit),
+                    totalItems: totalContributions
+                }}
+            />
+        </div>
     )
 }

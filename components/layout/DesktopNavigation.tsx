@@ -4,109 +4,117 @@ import { useAuth } from '@/components/providers/AuthProvider'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import {
-  Users,
-  Zap,
-  Landmark,
-  User
-} from 'lucide-react'
-import { NotificationCenter } from '@/components/notifications/NotificationCenter'
-import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher'
-import { DesktopUserMenu } from './DesktopUserMenu'
+import { Zap, Landmark, Users, User, BarChart3, Settings, LogOut, Smartphone, Wallet, History } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { itemFadeIn, staggerContainer } from '@/lib/motions'
+import { itemFadeIn } from '@/lib/motions'
 import { UBankLogo } from '@/components/ui/Logo'
 import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
 const NavigationLink = ({ item, isActive }: { item: any; isActive: boolean }) => (
   <motion.div variants={itemFadeIn}>
     <Link
       href={item.href}
       className={cn(
-        "relative group px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2",
+        "relative group px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center gap-3",
         isActive
-          ? "text-blue-600 dark:text-banana"
-          : "text-muted-foreground hover:text-foreground"
+          ? "text-[#1B4332] bg-transparent"
+          : "text-[#94A3B8] hover:text-[#1B4332] hover:bg-slate-50"
       )}
     >
-      {/* Active Background Indicator */}
+      {/* Active Line Indicator */}
       {isActive && (
         <motion.div
-          layoutId="active-nav"
-          className="absolute inset-0 bg-blue-500/10 dark:bg-banana/10 border-b-2 border-blue-500 dark:border-banana rounded-xl z-0"
+          layoutId="active-nav-line"
+          className="absolute left-0 w-1 h-6 bg-[#2D6A4F] rounded-r-full"
           transition={{ type: "spring", stiffness: 380, damping: 30 }}
         />
       )}
 
       <item.icon className={cn(
-        "w-4 h-4 relative z-10 transition-transform duration-300 group-hover:scale-110",
-        isActive ? "stroke-[2.5px]" : ""
+        "w-5 h-5 transition-transform duration-300 group-hover:scale-110",
+        isActive ? "text-[#2D6A4F] stroke-[2.5px]" : "text-[#94A3B8]"
       )} />
-      <span className="relative z-10 whitespace-nowrap">{item.name}</span>
+      <span className="whitespace-nowrap">{item.name}</span>
+
+      {item.badge && (
+        <span className="ml-auto bg-[#1B4332] text-white text-[10px] px-2 py-0.5 rounded-md font-bold">
+          {item.badge}
+        </span>
+      )}
     </Link>
   </motion.div>
 )
 
 export function DesktopNavigation() {
-  const { user } = useAuth()
+  const { logout } = useAuth()
   const pathname = usePathname()
-  const { t } = useLanguage()
 
-  // Define member-specific navigation
-  const memberNavigation = [
-    { name: t('common.pulse'), href: '/dashboard', icon: Zap },
-    { name: t('common.vault'), href: '/vault', icon: Landmark },
-    { name: t('common.groups'), href: '/groups', icon: Users },
-    { name: t('common.profile'), href: '/profile', icon: User },
+  const menuItems = [
+    { name: 'Pulse', href: '/dashboard', icon: Zap },
+    { name: 'Vault', href: '/vault', icon: Landmark },
+    { name: 'Groups', href: '/groups', icon: Users },
+    { name: 'Profile', href: '/profile', icon: User },
   ]
 
-
   return (
-    <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-64 flex-col z-50">
-      {/* Premium Glass Layer */}
-      <div className="absolute inset-0 bg-white/70 dark:bg-slate-950/60 backdrop-blur-2xl border-r border-white/20 dark:border-white/10 shadow-2xl" />
-
-      <div className="relative z-10 flex flex-col h-full p-6">
-        {/* Logo Section - Integrated Design */}
-        <div className="mb-10">
-          <Link href="/dashboard" className="group">
-            {/* Logo and text as one unified word */}
-            <div className="flex items-end gap-0.5">
-              <div className="flex items-center justify-center group-hover:scale-110 transition-all duration-300">
-                <UBankLogo className="w-7 h-7" />
-              </div>
-              <h1 className="text-lg font-black bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent leading-none">
-                Bank
-              </h1>
+    <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-72 flex-col z-50 bg-[#F8FAFC]">
+      <div className="relative flex flex-col h-full p-8 border-r border-slate-200">
+        {/* Logo Section */}
+        <div className="mb-12">
+          <Link href="/dashboard" className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#D8F3DC] rounded-xl flex items-center justify-center">
+              <UBankLogo className="w-6 h-6 text-[#2D6A4F]" />
             </div>
-            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 leading-none mt-1 block">
-              {t('common.zen_edition')}
-            </span>
+            <span className="text-xl font-bold text-[#1B4332]">uBank</span>
           </Link>
         </div>
 
-        {/* Navigation Section */}
-        <nav className="flex-1 space-y-2">
-          {memberNavigation.map((item) => (
-            <NavigationLink key={item.href} item={item} isActive={pathname === item.href} />
-          ))}
-        </nav>
-
-        {/* Footer Actions */}
-        <div className="pt-6 border-t border-border/50 space-y-6">
-          <div className="flex items-center justify-between px-2">
-            <LanguageSwitcher />
-            <NotificationCenter align="left" side="top" />
+        {/* Menu Section */}
+        <div className="flex-1 space-y-8 overflow-y-auto no-scrollbar">
+          <div>
+            <p className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest mb-4 px-4">
+              Menu
+            </p>
+            <nav className="space-y-1">
+              {menuItems.map((item) => (
+                <NavigationLink key={item.href} item={item} isActive={pathname === item.href} />
+              ))}
+            </nav>
           </div>
-          {user && (
-            <div className="flex items-center gap-3 p-2 rounded-2xl bg-white/40 dark:bg-slate-900/40 border border-white/20 dark:border-white/10 overflow-hidden">
-              <DesktopUserMenu user={user} />
-              <div className="flex flex-col min-w-0">
-                <p className="text-sm font-black truncate text-foreground">{user.firstName}</p>
-                <p className="text-[10px] font-bold text-muted-foreground truncate uppercase">{user.role?.replace('_', ' ')}</p>
+        </div>
+
+        {/* Download App Card */}
+        <div className="mt-auto pt-8">
+          <div className="relative p-6 rounded-3xl bg-[#081C15] overflow-hidden group">
+            {/* Abstract Background Shapes */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#2D6A4F] rounded-full blur-[60px] opacity-20 group-hover:opacity-40 transition-opacity" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#D8F3DC] rounded-full blur-[40px] opacity-10 group-hover:opacity-20 transition-opacity" />
+
+            <div className="relative z-10 flex flex-col gap-4">
+              <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
+                <Smartphone className="w-5 h-5 text-white" />
               </div>
+              <div>
+                <h4 className="text-white font-bold text-sm">Download our Mobile App</h4>
+                <p className="text-white/60 text-[11px] mt-1 leading-relaxed">
+                  Get easy access on another way
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full bg-[#1B4332] border-0 text-white rounded-xl py-5 font-bold hover:bg-[#2D6A4F] transition-all"
+              >
+                Download
+              </Button>
             </div>
-          )}
+
+            {/* User Icon Float */}
+            <div className="absolute -top-1 left-2 w-6 h-6 rounded-full border-2 border-[#081C15] bg-emerald-500 flex items-center justify-center text-[10px] font-bold text-white">
+              B
+            </div>
+          </div>
         </div>
       </div>
     </aside>

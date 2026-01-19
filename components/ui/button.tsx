@@ -17,6 +17,7 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         destructive: "bg-red-500 text-white hover:bg-red-600 shadow-sm",
         banana: "bg-gradient-to-r from-[var(--banana)] to-yellow-500 text-black font-bold shadow-md hover:shadow-lg",
+        supporting: "bg-gradient-to-r from-[var(--supporting)] to-emerald-500 text-white font-bold shadow-md hover:shadow-lg hover:brightness-110",
         glass: "bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30 shadow-sm",
         link: "text-primary underline-offset-4 hover:underline",
       },

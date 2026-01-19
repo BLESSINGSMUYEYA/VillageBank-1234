@@ -11,7 +11,7 @@ export default function AboutPage() {
     const { t } = useLanguage()
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 selection:bg-blue-500/30 font-sans">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 selection:bg-emerald-500/30 font-sans">
             <MarketingHeader />
 
             <main className="container mx-auto px-6 py-24">
@@ -74,7 +74,7 @@ export default function AboutPage() {
                     </div>
 
                     {/* Background elements */}
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/20 rounded-full blur-[100px] translate-x-1/2 -translate-y-1/2" />
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-600/20 rounded-full blur-[100px] translate-x-1/2 -translate-y-1/2" />
                     <div className="absolute bottom-0 left-0 w-96 h-96 bg-rose-600/20 rounded-full blur-[100px] -translate-x-1/2 translate-y-1/2" />
                 </motion.div>
 

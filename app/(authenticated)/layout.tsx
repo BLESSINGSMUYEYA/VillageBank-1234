@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { usePathname } from 'next/navigation'
 import { InstallPrompt } from '@/components/pwa/InstallPrompt'
 
+import { DashboardHeader } from '@/components/layout/DashboardHeader'
+
 export default function AuthenticatedLayout({
     children,
 }: {
@@ -15,35 +17,30 @@ export default function AuthenticatedLayout({
     const pathname = usePathname()
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#020617] relative selection:bg-banana selection:text-banana-foreground overflow-x-hidden">
+        <div className="min-h-screen bg-[#F1F5F9] dark:bg-[#020617] relative selection:bg-banana selection:text-banana-foreground overflow-x-hidden">
             {/* Ambient Background Layer 1: Global Glow */}
             <div className="fixed inset-0 z-0 pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 dark:bg-blue-600/5 rounded-full blur-[120px] animate-pulse" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-banana/10 dark:bg-banana/5 rounded-full blur-[120px] animate-pulse [animation-delay:2s]" />
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-500/5 dark:bg-emerald-600/5 rounded-full blur-[120px]" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 dark:bg-blue-600/5 rounded-full blur-[120px]" />
             </div>
 
-            {/* Ambient Background Layer 2: Mesh Gradient */}
-            <div className="fixed inset-0 z-0 pointer-events-none opacity-40 dark:opacity-20">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(59,130,246,0.1),transparent_50%)]" />
-            </div>
-
-            <div className="relative z-10 flex flex-col min-h-screen">
-                {/* Mobile Navigation */}
-                <MobileNavigation />
-
-                {/* Desktop Header (now Sidebar) */}
+            <div className="relative z-10 flex min-h-screen">
+                {/* Desktop Sidebar */}
                 <DesktopNavigation />
 
                 {/* Content Area with Sidebar Offset */}
-                <div className="flex-1 lg:pl-64 transition-all duration-300 flex flex-col">
+                <div className="flex-1 lg:pl-72 transition-all duration-300 flex flex-col min-h-screen">
+                    {/* Header */}
+                    <DashboardHeader />
+
                     {/* Main Content with Transition */}
-                    <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:pt-10 pb-24 lg:pb-12 relative z-10 w-full flex-1">
+                    <main className="px-4 sm:px-8 py-2 relative z-10 w-full flex-1">
                         <AnimatePresence mode="wait">
                             <motion.div
                                 key={pathname}
-                                initial={{ opacity: 0, y: 10, scale: 0.99 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: -10, scale: 1.01 }}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
                                 transition={{
                                     duration: 0.3,
                                     ease: [0.22, 1, 0.36, 1]
@@ -57,6 +54,11 @@ export default function AuthenticatedLayout({
 
                     {/* Footer */}
                     <Footer />
+                </div>
+
+                {/* Mobile Navigation (Floating or Bottom - keeping existing for now but hidden on large) */}
+                <div className="lg:hidden">
+                    <MobileNavigation />
                 </div>
             </div>
         </div>

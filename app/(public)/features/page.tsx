@@ -38,7 +38,7 @@ export default function FeaturesPage() {
     ]
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 selection:bg-blue-500/30 font-sans">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 selection:bg-emerald-500/30 font-sans">
             <MarketingHeader />
 
             <main className="container mx-auto px-6 py-24">
@@ -66,7 +66,7 @@ export default function FeaturesPage() {
                             className={`flex flex-col ${i % 2 === 1 ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-16`}
                         >
                             <div className="flex-1 space-y-6">
-                                <div className="w-16 h-16 bg-blue-600 rounded-3xl flex items-center justify-center shadow-lg shadow-blue-600/20">
+                                <div className="w-16 h-16 bg-emerald-600 rounded-3xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
                                     <feature.icon className="w-8 h-8 text-white" />
                                 </div>
                                 <h2 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">{feature.title}</h2>

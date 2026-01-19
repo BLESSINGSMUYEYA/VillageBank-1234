@@ -116,7 +116,7 @@ export class PenaltyService {
                         title: 'Penalty Applied',
                         message: `A late contribution penalty of MWK ${penaltyToApply.toLocaleString()} has been applied for ${currentMonth}/${currentYear}.`,
                         type: 'WARNING',
-                        actionUrl: `/contributions/new?groupId=${groupId}`,
+                        actionUrl: `/groups/${groupId}`,
                         actionText: 'Pay Now'
                     })
 

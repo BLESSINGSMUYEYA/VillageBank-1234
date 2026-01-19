@@ -33,5 +33,9 @@ export default async function GroupsPage() {
     }
   })
 
-  return <GroupsContent userGroups={userGroups} />
+  return (
+    <div className="w-full max-w-7xl mx-auto py-4 sm:py-8 px-0 sm:px-4 lg:px-8 pb-24 space-y-6">
+      <GroupsContent userGroups={userGroups} />
+    </div>
+  )
 }

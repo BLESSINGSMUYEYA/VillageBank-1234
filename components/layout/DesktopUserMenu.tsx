@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Settings, LogOut, User, Shield } from 'lucide-react'
+import { Settings, LogOut, User, Shield, History } from 'lucide-react'
 
 interface DesktopUserMenuProps {
     user: any
@@ -44,6 +44,12 @@ export function DesktopUserMenu({ user }: DesktopUserMenuProps) {
                     <Link href="/profile" className="w-full cursor-pointer rounded-lg font-bold">
                         <User className="mr-2 h-4 w-4" />
                         {t('common.profile')}
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                    <Link href="/activity" className="w-full cursor-pointer rounded-lg font-bold">
+                        <History className="mr-2 h-4 w-4" />
+                        {t('dashboard.recent_activity') || 'Activity'}
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>

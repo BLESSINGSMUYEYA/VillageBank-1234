@@ -12,7 +12,7 @@ export default function PricingPage() {
     const { t } = useLanguage()
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 selection:bg-blue-500/30 font-sans">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 selection:bg-emerald-500/30 font-sans">
             <MarketingHeader />
 
             <main className="container mx-auto px-6 py-24">
@@ -42,7 +42,7 @@ export default function PricingPage() {
                             <div>
                                 <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-2">{t('pricing_page.free_tier_title')}</h3>
                                 <div className="flex items-baseline gap-2">
-                                    <span className="text-5xl font-black text-blue-600 dark:text-banana">{t('pricing_page.free_tier_price')}</span>
+                                    <span className="text-5xl font-black text-emerald-600 dark:text-banana">{t('pricing_page.free_tier_price')}</span>
                                 </div>
                                 <p className="text-slate-500 font-bold mt-4">{t('pricing_page.free_tier_desc')}</p>
                             </div>
@@ -54,7 +54,7 @@ export default function PricingPage() {
                                     'Secure Wallet'
                                 ].map((item, i) => (
                                     <li key={i} className="flex items-center gap-3 text-slate-700 dark:text-slate-300 font-bold">
-                                        <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-600/20 flex items-center justify-center text-blue-600">
+                                        <div className="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-600/20 flex items-center justify-center text-emerald-600">
                                             <Check className="w-4 h-4" />
                                         </div>
                                         {item}
@@ -72,7 +72,7 @@ export default function PricingPage() {
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.3 }}
-                        className="p-10 rounded-3xl bg-blue-600 dark:bg-blue-600 text-white relative overflow-hidden"
+                        className="p-10 rounded-3xl bg-emerald-600 dark:bg-emerald-600 text-white relative overflow-hidden"
                     >
                         <div className="absolute top-0 right-0 p-4">
                             <div className="bg-white/20 backdrop-blur-md px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest border border-white/20">
@@ -85,7 +85,7 @@ export default function PricingPage() {
                                 <div className="flex items-baseline gap-2">
                                     <span className="text-5xl font-black">{t('pricing_page.premium_tier_price')}</span>
                                 </div>
-                                <p className="text-blue-100 font-bold mt-4">{t('pricing_page.premium_tier_desc')}</p>
+                                <p className="text-emerald-100 font-bold mt-4">{t('pricing_page.premium_tier_desc')}</p>
                             </div>
                             <ul className="space-y-4">
                                 {[
@@ -103,7 +103,7 @@ export default function PricingPage() {
                                     </li>
                                 ))}
                             </ul>
-                            <Button className="w-full h-14 rounded-2xl bg-white text-blue-600 font-black text-lg hover:scale-105 transition-transform shadow-2xl">
+                            <Button className="w-full h-14 rounded-2xl bg-white text-emerald-600 font-black text-lg hover:scale-105 transition-transform shadow-2xl">
                                 {t('landing.create_first_group')}
                             </Button>
                         </div>
