@@ -339,7 +339,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
 
     setLoading(true)
     try {
-      await navigator.clipboard.writeText(shareData.shareUrl)
+      // Generate the combined image first
       const combinedFile = await createCombinedImage(
         shareData.qrCode,
         groupName,
@@ -357,25 +357,40 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
         const shareObj = {
           title: `Join ${groupName}`,
           text: shareText,
-          url: shareData.shareUrl, // Explicitly add URL field for supported platforms
+          url: shareData.shareUrl,
           files: [combinedFile]
         }
 
         if (navigator.canShare(shareObj)) {
-          await navigator.share(shareObj)
-          toast.success('Shared successfully!')
-          return
+          try {
+            await navigator.share(shareObj)
+            toast.success('Shared successfully!')
+            return
+          } catch (shareError) {
+            console.warn('Native share failed or cancelled, falling back to download:', shareError)
+          }
         }
       }
 
-      const encodedMessage = encodeURIComponent(shareText)
-      const whatsappUrl = `https://wa.me/?text=${encodedMessage}`
-      window.open(whatsappUrl, '_blank')
-      toast.success('Link copied & opening WhatsApp...')
+      // FALLBACK: Download the image and copy text
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(combinedFile)
+      link.download = `ubank-invite-${groupName.replace(/\s+/g, '-').toLowerCase()}.png`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(link.href)
+
+      await navigator.clipboard.writeText(shareText)
+
+      toast.success('Image downloaded & Text copied!', {
+        description: 'Native sharing not supported. Image saved to downloads.',
+        duration: 5000,
+      })
 
     } catch (error) {
-      console.error('Share error:', error)
-      toast.error('Share failed, but link was copied')
+      console.error('Share generation error:', error)
+      toast.error('Failed to generate share image')
     } finally {
       setLoading(false)
     }
