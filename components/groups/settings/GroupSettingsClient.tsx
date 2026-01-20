@@ -14,6 +14,8 @@ import { Button } from '@/components/ui/button'
 import { SettingsSidebar } from './SettingsSidebar'
 import { FormGroup } from '@/components/ui/form-group'
 import { PremiumInput } from '@/components/ui/premium-input'
+import { InfoTooltip } from '@/components/ui/info-tooltip'
+import { LoanSimulator } from './LoanSimulator'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -55,6 +57,9 @@ export function GroupSettingsClient({ group, userId }: GroupSettingsClientProps)
         description: group.description || '',
         region: group.region,
         meetingFrequency: group.meetingFrequency,
+        meetingLocation: group.meetingLocation || '',
+        contactEmail: group.contactEmail || '',
+        contactPhone: group.contactPhone || '',
         monthlyContribution: group.monthlyContribution.toString(),
         socialFundAmount: group.socialFundAmount.toString(),
         maxLoanMultiplier: group.maxLoanMultiplier.toString(),
@@ -66,6 +71,7 @@ export function GroupSettingsClient({ group, userId }: GroupSettingsClientProps)
         missedMeetingFine: group.missedMeetingFine.toString(),
         contributionDueDay: group.contributionDueDay.toString(),
         contributionDeadlineType: group.contributionDeadlineType || 'MONTHLY',
+        minContributionMonths: (group.minContributionMonths || 3).toString(),
         loanGracePeriodDays: group.loanGracePeriodDays.toString(),
         isActive: group.isActive
     })
@@ -88,6 +94,9 @@ export function GroupSettingsClient({ group, userId }: GroupSettingsClientProps)
                     description: formData.description,
                     region: formData.region,
                     meetingFrequency: formData.meetingFrequency,
+                    meetingLocation: formData.meetingLocation,
+                    contactEmail: formData.contactEmail,
+                    contactPhone: formData.contactPhone,
                     monthlyContribution: parseFloat(formData.monthlyContribution) || 0,
                     socialFundAmount: parseFloat(formData.socialFundAmount) || 0,
                     maxLoanMultiplier: parseFloat(formData.maxLoanMultiplier) || 1,
@@ -99,6 +108,7 @@ export function GroupSettingsClient({ group, userId }: GroupSettingsClientProps)
                     missedMeetingFine: parseFloat(formData.missedMeetingFine) || 0,
                     contributionDueDay: parseInt(formData.contributionDueDay) || 5,
                     contributionDeadlineType: formData.contributionDeadlineType,
+                    minContributionMonths: parseInt(formData.minContributionMonths) || 3,
                     loanGracePeriodDays: parseInt(formData.loanGracePeriodDays) || 0,
                     isActive: formData.isActive
                 }),
@@ -270,6 +280,51 @@ export function GroupSettingsClient({ group, userId }: GroupSettingsClientProps)
                                                     </SelectContent>
                                                 </Select>
                                             </FormGroup>
+
+                                            <div className="grid md:grid-cols-2 gap-6">
+                                                <FormGroup label="Contact Email">
+                                                    <PremiumInput
+                                                        id="contactEmail"
+                                                        value={formData.contactEmail}
+                                                        onChange={(e) => handleInputChange('contactEmail', e.target.value)}
+                                                        className={inputClassName}
+                                                        placeholder="contact@group.com"
+                                                    />
+                                                </FormGroup>
+                                                <FormGroup label="Contact Phone">
+                                                    <PremiumInput
+                                                        id="contactPhone"
+                                                        value={formData.contactPhone}
+                                                        onChange={(e) => handleInputChange('contactPhone', e.target.value)}
+                                                        className={inputClassName}
+                                                        placeholder="+265..."
+                                                    />
+                                                </FormGroup>
+                                            </div>
+
+                                            <div className="grid md:grid-cols-2 gap-6">
+                                                <FormGroup label="Meeting Location">
+                                                    <PremiumInput
+                                                        id="meetingLocation"
+                                                        value={formData.meetingLocation}
+                                                        onChange={(e) => handleInputChange('meetingLocation', e.target.value)}
+                                                        className={inputClassName}
+                                                        placeholder="e.g. Village Hall"
+                                                    />
+                                                </FormGroup>
+                                                <FormGroup label="Meeting Frequency">
+                                                    <Select value={formData.meetingFrequency} onValueChange={(v) => handleInputChange('meetingFrequency', v)}>
+                                                        <SelectTrigger className={inputClassName}>
+                                                            <SelectValue />
+                                                        </SelectTrigger>
+                                                        <SelectContent className="rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-white/20 dark:border-white/10 shadow-2xl overflow-hidden p-1">
+                                                            <SelectItem value="WEEKLY" className="font-bold cursor-pointer rounded-xl py-3 px-4">Weekly</SelectItem>
+                                                            <SelectItem value="BIWEEKLY" className="font-bold cursor-pointer rounded-xl py-3 px-4">Bi-Weekly</SelectItem>
+                                                            <SelectItem value="MONTHLY" className="font-bold cursor-pointer rounded-xl py-3 px-4">Monthly</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </FormGroup>
+                                            </div>
                                         </div>
                                     )}
 
@@ -285,7 +340,12 @@ export function GroupSettingsClient({ group, userId }: GroupSettingsClientProps)
                                                         className={inputClassName}
                                                     />
                                                 </FormGroup>
-                                                <FormGroup label="Social Fund">
+                                                <FormGroup label={
+                                                    <div className="flex items-center">
+                                                        Social Fund
+                                                        <InfoTooltip content="A pooled fund for emergencies or community projects. This amount is contributed monthly but is separate from shares." />
+                                                    </div>
+                                                }>
                                                     <PremiumInput
                                                         type="number"
                                                         prefix="MWK"
@@ -294,7 +354,12 @@ export function GroupSettingsClient({ group, userId }: GroupSettingsClientProps)
                                                         className={inputClassName}
                                                     />
                                                 </FormGroup>
-                                                <FormGroup label="Interest Rate (%)">
+                                                <FormGroup label={
+                                                    <div className="flex items-center">
+                                                        Interest Rate (%)
+                                                        <InfoTooltip content="The percentage charged on loans. For Flat Rate, this is applied to the principal. For Reducing Balance, it applies to the remaining balance." />
+                                                    </div>
+                                                }>
                                                     <PremiumInput
                                                         type="number"
                                                         suffix="%"
@@ -303,7 +368,28 @@ export function GroupSettingsClient({ group, userId }: GroupSettingsClientProps)
                                                         className={inputClassName}
                                                     />
                                                 </FormGroup>
-                                                <FormGroup label="Max Loan Multiplier">
+                                                <FormGroup label={
+                                                    <div className="flex items-center">
+                                                        Interest Type
+                                                        <InfoTooltip content="Flat Rate charges interest on the full loan amount. Reducing Balance charges interest only on what is still owed." />
+                                                    </div>
+                                                }>
+                                                    <Select value={formData.loanInterestType} onValueChange={(v) => handleInputChange('loanInterestType', v)}>
+                                                        <SelectTrigger className={inputClassName}>
+                                                            <SelectValue />
+                                                        </SelectTrigger>
+                                                        <SelectContent className="rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-white/20 dark:border-white/10 shadow-2xl overflow-hidden p-1">
+                                                            <SelectItem value="FLAT_RATE" className="font-bold cursor-pointer rounded-xl py-3 px-4">Flat Rate</SelectItem>
+                                                            <SelectItem value="REDUCING_BALANCE" className="font-bold cursor-pointer rounded-xl py-3 px-4">Reducing Balance</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </FormGroup>
+                                                <FormGroup label={
+                                                    <div className="flex items-center">
+                                                        Max Loan Multiplier
+                                                        <InfoTooltip content="Limits how much a member can borrow based on their total savings. Example: 3x on 10,000 MWK savings = 30,000 MWK max loan." />
+                                                    </div>
+                                                }>
                                                     <PremiumInput
                                                         type="number"
                                                         suffix="x"
@@ -313,6 +399,12 @@ export function GroupSettingsClient({ group, userId }: GroupSettingsClientProps)
                                                     />
                                                 </FormGroup>
                                             </div>
+
+                                            <LoanSimulator
+                                                interestRate={parseFloat(formData.interestRate) || 0}
+                                                interestType={formData.loanInterestType as 'FLAT_RATE' | 'REDUCING_BALANCE'}
+                                                maxLoanMultiplier={parseFloat(formData.maxLoanMultiplier) || 1}
+                                            />
                                         </div>
                                     )}
 
@@ -342,6 +434,24 @@ export function GroupSettingsClient({ group, userId }: GroupSettingsClientProps)
                                                         type="number"
                                                         value={formData.loanGracePeriodDays}
                                                         onChange={(e) => handleInputChange('loanGracePeriodDays', e.target.value)}
+                                                        className={inputClassName}
+                                                    />
+                                                </FormGroup>
+                                                <FormGroup label="Min. Contribution Months">
+                                                    <PremiumInput
+                                                        type="number"
+                                                        value={formData.minContributionMonths}
+                                                        onChange={(e) => handleInputChange('minContributionMonths', e.target.value)}
+                                                        className={inputClassName}
+                                                    />
+                                                </FormGroup>
+                                                <FormGroup label="Contribution Due Day">
+                                                    <PremiumInput
+                                                        type="number"
+                                                        min={1}
+                                                        max={31}
+                                                        value={formData.contributionDueDay}
+                                                        onChange={(e) => handleInputChange('contributionDueDay', e.target.value)}
                                                         className={inputClassName}
                                                     />
                                                 </FormGroup>

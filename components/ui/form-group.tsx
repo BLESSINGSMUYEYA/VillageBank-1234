@@ -3,7 +3,7 @@ import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 
 interface FormGroupProps {
-    label: string
+    label: React.ReactNode | string
     error?: string
     children: React.ReactNode
     className?: string

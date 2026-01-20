@@ -57,18 +57,6 @@ export async function checkLoanEligibility(
     },
   })
 
-  if (contributions.length < 3) {
-    return {
-      eligible: false,
-      reason: 'You must contribute for at least 3 months',
-    }
-  }
-
-  const totalContributions = contributions.reduce(
-    (sum, c) => sum + Number(c.amount),
-    0
-  )
-
   const group = await prisma.group.findUnique({
     where: { id: groupId },
   })
@@ -76,6 +64,18 @@ export async function checkLoanEligibility(
   if (!group) {
     return { eligible: false, reason: 'Group not found' }
   }
+
+  if (contributions.length < (group.minContributionMonths ?? 3)) {
+    return {
+      eligible: false,
+      reason: `You must contribute for at least ${group.minContributionMonths ?? 3} months`,
+    }
+  }
+
+  const totalContributions = contributions.reduce(
+    (sum, c) => sum + Number(c.amount),
+    0
+  )
 
   const maxLoanAmount = totalContributions * group.maxLoanMultiplier
 

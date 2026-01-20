@@ -8,6 +8,9 @@ const updateGroupSchema = z.object({
   description: z.string().optional(),
   region: z.enum(['NORTHERN', 'SOUTHERN', 'CENTRAL']).optional(),
   meetingFrequency: z.enum(['WEEKLY', 'BIWEEKLY', 'MONTHLY']).optional(),
+  meetingLocation: z.string().optional(),
+  contactEmail: z.string().email().optional().or(z.literal('')),
+  contactPhone: z.string().optional(),
   monthlyContribution: z.number().positive().optional(),
   socialFundAmount: z.number().min(0).optional(),
   maxLoanMultiplier: z.number().min(1).max(10).optional(),
@@ -19,6 +22,7 @@ const updateGroupSchema = z.object({
   missedMeetingFine: z.number().min(0).optional(),
   contributionDueDay: z.number().min(1).max(31).optional(),
   contributionDeadlineType: z.enum(['WEEKLY', 'BIWEEKLY', 'MONTHLY']).optional(),
+  minContributionMonths: z.number().min(0).optional(),
   loanGracePeriodDays: z.number().min(0).optional(),
   isActive: z.boolean().optional(),
 })

@@ -110,7 +110,7 @@ export default async function VaultPage({
 
         eligibilityChecks.push({
             group: groupMember.group,
-            eligible: completedContributions >= 3 && !hasActiveLoan,
+            eligible: completedContributions >= (groupMember.group.minContributionMonths || 3) && !hasActiveLoan,
             contributionsCount: completedContributions,
             totalContributions: totalContributionsValue,
             maxLoanAmount: totalContributionsValue * groupMember.group.maxLoanMultiplier,

@@ -82,7 +82,9 @@ export async function POST(request: NextRequest) {
         userId: userId as string,
         amountRequested: validatedData.amountRequested,
         repaymentPeriodMonths: validatedData.repaymentPeriodMonths,
+
         interestRate: groupMember.group.interestRate,
+        interestType: groupMember.group.loanInterestType,
         status: 'PENDING', // Requires treasurer approval
         // Disbursement details
         disbursementMethod: validatedData.disbursementMethod,

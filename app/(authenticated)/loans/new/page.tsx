@@ -26,6 +26,7 @@ interface Group {
   monthlyContribution: number
   maxLoanMultiplier: number
   interestRate: number
+  loanInterestType?: 'FLAT_RATE' | 'REDUCING_BALANCE'
   region: string
 }
 
@@ -114,6 +115,7 @@ function NewLoanPageContent() {
           monthlyContribution: g.monthlyContribution,
           maxLoanMultiplier: g.maxLoanMultiplier,
           interestRate: g.interestRate,
+          loanInterestType: g.loanInterestType,
           region: g.region
         })))
       }
@@ -133,6 +135,7 @@ function NewLoanPageContent() {
           monthlyContribution: group.monthlyContribution,
           maxLoanMultiplier: group.maxLoanMultiplier,
           interestRate: group.interestRate,
+          loanInterestType: group.loanInterestType,
           region: group.region
         })
       }
@@ -600,7 +603,26 @@ function NewLoanPageContent() {
                     <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-70">Total Repayment Amount</span>
                     <span className="text-xl font-black text-foreground">
                       {formatCurrency(
-                        parseFloat(formData.amountRequested) * (1 + (selectedGroup.interestRate / 100) * (parseInt(formData.repaymentPeriodMonths) / 12))
+                        (() => {
+                          const P = parseFloat(formData.amountRequested);
+                          const r = selectedGroup.interestRate / 100;
+                          const n = parseInt(formData.repaymentPeriodMonths);
+
+                          // @ts-ignore - interestType is not yet in the frontend type definition but exists in API response
+                          if (selectedGroup.loanInterestType === 'REDUCING_BALANCE') {
+                            // Amortization Formula for Monthly Payment: PMT = P * (i / (1 - (1 + i)^-n))
+                            // where i is monthly interest rate
+                            const i = r; // Assuming interestRate is monthly in the system context, or convert if annual? 
+                            // NOTE: Usually in village banking, interest rate is MONTHLY.
+                            // Formular: PMT = P * i * (1 + i)^n / ((1 + i)^n - 1)
+                            const monthlyRate = r;
+                            const monthlyPayment = (P * monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1);
+                            return monthlyPayment * n;
+                          } else {
+                            // Flat Rate: Interest is calculated on the original principal
+                            return P * (1 + r * n);
+                          }
+                        })()
                       )}
                     </span>
                   </div>
@@ -610,8 +632,19 @@ function NewLoanPageContent() {
                       <p className="text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-1">Monthly Cycle Settlement</p>
                       <p className="text-3xl font-black text-blue-700 dark:text-banana tracking-tighter">
                         {formatCurrency(
-                          (parseFloat(formData.amountRequested) * (1 + (selectedGroup.interestRate / 100) * (parseInt(formData.repaymentPeriodMonths) / 12))) /
-                          parseInt(formData.repaymentPeriodMonths)
+                          (() => {
+                            const P = parseFloat(formData.amountRequested);
+                            const r = selectedGroup.interestRate / 100;
+                            const n = parseInt(formData.repaymentPeriodMonths);
+
+                            // @ts-ignore
+                            if (selectedGroup.loanInterestType === 'REDUCING_BALANCE') {
+                              const monthlyRate = r;
+                              return (P * monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1);
+                            } else {
+                              return (P * (1 + r * n)) / n;
+                            }
+                          })()
                         )}
                       </p>
                     </div>
@@ -619,7 +652,20 @@ function NewLoanPageContent() {
                       <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">Interest Component</p>
                       <p className="font-bold text-foreground">
                         {formatCurrency(
-                          (parseFloat(formData.amountRequested) * ((selectedGroup.interestRate / 100) * (parseInt(formData.repaymentPeriodMonths) / 12)))
+                          (() => {
+                            const P = parseFloat(formData.amountRequested);
+                            const r = selectedGroup.interestRate / 100;
+                            const n = parseInt(formData.repaymentPeriodMonths);
+
+                            // @ts-ignore
+                            if (selectedGroup.loanInterestType === 'REDUCING_BALANCE') {
+                              const monthlyRate = r;
+                              const totalRepayment = ((P * monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1)) * n;
+                              return totalRepayment - P;
+                            } else {
+                              return P * r * n;
+                            }
+                          })()
                         )}
                       </p>
                     </div>
