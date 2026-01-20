@@ -1,7 +1,7 @@
 'use client'
 
-import { Suspense } from 'react' // [NEW] Import Suspense
-
+import { useState, useEffect, Suspense } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -14,19 +14,26 @@ interface ContributionModalProps {
 }
 
 export function ContributionModal({ isOpen, onClose }: ContributionModalProps) {
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    if (!mounted) return null
     if (!isOpen) return null
 
-    return (
+    return createPortal(
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 isolate">
                     {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm -z-10"
                     />
 
                     {/* Modal Content */}
@@ -34,7 +41,7 @@ export function ContributionModal({ isOpen, onClose }: ContributionModalProps) {
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#F8FAFC] dark:bg-[#020617] border border-white/20 shadow-2xl no-scrollbar"
+                        className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#F8FAFC] dark:bg-[#020617] border border-white/20 shadow-2xl no-scrollbar z-50"
                     >
                         {/* Close Button */}
                         <div className="absolute top-4 right-4 z-50">
@@ -56,6 +63,7 @@ export function ContributionModal({ isOpen, onClose }: ContributionModalProps) {
                     </motion.div>
                 </div>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     )
 }
