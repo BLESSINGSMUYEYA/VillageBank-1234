@@ -366,8 +366,14 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
             await navigator.share(shareObj)
             toast.success('Shared successfully!')
             return
-          } catch (shareError) {
-            console.warn('Native share failed or cancelled, falling back to download:', shareError)
+          } catch (shareError: any) {
+            // Check if user cancelled the share action
+            if (shareError.name === 'AbortError' || shareError.message?.includes('cancel')) {
+              // User cancelled - don't show error or fallback
+              setLoading(false)
+              return
+            }
+            console.warn('Native share failed, falling back to download:', shareError)
           }
         }
       }
@@ -384,7 +390,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
       await navigator.clipboard.writeText(shareText)
 
       toast.success('Image downloaded & Text copied!', {
-        description: 'Native sharing not supported. Image saved to downloads.',
+        description: 'Share the downloaded image with your community.',
         duration: 5000,
       })
 

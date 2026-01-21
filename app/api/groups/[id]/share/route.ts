@@ -68,6 +68,7 @@ export async function POST(
             name: true,
             description: true,
             region: true,
+            groupTag: true,
           },
         },
       },
@@ -168,6 +169,7 @@ export async function POST(
       currentUses: groupShare.currentUses,
       customMessage: customMessage || null,
       group: groupShare.group,
+      groupTag: groupShare.group.groupTag || null,
     })
 
   } catch (error) {

@@ -11,7 +11,7 @@ export async function GET(
     const userAgent = request.headers.get('user-agent') || undefined
     const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || undefined
 
-    // Find valid share
+    // Find valid share (check expiry at query level, maxUses at application level)
     const groupShare = await (prisma as any).groupShare.findFirst({
       where: {
         shareToken,
@@ -19,14 +19,6 @@ export async function GET(
         OR: [
           { expiresAt: null },
           { expiresAt: { gt: new Date() } },
-        ],
-        AND: [
-          {
-            OR: [
-              { maxUses: null },
-              { currentUses: { lt: 1000 } }, // Will be validated in application logic
-            ],
-          },
         ],
       },
       include: {
@@ -68,6 +60,14 @@ export async function GET(
       )
     }
 
+    // Validate max uses at application level (Prisma doesn't support field-to-field comparisons)
+    if (groupShare.maxUses && groupShare.currentUses >= groupShare.maxUses) {
+      return NextResponse.json(
+        { error: 'This share link has reached its maximum number of uses' },
+        { status: 410 }
+      )
+    }
+
     // Track analytics
     await (prisma as any).qrAnalytics.create({
       data: {
@@ -85,7 +85,7 @@ export async function GET(
 
     // Filter data based on permissions
     let groupData = groupShare.group
-    
+
     switch (groupShare.permissions) {
       case 'VIEW_ONLY':
         groupData = {

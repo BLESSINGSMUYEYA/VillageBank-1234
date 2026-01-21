@@ -161,6 +161,7 @@
     "ledger_sync": "Syncing history",
     "portfolio_health": "Financial health rating",
     "no_records": "No records found",
+    "no_records_desc": "No contributions or loans found matching your criteria.",
     "no_active_credit": "No active loans"
   },
   "contributions": {

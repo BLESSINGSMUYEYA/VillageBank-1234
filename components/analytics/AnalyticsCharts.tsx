@@ -29,16 +29,25 @@ const THEME_COLORS = {
 const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
         return (
-            <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/20 dark:border-white/10 p-3 rounded-xl shadow-xl">
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">{label}</p>
-                {payload.map((entry: any, index: number) => (
-                    <div key={index} className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
-                        <span className="text-xs font-bold text-foreground">
-                            {entry.name === 'amount' || entry.name === 'value' ? formatCurrency(entry.value) : entry.value}
-                        </span>
-                    </div>
-                ))}
+            <div className="bg-white/90 dark:bg-slate-950/90 backdrop-blur-2xl border border-slate-200/50 dark:border-white/10 p-4 rounded-xl shadow-2xl shadow-slate-200/50 dark:shadow-black/50 min-w-[150px]">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 pb-2 border-b border-slate-100 dark:border-white/5">{label}</p>
+                <div className="space-y-1.5">
+                    {payload.map((entry: any, index: number) => (
+                        <div key={index} className="flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-2">
+                                <div className="w-1.5 h-1.5 rounded-full ring-2 ring-white/10" style={{ backgroundColor: entry.color }} />
+                                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 capitalize">
+                                    {entry.name === 'cumulative' ? 'Total' : entry.name}
+                                </span>
+                            </div>
+                            <span className="text-xs font-bold text-foreground tabular-nums">
+                                {entry.name === 'amount' || entry.name === 'value' || entry.name === 'cumulative'
+                                    ? formatCurrency(entry.value)
+                                    : entry.value}
+                            </span>
+                        </div>
+                    ))}
+                </div>
             </div>
         )
     }
@@ -69,11 +78,11 @@ export function AnalyticsCharts({ data, chartMode, setChartMode, projectedData, 
                         </p>
                     </div>
 
-                    <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+                    <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl relative">
                         <button
                             onClick={() => setChartMode('monthly')}
                             className={cn(
-                                "px-4 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all",
+                                "px-4 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all relative z-10",
                                 chartMode === 'monthly'
                                     ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-banana shadow-sm"
                                     : "text-muted-foreground hover:text-foreground"
@@ -84,7 +93,7 @@ export function AnalyticsCharts({ data, chartMode, setChartMode, projectedData, 
                         <button
                             onClick={() => setChartMode('cumulative')}
                             className={cn(
-                                "px-4 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all",
+                                "px-4 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all relative z-10",
                                 chartMode === 'cumulative'
                                     ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-banana shadow-sm"
                                     : "text-muted-foreground hover:text-foreground"
@@ -95,7 +104,7 @@ export function AnalyticsCharts({ data, chartMode, setChartMode, projectedData, 
                         <button
                             onClick={() => setChartMode('active')}
                             className={cn(
-                                "px-4 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all",
+                                "px-4 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all relative z-10",
                                 chartMode === 'active'
                                     ? "bg-white dark:bg-slate-700 text-emerald-500 shadow-sm"
                                     : "text-muted-foreground hover:text-foreground"
@@ -114,7 +123,13 @@ export function AnalyticsCharts({ data, chartMode, setChartMode, projectedData, 
                                 <XAxis dataKey="month" stroke={THEME_COLORS.text} fontSize={10} tickLine={false} axisLine={false} fontWeight={700} dy={10} />
                                 <YAxis tickFormatter={(v) => formatCurrency(v, 'MWK', true)} stroke={THEME_COLORS.text} fontSize={10} tickLine={false} axisLine={false} fontWeight={700} />
                                 <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
-                                <Bar dataKey="amount" fill={THEME_COLORS.primary} radius={[6, 6, 0, 0]} animationDuration={1000} />
+                                <Bar
+                                    dataKey="amount"
+                                    fill={THEME_COLORS.primary}
+                                    radius={[6, 6, 0, 0]}
+                                    animationDuration={1500}
+                                    animationEasing="ease-out"
+                                />
                             </BarChart>
                         ) : (
                             <AreaChart data={chartMode === 'active' ? projectedData : cumulativeData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -140,6 +155,8 @@ export function AnalyticsCharts({ data, chartMode, setChartMode, projectedData, 
                                     fillOpacity={1}
                                     fill="url(#colorCumulative)"
                                     strokeWidth={3}
+                                    animationDuration={2000}
+                                    animationEasing="ease-out"
                                 />
                                 {chartMode === 'active' && (
                                     <Area
@@ -150,7 +167,10 @@ export function AnalyticsCharts({ data, chartMode, setChartMode, projectedData, 
                                         fillOpacity={1}
                                         fill="url(#colorProjected)"
                                         strokeWidth={3}
-                                        connectNulls // Helps connect the projection line if data logic requires
+                                        connectNulls
+                                        animationDuration={2000}
+                                        animationEasing="ease-out"
+                                        animationBegin={500}
                                     />
                                 )}
                             </AreaChart>
@@ -180,6 +200,8 @@ export function AnalyticsCharts({ data, chartMode, setChartMode, projectedData, 
                                     outerRadius={100}
                                     paddingAngle={5}
                                     dataKey="value"
+                                    animationDuration={1500}
+                                    animationEasing="ease-out"
                                 >
                                     {data.paymentMethods.map((entry: any, index: number) => (
                                         <Cell key={`cell-${index}`} fill={[THEME_COLORS.primary, THEME_COLORS.secondary, THEME_COLORS.accent, THEME_COLORS.success][index % 4]} stroke="none" />

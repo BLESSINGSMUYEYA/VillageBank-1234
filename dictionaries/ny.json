@@ -158,6 +158,7 @@
         "ledger_sync": "Kukonza mbiri",
         "portfolio_health": "Umoyo wa zachuma",
         "no_records": "Palibe mbiri yomwe yapezeka",
+        "no_records_desc": "Palibe zopereka kapena ngongole zomwe zapezeka.",
         "no_active_credit": "Palibe ngongole zina"
     },
     "contributions": {

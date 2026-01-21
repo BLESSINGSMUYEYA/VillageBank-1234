@@ -285,16 +285,16 @@ export default function SmartContributionForm({ isModal, onClose }: SmartContrib
         <div className={cn("mx-auto px-4", isModal ? "max-w-full" : "max-w-4xl")}>
             {/* Step Indicator - Hidden on Success Step for cleaner look */}
             {step < 3 && (
-                <div className="flex items-center justify-center mb-12 gap-4">
+                <div className="flex items-center justify-center mb-6 sm:mb-12 gap-2 sm:gap-4">
                     <div className={cn(
-                        "w-10 h-10 rounded-full flex items-center justify-center font-black transition-all duration-500",
+                        "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-black text-sm sm:text-base transition-all duration-500",
                         step === 1 ? "bg-blue-600 text-white scale-110 shadow-lg shadow-blue-500/20" : "bg-emerald-500 text-white"
                     )}>
-                        {step > 1 ? <CheckCircle className="w-6 h-6" /> : "1"}
+                        {step > 1 ? <CheckCircle className="w-4 h-4 sm:w-6 sm:h-6" /> : "1"}
                     </div>
-                    <div className={cn("h-1 w-16 rounded-full transition-colors duration-500", step === 2 ? "bg-emerald-100 dark:bg-emerald-900/40" : "bg-muted")} />
+                    <div className={cn("h-1 w-8 sm:w-16 rounded-full transition-colors duration-500", step === 2 ? "bg-emerald-100 dark:bg-emerald-900/40" : "bg-muted")} />
                     <div className={cn(
-                        "w-10 h-10 rounded-full flex items-center justify-center font-black transition-all duration-500",
+                        "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-black text-sm sm:text-base transition-all duration-500",
                         step === 2 ? "bg-blue-600 text-white scale-110 shadow-lg shadow-blue-500/20" : "bg-muted text-muted-foreground"
                     )}>
                         2
@@ -311,9 +311,9 @@ export default function SmartContributionForm({ isModal, onClose }: SmartContrib
                         exit={{ opacity: 0, x: 20 }}
                         className="space-y-8"
                     >
-                        <div className="text-center space-y-2">
-                            <h2 className="text-3xl font-black text-foreground">Upload Receipt</h2>
-                            <p className="text-muted-foreground font-medium">Upload your proof of payment for treasurer verification.</p>
+                        <div className="text-center space-y-1 sm:space-y-2">
+                            <h2 className="text-xl sm:text-3xl font-black text-foreground">Upload Receipt</h2>
+                            <p className="text-sm sm:text-base text-muted-foreground font-medium">Upload your proof of payment for treasurer verification.</p>
 
                             {/* Skip Toggle */}
                             <div className="flex justify-center pt-2">
@@ -357,15 +357,15 @@ export default function SmartContributionForm({ isModal, onClose }: SmartContrib
                         exit={{ opacity: 0, x: -20 }}
                         className="space-y-8"
                     >
-                        <div className="text-center space-y-2">
-                            <h2 className="text-3xl font-black text-foreground uppercase tracking-tight">Review & Allocate</h2>
-                            <p className="text-muted-foreground font-medium">Verify your details and see how your funds are distributed.</p>
+                        <div className="text-center space-y-1 sm:space-y-2">
+                            <h2 className="text-xl sm:text-3xl font-black text-foreground uppercase tracking-tight">Review & Allocate</h2>
+                            <p className="text-sm sm:text-base text-muted-foreground font-medium">Verify your details and see how your funds are distributed.</p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-[1fr,340px] gap-8">
+                        <div className="grid grid-cols-1 lg:grid-cols-[1fr,340px] gap-4 sm:gap-8">
                             {/* Left: Refined Form */}
                             <div className="space-y-6">
-                                <GlassCard className="p-6 border-white/10" hover={false}>
+                                <GlassCard className="p-4 sm:p-6 border-white/10" hover={false}>
                                     <div className="space-y-6">
                                         <FormGroup label="Target Group *">
                                             <Select value={selectedGroupId} onValueChange={setSelectedGroupId} disabled={scanning}>
@@ -382,7 +382,7 @@ export default function SmartContributionForm({ isModal, onClose }: SmartContrib
                                             </Select>
                                         </FormGroup>
 
-                                        <div className="grid grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <FormGroup label="Amount (MWK) *">
                                                 <PremiumInput
                                                     value={amount}
@@ -427,7 +427,7 @@ export default function SmartContributionForm({ isModal, onClose }: SmartContrib
 
                             {/* Right: Premium Breakdown Summary */}
                             <div className="space-y-6">
-                                <GlassCard className="p-6 h-full flex flex-col justify-between border-blue-500/20 bg-blue-500/5 relative overflow-hidden" hover={false}>
+                                <GlassCard className="p-4 sm:p-6 h-full flex flex-col justify-between border-blue-500/20 bg-blue-500/5 relative overflow-hidden" hover={false}>
                                     <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
                                         <Sparkles className="w-20 h-20 text-blue-500" />
                                     </div>
@@ -441,7 +441,7 @@ export default function SmartContributionForm({ isModal, onClose }: SmartContrib
                                             <div className="space-y-6">
                                                 <div className="space-y-1">
                                                     <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Total Proof</p>
-                                                    <p className="text-3xl font-black text-foreground">{formatCurrency(amount)}</p>
+                                                    <p className="text-2xl sm:text-3xl font-black text-foreground">{formatCurrency(amount)}</p>
                                                 </div>
 
                                                 <div className="space-y-4 border-l-2 border-muted pl-4 py-1">
