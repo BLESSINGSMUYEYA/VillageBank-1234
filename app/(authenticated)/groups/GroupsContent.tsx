@@ -237,8 +237,8 @@ export function GroupsContent({ userGroups, userRole, pendingApprovalsCount = 0 
                             <Link href="/groups/new" className="w-full sm:w-auto">
                                 <Button
                                     size="sm"
-                                    variant="supporting"
-                                    className="w-full sm:w-auto min-h-[44px] h-11 font-bold rounded-xl shadow-lg shadow-emerald-500/20"
+                                    variant="banana"
+                                    className="w-full sm:w-auto min-h-[44px] h-11 font-bold rounded-xl shadow-lg shadow-yellow-500/20"
                                 >
                                     <Plus className="w-4 h-4 mr-1 sm:mr-2" />
                                     <span className="text-[9px] sm:text-[10px] uppercase tracking-wide">{t('groups.create_group')}</span>
@@ -263,7 +263,7 @@ export function GroupsContent({ userGroups, userRole, pendingApprovalsCount = 0 
                                 action={
                                     !searchTerm ? (
                                         <Link href="/groups/new">
-                                            <Button size="lg" className="bg-supporting text-supporting-foreground hover:brightness-110 font-black">
+                                            <Button size="lg" variant="banana" className="shadow-lg shadow-yellow-500/20 font-black">
                                                 <Plus className="w-6 h-6 mr-2" />
                                                 {t('groups.create_group')}
                                             </Button>

@@ -13,32 +13,32 @@ This style guide ensures visual consistency across all pages and components in t
 
 #### Primary Colors
 ```css
-/* Navy Blue Theme */
---primary: oklch(0.35 0.15 250)        /* Navy Blue #1E3A8A */
---accent: oklch(0.55 0.2 250)          /* Royal Blue #3B82F6 */
+/* Emerald Theme */
+--primary: oklch(0.45 0.15 145)        /* Emerald #059669 */
+--accent: oklch(0.5 0.18 145)          /* Emerald Green */
 
 /* Banana Gold (Accent/CTA) */
 --banana: oklch(0.85 0.16 85)          /* Vibrant Banana Gold */
---banana-foreground: oklch(0.2 0.05 260)
+--banana-foreground: oklch(0.2 0.05 145)
 --banana-soft: oklch(0.96 0.03 85)
 ```
 
 #### Semantic Colors
 ```css
 /* Success */
---success: green-600
---success-bg: green-100 (light) / green-900/30 (dark)
+--success: oklch(0.65 0.15 150)
+--success-foreground: oklch(0.15 0.05 145)
 
 /* Warning */
---warning: orange-600
---warning-bg: orange-100 (light) / orange-900/30 (dark)
+--warning: oklch(0.7 0.18 60)
+--warning-foreground: oklch(0.15 0.05 145)
 
 /* Error */
 --destructive: oklch(0.577 0.245 27.325)
 
 /* Info */
---info: blue-600
---info-bg: blue-100 (light) / blue-900/30 (dark)
+--info: oklch(0.6 0.15 145)
+--info-foreground: oklch(0.15 0.05 145)
 ```
 
 ---
@@ -65,7 +65,7 @@ import { PageHeader } from '@/components/layout/PageHeader'
 ```
 
 **Style Rules:**
-- **Title:** Gradient text from blue-900 to indigo-800 (dark: white to blue-200)
+- **Title:** Gradient text (Emerald logic)
 - **Font:** `text-2xl sm:text-3xl lg:text-4xl font-black`
 - **Bottom border:** `border-b border-border/50 pb-6`
 - **Margin:** `mb-6 sm:mb-8`
@@ -109,7 +109,7 @@ import { PageHeader } from '@/components/layout/PageHeader'
 ```tsx
 <StatsCard
   variant="gradient"
-  gradient="from-blue-900 to-indigo-900"
+  gradient="from-emerald-900 to-green-900"
   label="Active Loans"
   value={activeLoans.length}
   description="Current loans"
