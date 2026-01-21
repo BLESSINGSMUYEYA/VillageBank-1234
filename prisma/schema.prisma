@@ -33,6 +33,7 @@ model User {
   notifications     Notification[]
   pushSubscriptions PushSubscription[]
   reminders         Reminder[]
+  createdAnnouncements Announcement[]  @relation("CreatedAnnouncements")
 }
 
 model Group {
@@ -365,4 +366,23 @@ enum ReminderType {
   MEETING
   PAYMENT
   GENERAL
+}
+model Announcement {
+  id          String   @id @default(cuid())
+  title       String
+  message     String
+  imageUrl    String?
+  link        String?
+  actionText  String?
+  type        AnnouncementType @default(BANNER)
+  isActive    Boolean  @default(true)
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
+  createdById String
+  createdBy   User     @relation("CreatedAnnouncements", fields: [createdById], references: [id])
+}
+
+enum AnnouncementType {
+  BANNER
+  BROADCAST_ONLY
 }

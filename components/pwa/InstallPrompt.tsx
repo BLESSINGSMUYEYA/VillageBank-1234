@@ -50,17 +50,17 @@ export function InstallPrompt() {
                 className="fixed bottom-28 lg:bottom-4 right-4 z-[60] w-full max-w-sm px-4 sm:px-0"
             >
                 <GlassCard
-                    className="relative overflow-hidden border-blue-500/30 dark:border-banana/30 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)]"
+                    className="relative overflow-hidden border-emerald-500/30 dark:border-emerald-400/30 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)]"
                     gradient
                 >
                     {/* Decorative background element */}
-                    <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-blue-500/20 dark:bg-banana/20 rounded-full blur-2xl" />
+                    <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-emerald-500/20 dark:bg-emerald-400/20 rounded-full blur-2xl" />
 
                     <div className="relative z-10 p-5 flex flex-col gap-4">
                         <div className="flex items-start justify-between">
                             <div className="flex gap-3">
-                                <div className="p-2.5 bg-blue-600/10 dark:bg-banana/10 rounded-xl">
-                                    <Smartphone className="w-6 h-6 text-blue-600 dark:text-banana" />
+                                <div className="p-2.5 bg-emerald-600/10 dark:bg-emerald-400/10 rounded-xl">
+                                    <Smartphone className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                                 </div>
                                 <div>
                                     <h3 className="font-black text-lg text-foreground leading-tight">Install App</h3>
@@ -82,7 +82,7 @@ export function InstallPrompt() {
                         <div className="flex gap-3 mt-1">
                             <Button
                                 onClick={promptToInstall}
-                                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white dark:bg-banana dark:text-blue-950 dark:hover:bg-banana/90 font-bold shadow-lg shadow-blue-500/20 dark:shadow-banana/20"
+                                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-500 dark:text-white dark:hover:bg-emerald-600 font-bold shadow-lg shadow-emerald-500/20 dark:shadow-emerald-500/20"
                             >
                                 <Download className="w-4 h-4 mr-2" />
                                 Install Now

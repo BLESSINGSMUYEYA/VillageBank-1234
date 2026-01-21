@@ -18,8 +18,10 @@ import {
     ChevronRight,
     X,
     Link as LinkIcon,
-    TrendingUp
+    TrendingUp,
+    Bell
 } from 'lucide-react'
+import { PushNotificationManager } from '@/components/pwa/PushNotificationManager'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { StatsCard } from '@/components/ui/stats-card'
 import { formatCurrency, cn } from '@/lib/utils'
@@ -257,6 +259,26 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                     </div>
                                 </div>
                             </CardContent>
+                        </GlassCard>
+                    </motion.div>
+
+                    {/* Notifications Control */}
+                    <motion.div variants={itemFadeIn}>
+                        <GlassCard className="p-0 overflow-hidden min-h-[140px] border border-slate-100 dark:border-white/5 bg-gradient-to-br from-indigo-500/5 to-purple-500/5" hover={true}>
+                            <div className="p-4 sm:p-6 flex flex-col justify-between h-full relative z-10">
+                                <div>
+                                    <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-3">
+                                        <Bell className="w-5 h-5" />
+                                    </div>
+                                    <h3 className="text-sm font-black text-foreground mb-1">Push Notifications</h3>
+                                    <p className="text-[10px] sm:text-xs font-medium text-muted-foreground leading-relaxed max-w-[200px]">
+                                        Get instant alerts for contributions, loans, and group updates.
+                                    </p>
+                                </div>
+                                <div className="mt-4">
+                                    <PushNotificationManager />
+                                </div>
+                            </div>
                         </GlassCard>
                     </motion.div>
 

@@ -20,7 +20,7 @@ function urlBase64ToUint8Array(base64String: string) {
     return outputArray;
 }
 
-export function PushManager() {
+export function PushNotificationManager() {
     const [isSupported, setIsSupported] = useState(false)
     const [subscription, setSubscription] = useState<PushSubscription | null>(null)
     const [loading, setLoading] = useState(true)
@@ -36,6 +36,12 @@ export function PushManager() {
 
     async function registerServiceWorker() {
         try {
+            // Check if we are in dev mode and SW is not registered
+            if (process.env.NODE_ENV === 'development') {
+                // In dev, sometimes we need to register manually if next-pwa is disabled
+                await navigator.serviceWorker.register('/sw.js')
+            }
+
             const registration = await navigator.serviceWorker.ready
             const sub = await registration.pushManager.getSubscription()
             setSubscription(sub)

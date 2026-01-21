@@ -24,7 +24,6 @@ export function Footer() {
                 </div>
                 <div className="flex flex-col">
                   <h3 className="text-xl font-black text-[#1B4332] dark:text-white leading-none tracking-tighter italic">uBank</h3>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 leading-none">Global Platform</p>
                 </div>
               </div>
             </Link>

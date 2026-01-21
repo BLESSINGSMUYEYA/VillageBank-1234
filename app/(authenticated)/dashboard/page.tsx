@@ -1,3 +1,4 @@
+
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
@@ -28,18 +29,27 @@ export default async function DashboardPage() {
   }
 
   // Fetch data for DashboardContent
-  const [stats, recentActivity, pendingApprovals, remindersResult] = await Promise.all([
+  const [stats, recentActivity, pendingApprovals, remindersResult, announcements] = await Promise.all([
     getDashboardStats(),
     getRecentActivity(),
     getPendingApprovals(),
-    getUpcomingReminders(user.id)
+    getUpcomingReminders(user.id),
+    prisma.announcement.findMany({
+      where: {
+        type: 'BANNER',
+        isActive: true
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
   ])
 
   const reminders = remindersResult.success ? remindersResult.data : []
 
   return (
     <div className="space-y-12">
-      <DashboardBannerCarousel />
+      <DashboardBannerCarousel announcements={announcements} />
 
       <DashboardContent
         user={user}
