@@ -10,8 +10,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md hover:shadow-lg hover:from-blue-700 hover:to-indigo-700 border border-transparent",
-        default: "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md hover:shadow-lg hover:from-blue-700 hover:to-indigo-700 border border-transparent",
+        primary: "bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-md hover:shadow-lg hover:from-emerald-700 hover:to-green-700 border border-transparent",
+        default: "bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-md hover:shadow-lg hover:from-emerald-700 hover:to-green-700 border border-transparent",
         secondary: "bg-white dark:bg-slate-800 text-foreground border border-input shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700",
         outline: "border border-input bg-transparent hover:bg-accent hover:text-accent-foreground",
         ghost: "hover:bg-accent hover:text-accent-foreground",

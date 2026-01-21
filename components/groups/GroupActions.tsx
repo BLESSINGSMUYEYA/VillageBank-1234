@@ -7,8 +7,6 @@ import {
     Share2,
     DollarSign,
 } from 'lucide-react'
-import { GlassCard } from '@/components/ui/GlassCard'
-import { QRCodeShare } from '@/components/sharing/QRCodeShare'
 import {
     Dialog,
     DialogContent,
@@ -20,6 +18,7 @@ import {
 import { RecordCashModal } from '@/components/groups/RecordCashModal'
 import { ContributionModal } from '@/components/contributions/ContributionModal'
 import { GroupDetailsForm } from './settings/GroupDetailsForm'
+import { GroupShareModal } from './GroupShareModal'
 
 interface GroupActionsProps {
     group: any
@@ -52,26 +51,7 @@ export default function GroupActions({
 
             <div className="grid grid-cols-2 gap-3">
                 {isAdmin && (
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button variant="outline" className="h-12 rounded-xl px-4 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 font-bold text-xs gap-2 group">
-                                <Share2 className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
-                                <span className="truncate">Invite</span>
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent
-                            overlayClassName="bg-black/10 backdrop-blur-sm"
-                            className="sm:max-w-md border-none bg-transparent p-0 shadow-none max-h-[85vh] overflow-y-auto no-scrollbar"
-                        >
-                            <DialogTitle className="sr-only">Share Group Access Card</DialogTitle>
-                            <DialogDescription className="sr-only">
-                                Scan this QR code to join the group or share the invite link.
-                            </DialogDescription>
-                            <GlassCard className="p-8" hover={false}>
-                                <QRCodeShare groupId={group.id} groupName={group.name} />
-                            </GlassCard>
-                        </DialogContent>
-                    </Dialog>
+                    <GroupShareModal groupId={group.id} groupName={group.name} />
                 )}
 
                 {isAdmin && (

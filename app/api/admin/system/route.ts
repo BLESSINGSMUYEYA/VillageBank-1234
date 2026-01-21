@@ -126,8 +126,7 @@ export async function GET(request: NextRequest) {
       configurationHealth: {
         cloudinary: !!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
         gemini: !!process.env.GEMINI_API_KEY,
-        database: !!process.env.DATABASE_URL,
-        clerk: !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+        database: !!process.env.DATABASE_URL
       }
     }
 

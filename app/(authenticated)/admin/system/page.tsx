@@ -57,7 +57,6 @@ interface SystemData {
     cloudinary: boolean
     gemini: boolean
     database: boolean
-    clerk: boolean
   }
 }
 
@@ -442,15 +441,9 @@ export default function SystemAdminPage() {
                         <span className="text-xs font-mono">{data?.configurationHealth?.gemini ? 'CONNECTED' : 'ERROR'}</span>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Clerk Auth</span>
-                      <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${data?.configurationHealth?.clerk ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                        <span className="text-xs font-mono">{data?.configurationHealth?.clerk ? 'CONNECTED' : 'ERROR'}</span>
-                      </div>
-                    </div>
                   </div>
                 </div>
+
               </AdminGlassCard>
 
               <AdminGlassCard title="Maintenance">
@@ -646,7 +639,7 @@ export default function SystemAdminPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </motion.div>
-    </div>
+      </motion.div >
+    </div >
   )
 }

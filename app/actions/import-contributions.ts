@@ -74,7 +74,6 @@ export async function parseAndValidateImport(
 
         const emailMap = new Map<string, typeof groupMembers[0]>();
         groupMembers.forEach((member) => {
-            // clerk emails can be tricky, assuming user.email is the primary one stored in our DB
             if (member.user.email) {
                 emailMap.set(member.user.email.toLowerCase().trim(), member);
             }

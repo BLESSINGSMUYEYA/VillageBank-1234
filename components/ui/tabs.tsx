@@ -85,7 +85,7 @@ const ZenTabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "group inline-flex items-center justify-center whitespace-nowrap border-b-2 border-transparent px-0 pb-3 text-xs font-black tracking-widest uppercase transition-all hover:text-foreground data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:text-blue-600 data-[state=active]:shadow-none dark:data-[state=active]:border-banana dark:data-[state=active]:text-banana",
+      "group inline-flex items-center justify-center whitespace-nowrap border-b-2 border-transparent px-0 pb-3 text-[10px] font-black tracking-widest uppercase transition-all hover:text-foreground data-[state=active]:border-emerald-600 data-[state=active]:bg-transparent data-[state=active]:text-emerald-600 data-[state=active]:shadow-none dark:data-[state=active]:border-supporting dark:data-[state=active]:text-supporting",
       className
     )}
     {...props}

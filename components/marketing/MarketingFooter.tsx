@@ -18,7 +18,7 @@ export function MarketingFooter() {
                 {t('landing.copyright', { year: new Date().getFullYear().toString() })}
             </p>
             <div className="flex items-center gap-6">
-                <Link href="/help" className="text-slate-500 hover:text-blue-600 dark:hover:text-banana text-xs font-black uppercase tracking-widest transition-colors">
+                <Link href="/help" className="text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 text-xs font-black uppercase tracking-widest transition-colors">
                     Help Center
                 </Link>
                 <Globe className="w-5 h-5 text-slate-400" />
