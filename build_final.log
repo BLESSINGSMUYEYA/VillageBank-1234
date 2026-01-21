@@ -1,0 +1,28 @@
+
+> village-banking@0.1.0 build
+> cross-env NODE_OPTIONS='--dns-result-order=ipv4first --max-old-space-size=4096' prisma generate && cross-env NODE_OPTIONS='--dns-result-order=ipv4first --max-old-space-size=4096' next build
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to .\node_modules\@prisma\client in 353ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
+
+   ▲ Next.js 15.5.9
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     ✓ reactCompiler
+     · optimizePackageImports
+
+   Creating an optimized production build ...
+ ✓ (serwist) Bundling the service worker script with the URL '/sw.js' and the scope '/'...
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOSPC: no space left on device, write
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOSPC: no space left on device, write
+uncaughtException [Error: ENOSPC: no space left on device, write] {
+  errno: -4055,
+  code: 'ENOSPC',
+  syscall: 'write'
+}

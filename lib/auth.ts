@@ -32,9 +32,19 @@ export async function getSession() {
     return await verifyToken(token);
 }
 
-export async function getSessionFromRequest(request: NextRequest) {
+export interface SessionPayload {
+    userId: string;
+    role: string;
+    [key: string]: any;
+}
+
+export async function getSessionFromRequest(request: NextRequest): Promise<SessionPayload | null> {
     const token = request.cookies.get('auth_token')?.value;
     if (!token) return null;
     const payload = await verifyToken(token);
-    return payload ? { userId: payload.userId as string, ...payload } : null;
+    return payload ? {
+        userId: payload.userId as string,
+        role: payload.role as string,
+        ...payload
+    } : null;
 }
