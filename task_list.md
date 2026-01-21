@@ -23,7 +23,7 @@ This document outlines the tasks for elevating the Village Banking member experi
 - [x] **Bento Dashboard**:
     - [x] Implemented staggered entrance for all dashboard widgets.
     - [x] Added "Quick Action" glass tiles with dynamic hover states.
-- [ ] **Animated Charts**: Ensure `recharts` have smooth entrance animations and premium tooltips.
+- [x] **Animated Charts**: Ensure `recharts` have smooth entrance animations and premium tooltips.
 - [ ] **Skeleton Architecture**: Build context-specific skeleton loaders to reduce perceived load time.
 
 ## 📱 Phase 4: Mobile & Polish (The Detail)

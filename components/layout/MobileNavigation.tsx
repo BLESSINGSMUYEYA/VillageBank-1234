@@ -64,14 +64,11 @@ export function MobileNavigation() {
       >
         <div className="flex items-center justify-between p-4 px-5">
           <Link href="/dashboard" className="group">
-            <div className="flex items-center gap-2">
-              <div className="flex items-center justify-center p-1.5 rounded-xl bg-[#1B4332] group-active:scale-90 transition-transform shadow-lg shadow-emerald-900/20">
-                <UBankLogo className="w-5 h-5 brightness-200" />
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#D8F3DC] rounded-xl flex items-center justify-center group-active:scale-95 transition-transform">
+                <UBankLogo className="w-6 h-6 text-[#2D6A4F]" />
               </div>
-              <div className="flex flex-col">
-                <h1 className="text-lg font-black text-[#1B4332] dark:text-white leading-none tracking-tighter italic">uBank</h1>
-                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 leading-none">Global</p>
-              </div>
+              <span className="text-xl font-bold text-[#1B4332] dark:text-white">uBank</span>
             </div>
           </Link>
 
