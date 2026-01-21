@@ -10,6 +10,13 @@ const withSerwist = withSerwistInit({
 const nextConfig: NextConfig = {
   experimental: {
     reactCompiler: true,
+    optimizePackageImports: [
+      'lucide-react',
+      'recharts',
+      'framer-motion',
+      'date-fns',
+      '@radix-ui/react-icons',
+    ],
   },
   eslint: {
     ignoreDuringBuilds: true,

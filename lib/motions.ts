@@ -81,3 +81,81 @@ export const fadeUp = {
     animate: { opacity: 1, y: 0 },
     transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] }
 } as const;
+
+// ==========================================
+// MOBILE-OPTIMIZED VARIANTS
+// Use these on mobile for better performance
+// ==========================================
+
+/**
+ * Simplified fade-in for mobile - uses tween instead of spring
+ * Less computational overhead on low-end devices
+ */
+export const mobileItemFadeIn = {
+    initial: { opacity: 0, y: 10 },
+    animate: {
+        opacity: 1,
+        y: 0,
+        transition: {
+            type: "tween",
+            duration: 0.2,
+            ease: "easeOut"
+        }
+    }
+} as const;
+
+/**
+ * Fast stagger for mobile - shorter delays
+ */
+export const mobileStaggerContainer = {
+    initial: {},
+    animate: {
+        transition: {
+            staggerChildren: 0.03
+        }
+    }
+} as const;
+
+/**
+ * Simple scale for mobile - no spring physics
+ */
+export const mobileScaleIn = {
+    initial: { opacity: 0, scale: 0.98 },
+    animate: {
+        opacity: 1,
+        scale: 1,
+        transition: {
+            type: "tween",
+            duration: 0.15,
+            ease: "easeOut"
+        }
+    }
+} as const;
+
+/**
+ * No-hover variant for touch devices
+ */
+export const touchScale = {
+    whileTap: { scale: 0.97 },
+    transition: { type: "tween", duration: 0.1 }
+} as const;
+
+/**
+ * Helper: Check if user prefers reduced motion
+ * Use this to conditionally apply simpler animations
+ */
+export const prefersReducedMotion = (): boolean => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+};
+
+/**
+ * Helper: Get appropriate variants based on device/preference
+ */
+export const getResponsiveVariants = (isMobile: boolean) => ({
+    itemFadeIn: isMobile ? mobileItemFadeIn : itemFadeIn,
+    staggerContainer: isMobile ? mobileStaggerContainer : staggerContainer,
+    scaleIn: isMobile ? mobileScaleIn : scaleIn,
+    hoverScale: isMobile ? touchScale : hoverScale,
+});
+

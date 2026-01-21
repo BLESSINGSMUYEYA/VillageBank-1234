@@ -1,5 +1,6 @@
 'use client'
 
+import { memo, useMemo } from 'react'
 import { Activity, Banknote, Calendar, CreditCard, Users, Wallet } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { GlassCard } from '@/components/ui/GlassCard'

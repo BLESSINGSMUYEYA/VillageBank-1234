@@ -19,7 +19,7 @@ import {
 import { NotificationCenter } from '@/components/notifications/NotificationCenter'
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher'
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion'
-import { useState } from 'react'
+import { useState, memo } from 'react'
 
 import { cn } from '@/lib/utils'
 import { UBankLogo } from '@/components/ui/Logo'

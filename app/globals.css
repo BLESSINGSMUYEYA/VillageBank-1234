@@ -293,6 +293,43 @@
   :focus-visible {
     @apply outline-none ring-2 ring-primary/50 ring-offset-2 ring-offset-background;
   }
+
+  /* ========================================
+     MOBILE PERFORMANCE OPTIMIZATIONS
+     ======================================== */
+
+  /* Respect user preference for reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Simplify backdrop-blur on mobile (expensive on low-end devices) */
+  @media (max-width: 640px) {
+
+    .glass-morphism,
+    .glass-morphism-light,
+    .zen-card {
+      backdrop-filter: blur(8px) !important;
+      -webkit-backdrop-filter: blur(8px) !important;
+    }
+  }
+
+  /* Disable complex hover animations on touch devices */
+  @media (hover: none) and (pointer: coarse) {
+
+    .bento-card-interactive:hover,
+    .spring-transition:hover {
+      transform: none !important;
+    }
+  }
 }
 
 @layer utilities {
@@ -380,6 +417,18 @@
 
   .spring-transition {
     transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    will-change: transform, opacity;
+  }
+
+  /* GPU-accelerated transforms for smooth animations */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  /* Optimize off-screen content rendering */
+  .content-auto {
+    content-visibility: auto;
   }
 
   .glass-morphism {
