@@ -93,26 +93,28 @@ export function DesktopNavigation() {
 
             <div className="relative z-10 flex flex-col gap-4">
               <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
-                <Smartphone className="w-5 h-5 text-white" />
+                <Users className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h4 className="text-white font-bold text-sm">Download our Mobile App</h4>
+                <h4 className="text-white font-bold text-sm">Invite Friends</h4>
                 <p className="text-white/60 text-[11px] mt-1 leading-relaxed">
-                  Get easy access on another way
+                  Banking is better together. Grow your circle.
                 </p>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full bg-[#1B4332] border-0 text-white rounded-xl py-5 font-bold hover:bg-[#2D6A4F] transition-all"
-              >
-                Download
-              </Button>
+              <Link href="/groups">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full bg-[#1B4332] border-0 text-white rounded-xl py-5 font-bold hover:bg-[#2D6A4F] transition-all"
+                >
+                  Invite
+                </Button>
+              </Link>
             </div>
 
             {/* User Icon Float */}
             <div className="absolute -top-1 left-2 w-6 h-6 rounded-full border-2 border-[#081C15] bg-emerald-500 flex items-center justify-center text-[10px] font-bold text-white">
-              B
+              +
             </div>
           </div>
         </div>
