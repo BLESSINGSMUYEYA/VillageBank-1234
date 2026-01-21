@@ -104,7 +104,10 @@ export default function SmartContributionForm({ isModal, onClose }: SmartContrib
                     const data = await res.json()
                     const activeGroups = data.groups.filter((g: any) =>
                         g.members.some((m: any) => m.status === 'ACTIVE')
-                    )
+                    ).map((g: any) => ({
+                        ...g,
+                        currentUserMember: g.members[0] // user's membership is filtered in API
+                    }))
                     setGroups(activeGroups)
 
                     // UX Improvement: Auto-select if only 1 group
@@ -118,6 +121,16 @@ export default function SmartContributionForm({ isModal, onClose }: SmartContrib
         }
         fetchGroups()
     }, [])
+
+    // Update unpaid penalties when group changes
+    useEffect(() => {
+        if (selectedGroupId) {
+            const group = groups.find(g => g.id === selectedGroupId) as any
+            if (group && group.currentUserMember) {
+                setUnpaidPenalties(group.currentUserMember.unpaidPenalties || 0)
+            }
+        }
+    }, [selectedGroupId, groups])
 
     const handleScanComplete = (data: any) => {
         setScanning(false)
@@ -187,6 +200,7 @@ export default function SmartContributionForm({ isModal, onClose }: SmartContrib
             paymentMethod: paymentMethod || 'OTHER',
             transactionRef,
             paymentDate: new Date(paymentDate).toISOString(),
+            penaltyPaid: breakdown?.appliedPenalty || 0,
         }
 
         try {

@@ -17,7 +17,7 @@ export async function updateGroupDetails(
 ): Promise<UpdateGroupDetailsState> {
     const session = await getSession()
     if (!session?.user) {
-        return { error: 'Unauthorized' }
+        return { error: 'Unauthorized: No active session found. Please log in again.' }
     }
 
     const groupId = formData.get('groupId') as string
@@ -33,8 +33,14 @@ export async function updateGroupDetails(
         }
     })
 
-    if (!membership || membership.role !== 'ADMIN') {
-        return { error: 'Unauthorized: Only admins can update details' }
+    console.log('[DEBUG] UpdateGroupDetails - User:', userId, 'Group:', groupId, 'Membership:', membership);
+
+    if (!membership) {
+        return { error: `Unauthorized: You are not a member of this group. (User: ${userId}, Group: ${groupId})` }
+    }
+
+    if (membership.role !== 'ADMIN') {
+        return { error: `Unauthorized: You are a ${membership.role}, but ADMIN access is required.` }
     }
 
     try {

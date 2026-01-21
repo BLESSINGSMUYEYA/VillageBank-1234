@@ -47,6 +47,22 @@ export async function checkLoanEligibility(
       reason: 'You already have an active loan',
     }
   }
+  // Check for unpaid penalties
+  const member = await prisma.groupMember.findUnique({
+    where: {
+      groupId_userId: {
+        groupId,
+        userId,
+      },
+    },
+  })
+
+  if (member && member.unpaidPenalties > 0) {
+    return {
+      eligible: false,
+      reason: `You have unpaid penalties. Please clear your outstanding fines first.`,
+    }
+  }
 
   // Calculate total contributions
   const contributions = await prisma.contribution.findMany({

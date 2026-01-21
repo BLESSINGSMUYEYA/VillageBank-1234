@@ -24,11 +24,22 @@ export default function CreateGroupPage() {
     name: '',
     description: '',
     region: '',
+    meetingLocation: '',
+    contactEmail: '',
+    contactPhone: '',
+    lateContributionFee: '0',
+    minContributionMonths: '0',
     meetingFrequency: 'MONTHLY',
     monthlyContribution: '',
     socialFundAmount: '0',
     maxLoanMultiplier: '3',
     interestRate: '10',
+    loanInterestType: 'FLAT_RATE',
+    penaltyAmount: '0',
+    lateMeetingFine: '0',
+    missedMeetingFine: '0',
+    contributionDueDay: '5',
+    loanGracePeriodDays: '0',
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -106,11 +117,22 @@ export default function CreateGroupPage() {
           name: formData.name,
           description: formData.description,
           region: formData.region,
+          meetingLocation: formData.meetingLocation,
+          contactEmail: formData.contactEmail,
+          contactPhone: formData.contactPhone,
           meetingFrequency: formData.meetingFrequency,
           monthlyContribution: parseFloat(formData.monthlyContribution),
           socialFundAmount: parseFloat(formData.socialFundAmount) || 0,
           maxLoanMultiplier: parseInt(formData.maxLoanMultiplier),
           interestRate: parseFloat(formData.interestRate),
+          loanInterestType: formData.loanInterestType,
+          penaltyAmount: parseFloat(formData.penaltyAmount) || 0,
+          lateMeetingFine: parseFloat(formData.lateMeetingFine) || 0,
+          missedMeetingFine: parseFloat(formData.missedMeetingFine) || 0,
+          lateContributionFee: parseFloat(formData.lateContributionFee) || 0,
+          contributionDueDay: parseInt(formData.contributionDueDay),
+          minContributionMonths: parseInt(formData.minContributionMonths),
+          loanGracePeriodDays: parseInt(formData.loanGracePeriodDays),
         }),
       })
 
@@ -264,6 +286,69 @@ export default function CreateGroupPage() {
                         value={formData.interestRate}
                         onChange={(e) => handleInputChange('interestRate', e.target.value)}
                       />
+                    </FormGroup>
+
+                    <FormGroup label="Interest Type">
+                      <Select value={formData.loanInterestType} onValueChange={(v) => handleInputChange('loanInterestType', v)}>
+                        <SelectTrigger className="bg-white/50 dark:bg-black/20 border-white/20 rounded-xl h-14 font-bold px-6">
+                          <SelectValue placeholder="Interest Calculation" />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-2xl border-white/10 backdrop-blur-3xl">
+                          <SelectItem value="FLAT_RATE" className="font-bold">Flat Rate</SelectItem>
+                          <SelectItem value="REDUCING_BALANCE" className="font-bold">Reducing Balance</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormGroup>
+
+                    <FormGroup label="Grace Period (Days)">
+                      <PremiumInput
+                        type="number"
+                        value={formData.loanGracePeriodDays}
+                        onChange={(e) => handleInputChange('loanGracePeriodDays', e.target.value)}
+                      />
+                    </FormGroup>
+                  </div>
+                </div>
+
+                <div className="space-y-8 pt-6">
+                  <SectionHeader
+                    title="Penalties & Fees"
+                    icon={AlertCircle}
+                    iconColor="text-red-500"
+                    iconBg="bg-red-500/10"
+                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormGroup label="Late Contribution Fee (MWK)">
+                      <PremiumInput type="number" prefix="MWK" value={formData.lateContributionFee} onChange={(e) => handleInputChange('lateContributionFee', e.target.value)} />
+                    </FormGroup>
+                    <FormGroup label="Late Meeting Fine (MWK)">
+                      <PremiumInput type="number" prefix="MWK" value={formData.lateMeetingFine} onChange={(e) => handleInputChange('lateMeetingFine', e.target.value)} />
+                    </FormGroup>
+                    <FormGroup label="Missed Meeting Fine (MWK)">
+                      <PremiumInput type="number" prefix="MWK" value={formData.missedMeetingFine} onChange={(e) => handleInputChange('missedMeetingFine', e.target.value)} />
+                    </FormGroup>
+                    <FormGroup label="General Penalty Amount (MWK)">
+                      <PremiumInput type="number" prefix="MWK" value={formData.penaltyAmount} onChange={(e) => handleInputChange('penaltyAmount', e.target.value)} />
+                    </FormGroup>
+                  </div>
+                </div>
+
+                <div className="space-y-8 pt-6">
+                  <SectionHeader
+                    title="Contact & Location"
+                    icon={Globe}
+                    iconColor="text-blue-500"
+                    iconBg="bg-blue-500/10"
+                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormGroup label="Meeting Location">
+                      <PremiumInput value={formData.meetingLocation} onChange={(e) => handleInputChange('meetingLocation', e.target.value)} placeholder="e.g. Community Hall" />
+                    </FormGroup>
+                    <FormGroup label="Contact Email">
+                      <PremiumInput value={formData.contactEmail} onChange={(e) => handleInputChange('contactEmail', e.target.value)} placeholder="group@example.com" />
+                    </FormGroup>
+                    <FormGroup label="Contact Phone">
+                      <PremiumInput value={formData.contactPhone} onChange={(e) => handleInputChange('contactPhone', e.target.value)} placeholder="+265..." />
                     </FormGroup>
                   </div>
                 </div>

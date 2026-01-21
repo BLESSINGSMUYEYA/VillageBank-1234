@@ -3,6 +3,7 @@
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
+import { InterestType } from '@prisma/client'
 
 export type UpdateGroupSettingsState = {
     success?: boolean
@@ -16,7 +17,7 @@ export async function updateGroupSettings(
 ): Promise<UpdateGroupSettingsState> {
     const session = await getSession()
     if (!session?.user) {
-        return { error: 'Unauthorized' }
+        return { error: 'Unauthorized: No active session found. Please log in again.' }
     }
 
     const groupId = formData.get('groupId') as string
@@ -33,19 +34,36 @@ export async function updateGroupSettings(
         }
     })
 
-    if (!membership || membership.role !== 'ADMIN') {
-        return { error: 'Unauthorized: Only admins can update settings' }
+    console.log('[DEBUG] UpdateGroupSettings - User:', userId, 'Group:', groupId, 'Membership:', membership);
+
+    if (!membership) {
+        return { error: `Unauthorized: You are not a member of this group. (User: ${userId}, Group: ${groupId})` }
+    }
+
+    if (membership.role !== 'ADMIN') {
+        return { error: `Unauthorized: You are a ${membership.role}, but ADMIN access is required.` }
     }
 
     try {
-        const monthlyContribution = parseFloat(formData.get('monthlyContribution') as string)
-        const interestRate = parseFloat(formData.get('interestRate') as string)
-        const lateMeetingFine = parseFloat(formData.get('lateMeetingFine') as string)
-        const lateContributionFee = parseFloat(formData.get('lateContributionFee') as string)
-        const missedMeetingFine = parseFloat(formData.get('missedMeetingFine') as string)
-        const socialFundAmount = parseFloat(formData.get('socialFundAmount') as string)
-        const maxLoanMultiplier = parseFloat(formData.get('maxLoanMultiplier') as string)
-        const penaltyAmount = parseFloat(formData.get('penaltyAmount') as string)
+        const parseNumber = (value: FormDataEntryValue | null, isFloat: boolean = true) => {
+            if (!value) return 0
+            const num = isFloat ? parseFloat(value as string) : parseInt(value as string)
+            return isNaN(num) ? 0 : num
+        }
+
+        const monthlyContribution = parseNumber(formData.get('monthlyContribution'))
+        const interestRate = parseNumber(formData.get('interestRate'))
+        const lateMeetingFine = parseNumber(formData.get('lateMeetingFine'))
+        const lateContributionFee = parseNumber(formData.get('lateContributionFee'))
+        const missedMeetingFine = parseNumber(formData.get('missedMeetingFine'))
+        const socialFundAmount = parseNumber(formData.get('socialFundAmount'))
+        const maxLoanMultiplier = parseNumber(formData.get('maxLoanMultiplier'), false)
+        const penaltyAmount = parseNumber(formData.get('penaltyAmount'))
+
+        const contributionDueDay = parseNumber(formData.get('contributionDueDay'), false)
+        const minContributionMonths = parseNumber(formData.get('minContributionMonths'), false)
+        const loanGracePeriodDays = parseNumber(formData.get('loanGracePeriodDays'), false)
+        const loanInterestType = (formData.get('loanInterestType') as InterestType) || 'FLAT_RATE'
 
         await prisma.group.update({
             where: { id: groupId },
@@ -58,11 +76,15 @@ export async function updateGroupSettings(
                 socialFundAmount,
                 maxLoanMultiplier,
                 penaltyAmount,
+                contributionDueDay,
+                minContributionMonths,
+                loanGracePeriodDays,
+                loanInterestType,
             }
         })
 
         revalidatePath(`/groups/${groupId}`)
-        revalidatePath(`/groups/${groupId}`)
+        revalidatePath(`/groups/${groupId}/settings`)
 
         return {
             success: true,

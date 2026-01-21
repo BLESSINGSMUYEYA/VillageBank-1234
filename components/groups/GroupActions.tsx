@@ -6,7 +6,6 @@ import {
     Settings,
     Share2,
     DollarSign,
-    Shield,
 } from 'lucide-react'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { QRCodeShare } from '@/components/sharing/QRCodeShare'
@@ -16,10 +15,10 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
+    DialogDescription,
 } from "@/components/ui/dialog"
 import { RecordCashModal } from '@/components/groups/RecordCashModal'
 import { ContributionModal } from '@/components/contributions/ContributionModal'
-import { GroupPoliciesClient } from './settings/GroupPoliciesClient'
 import { GroupDetailsForm } from './settings/GroupDetailsForm'
 
 interface GroupActionsProps {
@@ -34,26 +33,18 @@ export default function GroupActions({
     isTreasurer
 }: GroupActionsProps) {
     const [isContributionModalOpen, setIsContributionModalOpen] = useState(false)
-    const [isPoliciesOpen, setIsPoliciesOpen] = useState(false)
     const [isSettingsOpen, setIsSettingsOpen] = useState(false)
 
     return (
         <div className="flex flex-col gap-3 w-full xl:w-auto mt-2 xl:mt-0 xl:min-w-[300px]">
-            {/* Policies Dialog */}
-            <Dialog open={isPoliciesOpen} onOpenChange={setIsPoliciesOpen}>
-                <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle>Group Policies</DialogTitle>
-                    </DialogHeader>
-                    <GroupPoliciesClient group={group} onSuccess={() => setIsPoliciesOpen(false)} />
-                </DialogContent>
-            </Dialog>
-
-            {/* Settings Dialog */}
+            {/* Settings Dialog - Now includes policies */}
             <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-                <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="sm:max-w-3xl max-h-[85vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>Group Settings</DialogTitle>
+                        <DialogDescription>
+                            Manage your group's profile, financial settings, and policies.
+                        </DialogDescription>
                     </DialogHeader>
                     <GroupDetailsForm group={group} onSuccess={() => setIsSettingsOpen(false)} />
                 </DialogContent>
@@ -73,22 +64,14 @@ export default function GroupActions({
                             className="sm:max-w-md border-none bg-transparent p-0 shadow-none max-h-[85vh] overflow-y-auto no-scrollbar"
                         >
                             <DialogTitle className="sr-only">Share Group Access Card</DialogTitle>
+                            <DialogDescription className="sr-only">
+                                Scan this QR code to join the group or share the invite link.
+                            </DialogDescription>
                             <GlassCard className="p-8" hover={false}>
                                 <QRCodeShare groupId={group.id} groupName={group.name} />
                             </GlassCard>
                         </DialogContent>
                     </Dialog>
-                )}
-
-                {isAdmin && (
-                    <Button
-                        variant="outline"
-                        onClick={() => setIsPoliciesOpen(true)}
-                        className="w-full h-12 rounded-xl px-4 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 font-bold text-xs gap-2 group"
-                    >
-                        <Shield className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
-                        <span className="truncate">Policies</span>
-                    </Button>
                 )}
 
                 {isAdmin && (

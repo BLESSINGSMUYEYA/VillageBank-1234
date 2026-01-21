@@ -8,8 +8,9 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { updateGroupDetails } from '@/app/actions/update-group-details'
+import { updateGroupSettings } from '@/app/actions/update-group-settings'
 import { toast } from 'sonner'
-import { Loader2, Save, MapPin, Calendar, Mail, Phone } from 'lucide-react'
+import { Loader2, Save, MapPin, Calendar, Mail, Phone, Wallet, AlertOctagon, Landmark, Shield } from 'lucide-react'
 
 interface GroupDetailsFormProps {
     group: any
@@ -23,13 +24,20 @@ export function GroupDetailsForm({ group, onSuccess }: GroupDetailsFormProps) {
     async function handleSubmit(formData: FormData) {
         setIsLoading(true)
         try {
-            const result = await updateGroupDetails(null, formData)
-            if (result.success) {
-                toast.success(result.message)
+            // Execute both updates
+            const [detailsResult, settingsResult] = await Promise.all([
+                updateGroupDetails(null, formData),
+                updateGroupSettings(null, formData)
+            ])
+
+            if (detailsResult.success && settingsResult.success) {
+                toast.success('Group settings updated successfully')
                 router.refresh()
                 onSuccess?.()
             } else {
-                toast.error(result.error)
+                // Determine which one failed or show generic error
+                const error = detailsResult.error || settingsResult.error || 'Failed to update some settings'
+                toast.error(error)
             }
         } catch (error) {
             toast.error('An unexpected error occurred')
@@ -39,141 +47,369 @@ export function GroupDetailsForm({ group, onSuccess }: GroupDetailsFormProps) {
     }
 
     return (
-        <form action={handleSubmit} className="space-y-6">
+        <form action={handleSubmit} className="space-y-8">
             <input type="hidden" name="groupId" value={group.id} />
 
-            {/* Name & Region */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                    <Label htmlFor="name" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Group Name</Label>
-                    <Input
-                        id="name"
-                        name="name"
-                        defaultValue={group.name}
-                        className="bg-white dark:bg-slate-900/50"
-                        placeholder="Enter group name"
-                        required
-                    />
+            {/* SECTION 1: GENERAL INFORMATION */}
+            <div className="space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-200 dark:border-white/10">
+                    <Shield className="w-5 h-5 text-emerald-600 dark:text-emerald-500" />
+                    <h3 className="font-bold text-lg">General Information</h3>
                 </div>
 
-                <div className="space-y-2">
-                    <Label htmlFor="region" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Region</Label>
-                    <Select name="region" defaultValue={group.region}>
-                        <SelectTrigger className="bg-white dark:bg-slate-900/50">
-                            <SelectValue placeholder="Select region" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="NORTHERN">Northern Region</SelectItem>
-                            <SelectItem value="CENTRAL">Central Region</SelectItem>
-                            <SelectItem value="SOUTHERN">Southern Region</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-            </div>
-
-            {/* Description */}
-            <div className="space-y-2">
-                <Label htmlFor="description" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Description</Label>
-                <Textarea
-                    id="description"
-                    name="description"
-                    defaultValue={group.description || ''}
-                    className="min-h-[80px] bg-white dark:bg-slate-900/50 resize-none"
-                    placeholder="Describe your group..."
-                />
-            </div>
-
-            <div className="h-px bg-slate-200 dark:bg-white/10" />
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {/* Meeting Details */}
-                <div className="space-y-4">
-                    <h3 className="text-sm font-bold flex items-center gap-2 text-foreground">
-                        <Calendar className="w-4 h-4 text-purple-500" />
-                        Meeting Details
-                    </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="name" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Group Name</Label>
+                        <Input
+                            id="name"
+                            name="name"
+                            defaultValue={group?.name || ''}
+                            className="bg-white dark:bg-slate-900/50"
+                            placeholder="Enter group name"
+                            required
+                        />
+                    </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="meetingFrequency" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Frequency</Label>
-                        <Select name="meetingFrequency" defaultValue={group.meetingFrequency}>
+                        <Label htmlFor="region" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Region</Label>
+                        <Select name="region" defaultValue={group?.region || 'NORTHERN'}>
                             <SelectTrigger className="bg-white dark:bg-slate-900/50">
-                                <SelectValue placeholder="Select frequency" />
+                                <SelectValue placeholder="Select region" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="WEEKLY">Weekly</SelectItem>
-                                <SelectItem value="BIWEEKLY">Bi-Weekly</SelectItem>
-                                <SelectItem value="MONTHLY">Monthly</SelectItem>
+                                <SelectItem value="NORTHERN">Northern Region</SelectItem>
+                                <SelectItem value="CENTRAL">Central Region</SelectItem>
+                                <SelectItem value="SOUTHERN">Southern Region</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
-
-                    <div className="space-y-2">
-                        <Label htmlFor="meetingLocation" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Location</Label>
-                        <div className="relative">
-                            <MapPin className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
-                            <Input
-                                id="meetingLocation"
-                                name="meetingLocation"
-                                defaultValue={group.meetingLocation || ''}
-                                className="pl-9 bg-white dark:bg-slate-900/50"
-                                placeholder="e.g. Community Center"
-                            />
-                        </div>
-                    </div>
                 </div>
 
-                {/* Contact Details */}
-                <div className="space-y-4">
-                    <h3 className="text-sm font-bold flex items-center gap-2 text-foreground">
-                        <Phone className="w-4 h-4 text-emerald-500" />
-                        Contact Info
-                    </h3>
+                <div className="space-y-2">
+                    <Label htmlFor="description" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Description</Label>
+                    <Textarea
+                        id="description"
+                        name="description"
+                        defaultValue={group?.description || ''}
+                        className="min-h-[80px] bg-white dark:bg-slate-900/50 resize-none"
+                        placeholder="Describe your group..."
+                    />
+                </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="contactEmail" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Email</Label>
-                        <div className="relative">
-                            <Mail className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
-                            <Input
-                                id="contactEmail"
-                                name="contactEmail"
-                                type="email"
-                                defaultValue={group.contactEmail || ''}
-                                className="pl-9 bg-white dark:bg-slate-900/50"
-                                placeholder="group@example.com"
-                            />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+                    <div className="space-y-4">
+                        <h4 className="text-sm font-bold flex items-center gap-2 text-foreground">
+                            <Calendar className="w-4 h-4 text-purple-500" />
+                            Meeting Details
+                        </h4>
+                        <div className="space-y-2">
+                            <Label htmlFor="meetingFrequency" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Frequency</Label>
+                            <Select name="meetingFrequency" defaultValue={group?.meetingFrequency || 'MONTHLY'}>
+                                <SelectTrigger className="bg-white dark:bg-slate-900/50">
+                                    <SelectValue placeholder="Select frequency" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="WEEKLY">Weekly</SelectItem>
+                                    <SelectItem value="BIWEEKLY">Bi-Weekly</SelectItem>
+                                    <SelectItem value="MONTHLY">Monthly</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="meetingLocation" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Location</Label>
+                            <div className="relative">
+                                <MapPin className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
+                                <Input
+                                    id="meetingLocation"
+                                    name="meetingLocation"
+                                    defaultValue={group?.meetingLocation || ''}
+                                    className="pl-9 bg-white dark:bg-slate-900/50"
+                                    placeholder="e.g. Community Center"
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="contactPhone" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Phone</Label>
-                        <div className="relative">
-                            <Phone className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
-                            <Input
-                                id="contactPhone"
-                                name="contactPhone"
-                                defaultValue={group.contactPhone || ''}
-                                className="pl-9 bg-white dark:bg-slate-900/50"
-                                placeholder="+1 234 567 890"
-                            />
+                    <div className="space-y-4">
+                        <h4 className="text-sm font-bold flex items-center gap-2 text-foreground">
+                            <Phone className="w-4 h-4 text-emerald-500" />
+                            Contact Info
+                        </h4>
+                        <div className="space-y-2">
+                            <Label htmlFor="contactEmail" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Email</Label>
+                            <div className="relative">
+                                <Mail className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
+                                <Input
+                                    id="contactEmail"
+                                    name="contactEmail"
+                                    type="email"
+                                    defaultValue={group?.contactEmail || ''}
+                                    className="pl-9 bg-white dark:bg-slate-900/50"
+                                    placeholder="group@example.com"
+                                />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="contactPhone" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Phone</Label>
+                            <div className="relative">
+                                <Phone className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
+                                <Input
+                                    id="contactPhone"
+                                    name="contactPhone"
+                                    defaultValue={group?.contactPhone || ''}
+                                    className="pl-9 bg-white dark:bg-slate-900/50"
+                                    placeholder="+1 234 567 890"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="flex justify-end pt-4">
+            {/* SECTION 2: FUNDS & FEES */}
+            <div className="space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-200 dark:border-white/10">
+                    <Wallet className="w-5 h-5 text-blue-600 dark:text-blue-500" />
+                    <h3 className="font-bold text-lg">Funds & Fees</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid gap-3">
+                        <Label htmlFor="monthlyContribution" className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Monthly Contribution</Label>
+                        <div className="relative">
+                            <span className="absolute left-4 top-3 text-muted-foreground font-medium">$</span>
+                            <Input
+                                id="monthlyContribution"
+                                name="monthlyContribution"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                className="pl-8 h-12 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 rounded-xl"
+                                defaultValue={group?.monthlyContribution || 0}
+                                placeholder="0.00"
+                            />
+                        </div>
+                        <p className="text-xs text-muted-foreground">Standard amount each member contributes per cycle.</p>
+                    </div>
+
+                    <div className="grid gap-3">
+                        <Label htmlFor="socialFundAmount" className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Social Fund</Label>
+                        <div className="relative">
+                            <span className="absolute left-4 top-3 text-muted-foreground font-medium">$</span>
+                            <Input
+                                id="socialFundAmount"
+                                name="socialFundAmount"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                className="pl-8 h-12 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 rounded-xl"
+                                defaultValue={group?.socialFundAmount || 0}
+                                placeholder="0.00"
+                            />
+                        </div>
+                        <p className="text-xs text-muted-foreground">Separate fund for community emergencies.</p>
+                    </div>
+
+                    <div className="grid gap-3">
+                        <Label htmlFor="lateContributionFee" className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Late Contribution Fee</Label>
+                        <div className="relative">
+                            <span className="absolute left-4 top-3 text-muted-foreground font-medium">$</span>
+                            <Input
+                                id="lateContributionFee"
+                                name="lateContributionFee"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                className="pl-8 h-12 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 rounded-xl"
+                                defaultValue={group?.lateContributionFee || 0}
+                                placeholder="0.00"
+                            />
+                        </div>
+                        <p className="text-xs text-muted-foreground">Fee charged for missing the contribution deadline.</p>
+                    </div>
+
+                    <div className="grid gap-3">
+                        <Label htmlFor="contributionDueDay" className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Contribution Due Day</Label>
+                        <Input
+                            id="contributionDueDay"
+                            name="contributionDueDay"
+                            type="number"
+                            min="1"
+                            max="31"
+                            step="1"
+                            className="h-12 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 rounded-xl"
+                            defaultValue={group?.contributionDueDay || 5}
+                            placeholder="Day (1-31)"
+                        />
+                        <p className="text-xs text-muted-foreground">Day of the month when contributions are expected.</p>
+                    </div>
+
+                    <div className="grid gap-3">
+                        <Label htmlFor="minContributionMonths" className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Min. Contribution Months</Label>
+                        <Input
+                            id="minContributionMonths"
+                            name="minContributionMonths"
+                            type="number"
+                            min="0"
+                            step="1"
+                            className="h-12 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 rounded-xl"
+                            defaultValue={group?.minContributionMonths || 0}
+                            placeholder="3"
+                        />
+                        <p className="text-xs text-muted-foreground">Months of contributions required before loan eligibility.</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* SECTION 3: PENALTIES */}
+            <div className="space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-200 dark:border-white/10">
+                    <AlertOctagon className="w-5 h-5 text-red-600 dark:text-red-500" />
+                    <h3 className="font-bold text-lg">Penalties</h3>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="grid gap-3">
+                        <Label htmlFor="lateMeetingFine" className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Late Meeting Fine</Label>
+                        <div className="relative">
+                            <span className="absolute left-4 top-3 text-muted-foreground font-medium">$</span>
+                            <Input
+                                id="lateMeetingFine"
+                                name="lateMeetingFine"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                className="pl-8 h-12 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 rounded-xl"
+                                defaultValue={group?.lateMeetingFine || 0}
+                                placeholder="0.00"
+                            />
+                        </div>
+                    </div>
+                    <div className="grid gap-3">
+                        <Label htmlFor="missedMeetingFine" className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Missed Meeting Fine</Label>
+                        <div className="relative">
+                            <span className="absolute left-4 top-3 text-muted-foreground font-medium">$</span>
+                            <Input
+                                id="missedMeetingFine"
+                                name="missedMeetingFine"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                className="pl-8 h-12 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 rounded-xl"
+                                defaultValue={group?.missedMeetingFine || 0}
+                                placeholder="0.00"
+                            />
+                        </div>
+                    </div>
+                    <div className="grid gap-3 sm:col-span-2">
+                        <Label htmlFor="penaltyAmount" className="text-sm font-bold text-muted-foreground uppercase tracking-wider">General Penalty Base</Label>
+                        <div className="relative">
+                            <span className="absolute left-4 top-3 text-muted-foreground font-medium">$</span>
+                            <Input
+                                id="penaltyAmount"
+                                name="penaltyAmount"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                className="pl-8 h-12 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 rounded-xl"
+                                defaultValue={group?.penaltyAmount || 0}
+                                placeholder="0.00"
+                            />
+                        </div>
+                        <p className="text-xs text-muted-foreground">Base amount for other unspecified infractions.</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* SECTION 4: LOANS */}
+            <div className="space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-200 dark:border-white/10">
+                    <Landmark className="w-5 h-5 text-indigo-600 dark:text-indigo-500" />
+                    <h3 className="font-bold text-lg">Loans</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid gap-3">
+                        <Label htmlFor="interestRate" className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Interest Rate</Label>
+                        <div className="relative">
+                            <Input
+                                id="interestRate"
+                                name="interestRate"
+                                type="number"
+                                step="0.1"
+                                min="0"
+                                max="100"
+                                className="pr-8 h-12 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 rounded-xl"
+                                defaultValue={group?.interestRate || 10}
+                                placeholder="0.0"
+                            />
+                            <span className="absolute right-4 top-3 text-muted-foreground font-medium">%</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">Monthly interest rate applied to loans.</p>
+                    </div>
+                    <div className="grid gap-3">
+                        <Label htmlFor="maxLoanMultiplier" className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Max Loan Multiplier</Label>
+                        <Input
+                            id="maxLoanMultiplier"
+                            name="maxLoanMultiplier"
+                            type="number"
+                            step="1"
+                            min="1"
+                            className="h-12 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 rounded-xl"
+                            defaultValue={group?.maxLoanMultiplier || 3}
+                            placeholder="3"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                            Multiplier of savings to determine max loan (e.g., 3x savings).
+                        </p>
+                    </div>
+
+                    <div className="grid gap-3">
+                        <Label htmlFor="loanInterestType" className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Interest Type</Label>
+                        <Select name="loanInterestType" defaultValue={group?.loanInterestType || 'FLAT_RATE'}>
+                            <SelectTrigger className="bg-white dark:bg-slate-900/50">
+                                <SelectValue placeholder="Select interest type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="FLAT_RATE">Flat Rate</SelectItem>
+                                <SelectItem value="REDUCING_BALANCE">Reducing Balance</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">Method used to calculate loan interest.</p>
+                    </div>
+
+                    <div className="grid gap-3">
+                        <Label htmlFor="loanGracePeriodDays" className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Grace Period (Days)</Label>
+                        <Input
+                            id="loanGracePeriodDays"
+                            name="loanGracePeriodDays"
+                            type="number"
+                            min="0"
+                            step="1"
+                            className="h-12 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 rounded-xl"
+                            defaultValue={group?.loanGracePeriodDays || 0}
+                            placeholder="0"
+                        />
+                        <p className="text-xs text-muted-foreground">Days before penalties or interest apply.</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* ACTION BAR */}
+            <div className="flex justify-end pt-8 border-t border-slate-200 dark:border-white/10 sticky bottom-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur py-4 -mx-4 px-4 sm:-mx-6 sm:px-6 mt-8 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-10">
                 <Button
                     type="submit"
                     disabled={isLoading}
-                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl px-6"
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl px-8 h-12 shadow-lg shadow-emerald-500/20"
                 >
                     {isLoading ? (
                         <>
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                             Saving...
                         </>
                     ) : (
                         <>
-                            <Save className="w-4 h-4 mr-2" />
+                            <Save className="w-5 h-5 mr-2" />
                             Save Changes
                         </>
                     )}

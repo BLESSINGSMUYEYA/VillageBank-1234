@@ -3,12 +3,24 @@
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
+import { applyPenalty, PenaltyType } from '@/app/actions/apply-penalty'
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal, Shield, MessageSquare, UserX, Users, Clock } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent
+} from '@/components/ui/dropdown-menu'
+import { MoreHorizontal, Shield, MessageSquare, UserX, Users, Clock, AlertTriangle, Gavel } from 'lucide-react'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { cn } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils';
 
 interface Member {
   id: string
@@ -16,6 +28,7 @@ interface Member {
   role: string
   status: string
   joinedAt: string
+  unpaidPenalties: number
   user: {
     id: string
     firstName: string
@@ -35,6 +48,24 @@ interface GroupMembersListProps {
 
 export default function GroupMembersList({ members, groupId, currentUserRole, currentUserId, searchTerm = '' }: GroupMembersListProps) {
   const [loading, setLoading] = useState(false)
+
+  const handleApplyPenalty = async (memberId: string, penaltyType: PenaltyType) => {
+    setLoading(true)
+    try {
+      const result = await applyPenalty(groupId, memberId, penaltyType)
+
+      if (result.error) {
+        toast.error(result.error)
+      } else {
+        toast.success(result.message)
+      }
+    } catch (error) {
+      toast.error('Failed to apply penalty')
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleRoleChange = async (memberId: string, newRole: string) => {
     if (!confirm(`Are you sure you want to change this member's role to ${newRole}?`)) {
@@ -58,6 +89,7 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
       window.location.reload()
     } catch (error) {
       console.error('Error updating role:', error)
+      toast.error('Failed to update role')
     } finally {
       setLoading(false)
     }
@@ -81,6 +113,7 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
       window.location.reload()
     } catch (error) {
       console.error('Error removing member:', error)
+      toast.error('Failed to remove member')
     } finally {
       setLoading(false)
     }
@@ -93,6 +126,8 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
 
   const activeMembers = members.filter(m => m.status === 'ACTIVE' && matchesSearch(m))
   const pendingMembers = members.filter(m => m.status === 'PENDING' && matchesSearch(m))
+
+  const canManageMembers = currentUserRole === 'ADMIN' || currentUserRole === 'TREASURER'
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -133,6 +168,12 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
                     >
                       {member.role}
                     </Badge>
+                    {member.unpaidPenalties > 0 && (
+                      <Badge variant="destructive" className="bg-red-500/10 text-red-500 border-red-500/20 px-2 py-0 text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
+                        <AlertTriangle className="w-3 h-3" />
+                        Owing {formatCurrency(member.unpaidPenalties)}
+                      </Badge>
+                    )}
                   </div>
                   <p className="text-micro font-bold text-muted-foreground uppercase tracking-wider opacity-70">
                     {member.user?.email || 'No email'} • Joined {new Date(member.joinedAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
@@ -141,7 +182,7 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
               </div>
 
               <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4 pl-14 sm:pl-0">
-                {currentUserRole === 'ADMIN' && member.userId !== currentUserId && (
+                {canManageMembers && member.userId !== currentUserId && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-white/10">
@@ -149,19 +190,46 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="bg-slate-900/90 backdrop-blur-xl border-white/10 rounded-xl p-1 shadow-2xl">
-                      <DropdownMenuItem onClick={() => handleRoleChange(member.id, 'TREASURER')} className="rounded-lg font-bold text-xs gap-2 text-slate-300 focus:text-white focus:bg-white/10">
-                        <Shield className="h-3.5 w-3.5" /> Make Treasurer
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleRoleChange(member.id, 'SECRETARY')} className="rounded-lg font-bold text-xs gap-2 text-slate-300 focus:text-white focus:bg-white/10">
-                        <MessageSquare className="h-3.5 w-3.5" /> Make Secretary
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleRoleChange(member.id, 'MEMBER')} className="rounded-lg font-bold text-xs gap-2 text-slate-300 focus:text-white focus:bg-white/10">
-                        <UserX className="h-3.5 w-3.5" /> Make Member
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator className="bg-white/10" />
-                      <DropdownMenuItem onClick={() => handleRemoveMember(member.id)} className="rounded-lg font-bold text-xs gap-2 text-red-400 focus:text-red-300 focus:bg-red-500/10">
-                        <UserX className="h-3.5 w-3.5" /> Remove
-                      </DropdownMenuItem>
+                      {currentUserRole === 'ADMIN' && (
+                        <>
+                          <DropdownMenuItem onClick={() => handleRoleChange(member.id, 'TREASURER')} className="rounded-lg font-bold text-xs gap-2 text-slate-300 focus:text-white focus:bg-white/10">
+                            <Shield className="h-3.5 w-3.5" /> Make Treasurer
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleRoleChange(member.id, 'SECRETARY')} className="rounded-lg font-bold text-xs gap-2 text-slate-300 focus:text-white focus:bg-white/10">
+                            <MessageSquare className="h-3.5 w-3.5" /> Make Secretary
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleRoleChange(member.id, 'MEMBER')} className="rounded-lg font-bold text-xs gap-2 text-slate-300 focus:text-white focus:bg-white/10">
+                            <UserX className="h-3.5 w-3.5" /> Make Member
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator className="bg-white/10" />
+                        </>
+                      )}
+
+                      <DropdownMenuSub>
+                        <DropdownMenuSubTrigger className="rounded-lg font-bold text-xs gap-2 text-slate-300 focus:text-white focus:bg-white/10">
+                          <Gavel className="h-3.5 w-3.5" /> Apply Fine
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuSubContent className="bg-slate-900/95 backdrop-blur-xl border-white/10 rounded-xl p-1 shadow-2xl">
+                          <DropdownMenuItem onClick={() => handleApplyPenalty(member.id, 'LATE_MEETING')} className="rounded-lg font-bold text-xs gap-2 text-slate-300 focus:text-white focus:bg-white/10">
+                            ⏲️ Late Meeting
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleApplyPenalty(member.id, 'MISSED_MEETING')} className="rounded-lg font-bold text-xs gap-2 text-slate-300 focus:text-white focus:bg-white/10">
+                            🚫 Missed Meeting
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleApplyPenalty(member.id, 'LATE_CONTRIBUTION')} className="rounded-lg font-bold text-xs gap-2 text-slate-300 focus:text-white focus:bg-white/10">
+                            📉 Late Contribution
+                          </DropdownMenuItem>
+                        </DropdownMenuSubContent>
+                      </DropdownMenuSub>
+
+                      {currentUserRole === 'ADMIN' && (
+                        <>
+                          <DropdownMenuSeparator className="bg-white/10" />
+                          <DropdownMenuItem onClick={() => handleRemoveMember(member.id)} className="rounded-lg font-bold text-xs gap-2 text-red-400 focus:text-red-300 focus:bg-red-500/10">
+                            <UserX className="h-3.5 w-3.5" /> Remove
+                          </DropdownMenuItem>
+                        </>
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 )}

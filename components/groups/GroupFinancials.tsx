@@ -35,6 +35,7 @@ interface Contribution {
     paymentDate?: string | Date
     createdAt: string
     receiptUrl?: string
+    penaltyApplied?: number
     user: {
         firstName: string
         lastName: string
@@ -111,6 +112,10 @@ export default function GroupFinancials({ contributions, loans, paymentMethods =
         .filter(c => c.status === 'COMPLETED')
         .reduce((sum, c) => sum + c.amount, 0)
 
+    const totalPenalties = contributions
+        .filter(c => c.status === 'COMPLETED')
+        .reduce((sum, c) => sum + (c.penaltyApplied || 0), 0)
+
     const totalDisbursed = loans
         .filter(l => l.status === 'ACTIVE' || l.status === 'COMPLETED')
         .reduce((sum, l) => sum + (l.amountApproved || 0), 0)
@@ -149,6 +154,11 @@ export default function GroupFinancials({ contributions, loans, paymentMethods =
                             <div>
                                 <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600 mb-1">Total Funds In</p>
                                 <p className="text-2xl font-black text-foreground">{formatCurrency(totalCollected)}</p>
+                                {totalPenalties > 0 && (
+                                    <p className="text-[10px] font-bold text-emerald-600/60 mt-1">
+                                        Includes {formatCurrency(totalPenalties)} in fines
+                                    </p>
+                                )}
                             </div>
                             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
                                 <ArrowDownLeft className="w-5 h-5 text-emerald-500" />

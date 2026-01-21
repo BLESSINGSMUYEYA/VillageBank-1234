@@ -11,6 +11,7 @@ const createContributionSchema = z.object({
   transactionRef: z.string().optional(),
   receiptUrl: z.string().optional(),
   paymentDate: z.string().datetime().optional(),
+  penaltyPaid: z.number().min(0).optional(),
 })
 
 export async function POST(request: NextRequest) {
@@ -56,9 +57,13 @@ export async function POST(request: NextRequest) {
     const currentYear = now.getFullYear()
     const currentDay = now.getDate()
 
-    // We allow multiple contributions per month now, so we remove the check for existingContribution
+    // 1. Calculate Deductions
+    const penaltyPaid = validatedData.penaltyPaid || 0
 
-    // Check if contribution is late and calculate penalty ONLY if no contribution exists for this month yet
+    // Only apply NEW penalty if this specific contribution is late and no other paid contribution exists for this month
+    // Note: If user is paying off OLD penalties (penaltyPaid > 0), they might still be late for THIS month's fee.
+    // Ideally, we separate "Loan Repayment" / "Fine Payment" / "Contribution", but here it's mixed.
+    // Legacy Logic: Check if Late
     const existingContributionMonth = await prisma.contribution.findFirst({
       where: {
         groupId: validatedData.groupId,
@@ -70,24 +75,67 @@ export async function POST(request: NextRequest) {
     })
 
     const isLate = !existingContributionMonth && currentDay > groupMember.group.contributionDueDay
-    const penaltyApplied = isLate ? groupMember.group.penaltyAmount : 0
+    // If user is late, we record that a penalty WAS applied (charged) to this contribution. 
+    // But wait, "penaltyApplied" usually means "Paid Off". 
+    // Let's assume penaltyApplied in DB means "Amount of this contribution directed to penalties".
+    // So if isLate -> we effectively "charge" them by directing some of their money to the fine? 
+    // No, standard practice is: Late -> Add to Debt. Payment -> Reduce Debt.
+    // The previous code had: `const penaltyApplied = isLate ? groupMember.group.penaltyAmount : 0`.
+    // This implies it was "Charging". This is confusing naming in the implementation I inherited.
+    // Correct Logic for "One-Click Fines" System:
+    // 1. Fines are charged via "Apply Fine" (adds to unpaidPenalties).
+    // 2. Fines are paid via Contribution (deducts from unpaidPenalties).
+    // 3. Late Fees for contributions should ALSO add to unpaidPenalties.
 
-    // Create contribution record
-    const contribution = await prisma.contribution.create({
-      data: {
-        groupId: validatedData.groupId,
-        userId: userId as string,
-        amount: validatedData.amount,
-        month: currentMonth,
-        year: currentYear,
-        paymentDate: validatedData.paymentDate ? new Date(validatedData.paymentDate) : now,
-        paymentMethod: validatedData.paymentMethod,
-        transactionRef: validatedData.transactionRef,
-        receiptUrl: validatedData.receiptUrl,
-        status: 'PENDING',
-        isLate: isLate,
-        penaltyApplied: penaltyApplied,
-      },
+    let finalPenaltyApplied = penaltyPaid;
+
+    // Execute in Transaction
+    const contribution = await prisma.$transaction(async (tx) => {
+      // If Late, auto-charge the late fee to the member's debt profile
+      if (isLate) {
+        const lateFee = groupMember.group.lateContributionFee // Use specific fee
+        if (lateFee > 0) {
+          await tx.groupMember.update({
+            where: { id: groupMember.id },
+            data: { unpaidPenalties: { increment: lateFee } }
+          })
+          // We create a separate activity for the "Charge"
+          await tx.activity.create({
+            data: {
+              userId: userId as string,
+              groupId: validatedData.groupId,
+              actionType: 'PENALTY_APPLIED',
+              description: `System applied Late Contribution Fee of ${lateFee.toLocaleString()}`,
+            }
+          })
+        }
+      }
+
+      // If Playing Off Penalties, decrement debt
+      if (penaltyPaid > 0) {
+        await tx.groupMember.update({
+          where: { id: groupMember.id },
+          data: { unpaidPenalties: { decrement: penaltyPaid } }
+        })
+      }
+
+      // Create contribution record
+      return await tx.contribution.create({
+        data: {
+          groupId: validatedData.groupId,
+          userId: userId as string,
+          amount: validatedData.amount,
+          month: currentMonth,
+          year: currentYear,
+          paymentDate: validatedData.paymentDate ? new Date(validatedData.paymentDate) : now,
+          paymentMethod: validatedData.paymentMethod,
+          transactionRef: validatedData.transactionRef,
+          receiptUrl: validatedData.receiptUrl,
+          status: 'PENDING',
+          isLate: isLate,
+          penaltyApplied: finalPenaltyApplied, // How much of THIS money went to penalties
+        },
+      })
     })
 
     // Create activity log
@@ -96,7 +144,7 @@ export async function POST(request: NextRequest) {
         userId: userId as string,
         groupId: validatedData.groupId,
         actionType: 'CONTRIBUTION_SUBMITTED',
-        description: `Submitted contribution of MWK ${validatedData.amount.toLocaleString()} for review.`,
+        description: `Submitted contribution of MWK ${validatedData.amount.toLocaleString()} for review.${penaltyPaid > 0 ? ` (Paid off MWK ${penaltyPaid} in fines)` : ''}`,
         metadata: {
           contributionId: contribution.id,
           amount: validatedData.amount,
