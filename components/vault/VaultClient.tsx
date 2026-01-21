@@ -275,55 +275,59 @@ export function VaultClient({
                                     {filteredItems.map((item) => (
                                         <div
                                             key={`${item.type}-${item.id}`}
-                                            className="group p-3 sm:p-4 bg-white dark:bg-slate-900/60 border border-slate-100 dark:border-white/5 rounded-2xl flex items-center justify-between hover:shadow-md hover:border-slate-200 dark:hover:border-white/10 transition-all cursor-default"
+                                            className="group p-3 sm:p-4 bg-white dark:bg-slate-900/60 border border-slate-100 dark:border-white/5 rounded-2xl hover:shadow-md hover:border-slate-200 dark:hover:border-white/10 transition-all cursor-default"
                                         >
-                                            <div className="flex items-center gap-4">
-                                                {/* Icon Box */}
-                                                <div className={cn(
-                                                    "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border",
-                                                    item.type === 'CONTRIBUTION'
-                                                        ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600"
-                                                        : "bg-indigo-500/10 border-indigo-500/20 text-indigo-600"
-                                                )}>
-                                                    {item.type === 'CONTRIBUTION' ? <Wallet className="w-5 h-5" /> : <Landmark className="w-5 h-5" />}
-                                                </div>
-
-                                                {/* Details */}
-                                                <div>
-                                                    <div className="flex items-center gap-2">
-                                                        <p className="font-black text-sm text-foreground">
-                                                            {item.groupName}
-                                                        </p>
-                                                        <span className={cn(
-                                                            "text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider",
-                                                            item.type === 'CONTRIBUTION' ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400"
-                                                        )}>
-                                                            {item.type === 'CONTRIBUTION' ? 'Deposit' : 'Loan'}
-                                                        </span>
+                                            {/* Mobile: Stack layout, Desktop: Flex row */}
+                                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                                                {/* Left Section: Icon + Details */}
+                                                <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
+                                                    {/* Icon Box */}
+                                                    <div className={cn(
+                                                        "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border",
+                                                        item.type === 'CONTRIBUTION'
+                                                            ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600"
+                                                            : "bg-indigo-500/10 border-indigo-500/20 text-indigo-600"
+                                                    )}>
+                                                        {item.type === 'CONTRIBUTION' ? <Wallet className="w-5 h-5" /> : <Landmark className="w-5 h-5" />}
                                                     </div>
-                                                    <div className="flex items-center gap-2 mt-0.5">
-                                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-                                                            <Calendar className="w-3 h-3" />
-                                                            {item.date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                                                        </p>
-                                                        {item.status === 'PENDING' && (
-                                                            <span className="text-[9px] font-bold text-orange-500 bg-orange-500/10 px-1.5 rounded-sm">
-                                                                Pending Review
+
+                                                    {/* Details - with proper text truncation */}
+                                                    <div className="min-w-0 flex-1">
+                                                        {/* Group name + Type badge: wrap on mobile */}
+                                                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                                                            <p className="font-black text-sm text-foreground truncate max-w-[150px] sm:max-w-[200px] md:max-w-none" title={item.groupName}>
+                                                                {item.groupName}
+                                                            </p>
+                                                            <span className={cn(
+                                                                "text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider shrink-0",
+                                                                item.type === 'CONTRIBUTION' ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400"
+                                                            )}>
+                                                                {item.type === 'CONTRIBUTION' ? 'Deposit' : 'Loan'}
                                                             </span>
-                                                        )}
+                                                        </div>
+                                                        {/* Date + Pending badge */}
+                                                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-0.5">
+                                                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                                                                <Calendar className="w-3 h-3" />
+                                                                {item.date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                                            </p>
+                                                            {item.status === 'PENDING' && (
+                                                                <span className="text-[9px] font-bold text-orange-500 bg-orange-500/10 px-1.5 rounded-sm">
+                                                                    Pending Review
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            {/* Amount & Status */}
-                                            <div className="text-right shrink-0">
-                                                <p className={cn(
-                                                    "text-sm sm:text-base font-black tracking-tight",
-                                                    item.type === 'CONTRIBUTION' ? "text-emerald-600 dark:text-emerald-400" : "text-foreground"
-                                                )}>
-                                                    {item.type === 'CONTRIBUTION' ? '+' : ''} {formatCurrency(item.amount)}
-                                                </p>
-                                                <div className="flex justify-end mt-0.5">
+                                                {/* Right Section: Amount & Status */}
+                                                <div className="flex items-center justify-between sm:justify-end sm:flex-col sm:items-end gap-1 pl-13 sm:pl-0 shrink-0">
+                                                    <p className={cn(
+                                                        "text-sm sm:text-base font-black tracking-tight",
+                                                        item.type === 'CONTRIBUTION' ? "text-emerald-600 dark:text-emerald-400" : "text-foreground"
+                                                    )}>
+                                                        {item.type === 'CONTRIBUTION' ? '+' : ''} {formatCurrency(item.amount)}
+                                                    </p>
                                                     <Badge className={cn(
                                                         "text-[9px] px-1.5 py-0 border-0 h-4",
                                                         item.status === 'COMPLETED' || item.status === 'ACTIVE'
