@@ -56,16 +56,18 @@ export async function POST(request: NextRequest) {
     if (group.members.length > 0) {
       const existingMember = group.members[0]
       if (existingMember.status === 'ACTIVE') {
-        return NextResponse.json(
-          { error: 'You are already a member of this group' },
-          { status: 400 }
-        )
+        return NextResponse.json({
+          message: 'You are already a member of this group',
+          alreadyMember: true,
+          groupId: group.id
+        })
       }
       if (existingMember.status === 'PENDING') {
-        return NextResponse.json(
-          { error: 'You already have a pending request to join this group' },
-          { status: 400 }
-        )
+        return NextResponse.json({
+          message: 'Join request already sent',
+          alreadyPending: true,
+          groupId: group.id
+        })
       }
     }
 

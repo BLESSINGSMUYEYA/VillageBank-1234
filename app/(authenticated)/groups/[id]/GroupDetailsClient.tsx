@@ -37,6 +37,51 @@ export default function GroupDetailsClient({
     currentUserMember
 }: GroupDetailsClientProps) {
 
+    if (currentUserMember?.status === 'PENDING') {
+        return (
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="max-w-2xl mx-auto pt-12 text-center space-y-6"
+            >
+                <div className="w-20 h-20 mx-auto bg-yellow-100 dark:bg-yellow-500/10 rounded-full flex items-center justify-center">
+                    <Shield className="w-10 h-10 text-yellow-600 dark:text-yellow-500" />
+                </div>
+                <div className="space-y-2">
+                    <h1 className="text-3xl font-black text-foreground">Awaiting Approval</h1>
+                    <p className="text-muted-foreground text-lg max-w-md mx-auto">
+                        Your request to join <span className="font-bold text-foreground">{group.name}</span> has been sent and is awaiting admin approval.
+                    </p>
+                </div>
+                <GlassCard className="p-6 text-left max-w-md mx-auto mt-8">
+                    <h3 className="font-bold mb-2 flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                        What happens next?
+                    </h3>
+                    <ul className="space-y-3 text-sm text-muted-foreground">
+                        <li className="flex gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-300 mt-1.5 shrink-0" />
+                            Admins will review your request to ensure you meet the group's requirements.
+                        </li>
+                        <li className="flex gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-300 mt-1.5 shrink-0" />
+                            You will receive a notification once your request status changes.
+                        </li>
+                        <li className="flex gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-300 mt-1.5 shrink-0" />
+                            In the meantime, you can continue to explore other public features.
+                        </li>
+                    </ul>
+                    <Link href="/dashboard">
+                        <Button className="w-full mt-6" variant="outline">
+                            Return to Dashboard
+                        </Button>
+                    </Link>
+                </GlassCard>
+            </motion.div>
+        )
+    }
+
     return (
         <>
             <motion.div

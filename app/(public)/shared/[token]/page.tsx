@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { GlassCard } from '@/components/ui/GlassCard'
@@ -50,6 +50,10 @@ export default function PublicSharedGroupPage() {
     const [joining, setJoining] = useState(false)
     const [hasRequested, setHasRequested] = useState(false)
 
+    const searchParams = useSearchParams()
+
+    // ... existings state ...
+
     useEffect(() => {
         const fetchSharedGroup = async () => {
             try {
@@ -74,7 +78,14 @@ export default function PublicSharedGroupPage() {
             try {
                 const res = await fetch('/api/auth/session')
                 const data = await res.json()
-                setIsAuthenticated(!!data?.userId)
+                const isAuth = !!data?.userId
+                setIsAuthenticated(isAuth)
+
+                // Auto-join logic if redirected back after login
+                if (isAuth && searchParams.get('autoJoin') === 'true' && params.token) {
+                    // We need to wait for groupData to be loaded before joining
+                    // This will be handled by a separate effect dependent on groupData
+                }
             } catch {
                 setIsAuthenticated(false)
             }
@@ -84,36 +95,62 @@ export default function PublicSharedGroupPage() {
             fetchSharedGroup()
             checkAuth()
         }
-    }, [params.token])
+    }, [params.token, searchParams])
+
+    // Separate effect for auto-joining once group data is ready and user is authenticated
+    useEffect(() => {
+        if (isAuthenticated && groupData && searchParams.get('autoJoin') === 'true' && !hasRequested && !joining) {
+            requestToJoin()
+        }
+    }, [isAuthenticated, groupData, searchParams, hasRequested, joining])
 
     const requestToJoin = async () => {
         if (!groupData || joining || hasRequested) return
 
         setJoining(true)
-        try {
-            const response = await fetch('/api/groups/request-join', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    groupId: groupData.group.id,
-                    shareToken: params.token,
-                }),
-            })
 
-            const data = await response.json()
+        const joinPromise = new Promise(async (resolve, reject) => {
+            try {
+                const response = await fetch('/api/groups/request-join', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        groupId: groupData.group.id,
+                        shareToken: params.token,
+                    }),
+                })
 
-            if (!response.ok) {
-                throw new Error(data.error || 'Failed to send join request')
+                const data = await response.json()
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to send join request')
+                }
+
+                resolve(data)
+
+                if (data.requestId || data.alreadyMember || data.alreadyPending) {
+                    setHasRequested(true)
+                    // Redirect to group page immediately on success
+                    setTimeout(() => {
+                        router.push(`/groups/${groupData.group.id}`)
+                    }, 1500)
+                }
+            } catch (err) {
+                reject(err)
+            } finally {
+                setJoining(false)
             }
+        })
 
-            toast.success('Join request sent successfully!')
-            setHasRequested(true)
-        } catch (err) {
-            console.error('Error requesting to join:', err)
-            toast.error(err instanceof Error ? err.message : 'Failed to send join request')
-        } finally {
-            setJoining(false)
-        }
+        toast.promise(joinPromise, {
+            loading: 'Securing your spot...',
+            success: (data: any) => {
+                if (data.alreadyMember) return `Welcome back! Redirecting to group...`
+                if (data.alreadyPending) return `Request already sent! Redirecting...`
+                return 'Request sent successfully! Redirecting...'
+            },
+            error: (err) => err instanceof Error ? err.message : 'Failed to join group'
+        })
     }
 
     const handleJoinClick = () => {
@@ -121,8 +158,10 @@ export default function PublicSharedGroupPage() {
             requestToJoin()
         } else {
             // Store the current URL to redirect back after login
-            const returnUrl = encodeURIComponent(`/shared/${params.token}`)
-            router.push(`/login?redirect=${returnUrl}`)
+            // We append autoJoin=true so that when they return, it triggers the join automatically
+            const currentPath = `/shared/${params.token}`
+            const callbackUrl = encodeURIComponent(`${currentPath}?autoJoin=true`)
+            router.push(`/login?redirect=${callbackUrl}`) // Changed from callbackUrl to redirect to match middleware/login Page usage commonly
         }
     }
 
