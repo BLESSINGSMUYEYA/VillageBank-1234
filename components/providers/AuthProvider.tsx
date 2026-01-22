@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
 interface User {
     id: string;
@@ -33,11 +33,15 @@ const AuthContext = createContext<AuthContextType>({
 
 export const useAuth = () => useContext(AuthContext);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+import { Suspense } from 'react';
+
+// Inner component that uses searchParams
+function AuthContent({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
     const pathname = usePathname();
+    const searchParams = useSearchParams();
 
     useEffect(() => {
         async function loadUser() {
@@ -75,7 +79,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { user } = await res.json();
         setUser(user);
 
-        if (user.role === 'REGIONAL_ADMIN') {
+        // Check for redirect URL
+        const redirectUrl = searchParams.get('redirect');
+        if (redirectUrl) {
+            router.push(decodeURIComponent(redirectUrl));
+        } else if (user.role === 'REGIONAL_ADMIN') {
             router.push('/admin/regional');
         } else if (user.role === 'SUPER_ADMIN') {
             router.push('/admin/system');
@@ -99,10 +107,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         if (responseData.message === 'verification_required') {
-            // Throw a special error or return a specific value to signal the component
-            // to show the verification message. 
-            // Since this function returns Promise<void>, throwing is a clean way to stop execution
-            // and let the caller handle the specific case.
             throw new Error('verification_required');
         }
 
@@ -130,5 +134,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         <AuthContext.Provider value={{ user, loading, isAuthenticated: !!user, login, register, logout }}>
             {children}
         </AuthContext.Provider>
+    );
+}
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+    return (
+        <Suspense fallback={null}>
+            <AuthContent>{children}</AuthContent>
+        </Suspense>
     );
 }

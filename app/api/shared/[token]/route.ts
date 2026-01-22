@@ -77,11 +77,11 @@ export async function GET(
       },
     })
 
-    // Increment usage count
-    await (prisma as any).groupShare.update({
-      where: { id: groupShare.id },
-      data: { currentUses: { increment: 1 } },
-    })
+    // Increment usage count - REMOVED: Only increment when actually joining/requesting
+    // await (prisma as any).groupShare.update({
+    //   where: { id: groupShare.id },
+    //   data: { currentUses: { increment: 1 } },
+    // })
 
     // Filter data based on permissions
     let groupData = groupShare.group
