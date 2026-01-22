@@ -25,7 +25,7 @@ export function GroupShareModal({ groupId, groupName }: GroupShareModalProps) {
     const modalContent = (
         <AnimatePresence>
             {open && (
-                <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-6 isolate">
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 isolate">
                     {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -40,36 +40,31 @@ export function GroupShareModal({ groupId, groupName }: GroupShareModalProps) {
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="relative w-full sm:max-w-2xl h-[90vh] sm:h-auto sm:max-h-[90vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl bg-[#F8FAFC] dark:bg-[#020617] border border-white/20 shadow-2xl no-scrollbar flex flex-col z-50"
+                        className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#F8FAFC] dark:bg-[#020617] border border-white/20 shadow-2xl no-scrollbar flex flex-col z-50"
                     >
-                        {/* Mobile drag handle */}
-                        <div className="sticky top-0 pt-2 pb-1 sm:hidden flex justify-center bg-inherit z-50">
-                            <div className="w-10 h-1 bg-slate-300 dark:bg-slate-600 rounded-full" />
-                        </div>
-
                         {/* Header */}
-                        <div className="flex items-center justify-between p-4 sm:p-6 md:p-8 border-b border-slate-200 dark:border-white/10 shrink-0 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl">
+                        <div className="flex items-center justify-between p-6 sm:p-8 border-b border-slate-200 dark:border-white/10 shrink-0 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl">
                             <div>
-                                <h2 className="text-xl sm:text-2xl font-black text-foreground tracking-tight flex items-center gap-2">
-                                    <div className="p-1.5 sm:p-2 bg-blue-100 dark:bg-blue-500/10 rounded-xl">
-                                        <Share2 className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" />
+                                <h2 className="text-2xl font-black text-foreground tracking-tight flex items-center gap-2">
+                                    <div className="p-2 bg-blue-100 dark:bg-blue-500/10 rounded-xl">
+                                        <Share2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                                     </div>
                                     Share Group
                                 </h2>
-                                <p className="text-xs sm:text-sm text-muted-foreground mt-1 ml-9 sm:ml-11">Invite members to {groupName}</p>
+                                <p className="text-sm text-muted-foreground mt-1 ml-11">Invite members to {groupName}</p>
                             </div>
                             <Button
                                 size="icon"
                                 variant="ghost"
                                 onClick={() => setOpen(false)}
-                                className="rounded-full hover:bg-black/5 dark:hover:bg-white/10 h-8 w-8 sm:h-10 sm:w-10"
+                                className="rounded-full hover:bg-black/5 dark:hover:bg-white/10"
                             >
-                                <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                                <X className="w-5 h-5" />
                             </Button>
                         </div>
 
                         {/* Content */}
-                        <div className="p-4 sm:p-6 md:p-8 overflow-y-auto flex-1">
+                        <div className="p-6 sm:p-8 overflow-y-auto">
                             <QRCodeShare groupId={groupId} groupName={groupName} />
                         </div>
                     </motion.div>

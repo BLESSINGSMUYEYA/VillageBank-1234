@@ -435,7 +435,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
                 <SelectTrigger className="w-full h-12 rounded-xl bg-white/40 dark:bg-black/20 border-white/10 shadow-sm backdrop-blur-md focus:ring-2 focus:ring-blue-500/10 font-bold px-4">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="rounded-xl border-white/10 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl p-1">
+                <SelectContent className="z-[99999] rounded-xl border-white/10 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl p-1">
                   <SelectItem value="VIEW_ONLY" className="font-bold rounded-lg cursor-pointer py-2.5">View Only</SelectItem>
                   <SelectItem value="REQUEST_JOIN" className="font-bold rounded-lg cursor-pointer py-2.5">Can Request to Join</SelectItem>
                   <SelectItem value="LIMITED_ACCESS" className="font-bold rounded-lg cursor-pointer py-2.5">Limited Access</SelectItem>
@@ -452,7 +452,7 @@ export function QRCodeShare({ groupId, groupName }: QRCodeShareProps) {
                   <SelectTrigger className="w-full h-12 rounded-xl bg-white/40 dark:bg-black/20 border-white/10 shadow-sm backdrop-blur-md focus:ring-2 focus:ring-blue-500/10 font-bold px-4">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="rounded-xl border-white/10 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl p-1">
+                  <SelectContent className="z-[99999] rounded-xl border-white/10 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl p-1">
                     <SelectItem value="1" className="font-bold rounded-lg cursor-pointer py-2.5">1 Day</SelectItem>
                     <SelectItem value="7" className="font-bold rounded-lg cursor-pointer py-2.5">7 Days</SelectItem>
                     <SelectItem value="30" className="font-bold rounded-lg cursor-pointer py-2.5">30 Days</SelectItem>
