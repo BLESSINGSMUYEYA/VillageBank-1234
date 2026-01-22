@@ -200,6 +200,31 @@ export function GroupDetailsForm({ group, onSuccess }: GroupDetailsFormProps) {
                 </div>
             </div>
 
+            {/* SECTION 1.5: BANK CONFIGURATION */}
+            <div className="space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b border-slate-200 dark:border-white/10">
+                    <Calendar className="w-5 h-5 text-indigo-600 dark:text-indigo-500" />
+                    <h3 className="font-bold text-lg">Bank Cycle</h3>
+                </div>
+
+                <div className="p-4 rounded-xl bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-900/20 space-y-4">
+                    <div className="grid gap-3">
+                        <Label htmlFor="cycleEndDate" className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Cycle End Date (Share Out)</Label>
+                        <Input
+                            id="cycleEndDate"
+                            name="cycleEndDate"
+                            type="date"
+                            className="bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 h-12 rounded-xl"
+                            defaultValue={group?.cycleEndDate ? new Date(group.cycleEndDate).toISOString().split('T')[0] : ''}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                            The date when the current banking cycle ends and funds are distributed (Share Out).
+                            Loans cannot be issued past this date.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             {/* SECTION 2: FUNDS & FEES */}
             <div className="space-y-4">
                 <div className="flex items-center gap-2 pb-2 border-b border-slate-200 dark:border-white/10">

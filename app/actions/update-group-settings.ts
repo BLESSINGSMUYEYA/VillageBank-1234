@@ -65,6 +65,9 @@ export async function updateGroupSettings(
         const loanGracePeriodDays = parseNumber(formData.get('loanGracePeriodDays'), false)
         const loanInterestType = (formData.get('loanInterestType') as InterestType) || 'FLAT_RATE'
 
+        const cycleEndDateRaw = formData.get('cycleEndDate') as string
+        const cycleEndDate = cycleEndDateRaw ? new Date(cycleEndDateRaw) : null
+
         await prisma.group.update({
             where: { id: groupId },
             data: {
@@ -80,6 +83,7 @@ export async function updateGroupSettings(
                 minContributionMonths,
                 loanGracePeriodDays,
                 loanInterestType,
+                cycleEndDate,
             }
         })
 

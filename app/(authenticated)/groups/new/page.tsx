@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { ArrowLeft, Plus, Landmark, Globe, Banknote, TrendingUp, ShieldCheck, Loader2, AlertCircle } from 'lucide-react'
+import { ArrowLeft, Plus, Landmark, Globe, Banknote, TrendingUp, ShieldCheck, Loader2, AlertCircle, Calendar } from 'lucide-react'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { SectionHeader } from '@/components/ui/section-header'
@@ -133,6 +133,7 @@ export default function CreateGroupPage() {
           contributionDueDay: parseInt(formData.contributionDueDay),
           minContributionMonths: parseInt(formData.minContributionMonths),
           loanGracePeriodDays: parseInt(formData.loanGracePeriodDays),
+          cycleEndDate: (formData as any).cycleEndDate,
         }),
       })
 

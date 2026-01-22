@@ -25,6 +25,7 @@ const updateGroupSchema = z.object({
   minContributionMonths: z.number().min(0).optional(),
   loanGracePeriodDays: z.number().min(0).optional(),
   isActive: z.boolean().optional(),
+  cycleEndDate: z.string().optional().nullable().transform(val => val ? new Date(val) : null),
 })
 
 export async function GET(

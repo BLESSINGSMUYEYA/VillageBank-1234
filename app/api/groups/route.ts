@@ -24,6 +24,7 @@ const createGroupSchema = z.object({
   missedMeetingFine: z.number().min(0).default(0),
   contributionDueDay: z.number().min(1).max(31).default(5),
   loanGracePeriodDays: z.number().min(0).default(0),
+  cycleEndDate: z.string().optional().nullable().transform(val => val ? new Date(val) : null),
 })
 
 export async function POST(request: NextRequest) {
@@ -81,6 +82,7 @@ export async function POST(request: NextRequest) {
           contributionDueDay: validatedData.contributionDueDay,
           minContributionMonths: validatedData.minContributionMonths,
           loanGracePeriodDays: validatedData.loanGracePeriodDays,
+          cycleEndDate: validatedData.cycleEndDate,
           createdById: userId,
         },
       })
