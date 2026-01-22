@@ -18,6 +18,7 @@ import { cn, formatCurrency } from '@/lib/utils'
 import { toast } from 'sonner'
 import { saveContribution, getSharedFile } from '@/lib/idb'
 import { uploadReceipt } from '@/lib/upload'
+import confetti from 'canvas-confetti'
 
 interface Group {
     id: string
@@ -147,6 +148,28 @@ export default function SmartContributionForm({ isModal, onClose }: SmartContrib
         // setTimeout(() => setStep(2), 800)
     }
 
+    const triggerConfetti = () => {
+        const duration = 3 * 1000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 99999 };
+
+        const random = (min: number, max: number) => Math.random() * (max - min) + min;
+
+        const interval = setInterval(function () {
+            const timeLeft = animationEnd - Date.now();
+
+            if (timeLeft <= 0) {
+                return clearInterval(interval);
+            }
+
+            const particleCount = 50 * (timeLeft / duration);
+
+            // multiple origins
+            confetti({ ...defaults, particleCount, origin: { x: random(0.1, 0.3), y: Math.random() - 0.2 } });
+            confetti({ ...defaults, particleCount, origin: { x: random(0.7, 0.9), y: Math.random() - 0.2 } });
+        }, 250);
+    }
+
     const selectedGroup = groups.find(g => g.id === selectedGroupId)
 
     // Smart Calculation Logic
@@ -223,14 +246,15 @@ export default function SmartContributionForm({ isModal, onClose }: SmartContrib
 
                 if (!res.ok) throw new Error("Submission failed")
 
-                // [MODIFIED] Success Handler: Set step 3 and delay redirect
+                // [MODIFIED] Success Handler: Set step 3, Confetti, and delay redirect
                 setStep(3)
+                triggerConfetti()
                 setTimeout(() => {
                     if (isModal && onClose) {
                         onClose()
                     }
                     router.push('/contributions')
-                }, 2500)
+                }, 3500)
 
             } else {
                 throw new Error("Offline")
@@ -260,12 +284,13 @@ export default function SmartContributionForm({ isModal, onClose }: SmartContrib
 
                     // [MODIFIED] Offline Success also shows success screen
                     setStep(3)
+                    triggerConfetti()
                     setTimeout(() => {
                         if (isModal && onClose) {
                             onClose()
                         }
                         router.push('/contributions')
-                    }, 2500)
+                    }, 3500)
 
                 } catch (saveErr) {
                     console.error(saveErr)
@@ -339,13 +364,26 @@ export default function SmartContributionForm({ isModal, onClose }: SmartContrib
                             />
                         </GlassCard>
 
+                        {/* [MODIFIED] Dynamic Action Button */}
                         <div className="flex justify-center">
                             <Button
-                                variant="ghost"
-                                className="text-muted-foreground font-bold hover:text-foreground"
+                                variant={receiptFile ? "banana" : "ghost"}
+                                size={receiptFile ? "xl" : "default"}
+                                className={cn(
+                                    "font-bold transition-all",
+                                    receiptFile ? "shadow-xl hover:scale-105" : "text-muted-foreground hover:text-foreground"
+                                )}
                                 onClick={() => setStep(2)}
                             >
-                                Continue to manual entry <ArrowRight className="ml-2 w-4 h-4" />
+                                {receiptFile ? (
+                                    <>
+                                        Review Scanned Details <ArrowRight className="ml-2 w-5 h-5" />
+                                    </>
+                                ) : (
+                                    <>
+                                        Continue to manual entry <ArrowRight className="ml-2 w-4 h-4" />
+                                    </>
+                                )}
                             </Button>
                         </div>
                     </motion.div>
@@ -505,19 +543,32 @@ export default function SmartContributionForm({ isModal, onClose }: SmartContrib
                         key="step3"
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="flex flex-col items-center justify-center py-12 space-y-6"
+                        className="flex flex-col items-center justify-center py-24 space-y-8"
                     >
-                        <div className="w-24 h-24 bg-green-500 text-white rounded-full flex items-center justify-center shadow-2xl shadow-green-500/40">
-                            <CheckCircle className="w-12 h-12" />
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-green-500/30 blur-3xl rounded-full" />
+                            <div className="w-32 h-32 bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-full flex items-center justify-center shadow-2xl shadow-green-500/40 relative z-10 animate-bounce-slow">
+                                <CheckCircle className="w-16 h-16" />
+                            </div>
                         </div>
-                        <div className="text-center space-y-2">
-                            <h2 className="text-3xl font-black text-foreground">Success!</h2>
-                            <p className="text-muted-foreground font-medium">Your contribution has been securely sent.</p>
+
+                        <div className="text-center space-y-3 max-w-md">
+                            <h2 className="text-4xl font-black text-foreground tracking-tighter">Transfer Secure!</h2>
+                            <p className="text-muted-foreground font-medium text-lg">
+                                Your contribution has been securely recorded on the intelligent ledger.
+                            </p>
                         </div>
-                        <p className="text-sm text-muted-foreground animate-pulse">Redirecting you to contributions...</p>
+
+                        <div className="p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-2xl border border-emerald-100 dark:border-emerald-800/20 flex items-center gap-3">
+                            <Shield className="w-5 h-5 text-emerald-600" />
+                            <span className="text-sm font-bold text-emerald-700 dark:text-emerald-400">Encrypted & Verifiable</span>
+                        </div>
+
+                        <p className="text-sm text-muted-foreground animate-pulse pt-8">Redirecting you to contributions...</p>
                     </motion.div>
                 )}
             </AnimatePresence>
         </div>
     )
 }
+

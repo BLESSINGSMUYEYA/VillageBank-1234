@@ -15,7 +15,7 @@ export function MarketingHeader() {
 
     // Determine active link style
     const getLinkClass = (path: string) => cn(
-        "text-sm font-black uppercase tracking-widest transition-colors",
+        "text-label-caps transition-colors text-sm", // Explicitly added text-sm to match original size if label-caps is smaller
         pathname === path
             ? "text-emerald-600 dark:text-emerald-400"
             : "text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400"
@@ -33,7 +33,7 @@ export function MarketingHeader() {
     return (
         <header className="container mx-auto px-6 py-8 flex items-center justify-between relative z-50">
             <Link href="/" className="flex items-center gap-3 group cursor-pointer">
-                <div className="w-10 h-10 bg-slate-900 dark:bg-white/10 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform border border-white/5">
+                <div className="w-10 h-10 bg-slate-900 dark:bg-white/10 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform border border-white/5">
                     <UBankLogo className="w-6 h-6" />
                 </div>
                 <span className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">
@@ -51,7 +51,7 @@ export function MarketingHeader() {
                     ))}
                 </nav>
                 <Link href="/login">
-                    <Button className="bg-slate-950 dark:bg-white text-white dark:text-slate-950 font-black rounded-2xl px-8 h-12 hover:scale-105 transition-all">
+                    <Button size="xl" className="bg-slate-950 dark:bg-white text-white dark:text-slate-950 shadow-xl hover:scale-105 transition-all">
                         {t('landing.launch_app')}
                     </Button>
                 </Link>
@@ -69,7 +69,7 @@ export function MarketingHeader() {
                         <SheetTitle className="hidden">Mobile Navigation</SheetTitle>
                         <div className="flex flex-col h-full pt-10">
                             <div className="flex items-center gap-3 mb-10 px-2">
-                                <div className="w-10 h-10 bg-emerald-600 rounded-2xl flex items-center justify-center shadow-lg border border-white/10">
+                                <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg border border-white/10">
                                     <UBankLogo className="w-6 h-6 invert" />
                                 </div>
                                 <span className="text-2xl font-black text-white tracking-tighter">
@@ -82,7 +82,7 @@ export function MarketingHeader() {
                                         key={item.path}
                                         href={item.path}
                                         className={cn(
-                                            "px-4 py-3 text-sm font-black uppercase tracking-widest rounded-xl transition-all",
+                                            "px-4 py-3 rounded-xl transition-all text-label-caps text-base", // Added text-base to slightly increase size for mobile usage if needed, or stick to utility
                                             pathname === item.path
                                                 ? "text-white bg-white/10"
                                                 : "text-slate-400 hover:text-white hover:bg-white/5"
@@ -94,12 +94,12 @@ export function MarketingHeader() {
                             </nav>
                             <div className="mt-auto pb-8 space-y-4">
                                 <Link href="/login" className="block">
-                                    <Button className="w-full bg-emerald-600 text-white font-black rounded-2xl h-14 hover:bg-emerald-700 transition-all">
+                                    <Button size="xl" className="w-full bg-emerald-600 text-white shadow-xl hover:bg-emerald-700 transition-all">
                                         {t('landing.launch_app')}
                                     </Button>
                                 </Link>
                                 <Link href="/register" className="block">
-                                    <Button variant="outline" className="w-full border-white/10 text-white hover:bg-white/5 font-black rounded-2xl h-14">
+                                    <Button size="xl" variant="outline" className="w-full border-white/10 text-white hover:bg-white/5">
                                         Create Account
                                     </Button>
                                 </Link>
