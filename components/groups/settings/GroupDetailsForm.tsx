@@ -10,7 +10,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { updateGroupDetails } from '@/app/actions/update-group-details'
 import { updateGroupSettings } from '@/app/actions/update-group-settings'
 import { toast } from 'sonner'
-import { Loader2, Save, MapPin, Calendar, Mail, Phone, Wallet, AlertOctagon, Landmark, Shield } from 'lucide-react'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Loader2, Save, MapPin, Calendar, Mail, Phone, Wallet, AlertOctagon, Landmark, Shield, Trash2, AlertTriangle } from 'lucide-react'
 
 interface GroupDetailsFormProps {
     group: any
@@ -19,7 +30,30 @@ interface GroupDetailsFormProps {
 
 export function GroupDetailsForm({ group, onSuccess }: GroupDetailsFormProps) {
     const [isLoading, setIsLoading] = useState(false)
+    const [isDeleting, setIsDeleting] = useState(false)
     const router = useRouter()
+
+    async function handleDelete() {
+        setIsDeleting(true)
+        try {
+            const response = await fetch(`/api/groups/${group.id}`, {
+                method: 'DELETE',
+            })
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to delete group')
+            }
+
+            toast.success('Group deleted successfully')
+            router.push('/groups')
+            router.refresh()
+        } catch (error: any) {
+            toast.error(error.message || 'An unexpected error occurred')
+            setIsDeleting(false)
+        }
+    }
 
     async function handleSubmit(formData: FormData) {
         setIsLoading(true)
@@ -392,6 +426,59 @@ export function GroupDetailsForm({ group, onSuccess }: GroupDetailsFormProps) {
                         />
                         <p className="text-xs text-muted-foreground">Days before penalties or interest apply.</p>
                     </div>
+                </div>
+            </div>
+
+            {/* SECTION 5: DANGER ZONE */}
+            <div className="space-y-4 pt-4">
+                <div className="flex items-center gap-2 pb-2 border-b border-red-200 dark:border-red-900/30">
+                    <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-500" />
+                    <h3 className="font-bold text-lg text-red-600 dark:text-red-500">Danger Zone</h3>
+                </div>
+
+                <div className="p-4 rounded-xl border border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="space-y-1">
+                        <h4 className="font-bold text-red-900 dark:text-red-200">Delete this group</h4>
+                        <p className="text-sm text-red-700 dark:text-red-300">
+                            Once you delete a group, there is no going back. Please be certain.
+                        </p>
+                    </div>
+
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="ghost" className="text-red-600 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-900/20 font-bold shrink-0">
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Delete Group
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete the group
+                                    <span className="font-bold text-foreground"> {group.name} </span>
+                                    and remove all associated data including members, contributions, and loans.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                    onClick={handleDelete}
+                                    className="bg-red-600 hover:bg-red-700 focus:ring-red-600 text-white font-bold"
+                                    disabled={isDeleting}
+                                >
+                                    {isDeleting ? (
+                                        <>
+                                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                            Deleting...
+                                        </>
+                                    ) : (
+                                        'Delete Group'
+                                    )}
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                 </div>
             </div>
 

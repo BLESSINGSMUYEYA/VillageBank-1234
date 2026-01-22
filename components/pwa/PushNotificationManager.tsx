@@ -55,22 +55,46 @@ export function PushNotificationManager() {
     async function subscribeToPush() {
         setLoading(true)
         try {
-            const registration = await navigator.serviceWorker.ready
-            const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+            if (!('serviceWorker' in navigator)) {
+                throw new Error('Service Worker not supported');
+            }
 
+            if (!('PushManager' in window)) {
+                throw new Error('Push Manager not supported');
+            }
+
+            const registration = await navigator.serviceWorker.ready
+
+            if (!registration) {
+                throw new Error('Service Worker not ready');
+            }
+
+            const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
             if (!vapidPublicKey) {
-                throw new Error("VAPID Public Key not found")
+                throw new Error("VAPID Public Key not found in environment variables")
+            }
+
+            // console.log('Using VAPID Key:', vapidPublicKey.substring(0, 10) + '...');
+
+            // Request permission specifically if not granted
+            if (Notification.permission === 'default') {
+                const permission = await Notification.requestPermission();
+                if (permission !== 'granted') {
+                    throw new Error('Notification permission denied');
+                }
+            } else if (Notification.permission === 'denied') {
+                throw new Error('Notification permission was previously denied. Please enable it in browser settings.');
             }
 
             const sub = await registration.pushManager.subscribe({
                 userVisibleOnly: true,
-                applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
+                applicationServerKey: urlBase64ToUint8Array(vapidPublicKey.trim())
             })
 
             setSubscription(sub)
 
             // Send to backend
-            await fetch('/api/web-push/subscription', {
+            const response = await fetch('/api/web-push/subscription', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -78,10 +102,15 @@ export function PushNotificationManager() {
                 body: JSON.stringify(sub)
             })
 
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to save subscription on server');
+            }
+
             toast.success('Notifications enabled!')
-        } catch (error) {
-            console.error('Failed to subscribe', error)
-            toast.error('Failed to enable notifications')
+        } catch (error: any) {
+            console.error('Failed to subscribe:', error)
+            toast.error(error.message || 'Failed to enable notifications')
         } finally {
             setLoading(false)
         }
