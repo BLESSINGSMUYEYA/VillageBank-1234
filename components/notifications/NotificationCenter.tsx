@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Bell, X, Check, Trash2, Info, CheckCircle, AlertTriangle, XCircle, ExternalLink } from 'lucide-react'
+import { Bell, X, Check, Trash2, Info, CheckCircle, AlertTriangle, XCircle, ExternalLink, CheckCheck } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { motion, AnimatePresence } from 'framer-motion'
 import { GlassCard } from '@/components/ui/GlassCard'
@@ -139,6 +139,8 @@ export function NotificationCenter({
     }
   }
 
+  // ... inside component ...
+  // Added a backdrop for mobile to improve focus and "dialog" feel
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Notification Bell */}
@@ -166,6 +168,19 @@ export function NotificationCenter({
         </AnimatePresence>
       </Button>
 
+      {/* Mobile Backdrop */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 bg-slate-950/20 backdrop-blur-[2px] sm:hidden"
+            onClick={() => setIsOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Notification Dropdown */}
       <AnimatePresence>
         {isOpen && (
@@ -178,7 +193,7 @@ export function NotificationCenter({
               "fixed inset-x-4 top-20 sm:fixed sm:inset-auto w-auto sm:w-[500px] max-w-[95vw] z-50 shadow-[0_20px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)]",
               side === 'bottom' ? "sm:mt-4" : "sm:bottom-full sm:mb-4",
               align === 'right' ? "sm:right-0" : "sm:left-0",
-              // Mobile specific overrides or keep fixed top
+              // Mobile specific overrides
               "sm:absolute"
             )}
           >
@@ -187,16 +202,16 @@ export function NotificationCenter({
               hover={false}
               gradient={false}
             >
-              <div className="p-4 sm:p-5 border-b border-border bg-white dark:bg-slate-900 flex justify-between items-center relative z-10">
-                <div>
-                  <h3 className="text-lg font-black text-foreground">Notifications</h3>
+              <div className="p-4 sm:p-5 border-b border-border bg-white dark:bg-slate-900 flex justify-between items-center relative z-10 gap-2">
+                <div className="min-w-0 shrink">
+                  <h3 className="text-lg font-black text-foreground truncate">Notifications</h3>
                   <div className="flex items-center gap-2">
-                    <p className="text-xs font-bold text-muted-foreground mt-0.5">
+                    <p className="text-xs font-bold text-muted-foreground mt-0.5 truncate">
                       {unreadCount} unread message{unreadCount !== 1 ? 's' : ''}
                     </p>
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-1 sm:gap-2 shrink-0">
                   <div className="block">
                     <PushNotificationManager />
                   </div>
@@ -205,9 +220,11 @@ export function NotificationCenter({
                       variant="ghost"
                       size="sm"
                       onClick={markAllAsRead}
-                      className="text-[10px] uppercase tracking-widest font-black h-8 px-3 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-banana"
+                      className="text-[10px] uppercase tracking-widest font-black h-8 px-2 sm:px-3 hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-banana"
+                      title="Mark all read"
                     >
-                      Mark all read
+                      <CheckCheck className="w-4 h-4 sm:mr-1.5" />
+                      <span className="hidden sm:inline">Mark all read</span>
                     </Button>
                   )}
                   {notifications.length > 0 && (
@@ -215,10 +232,11 @@ export function NotificationCenter({
                       variant="ghost"
                       size="sm"
                       onClick={clearAll}
-                      className="text-[10px] uppercase tracking-widest font-black h-8 px-3 hover:bg-red-500/10 hover:text-red-600"
+                      className="text-[10px] uppercase tracking-widest font-black h-8 px-2 sm:px-3 hover:bg-red-500/10 hover:text-red-600"
+                      title="Clear All"
                     >
-                      <Trash2 className="w-3 h-3 mr-1.5" />
-                      Clear All
+                      <Trash2 className="w-4 h-4 sm:mr-1.5" />
+                      <span className="hidden sm:inline">Clear All</span>
                     </Button>
                   )}
                   <Button
@@ -232,7 +250,7 @@ export function NotificationCenter({
                 </div>
               </div>
 
-              <div className="max-h-[60vh] sm:max-h-[450px] overflow-y-auto no-scrollbar">
+              <div className="max-h-[80vh] sm:max-h-[450px] overflow-y-auto no-scrollbar">
                 {loading ? (
                   <div className="p-10 text-center space-y-3">
                     <motion.div

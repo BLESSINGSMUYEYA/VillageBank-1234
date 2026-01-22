@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Bell, BellOff } from 'lucide-react'
 import { toast } from 'sonner'
+import { cn } from '@/lib/utils'
 
 function urlBase64ToUint8Array(base64String: string) {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -159,9 +160,10 @@ export function PushNotificationManager() {
                 size="sm"
                 onClick={unsubscribeFromPush}
                 className="text-xs font-bold text-muted-foreground hover:text-red-500"
+                title="Disable Notifications"
             >
-                <BellOff className="w-4 h-4 mr-2" />
-                Disable Notifications
+                <BellOff className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Disable Notifications</span>
             </Button>
         )
     }
@@ -172,9 +174,10 @@ export function PushNotificationManager() {
             size="sm"
             onClick={subscribeToPush}
             className="text-xs font-bold border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-300"
+            title="Enable Notifications"
         >
-            <Bell className="w-4 h-4 mr-2" />
-            Enable Notifications
+            <Bell className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Enable Notifications</span>
         </Button>
     )
 }
