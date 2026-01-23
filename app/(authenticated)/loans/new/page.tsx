@@ -333,6 +333,8 @@ function NewLoanPageContent() {
               onClick={() => {
                 setSelectedGroup(group)
                 setEligibility(null)
+                // Ensure duration is reset to a safe value or within range
+                setLoanDuration('1')
                 checkEligibility(group.id)
               }}
               className={cn(
@@ -400,7 +402,7 @@ function NewLoanPageContent() {
             <div className="space-y-2">
               <label className="text-sm font-bold text-muted-foreground uppercase tracking-wide">Repayment Period</label>
               <Select value={loanDuration} onValueChange={setLoanDuration}>
-                <SelectTrigger className="h-14 text-lg font-bold rounded-xl bg-slate-50 dark:bg-white/5 border-transparent">
+                <SelectTrigger className="h-14 text-lg font-bold rounded-xl bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 hover:border-blue-500/50 transition-colors">
                   <SelectValue placeholder="Select Duration" />
                 </SelectTrigger>
                 <SelectContent>
@@ -513,7 +515,9 @@ function NewLoanPageContent() {
                 value={newAccountForm.method}
                 onValueChange={(v: any) => setNewAccountForm(prev => ({ ...prev, method: v }))}
               >
-                <SelectTrigger className="bg-white dark:bg-transparent"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="h-12 bg-white dark:bg-black/20 border-slate-200 dark:border-white/10 rounded-xl font-bold">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="AIRTEL_MONEY">Airtel Money</SelectItem>
                   <SelectItem value="MPAMBA">Mpamba</SelectItem>

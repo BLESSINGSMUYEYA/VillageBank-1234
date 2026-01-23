@@ -35,7 +35,7 @@ export function RecordCashModal({ groupId, members, showTrigger = true }: Record
     const modalContent = (
         <AnimatePresence>
             {open && (
-                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 isolate">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 isolate">
                     {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}

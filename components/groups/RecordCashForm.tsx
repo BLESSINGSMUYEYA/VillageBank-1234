@@ -23,8 +23,10 @@ import {
 } from '@/components/ui/select'
 import { toast } from 'sonner'
 import { recordCashTransaction } from '@/app/actions/cash-transaction'
-import { Loader2, Calendar, User, FileText } from 'lucide-react'
+import { PremiumInput } from '@/components/ui/premium-input'
+import { FormGroup } from '@/components/ui/form-group'
 import { useRouter } from 'next/navigation'
+import { User, Calendar, FileText, Loader2 } from 'lucide-react'
 
 const formSchema = z.object({
     userId: z.string().min(1, 'Member is required'),
@@ -103,30 +105,30 @@ export function RecordCashForm({ groupId, members, onSuccess, onCancel }: Record
                     control={form.control}
                     name="userId"
                     render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Member</FormLabel>
+                        <FormGroup label="Member" error={form.formState.errors.userId?.message}>
                             <Select onValueChange={field.onChange} value={field.value}>
                                 <FormControl>
-                                    <SelectTrigger className="h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                                    <SelectTrigger className="h-14 rounded-2xl border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 transition-all border-dashed hover:border-solid hover:shadow-sm">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                                                <User className="w-4 h-4 text-muted-foreground" />
+                                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-emerald-500/10 flex items-center justify-center">
+                                                <User className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                             </div>
                                             <SelectValue placeholder="Select a member" />
                                         </div>
                                     </SelectTrigger>
                                 </FormControl>
-                                <SelectContent className="rounded-xl border-slate-200 dark:border-white/10">
+                                <SelectContent className="rounded-2xl border-slate-200 dark:border-white/10 shadow-2xl backdrop-blur-xl">
                                     {members.map((member) => (
-                                        <SelectItem key={member.userId} value={member.userId} className="rounded-lg focus:bg-slate-100 dark:focus:bg-slate-800 cursor-pointer py-3">
-                                            <span className="font-medium">{member.user.firstName} {member.user.lastName}</span>
-                                            <span className="text-xs text-muted-foreground ml-2">({member.user.email})</span>
+                                        <SelectItem key={member.userId} value={member.userId} className="rounded-xl focus:bg-emerald-50 dark:focus:bg-emerald-500/10 cursor-pointer py-3 transition-colors">
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-slate-900 dark:text-slate-100">{member.user.firstName} {member.user.lastName}</span>
+                                                <span className="text-[10px] uppercase font-bold text-muted-foreground opacity-60 tracking-wider">({member.user.email})</span>
+                                            </div>
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
-                            <FormMessage />
-                        </FormItem>
+                        </FormGroup>
                     )}
                 />
 
@@ -135,22 +137,17 @@ export function RecordCashForm({ groupId, members, onSuccess, onCancel }: Record
                     control={form.control}
                     name="amount"
                     render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Amount</FormLabel>
-                            <FormControl>
-                                <div className="relative group">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold text-lg group-hover:text-emerald-500 transition-colors">MWK</span>
-                                    <Input
-                                        type="number"
-                                        {...field}
-                                        value={isNaN(field.value) ? '' : field.value}
-                                        onChange={e => field.onChange(e.target.valueAsNumber)}
-                                        className="pl-14 h-14 text-lg font-bold rounded-2xl border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/50 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500 transition-all"
-                                    />
-                                </div>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
+                        <FormGroup label="Amount" error={form.formState.errors.amount?.message}>
+                            <PremiumInput
+                                type="number"
+                                prefix="MWK"
+                                placeholder="0.00"
+                                className="h-14 text-lg font-black"
+                                {...field}
+                                value={field.value || ""}
+                                onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            />
+                        </FormGroup>
                     )}
                 />
 
@@ -160,45 +157,39 @@ export function RecordCashForm({ groupId, members, onSuccess, onCancel }: Record
                         control={form.control}
                         name="month"
                         render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Month</FormLabel>
+                            <FormGroup label="Month" error={form.formState.errors.month?.message}>
                                 <Select onValueChange={(value) => field.onChange(Number(value))} value={String(field.value)}>
                                     <FormControl>
-                                        <SelectTrigger className="h-12 rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/50">
+                                        <SelectTrigger className="h-12 rounded-xl border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 transition-all">
                                             <div className="flex items-center gap-2">
-                                                <Calendar className="w-4 h-4 text-muted-foreground" />
+                                                <Calendar className="w-4 h-4 text-emerald-500" />
                                                 <SelectValue placeholder="Month" />
                                             </div>
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent className="max-h-[300px] rounded-xl border-slate-200 dark:border-white/10">
+                                    <SelectContent className="max-h-[300px] rounded-xl border-slate-200 dark:border-white/10 backdrop-blur-xl">
                                         {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-                                            <SelectItem key={m} value={String(m)} className="rounded-lg cursor-pointer">
+                                            <SelectItem key={m} value={String(m)} className="rounded-lg cursor-pointer focus:bg-emerald-50 dark:focus:bg-emerald-500/10">
                                                 {new Date(0, m - 1).toLocaleString('default', { month: 'long' })}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                <FormMessage />
-                            </FormItem>
+                            </FormGroup>
                         )}
                     />
                     <FormField
                         control={form.control}
                         name="year"
                         render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Year</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        type="number"
-                                        {...field}
-                                        onChange={e => field.onChange(e.target.valueAsNumber)}
-                                        className="h-12 font-medium rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/50"
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
+                            <FormGroup label="Year" error={form.formState.errors.year?.message}>
+                                <PremiumInput
+                                    type="number"
+                                    className="h-12 font-bold"
+                                    {...field}
+                                    onChange={e => field.onChange(e.target.valueAsNumber)}
+                                />
+                            </FormGroup>
                         )}
                     />
                 </div>
@@ -208,20 +199,14 @@ export function RecordCashForm({ groupId, members, onSuccess, onCancel }: Record
                     control={form.control}
                     name="description"
                     render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Notes (Optional)</FormLabel>
-                            <FormControl>
-                                <div className="relative">
-                                    <FileText className="absolute left-4 top-3.5 w-4 h-4 text-muted-foreground" />
-                                    <Input
-                                        {...field}
-                                        className="pl-10 h-12 rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/50"
-                                        placeholder="Add any payment details..."
-                                    />
-                                </div>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
+                        <FormGroup label="Notes (Optional)" error={form.formState.errors.description?.message}>
+                            <PremiumInput
+                                {...field}
+                                icon={<FileText className="w-4 h-4" />}
+                                className="h-12"
+                                placeholder="Add any payment details..."
+                            />
+                        </FormGroup>
                     )}
                 />
 

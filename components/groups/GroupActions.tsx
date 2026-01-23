@@ -65,8 +65,8 @@ export default function GroupActions({
                     </Button>
                 )}
 
-                {/* Always render RecordCashModal, but only show the trigger button conditionally */}
-                {(isAdmin || isTreasurer) && (
+                {/* Only allow Treasurers to record cash */}
+                {isTreasurer && (
                     <RecordCashModal groupId={group.id} members={group.members} />
                 )}
 
