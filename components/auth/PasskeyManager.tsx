@@ -20,7 +20,7 @@ export default function PasskeyManager() {
             });
 
             if (!resp.ok) {
-                const error = await resp.json();
+                const error = await resp.json().catch(() => ({}));
                 throw new Error(error.error || 'Failed to get registration options');
             }
 
@@ -41,18 +41,27 @@ export default function PasskeyManager() {
             const verifyResult = await verifyResp.json();
 
             if (verifyResult.verified) {
-                toast.success('Passkey registered successfully!');
+                toast.success('Passkey registered successfully! You can now use biometric login.');
             } else {
-                toast.error('Passkey registration failed');
                 console.error('Verification failed:', verifyResult);
+                toast.error(verifyResult.error || 'Passkey registration failed. Please try again.');
             }
         } catch (error: any) {
-            // SimpleWebAuthn errors or fetch errors
+            console.error('Registration error:', error);
+
+            // Provide user-friendly error messages
             if (error.name === 'InvalidStateError') {
-                toast.error('This authenticator is already registered.');
+                toast.error('This authenticator is already registered. Please try a different one.');
+            } else if (error.name === 'NotAllowedError') {
+                toast.error('Registration was cancelled or timed out. Please try again.');
+            } else if (error.name === 'NotSupportedError') {
+                toast.error('Biometric authentication is not supported on this device.');
+            } else if (error.name === 'SecurityError') {
+                toast.error('Security error. Please ensure you\'re using HTTPS or localhost.');
+            } else if (error.name === 'AbortError') {
+                toast.error('Registration was aborted. Please try again.');
             } else {
-                console.error('Registration error:', error);
-                toast.error(error.message || 'An error occurred during registration');
+                toast.error(error.message || 'An error occurred during registration. Please try again.');
             }
         } finally {
             setLoading(false);
