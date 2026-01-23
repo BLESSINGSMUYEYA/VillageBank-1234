@@ -32,8 +32,10 @@ export async function POST(request: Request) {
             );
         }
 
-        const expectedOrigin = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-        const expectedRPID = process.env.NEXT_PUBLIC_RP_ID || 'localhost';
+        // Determine expected origin and RP ID dynamically from the request URL
+        const url = new URL(request.url);
+        const expectedOrigin = process.env.NEXT_PUBLIC_APP_URL || url.origin;
+        const expectedRPID = process.env.NEXT_PUBLIC_RP_ID || url.hostname;
 
         const verification = await verifyAuthenticationResponse({
             response: body,

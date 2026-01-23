@@ -28,7 +28,9 @@ export async function GET(request: Request) {
             }
         }
 
-        const rpID = process.env.NEXT_PUBLIC_RP_ID || 'localhost';
+        // Determine RP ID dynamically from the request URL
+        const url = new URL(request.url);
+        const rpID = process.env.NEXT_PUBLIC_RP_ID || url.hostname;
 
         const options = await generateAuthenticationOptions({
             rpID,

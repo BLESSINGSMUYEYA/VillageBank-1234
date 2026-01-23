@@ -23,13 +23,10 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
 
-        // Determine RP ID based on environment or request
-        // In production, this should be your domain name (e.g., 'example.com')
-        // In development, it can be 'localhost'
-        const rpID = process.env.NEXT_PUBLIC_RP_ID || 'localhost';
-
-        // Ensure we have a valid environment for WebAuthn
-        // You might need to configure this in your .env
+        // Determine RP ID dynamically from the request URL
+        // This ensures it works in both development (localhost) and production (deployed domain)
+        const url = new URL(request.url);
+        const rpID = process.env.NEXT_PUBLIC_RP_ID || url.hostname;
 
         const options = await generateRegistrationOptions({
             rpName: 'Village Banking',
