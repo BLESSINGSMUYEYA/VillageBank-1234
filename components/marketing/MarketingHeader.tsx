@@ -33,7 +33,7 @@ export function MarketingHeader() {
     return (
         <header className="container mx-auto px-6 py-8 flex items-center justify-between relative z-50">
             <Link href="/" className="flex items-center gap-3 group cursor-pointer">
-                <div className="w-10 h-10 bg-slate-900 dark:bg-white/10 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform border border-white/5">
+                <div className="w-10 h-10 bg-[#D8F3DC] dark:bg-emerald-950/30 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform border border-emerald-100 dark:border-emerald-500/10">
                     <UBankLogo className="w-6 h-6" />
                 </div>
                 <span className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">
@@ -69,8 +69,8 @@ export function MarketingHeader() {
                         <SheetTitle className="hidden">Mobile Navigation</SheetTitle>
                         <div className="flex flex-col h-full pt-10">
                             <div className="flex items-center gap-3 mb-10 px-2">
-                                <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg border border-white/10">
-                                    <UBankLogo className="w-6 h-6 invert" />
+                                <div className="w-10 h-10 bg-[#D8F3DC] rounded-xl flex items-center justify-center shadow-lg border border-[#B7E4C7]">
+                                    <UBankLogo className="w-6 h-6" />
                                 </div>
                                 <span className="text-2xl font-black text-white tracking-tighter">
                                     uBank

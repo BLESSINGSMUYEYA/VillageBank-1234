@@ -70,7 +70,7 @@ export default function ForgotPasswordPage() {
                 className="w-full max-w-md relative z-10"
             >
                 <motion.div variants={fadeIn} className="flex flex-col items-center mb-8">
-                    <div className="w-16 h-16 bg-slate-900 dark:bg-white/10 rounded-2xl flex items-center justify-center shadow-2xl mb-4 border border-white/10">
+                    <div className="w-16 h-16 bg-[#D8F3DC] dark:bg-emerald-950/30 rounded-2xl flex items-center justify-center shadow-2xl mb-4 border border-emerald-100 dark:border-emerald-500/10">
                         <UBankLogo className="w-10 h-10" />
                     </div>
                     <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter uppercase">
