@@ -7,7 +7,7 @@ export async function getGroupDetails(groupId: string, userId: string) {
             members: {
                 some: {
                     userId: userId,
-                    status: 'ACTIVE',
+                    status: { in: ['ACTIVE', 'PENDING'] },
                 },
             },
         },

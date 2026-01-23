@@ -11,7 +11,8 @@ import {
     Users,
     Shield,
     DollarSign,
-    CheckCircle2
+    CheckCircle2,
+    Clock
 } from 'lucide-react'
 import Link from 'next/link'
 import { formatCurrency } from '@/lib/utils'
@@ -40,44 +41,101 @@ export default function GroupDetailsClient({
     if (currentUserMember?.status === 'PENDING') {
         return (
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="max-w-2xl mx-auto pt-12 text-center space-y-6"
+                variants={staggerContainer}
+                initial="initial"
+                animate="animate"
+                className="space-y-6 sm:space-y-8 pb-20"
             >
-                <div className="w-20 h-20 mx-auto bg-yellow-100 dark:bg-yellow-500/10 rounded-full flex items-center justify-center">
-                    <Shield className="w-10 h-10 text-yellow-600 dark:text-yellow-500" />
-                </div>
-                <div className="space-y-2">
-                    <h1 className="text-3xl font-black text-foreground">Awaiting Approval</h1>
-                    <p className="text-muted-foreground text-lg max-w-md mx-auto">
-                        Your request to join <span className="font-bold text-foreground">{group.name}</span> has been sent and is awaiting admin approval.
-                    </p>
-                </div>
-                <GlassCard className="p-6 text-left max-w-md mx-auto mt-8">
-                    <h3 className="font-bold mb-2 flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                        What happens next?
-                    </h3>
-                    <ul className="space-y-3 text-sm text-muted-foreground">
-                        <li className="flex gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-slate-300 mt-1.5 shrink-0" />
-                            Admins will review your request to ensure you meet the group's requirements.
-                        </li>
-                        <li className="flex gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-slate-300 mt-1.5 shrink-0" />
-                            You will receive a notification once your request status changes.
-                        </li>
-                        <li className="flex gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-slate-300 mt-1.5 shrink-0" />
-                            In the meantime, you can continue to explore other public features.
-                        </li>
-                    </ul>
-                    <Link href="/dashboard">
-                        <Button className="w-full mt-6" variant="outline">
-                            Return to Dashboard
-                        </Button>
+                {/* Header Section - Same as main view */}
+                <motion.div variants={fadeIn} className="relative">
+                    <div className="absolute -top-20 -left-20 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl pointer-events-none" />
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+                    <Link href="/groups" className="inline-flex items-center text-xs font-bold text-muted-foreground hover:text-emerald-600 dark:hover:text-banana transition-colors duration-300 group mb-6 sm:mb-8 relative z-10">
+                        <div className="w-8 h-8 rounded-full bg-white/50 dark:bg-black/20 flex items-center justify-center mr-3 group-hover:bg-emerald-500/10 transition-colors">
+                            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform duration-300" />
+                        </div>
+                        <span className="tracking-wide">Back to Hub</span>
                     </Link>
-                </GlassCard>
+
+                    <div className="mb-6 sm:mb-8 md:mb-10 relative z-10">
+                        <div className="flex items-end justify-between gap-6">
+                            <div>
+                                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 mb-3 sm:mb-4 text-left break-words leading-tight">
+                                    {group.name}
+                                    <span className="text-yellow-500 dark:text-banana">.</span>
+                                </h1>
+                                <div className="text-xs sm:text-sm md:text-base font-medium text-slate-500 dark:text-slate-400 leading-relaxed max-w-xl flex flex-wrap items-center gap-2 sm:gap-3">
+                                    <div className="px-2.5 sm:px-3 py-1 rounded-full bg-yellow-500/10 text-yellow-600 dark:text-banana text-[10px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 sm:gap-2">
+                                        <Clock className="w-3 h-3" />
+                                        Membership Pending
+                                    </div>
+                                    <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700" />
+                                    <span className="hidden sm:inline italic">Application under review</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+
+                {/* Status Card - Styled like main card but for pending state */}
+                <motion.div variants={itemFadeIn}>
+                    <GlassCard className="p-0 overflow-hidden" hover={false}>
+                        <div className="relative border-b border-white/10 dark:border-white/5 p-4 sm:p-6 md:p-8 bg-slate-50/50 dark:bg-white/5">
+                            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 md:gap-8 items-start">
+                                <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-2xl bg-gradient-to-br from-yellow-500/20 to-orange-500/20 flex items-center justify-center text-yellow-600 dark:text-banana text-2xl sm:text-3xl font-black ring-1 ring-yellow-500/20">
+                                    <Clock className="w-8 h-8 sm:w-10 sm:h-10 animate-pulse-slow" />
+                                </div>
+                                <div className="space-y-3 pt-0 sm:pt-1">
+                                    <h2 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">Awaiting Approval</h2>
+                                    <p className="text-sm sm:text-base font-medium text-muted-foreground line-clamp-2 max-w-xl leading-relaxed">
+                                        Your request to join <span className="font-bold text-foreground">{group.name}</span> has been received and is currently being processed by the group administrators.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Info/Onboarding steps - Simple and consistent */}
+                        <div className="p-4 sm:p-6 md:p-8 bg-white dark:bg-black/40">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+                                <div className="space-y-2">
+                                    <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                                    </div>
+                                    <h4 className="font-bold text-sm">Review Process</h4>
+                                    <p className="text-xs text-muted-foreground leading-relaxed">Admins will verify your profile and membership eligibility.</p>
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                                        <Users className="w-4 h-4 text-blue-500" />
+                                    </div>
+                                    <h4 className="font-bold text-sm">Community Check</h4>
+                                    <p className="text-xs text-muted-foreground leading-relaxed">Once approved, you'll gain full access to contributions and loans.</p>
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                                        <TrendingUp className="w-4 h-4 text-purple-500" />
+                                    </div>
+                                    <h4 className="font-bold text-sm">Next Steps</h4>
+                                    <p className="text-xs text-muted-foreground leading-relaxed">Keep an eye on your notifications for status updates.</p>
+                                </div>
+                            </div>
+
+                            <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-3">
+                                <Link href="/dashboard" className="flex-1">
+                                    <Button className="w-full font-bold h-11" variant="outline">
+                                        Return to Dashboard
+                                    </Button>
+                                </Link>
+                                <Link href="/groups" className="flex-1">
+                                    <Button className="w-full font-bold h-11" variant="ghost">
+                                        Browse Other Groups
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                    </GlassCard>
+                </motion.div>
             </motion.div>
         )
     }

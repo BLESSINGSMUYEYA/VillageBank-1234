@@ -21,7 +21,8 @@ import {
     X,
     Link as LinkIcon,
     DollarSign,
-    TrendingUp
+    TrendingUp,
+    Clock
 } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
@@ -285,7 +286,12 @@ function GroupCardVault({ membership }: { membership: any }) {
     const { group } = membership
 
     return (
-        <div className="relative group p-3 sm:p-4 bg-white dark:bg-slate-800 border-none rounded-2xl shadow-sm ring-1 ring-black/5 hover:shadow-lg hover:ring-emerald-500/50 dark:hover:ring-emerald-500/50 hover:-translate-y-1 transition-all duration-300">
+        <div className={cn(
+            "relative group p-3 sm:p-4 border-none rounded-2xl shadow-sm ring-1 transition-all duration-300",
+            membership.status === 'PENDING'
+                ? "bg-slate-50/80 dark:bg-white/5 ring-slate-200 dark:ring-white/10 opacity-80"
+                : "bg-white dark:bg-slate-800 ring-black/5 hover:shadow-lg hover:ring-emerald-500/50 dark:hover:ring-emerald-500/50 hover:-translate-y-1"
+        )}>
             {/* Overlay Link for Main Card Action */}
             <Link
                 href={`/groups/${membership.groupId}`}
@@ -317,6 +323,12 @@ function GroupCardVault({ membership }: { membership: any }) {
                                     <Users className="w-2.5 h-2.5" />
                                     {group._count?.members || 0}
                                 </span>
+                                {membership.status === 'PENDING' && (
+                                    <Badge variant="banana" className="text-[8px] uppercase tracking-widest px-1.5 h-4 flex items-center gap-1">
+                                        <Clock className="w-2 h-2" />
+                                        Pending Approval
+                                    </Badge>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -348,9 +360,9 @@ function GroupCardVault({ membership }: { membership: any }) {
                         </div>
                         <div className={cn(
                             "flex items-center justify-center w-8 h-8 rounded-full",
-                            membership.status === 'ACTIVE' ? "bg-emerald-500/10 text-emerald-600" : "bg-yellow-500/10 text-yellow-600"
+                            membership.status === 'ACTIVE' ? "bg-emerald-500/10 text-emerald-600" : "bg-yellow-500/20 text-yellow-600 animate-pulse"
                         )}>
-                            <Activity className="w-4 h-4" />
+                            {membership.status === 'ACTIVE' ? <Activity className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
                         </div>
                     </div>
 
@@ -364,7 +376,7 @@ function GroupCardVault({ membership }: { membership: any }) {
                                     {t('groups.cycle_status')}
                                 </p>
                                 <p className="text-xs font-black text-foreground">
-                                    Active
+                                    {membership.status === 'ACTIVE' ? 'Active' : 'Awaiting Admin'}
                                 </p>
                             </div>
                         </div>

@@ -25,6 +25,8 @@ const badgeVariants = cva(
           "border-transparent bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 rounded-lg font-bold px-2.5 py-1 text-[10px] uppercase tracking-wider",
         error:
           "border-transparent bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 rounded-lg font-bold px-2.5 py-1 text-[10px] uppercase tracking-wider",
+        banana:
+          "border-transparent bg-banana-soft text-banana-foreground rounded-lg font-bold px-2.5 py-1 text-[10px] uppercase tracking-wider",
       },
     },
     defaultVariants: {
