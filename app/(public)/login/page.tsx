@@ -59,9 +59,19 @@ export default function LoginPage() {
                 : '/api/auth/webauthn/login/options';
 
             const resp = await fetch(url, { headers: { 'Cache-Control': 'no-store' } });
-            if (!resp.ok) throw new Error('Failed to initialize biometric login');
+
+            if (!resp.ok) {
+                const errorData = await resp.json().catch(() => ({}));
+                throw new Error(errorData.error || 'Failed to initialize biometric login');
+            }
 
             const options = await resp.json();
+
+            // Check if there are any credentials available
+            if (options.allowCredentials && options.allowCredentials.length === 0) {
+                throw new Error('NO_CREDENTIALS');
+            }
+
             const authResp = await startAuthentication(options);
 
             const verifyResp = await fetch('/api/auth/webauthn/login/verify', {
@@ -76,14 +86,26 @@ export default function LoginPage() {
                 router.push('/dashboard');
                 router.refresh();
             } else {
-                throw new Error('Verification failed');
+                throw new Error(verification.error || 'Verification failed');
             }
         } catch (err: any) {
-            console.error(err);
-            if (err.name === 'NotAllowedError') {
-                setError('Biometric login cancelled');
+            console.error('Passkey login error:', err);
+
+            // Provide user-friendly error messages
+            if (err.message === 'NO_CREDENTIALS') {
+                setError('No biometric credentials found. Please register a passkey first or use email/password login.');
+            } else if (err.name === 'NotAllowedError') {
+                setError('Biometric authentication was cancelled or timed out. Please try again.');
+            } else if (err.name === 'InvalidStateError') {
+                setError('This authenticator is already registered. Please try a different one.');
+            } else if (err.name === 'NotSupportedError') {
+                setError('Biometric authentication is not supported on this device.');
+            } else if (err.name === 'SecurityError') {
+                setError('Security error. Please ensure you\'re using HTTPS or localhost.');
+            } else if (err.name === 'AbortError') {
+                setError('Authentication request was aborted. Please try again.');
             } else {
-                setError('Biometric login failed. Please try again.');
+                setError(err.message || 'Biometric login failed. Please try email/password login.');
             }
         } finally {
             setLoading(false);

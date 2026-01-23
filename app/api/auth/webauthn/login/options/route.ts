@@ -25,7 +25,13 @@ export async function GET(request: Request) {
                     id: passkey.credentialID,
                     transports: passkey.transports as AuthenticatorTransportFuture[],
                 }));
+
+                console.log(`[WebAuthn Login] Found ${allowCredentials.length} passkey(s) for user: ${email}`);
+            } else {
+                console.log(`[WebAuthn Login] No user found with email: ${email}`);
             }
+        } else {
+            console.log('[WebAuthn Login] No email provided, allowing any registered passkey');
         }
 
         // Determine RP ID dynamically from the request URL
