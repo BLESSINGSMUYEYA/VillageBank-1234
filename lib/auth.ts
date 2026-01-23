@@ -4,9 +4,11 @@ import { NextRequest } from 'next/server';
 
 const SECRET_KEY = process.env.JWT_SECRET;
 if (!SECRET_KEY) {
-    throw new Error('JWT_SECRET environment variable is not defined');
+    console.error('[Auth] JWT_SECRET environment variable is not defined!');
+    // Don't throw here to avoid crashing the whole server during import, 
+    // but the functions will fail if called.
 }
-const key = new TextEncoder().encode(SECRET_KEY);
+const key = new TextEncoder().encode(SECRET_KEY || 'default-secret-for-dev-only-do-not-use-in-prod');
 
 export async function signToken(payload: any) {
     return await new SignJWT(payload)

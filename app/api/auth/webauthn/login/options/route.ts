@@ -38,11 +38,16 @@ export async function GET(request: Request) {
         const url = new URL(request.url);
         const rpID = process.env.NEXT_PUBLIC_RP_ID || url.hostname;
 
+        console.log(`[WebAuthn Login Options] Generating options for email: ${email || 'None'}`);
+        console.log(`[WebAuthn Login Options] RP ID: ${rpID}`);
+
         const options = await generateAuthenticationOptions({
             rpID,
             allowCredentials,
             userVerification: 'preferred',
         });
+
+        console.log('[WebAuthn Login Options] Generated options:', JSON.stringify(options, null, 2));
 
         const cookieStore = await cookies();
         cookieStore.set('auth_challenge', options.challenge, {
@@ -54,10 +59,14 @@ export async function GET(request: Request) {
         });
 
         return NextResponse.json(options);
-    } catch (error) {
-        console.error('Error generating authentication options:', error);
+    } catch (error: any) {
+        console.error('[WebAuthn Login Options] Critical failure:', error);
         return NextResponse.json(
-            { error: 'Internal server error' },
+            {
+                error: 'Internal server error',
+                message: error.message,
+                code: error.code
+            },
             { status: 500 }
         );
     }

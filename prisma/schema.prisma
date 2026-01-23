@@ -8,77 +8,76 @@ datasource db {
 }
 
 model User {
-  id                String             @id @default(cuid())
-  email             String             @unique
-  ubankId                 String?          @unique
-  firstName         String?
-  lastName          String?
-  phoneNumber       String?
-  region            String?
-  role              UserRole           @default(MEMBER)
-  emailVerified     DateTime?
-  verificationToken String?            @unique
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  password          String?
-  resetToken        String?            @unique
-  resetTokenExpiry  DateTime?
-  activities        Activity[]
-  contributions     Contribution[]
-  groupMembers      GroupMember[]
-  groupShares       GroupShare[]
-  loans             Loan[]
-  loanRepayments    LoanRepayment[]
-  memberBankDetails MemberBankDetail[]
-  notifications     Notification[]
-  pushSubscriptions PushSubscription[]
-  reminders         Reminder[]
-  createdAnnouncements Announcement[]  @relation("CreatedAnnouncements")
-  passkeys          Passkey[]
+  id                   String             @id @default(cuid())
+  email                String             @unique
+  firstName            String?
+  lastName             String?
+  phoneNumber          String?
+  role                 UserRole           @default(MEMBER)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  emailVerified        DateTime?
+  region               String?
+  password             String?
+  resetToken           String?            @unique
+  resetTokenExpiry     DateTime?
+  verificationToken    String?            @unique
+  ubankId              String?            @unique
+  activities           Activity[]
+  createdAnnouncements Announcement[]     @relation("CreatedAnnouncements")
+  contributions        Contribution[]
+  groupMembers         GroupMember[]
+  groupShares          GroupShare[]
+  loans                Loan[]
+  loanRepayments       LoanRepayment[]
+  memberBankDetails    MemberBankDetail[]
+  notifications        Notification[]
+  passkeys             Passkey[]
+  pushSubscriptions    PushSubscription[]
+  reminders            Reminder[]
 }
 
 model Passkey {
-  id           String   @id @default(cuid())
-  credentialID String   @unique
+  id           String    @id @default(cuid())
+  credentialID String    @unique
   userId       String
   publicKey    Bytes
   counter      Int
   transports   String[]
-  createdAt    DateTime @default(now())
+  createdAt    DateTime  @default(now())
   lastUsedAt   DateTime?
-  
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Group {
   id                       String           @id @default(cuid())
   name                     String
-  ubankId                 String?          @unique
   description              String?
   region                   Region
-  meetingLocation          String?
-  contactEmail             String?
-  contactPhone             String?
-  meetingFrequency         MeetingFrequency @default(MONTHLY)
   monthlyContribution      Float
-  socialFundAmount         Float            @default(0)
   maxLoanMultiplier        Int              @default(3)
   interestRate             Float            @default(10)
-  minLoanAmount            Float            @default(0)
-  loanInterestType         InterestType     @default(FLAT_RATE)
-  penaltyAmount            Float            @default(0)
-  lateContributionFee      Float            @default(0)
-  lateMeetingFine          Float            @default(0)
-  missedMeetingFine        Float            @default(0)
-  contributionDueDay       Int              @default(5)
-  contributionDeadlineType MeetingFrequency @default(MONTHLY)
-  minContributionMonths    Int              @default(3)
-  loanGracePeriodDays      Int              @default(0)
   isActive                 Boolean          @default(true)
-  cycleEndDate             DateTime?
   createdById              String
   createdAt                DateTime         @default(now())
   updatedAt                DateTime         @updatedAt
+  contributionDeadlineType MeetingFrequency @default(MONTHLY)
+  contributionDueDay       Int              @default(5)
+  lateContributionFee      Float            @default(0)
+  lateMeetingFine          Float            @default(0)
+  loanGracePeriodDays      Int              @default(0)
+  loanInterestType         InterestType     @default(FLAT_RATE)
+  meetingFrequency         MeetingFrequency @default(MONTHLY)
+  missedMeetingFine        Float            @default(0)
+  penaltyAmount            Float            @default(0)
+  socialFundAmount         Float            @default(0)
+  ubankId                  String?          @unique
+  contactEmail             String?
+  contactPhone             String?
+  meetingLocation          String?
+  minContributionMonths    Int              @default(3)
+  cycleEndDate             DateTime?
+  minLoanAmount            Float            @default(0)
   activities               Activity[]
   contributions            Contribution[]
   members                  GroupMember[]
@@ -112,17 +111,17 @@ model Contribution {
   amount          Float
   month           Int
   year            Int
-  paymentDate     DateTime      @default(now())
   paymentMethod   String?
   transactionRef  String?
-  receiptUrl      String?
   status          PaymentStatus @default(PENDING)
-  penaltyApplied  Float         @default(0)
-  isLate          Boolean       @default(false)
-  reviewedById    String?
-  reviewDate      DateTime?
-  rejectionReason String?
   createdAt       DateTime      @default(now())
+  isLate          Boolean       @default(false)
+  paymentDate     DateTime      @default(now())
+  penaltyApplied  Float         @default(0)
+  receiptUrl      String?
+  rejectionReason String?
+  reviewDate      DateTime?
+  reviewedById    String?
   group           Group         @relation(fields: [groupId], references: [id])
   user            User          @relation(fields: [userId], references: [id])
 
@@ -138,22 +137,21 @@ model Loan {
   userId                    String
   amountRequested           Float
   amountApproved            Float?
-
   interestRate              Float
-  interestType              InterestType       @default(FLAT_RATE)
   repaymentPeriodMonths     Int
   status                    LoanStatus         @default(PENDING)
   approvedById              String?
   approvedAt                DateTime?
-  rejectedById              String?
-  rejectedAt                DateTime?
-  rejectionReason           String?
   createdAt                 DateTime           @default(now())
   updatedAt                 DateTime           @updatedAt
-  disbursementMethod        PaymentMethodType?
+  rejectedAt                DateTime?
+  rejectedById              String?
+  rejectionReason           String?
   disbursementAccountName   String?
   disbursementAccountNumber String?
   disbursementBankName      String?
+  disbursementMethod        PaymentMethodType?
+  interestType              InterestType       @default(FLAT_RATE)
   group                     Group              @relation(fields: [groupId], references: [id])
   user                      User               @relation(fields: [userId], references: [id])
   repayments                LoanRepayment[]
@@ -165,16 +163,15 @@ model Loan {
 model LoanRepayment {
   id             String   @id @default(cuid())
   loanId         String
-  userId         String
   amount         Float
   paymentMethod  String?
   transactionRef String?
   paidAt         DateTime @default(now())
   createdAt      DateTime @default(now())
+  userId         String
   loan           Loan     @relation(fields: [loanId], references: [id])
   user           User     @relation(fields: [userId], references: [id])
 }
-
 
 model PaymentMethod {
   id            String            @id @default(cuid())
@@ -182,10 +179,10 @@ model PaymentMethod {
   type          PaymentMethodType
   accountNumber String
   accountName   String
-  bankName      String?
   isActive      Boolean           @default(true)
   addedById     String
   createdAt     DateTime          @default(now())
+  bankName      String?
   group         Group             @relation(fields: [groupId], references: [id])
 }
 
@@ -280,6 +277,39 @@ model MemberBankDetail {
   @@index([userId])
 }
 
+model Reminder {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  datetime    DateTime
+  type        ReminderType @default(MEETING)
+  link        String?
+  userId      String
+  groupId     String?
+  isRead      Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  group       Group?       @relation(fields: [groupId], references: [id])
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, datetime])
+  @@index([groupId, datetime])
+}
+
+model Announcement {
+  id          String           @id @default(cuid())
+  title       String
+  message     String
+  imageUrl    String?
+  link        String?
+  type        AnnouncementType @default(BANNER)
+  isActive    Boolean          @default(true)
+  expiresAt   DateTime?
+  createdAt   DateTime         @default(now())
+  createdById String
+  actionText  String?
+  createdBy   User             @relation("CreatedAnnouncements", fields: [createdById], references: [id])
+}
+
 enum UserRole {
   MEMBER
   REGIONAL_ADMIN
@@ -359,46 +389,10 @@ enum SharePermission {
   FULL_PREVIEW
 }
 
-model Reminder {
-  id          String       @id @default(cuid())
-  title       String
-  description String?
-  datetime    DateTime
-  type        ReminderType @default(MEETING)
-  link        String? // For video calls etc
-
-  // Relations
-  userId  String // Creator or assignee
-  groupId String? // If group related
-
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
-
-  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  group Group? @relation(fields: [groupId], references: [id])
-
-  @@index([userId, datetime])
-  @@index([groupId, datetime])
-}
-
 enum ReminderType {
   MEETING
   PAYMENT
   GENERAL
-}
-model Announcement {
-  id          String   @id @default(cuid())
-  title       String
-  message     String
-  imageUrl    String?
-  link        String?
-  actionText  String?
-  type        AnnouncementType @default(BANNER)
-  isActive    Boolean  @default(true)
-  expiresAt   DateTime?
-  createdAt   DateTime @default(now())
-  createdById String
-  createdBy   User     @relation("CreatedAnnouncements", fields: [createdById], references: [id])
 }
 
 enum AnnouncementType {

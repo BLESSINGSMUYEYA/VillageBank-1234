@@ -24,17 +24,18 @@ export async function GET(request: Request) {
         }
 
         // Determine RP ID dynamically from the request URL
-        // This ensures it works in both development (localhost) and production (deployed domain)
         const url = new URL(request.url);
         const rpID = process.env.NEXT_PUBLIC_RP_ID || url.hostname;
+
+        console.log('[WebAuthn Registration Options] Generating options for user:', user.email);
+        console.log('[WebAuthn Registration Options] RP ID:', rpID);
 
         const options = await generateRegistrationOptions({
             rpName: 'Village Banking',
             rpID,
-            userID: new TextEncoder().encode(user.id), // Using the user's ID directly as the handle
+            userID: new TextEncoder().encode(user.id),
             userName: user.email,
             attestationType: 'none',
-            // Prevent users from registering the same authenticator multiple times
             excludeCredentials: user.passkeys.map((passkey) => ({
                 id: passkey.credentialID,
                 transports: passkey.transports as any,
@@ -42,7 +43,7 @@ export async function GET(request: Request) {
             authenticatorSelection: {
                 residentKey: 'preferred',
                 userVerification: 'preferred',
-                authenticatorAttachment: 'platform', // Enforce platform authenticators (TouchID, FaceID, Windows Hello)
+                authenticatorAttachment: 'platform',
             },
         });
 
@@ -57,10 +58,14 @@ export async function GET(request: Request) {
         });
 
         return NextResponse.json(options);
-    } catch (error) {
-        console.error('Error generating registration options:', error);
+    } catch (error: any) {
+        console.error('[WebAuthn Registration Options] Critical failure:', error);
         return NextResponse.json(
-            { error: 'Internal server error' },
+            {
+                error: 'Internal server error',
+                message: error.message,
+                code: error.code
+            },
             { status: 500 }
         );
     }

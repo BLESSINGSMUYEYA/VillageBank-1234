@@ -7,8 +7,14 @@ import { signToken } from '@/lib/auth';
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { id } = body; // Credential ID
+        console.log('[WebAuthn Login Verify] Body received:', JSON.stringify(body, null, 2));
 
+        if (!body || !body.id || !body.response) {
+            console.error('[WebAuthn Login Verify] Malformed request body');
+            return NextResponse.json({ error: 'Malformed request body' }, { status: 400 });
+        }
+
+        const { id } = body; // Credential ID
         console.log('[WebAuthn Verify] Starting authentication verification for credential:', id);
 
         const cookieStore = await cookies();
@@ -99,11 +105,16 @@ export async function POST(request: Request) {
         console.error('[WebAuthn Verify] Verification failed - verified:', verified);
         return NextResponse.json({ verified: false, error: 'Verification failed' }, { status: 400 });
 
-    } catch (error) {
-        console.error('[WebAuthn Verify] Error during verification:', error);
-        console.error('[WebAuthn Verify] Error stack:', (error as Error).stack);
+    } catch (error: any) {
+        console.error('[WebAuthn Verify] Critical failure during verification:', error);
+        console.error('[WebAuthn Verify] Error stack:', error.stack);
         return NextResponse.json(
-            { error: 'Internal server error', details: (error as Error).message },
+            {
+                error: 'Internal server error',
+                message: error.message,
+                details: error.details || 'No additional details',
+                code: error.code
+            },
             { status: 500 }
         );
     }

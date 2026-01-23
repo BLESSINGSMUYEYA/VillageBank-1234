@@ -30,7 +30,12 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json();
-        const { response } = body;
+        console.log('[WebAuthn Registration Verify] Body received:', JSON.stringify(body, null, 2));
+
+        if (!body || !body.id || !body.response) {
+            console.error('[WebAuthn Registration Verify] Malformed request body');
+            return NextResponse.json({ error: 'Malformed request body' }, { status: 400 });
+        }
 
         const user = await prisma.user.findUnique({
             where: { id: session.userId },
@@ -88,11 +93,16 @@ export async function POST(request: Request) {
         console.error('[WebAuthn Register] Verification failed - verified:', verified);
         return NextResponse.json({ verified: false, error: 'Verification failed' }, { status: 400 });
 
-    } catch (error) {
-        console.error('[WebAuthn Register] Error during registration:', error);
-        console.error('[WebAuthn Register] Error stack:', (error as Error).stack);
+    } catch (error: any) {
+        console.error('[WebAuthn Registration Verify] Critical failure:', error);
+        console.error('[WebAuthn Registration Verify] Error stack:', error.stack);
         return NextResponse.json(
-            { error: 'Internal server error', details: (error as Error).message },
+            {
+                error: 'Internal server error',
+                message: error.message,
+                details: error.details || 'No additional details',
+                code: error.code
+            },
             { status: 500 }
         );
     }
