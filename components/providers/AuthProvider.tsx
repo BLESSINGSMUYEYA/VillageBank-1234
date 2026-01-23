@@ -80,7 +80,7 @@ function AuthContent({ children }: { children: React.ReactNode }) {
         setUser(user);
 
         // Check for redirect URL
-        const redirectUrl = searchParams.get('redirect');
+        const redirectUrl = searchParams.get('redirect') || searchParams.get('callbackUrl');
         if (redirectUrl) {
             router.push(decodeURIComponent(redirectUrl));
         } else if (user.role === 'REGIONAL_ADMIN') {

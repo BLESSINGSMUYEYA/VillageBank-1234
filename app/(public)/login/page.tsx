@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { startAuthentication } from '@simplewebauthn/browser';
 import Link from 'next/link';
 import { useAuth } from '@/components/providers/AuthProvider';
@@ -30,6 +30,7 @@ type LoginForm = z.infer<typeof loginSchema>;
 export default function LoginPage() {
     const { login } = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { t } = useLanguage();
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -83,7 +84,12 @@ export default function LoginPage() {
             const verification = await verifyResp.json();
 
             if (verification.verified) {
-                router.push('/dashboard');
+                const redirectUrl = searchParams.get('redirect') || searchParams.get('callbackUrl');
+                if (redirectUrl) {
+                    router.push(decodeURIComponent(redirectUrl));
+                } else {
+                    router.push('/dashboard');
+                }
                 router.refresh();
             } else {
                 throw new Error(verification.error || 'Verification failed');

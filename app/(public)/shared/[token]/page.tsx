@@ -11,6 +11,7 @@ import { motion } from 'framer-motion'
 import { staggerContainer, itemFadeIn } from '@/lib/motions'
 import { formatCurrency } from '@/lib/utils'
 import Link from 'next/link'
+import { useAuth } from '@/components/providers/AuthProvider'
 
 interface SharedGroupData {
     share: {
@@ -46,7 +47,7 @@ export default function PublicSharedGroupPage() {
     const [groupData, setGroupData] = useState<SharedGroupData | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
-    const [isAuthenticated, setIsAuthenticated] = useState(false)
+    const { isAuthenticated, loading: authLoading } = useAuth()
     const [joining, setJoining] = useState(false)
     const [hasRequested, setHasRequested] = useState(false)
 
@@ -73,36 +74,17 @@ export default function PublicSharedGroupPage() {
             }
         }
 
-        // Check if user is authenticated
-        const checkAuth = async () => {
-            try {
-                const res = await fetch('/api/auth/session')
-                const data = await res.json()
-                const isAuth = !!data?.userId
-                setIsAuthenticated(isAuth)
-
-                // Auto-join logic if redirected back after login
-                if (isAuth && searchParams.get('autoJoin') === 'true' && params.token) {
-                    // We need to wait for groupData to be loaded before joining
-                    // This will be handled by a separate effect dependent on groupData
-                }
-            } catch {
-                setIsAuthenticated(false)
-            }
-        }
-
         if (params.token) {
             fetchSharedGroup()
-            checkAuth()
         }
-    }, [params.token, searchParams])
+    }, [params.token])
 
     // Separate effect for auto-joining once group data is ready and user is authenticated
     useEffect(() => {
-        if (isAuthenticated && groupData && searchParams.get('autoJoin') === 'true' && !hasRequested && !joining) {
+        if (isAuthenticated && !authLoading && groupData && searchParams.get('autoJoin') === 'true' && !hasRequested && !joining) {
             requestToJoin()
         }
-    }, [isAuthenticated, groupData, searchParams, hasRequested, joining])
+    }, [isAuthenticated, authLoading, groupData, searchParams, hasRequested, joining])
 
     const requestToJoin = async () => {
         if (!groupData || joining || hasRequested) return
@@ -165,7 +147,7 @@ export default function PublicSharedGroupPage() {
         }
     }
 
-    if (loading) {
+    if (loading || authLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
                 <div className="text-center space-y-4">
