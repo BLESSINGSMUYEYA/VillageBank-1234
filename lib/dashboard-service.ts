@@ -1,5 +1,7 @@
+import { cache } from 'react'
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { withCache, cacheKeys } from '@/lib/cache'
 
 export interface DashboardStats {
     totalGroups: number
@@ -32,7 +34,7 @@ export interface ChartData {
     }
 }
 
-export async function getDashboardStats(): Promise<DashboardStats> {
+export const getDashboardStats = cache(async (): Promise<DashboardStats> => {
     const session = await getSession()
     const userId = session?.userId
 
@@ -40,119 +42,133 @@ export async function getDashboardStats(): Promise<DashboardStats> {
         throw new Error('Unauthorized')
     }
 
-    // Parallel fetch of main entities
-    const [userGroupsCount, contributions, loans] = await Promise.all([
-        prisma.group.count({
-            where: {
-                members: {
-                    some: {
+    // Use cache with 5-minute TTL
+    return withCache(
+        cacheKeys.dashboardStats(userId),
+        async () => {
+
+            // Parallel fetch of main entities
+            const [userGroupsCount, contributions, loans] = await Promise.all([
+                prisma.group.count({
+                    where: {
+                        members: {
+                            some: {
+                                userId: userId,
+                                status: 'ACTIVE',
+                            },
+                        },
+                    },
+                }),
+                prisma.contribution.findMany({
+                    where: {
                         userId: userId,
-                        status: 'ACTIVE',
+                        status: 'COMPLETED',
+                    },
+                }),
+                prisma.loan.findMany({
+                    where: {
+                        userId: userId,
+                    },
+                    include: {
+                        repayments: true
+                    }
+                })
+            ])
+
+            // Get current month info for filtering
+            const now = new Date()
+            const currentMonth = now.getMonth() + 1
+            const currentYear = now.getFullYear()
+
+            // Filter in memory to avoid extra DB calls
+            const monthlyContribution = contributions.find(c =>
+                c.month === currentMonth &&
+                c.year === currentYear
+            )
+
+            // Calculate stats
+            const totalContributions = contributions.reduce((sum, c) => sum + Number(c.amount), 0)
+            const pendingLoans = loans.filter(loan => loan.status === 'PENDING').length
+            const activeLoans = loans.filter(loan => ['APPROVED', 'ACTIVE'].includes(loan.status)).length
+
+            // Calculate repayment progress using the already fetched loans
+            let repaymentProgress = 0
+            const eligibleLoans = loans.filter(l => ['APPROVED', 'ACTIVE', 'COMPLETED'].includes(l.status))
+            if (eligibleLoans.length > 0) {
+                let totalToRepay = 0
+                let totalRepaid = 0
+
+                eligibleLoans.forEach(loan => {
+                    const principal = loan.amountApproved || loan.amountRequested
+                    const interest = (principal * loan.interestRate) / 100
+                    totalToRepay += principal + interest
+                    totalRepaid += loan.repayments.reduce((sum, r) => sum + Number(r.amount), 0)
+                })
+
+                if (totalToRepay > 0) {
+                    repaymentProgress = Math.min(100, Math.round((totalRepaid / totalToRepay) * 100))
+                }
+            }
+
+            return {
+                totalGroups: userGroupsCount,
+                totalContributions,
+                totalLoans: activeLoans,
+                pendingLoans,
+                monthlyContribution: monthlyContribution ? Number(monthlyContribution.amount) : 0,
+                loanRepaymentProgress: repaymentProgress,
+            }
+        },
+        5 * 60 * 1000 // 5 minutes
+    )
+})
+
+export const getRecentActivity = cache(async (): Promise<RecentActivity[]> => {
+    const session = await getSession()
+    const userId = session?.userId
+
+    if (!userId) {
+        throw new Error('Unauthorized')
+    }
+
+    return withCache(
+        cacheKeys.dashboardActivity(userId),
+        async () => {
+
+            // Get user's recent activities
+            const activities = await prisma.activity.findMany({
+                where: {
+                    userId: userId as string,
+                },
+                include: {
+                    group: {
+                        select: {
+                            name: true,
+                            ubankId: true,
+                        },
                     },
                 },
-            },
-        }),
-        prisma.contribution.findMany({
-            where: {
-                userId: userId,
-                status: 'COMPLETED',
-            },
-        }),
-        prisma.loan.findMany({
-            where: {
-                userId: userId,
-            },
-            include: {
-                repayments: true
-            }
-        })
-    ])
-
-    // Get current month info for filtering
-    const now = new Date()
-    const currentMonth = now.getMonth() + 1
-    const currentYear = now.getFullYear()
-
-    // Filter in memory to avoid extra DB calls
-    const monthlyContribution = contributions.find(c =>
-        c.month === currentMonth &&
-        c.year === currentYear
-    )
-
-    // Calculate stats
-    const totalContributions = contributions.reduce((sum, c) => sum + Number(c.amount), 0)
-    const pendingLoans = loans.filter(loan => loan.status === 'PENDING').length
-    const activeLoans = loans.filter(loan => ['APPROVED', 'ACTIVE'].includes(loan.status)).length
-
-    // Calculate repayment progress using the already fetched loans
-    let repaymentProgress = 0
-    const eligibleLoans = loans.filter(l => ['APPROVED', 'ACTIVE', 'COMPLETED'].includes(l.status))
-    if (eligibleLoans.length > 0) {
-        let totalToRepay = 0
-        let totalRepaid = 0
-
-        eligibleLoans.forEach(loan => {
-            const principal = loan.amountApproved || loan.amountRequested
-            const interest = (principal * loan.interestRate) / 100
-            totalToRepay += principal + interest
-            totalRepaid += loan.repayments.reduce((sum, r) => sum + Number(r.amount), 0)
-        })
-
-        if (totalToRepay > 0) {
-            repaymentProgress = Math.min(100, Math.round((totalRepaid / totalToRepay) * 100))
-        }
-    }
-
-    return {
-        totalGroups: userGroupsCount,
-        totalContributions,
-        totalLoans: activeLoans,
-        pendingLoans,
-        monthlyContribution: monthlyContribution ? Number(monthlyContribution.amount) : 0,
-        loanRepaymentProgress: repaymentProgress,
-    }
-}
-
-export async function getRecentActivity(): Promise<RecentActivity[]> {
-    const session = await getSession()
-    const userId = session?.userId
-
-    if (!userId) {
-        throw new Error('Unauthorized')
-    }
-
-    // Get user's recent activities
-    const activities = await prisma.activity.findMany({
-        where: {
-            userId: userId as string,
-        },
-        include: {
-            group: {
-                select: {
-                    name: true,
-                    ubankId: true,
+                orderBy: {
+                    createdAt: 'desc',
                 },
-            },
-        },
-        orderBy: {
-            createdAt: 'desc',
-        },
-        take: 10,
-    })
+                take: 10,
+            })
 
-    // Format activities for dashboard
-    return activities.map(activity => ({
-        id: activity.id,
-        type: activity.actionType,
-        description: activity.description,
-        amount: (activity.metadata as any)?.amount as number | undefined,
-        createdAt: activity.createdAt,
-        groupName: activity.group?.name || 'Unknown Group',
-        groupTag: activity.group?.ubankId || undefined,
-    }))
-}
+            return activities.map(activity => ({
+                id: activity.id,
+                type: activity.actionType,
+                description: activity.description,
+                amount: (activity.metadata as any)?.amount as number | undefined,
+                createdAt: activity.createdAt,
+                groupName: activity.group?.name || 'Unknown Group',
+                groupTag: activity.group?.ubankId || undefined,
+            }))
+        },
+        5 * 60 * 1000 // 5 minutes
+    )
+})
 
-export async function getAllActivities(): Promise<RecentActivity[]> {
+export const getAllActivities = cache(async (): Promise<RecentActivity[]> => {
     const session = await getSession()
     const userId = session?.userId
 
@@ -189,9 +205,9 @@ export async function getAllActivities(): Promise<RecentActivity[]> {
         groupName: activity.group?.name || 'Unknown Group',
         groupTag: activity.group?.ubankId || undefined,
     }))
-}
+})
 
-export async function getChartData(): Promise<ChartData> {
+export const getChartData = cache(async (): Promise<ChartData> => {
     const session = await getSession()
     const userId = session?.userId
 
@@ -352,9 +368,9 @@ export async function getChartData(): Promise<ChartData> {
             currentStreak
         }
     }
-}
+})
 
-export async function getPendingApprovals() {
+export const getPendingApprovals = cache(async () => {
     const session = await getSession()
     const userId = session?.userId as string
 
@@ -471,5 +487,5 @@ export async function getPendingApprovals() {
             type: 'LOAN'
         }))
     }
-}
+})
 

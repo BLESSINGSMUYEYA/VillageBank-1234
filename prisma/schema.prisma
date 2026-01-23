@@ -101,6 +101,8 @@ model GroupMember {
   user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([groupId, userId])
+  @@index([userId, status])
+  @@index([groupId, status])
 }
 
 model Contribution {
@@ -127,6 +129,7 @@ model Contribution {
   @@index([groupId, userId, month, year])
   @@index([status])
   @@index([userId, status])
+  @@index([userId, status, createdAt])
 }
 
 model Loan {

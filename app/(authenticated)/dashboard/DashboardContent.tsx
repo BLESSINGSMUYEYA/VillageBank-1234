@@ -49,8 +49,8 @@ export function DashboardContent({
                 key="dashboard-hero"
                 user={user}
                 stats={stats}
-                pendingApprovalsCount={pendingApprovals.length}
-                recentActivityCount={recentActivity.length}
+                pendingApprovalsCount={pendingApprovals?.length || 0}
+                recentActivityCount={recentActivity?.length || 0}
             />
 
             {/* Quick Actions (Repositioned between Hero and Content) */}

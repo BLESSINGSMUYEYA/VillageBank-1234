@@ -48,8 +48,8 @@ export default async function DashboardPage() {
   const reminders = remindersResult.success ? remindersResult.data : []
 
   const flattenedApprovals = [
-    ...pendingApprovals.contributions.map((c: any) => ({ ...c, type: 'CONTRIBUTION' })),
-    ...pendingApprovals.loans
+    ...(pendingApprovals?.contributions?.map((c: any) => ({ ...c, type: 'CONTRIBUTION' })) || []),
+    ...(pendingApprovals?.loans || [])
   ]
 
   return (

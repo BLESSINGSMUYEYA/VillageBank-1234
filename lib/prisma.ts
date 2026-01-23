@@ -17,13 +17,16 @@ const getDatabaseUrl = () => {
 
 // Build connection options
 const prismaClientOptions: Prisma.PrismaClientOptions = {
-  log: ['error', 'warn'],
+  log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
   errorFormat: 'pretty',
   datasources: {
     db: {
       url: getDatabaseUrl()
     }
-  }
+  },
+  // Connection pooling configuration
+  // Note: For Neon/serverless, use pooled connection string in DATABASE_URL
+  // Example: postgresql://user:pass@host/db?pgbouncer=true&connection_limit=10
 }
 
 const prismaClientSingleton = () => {

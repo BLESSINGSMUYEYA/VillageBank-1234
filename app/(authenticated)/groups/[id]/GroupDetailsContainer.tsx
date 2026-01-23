@@ -30,18 +30,18 @@ export default function GroupDetailsContainer({
 }: GroupDetailsContainerProps) {
     return (
         <Tabs defaultValue="members" className="space-y-6 sm:space-y-8">
-            <div className="flex items-center justify-between gap-4 overflow-x-auto no-scrollbar pb-4 border-b border-slate-200 dark:border-white/5">
+            <div className="flex items-center justify-between gap-4 overflow-x-auto scrollbar-hide pb-4 border-b border-slate-200 dark:border-white/5 snap-x snap-mandatory">
                 <ZenTabsList>
-                    <ZenTabsTrigger value="members">
+                    <ZenTabsTrigger value="members" className="snap-start">
                         Members
                         <span className="ml-2 bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-300 py-0.5 px-2 rounded-full text-[10px] font-black">
                             {group.members.filter((m: any) => m.status === 'ACTIVE').length}
                         </span>
                     </ZenTabsTrigger>
-                    <ZenTabsTrigger value="ledger">
+                    <ZenTabsTrigger value="ledger" className="snap-start">
                         Ledger
                     </ZenTabsTrigger>
-                    <ZenTabsTrigger value="activities">
+                    <ZenTabsTrigger value="activities" className="snap-start">
                         Activity
                     </ZenTabsTrigger>
                 </ZenTabsList>
