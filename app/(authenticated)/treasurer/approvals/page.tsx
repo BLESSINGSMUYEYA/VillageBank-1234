@@ -127,22 +127,32 @@ export default function TreasurerApprovalsPage() {
     }
 
     return (
-        <div className="space-y-6 sm:space-y-8 pb-20 max-w-6xl mx-auto">
+        <div className="space-y-6 sm:space-y-8 pb-20 max-w-6xl mx-auto relative">
+            {/* Ambient Background Glows */}
+            <div className="absolute -top-20 -left-20 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+
             {/* Header */}
-            <div>
+            <div className="relative z-10">
                 <Link href="/dashboard" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-emerald-600 dark:hover:text-banana transition-all duration-300 group mb-6">
-                    <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300 relative z-10" />
+                    <div className="w-8 h-8 rounded-full bg-white/50 dark:bg-black/20 flex items-center justify-center mr-3 group-hover:bg-emerald-500/10 transition-colors">
+                        <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform duration-300" />
+                    </div>
                     Back to Hub
                 </Link>
                 <div className="hidden md:block mb-8">
-                    <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter text-main mb-2 text-left break-words">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 mb-2">
                         Approvals
-                        <span className="text-banana">.</span>
+                        <span className="text-emerald-500 dark:text-banana">.</span>
                     </h1>
-                    <p className="text-xs sm:text-sm md:text-base font-medium text-slate-500 leading-relaxed max-w-xl flex items-center gap-2">
-                        <ShieldCheck className="w-4 h-4 text-blue-600 dark:text-banana" />
-                        Financial Clearance & Audit
-                    </p>
+                    <div className="text-xs sm:text-sm md:text-base font-medium text-slate-500 dark:text-slate-400 leading-relaxed max-w-xl flex items-center gap-3">
+                        <div className="px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] font-bold uppercase tracking-wider flex items-center gap-2">
+                            <ShieldCheck className="w-3.5 h-3.5" />
+                            Financial Clearance & Audit
+                        </div>
+                        <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700" />
+                        <span className="italic">Secure Ledger Terminal</span>
+                    </div>
                 </div>
             </div>
 
@@ -273,98 +283,107 @@ export default function TreasurerApprovalsPage() {
 
             {/* Refined Vertical Review Modal */}
             <Dialog open={!!reviewItem} onOpenChange={(open) => !open && setReviewItem(null)}>
-                <DialogContent className="max-w-[480px] w-full max-h-[90vh] p-0 overflow-hidden rounded-3xl border-white/20 bg-slate-900/95 backdrop-blur-xl flex flex-col shadow-2xl outline-none">
+                <DialogContent className="max-w-[480px] w-full max-h-[90vh] p-0 overflow-hidden rounded-[2.5rem] border-white/20 dark:border-white/5 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl flex flex-col shadow-2xl outline-none">
                     <DialogTitle className="sr-only">Contribution Review</DialogTitle>
                     <DialogDescription className="sr-only">Review details</DialogDescription>
 
                     {reviewItem && (
                         <div className="flex flex-col h-full overflow-hidden">
                             {/* 1. Header & Image Section (Fixed at Top) */}
-                            <div className="relative shrink-0 bg-black/40 border-b border-white/10">
+                            <div className="relative shrink-0 bg-slate-100/50 dark:bg-black/40 border-b border-slate-200 dark:border-white/10">
+                                {/* Ambient Glow in modal */}
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+
                                 {/* Image Container - Fixed height */}
-                                <div className="h-[300px] w-full flex items-center justify-center relative overflow-hidden bg-grid-white/[0.05]">
+                                <div className="h-[300px] w-full flex items-center justify-center relative overflow-hidden bg-grid-slate-900/[0.02] dark:bg-grid-white/[0.02]">
                                     {reviewItem.receiptUrl ? (
                                         <>
                                             <motion.img
                                                 src={reviewItem.receiptUrl}
                                                 alt="Evidence"
                                                 animate={{ scale: zoomLevel, rotate: rotation }}
-                                                className="w-full h-full object-contain"
+                                                className="w-full h-full object-contain relative z-10"
                                             />
                                             {/* Floating Controls */}
-                                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-2 p-1.5 rounded-full bg-black/50 backdrop-blur-md border border-white/10">
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-white hover:bg-white/20" onClick={() => setZoomLevel(prev => Math.max(prev - 0.25, 0.5))}>
+                                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2 p-1.5 rounded-full bg-slate-900/80 dark:bg-black/50 backdrop-blur-md border border-white/10 shadow-xl">
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-white hover:bg-white/20" onClick={(e) => { e.stopPropagation(); setZoomLevel(prev => Math.max(prev - 0.25, 0.5)) }}>
                                                     <ZoomOut className="w-4 h-4" />
                                                 </Button>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-white hover:bg-white/20" onClick={() => setZoomLevel(1)}>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-white hover:bg-white/20" onClick={(e) => { e.stopPropagation(); setZoomLevel(1) }}>
                                                     <Maximize2 className="w-4 h-4" />
                                                 </Button>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-white hover:bg-white/20" onClick={() => setZoomLevel(prev => Math.min(prev + 0.25, 3))}>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-white hover:bg-white/20" onClick={(e) => { e.stopPropagation(); setZoomLevel(prev => Math.min(prev + 0.25, 3)) }}>
                                                     <ZoomIn className="w-4 h-4" />
                                                 </Button>
                                                 <div className="w-px h-4 bg-white/20 self-center mx-1" />
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-white hover:bg-white/20" onClick={() => setRotation(prev => prev + 90)}>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-white hover:bg-white/20" onClick={(e) => { e.stopPropagation(); setRotation(prev => prev + 90) }}>
                                                     <RotateCw className="w-4 h-4" />
                                                 </Button>
                                             </div>
                                         </>
                                     ) : (
-                                        <div className="flex flex-col items-center opacity-40">
-                                            <ImageIcon className="w-12 h-12 mb-3 text-white" />
-                                            <p className="font-black text-sm uppercase text-white tracking-widest">No Receipt Image</p>
+                                        <div className="flex flex-col items-center opacity-30">
+                                            <ImageIcon className="w-16 h-16 mb-4 text-slate-400 dark:text-slate-600" />
+                                            <p className="font-black text-xs uppercase tracking-[0.2em]">No Receipt Image</p>
                                         </div>
                                     )}
                                 </div>
                             </div>
 
                             {/* 2. Scrollable Details Section */}
-                            <div className="flex-1 overflow-y-auto p-5 space-y-6">
+                            <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8 scrollbar-hide">
                                 {/* Core Info */}
-                                <div className="text-center space-y-1">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-white/50">Transaction To Verify</p>
-                                    <div className="text-4xl font-black text-white tracking-tighter">
+                                <div className="text-center space-y-2">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-black uppercase tracking-widest mb-2">
+                                        <ShieldCheck className="w-3 h-3" />
+                                        Verification Required
+                                    </div>
+                                    <div className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter">
                                         {formatCurrency(reviewItem.amount)}
                                     </div>
-                                    <p className="text-sm font-bold text-emerald-400">
-                                        from {reviewItem.user.firstName} {reviewItem.user.lastName}
+                                    <p className="text-sm font-bold text-slate-500 dark:text-slate-400">
+                                        Deposit by <span className="text-slate-900 dark:text-white">{reviewItem.user.firstName} {reviewItem.user.lastName}</span>
                                     </p>
                                 </div>
 
-                                {/* Context Cards */}
+                                {/* Context Grid */}
                                 <div className="grid grid-cols-2 gap-3">
-                                    <div className="p-3 bg-white/5 border border-white/5 rounded-xl space-y-1">
-                                        <p className="text-[9px] font-black uppercase text-white/40">Timestamp</p>
-                                        <div className="flex items-center gap-1.5 text-white/90">
-                                            <History className="w-3.5 h-3.5 opacity-70" />
+                                    <div className="p-4 bg-white/50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-2xl space-y-1 group hover:border-emerald-500/20 transition-colors">
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-white/40">Timestamp</p>
+                                        <div className="flex items-center gap-2 text-slate-900 dark:text-white/90">
+                                            <History className="w-4 h-4 opacity-50 text-blue-500" />
                                             <span className="text-xs font-bold">{new Date(reviewItem.paymentDate || reviewItem.createdAt).toLocaleDateString()}</span>
                                         </div>
                                     </div>
-                                    <div className="p-3 bg-white/5 border border-white/5 rounded-xl space-y-1">
-                                        <p className="text-[9px] font-black uppercase text-white/40">Ref ID</p>
-                                        <p className="text-xs font-mono font-bold text-white/80 truncate">
-                                            {reviewItem.transactionRef || 'N/A'}
-                                        </p>
+                                    <div className="p-4 bg-white/50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-2xl space-y-1 group hover:border-emerald-500/20 transition-colors">
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-white/40">Network ID</p>
+                                        <div className="flex items-center gap-2 text-slate-900 dark:text-white/80">
+                                            <Wallet className="w-4 h-4 opacity-50 text-purple-500" />
+                                            <p className="text-xs font-mono font-bold truncate">
+                                                {reviewItem.transactionRef || 'OFF-LEDGER'}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="p-3 bg-white/5 border border-white/5 rounded-xl space-y-1">
-                                        <p className="text-[9px] font-black uppercase text-white/40">Balance</p>
-                                        <p className="text-xs font-bold text-emerald-400">
+                                    <div className="p-4 bg-white/50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-2xl space-y-1 group hover:border-emerald-500/20 transition-colors">
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-white/40">Portfolio Balance</p>
+                                        <p className="text-sm font-black text-emerald-600 dark:text-emerald-400">
                                             {formatCurrency(reviewItem.member.balance)}
                                         </p>
                                     </div>
-                                    <div className="p-3 bg-white/5 border border-white/5 rounded-xl space-y-1">
-                                        <p className="text-[9px] font-black uppercase text-white/40">Penalties</p>
-                                        <p className={cn("text-xs font-bold", reviewItem.member.unpaidPenalties > 0 ? "text-red-400" : "text-white/50")}>
+                                    <div className="p-4 bg-white/50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-2xl space-y-1 group hover:border-emerald-500/20 transition-colors">
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 dark:text-white/40">Compliance Risk</p>
+                                        <p className={cn("text-sm font-black", reviewItem.member.unpaidPenalties > 0 ? "text-red-500" : "text-slate-400 dark:text-white/30")}>
                                             {formatCurrency(reviewItem.member.unpaidPenalties)}
                                         </p>
                                     </div>
                                 </div>
 
-                                {/* Optional Rejection Note */}
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase text-white/40 pl-1">Review Notes (Optional)</label>
+                                {/* Rejection Note Area */}
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-white/40 pl-1">Reviewers Comments</label>
                                     <textarea
-                                        className="w-full h-20 p-3 rounded-xl border border-white/10 bg-black/20 text-xs font-medium text-white placeholder:text-white/20 focus:bg-black/40 focus:border-emerald-500/50 outline-none resize-none transition-all"
-                                        placeholder="Add a reason if rejecting..."
+                                        className="w-full h-24 p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-black/20 text-xs font-bold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 focus:bg-white dark:focus:bg-black/40 focus:border-emerald-500/50 dark:focus:border-banana/50 outline-none resize-none transition-all shadow-inner"
+                                        placeholder="Reason for audit failure (required if rejecting)..."
                                         value={rejectionReason}
                                         onChange={(e) => setRejectionReason(e.target.value)}
                                     />
@@ -372,18 +391,18 @@ export default function TreasurerApprovalsPage() {
                             </div>
 
                             {/* 3. Action Footer (Sticky Bottom) */}
-                            <div className="p-4 bg-white/5 border-t border-white/5 shrink-0 backdrop-blur-md">
-                                <div className="flex gap-3">
+                            <div className="p-6 bg-slate-50/80 dark:bg-white/5 border-t border-slate-200 dark:border-white/5 shrink-0 backdrop-blur-md">
+                                <div className="flex flex-col sm:flex-row gap-3">
                                     <Button
-                                        variant="ghost"
-                                        className="flex-1 h-12 rounded-xl font-bold text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                        variant="outline"
+                                        className="flex-1 h-14 rounded-2xl font-black uppercase tracking-widest text-[10px] border-red-200 dark:border-red-900/30 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
                                         onClick={() => handleReviewAction('REJECTED')}
                                         disabled={isSubmitting}
                                     >
-                                        Reject
+                                        Reject Transaction
                                     </Button>
                                     <Button
-                                        className="flex-[2] h-12 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black shadow-lg shadow-emerald-500/20"
+                                        className="flex-[2] h-14 rounded-2xl bg-emerald-600 hover:bg-emerald-500 dark:bg-banana dark:hover:bg-banana/90 text-white dark:text-emerald-950 font-black text-xs uppercase tracking-[0.15em] shadow-xl shadow-emerald-500/20 dark:shadow-banana/10 transition-all hover:scale-[1.02] active:scale-95 group"
                                         onClick={() => handleReviewAction('COMPLETED')}
                                         disabled={isSubmitting}
                                     >
@@ -391,8 +410,8 @@ export default function TreasurerApprovalsPage() {
                                             <InlineLogoLoader size="xs" />
                                         ) : (
                                             <span className="flex items-center gap-2">
-                                                <ShieldCheck className="w-4 h-4" />
-                                                Verify & Approve
+                                                <ShieldCheck className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                                                Approve To Ledger
                                             </span>
                                         )}
                                     </Button>
