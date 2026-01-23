@@ -56,7 +56,7 @@ export async function POST(request: Request) {
             expectedChallenge,
             expectedOrigin,
             expectedRPID,
-            requireUserVerification: true,
+            requireUserVerification: false,
         });
 
         const { verified, registrationInfo } = verification;
