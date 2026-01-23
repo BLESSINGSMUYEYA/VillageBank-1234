@@ -154,26 +154,28 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <div className="flex items-center gap-2">
-                    <p className="text-body-primary font-black text-foreground tracking-tight">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+                    <p className="text-body-primary font-black text-foreground tracking-tight whitespace-nowrap">
                       {member.user?.firstName || ''} {member.user?.lastName || ''}
                     </p>
-                    <Badge
-                      className={cn(
-                        "text-tab-label px-2 py-0 border-0",
-                        member.role === 'ADMIN' ? 'bg-blue-600 text-white' :
-                          member.role === 'TREASURER' ? 'bg-banana text-yellow-950' :
-                            'bg-slate-100 dark:bg-slate-800 text-slate-500'
-                      )}
-                    >
-                      {member.role}
-                    </Badge>
-                    {member.unpaidPenalties > 0 && (
-                      <Badge variant="destructive" className="bg-red-500/10 text-red-500 border-red-500/20 px-2 py-0 text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
-                        <AlertTriangle className="w-3 h-3" />
-                        Owing {formatCurrency(member.unpaidPenalties)}
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        className={cn(
+                          "text-tab-label px-2 py-0 border-0 shrink-0",
+                          member.role === 'ADMIN' ? 'bg-blue-600 text-white' :
+                            member.role === 'TREASURER' ? 'bg-banana text-yellow-950' :
+                              'bg-slate-100 dark:bg-slate-800 text-slate-500'
+                        )}
+                      >
+                        {member.role}
                       </Badge>
-                    )}
+                      {member.unpaidPenalties > 0 && (
+                        <Badge variant="destructive" className="bg-red-500/10 text-red-500 border-red-500/20 px-2 py-0 text-[10px] font-black uppercase tracking-wider flex items-center gap-1 shrink-0">
+                          <AlertTriangle className="w-3 h-3" />
+                          Owing {formatCurrency(member.unpaidPenalties)}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                   <p className="text-micro font-bold text-muted-foreground uppercase tracking-wider opacity-70">
                     {member.user?.email || 'No email'} • Joined {new Date(member.joinedAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
