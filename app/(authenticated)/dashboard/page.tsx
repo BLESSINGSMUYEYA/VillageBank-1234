@@ -47,6 +47,11 @@ export default async function DashboardPage() {
 
   const reminders = remindersResult.success ? remindersResult.data : []
 
+  const flattenedApprovals = [
+    ...pendingApprovals.contributions.map((c: any) => ({ ...c, type: 'CONTRIBUTION' })),
+    ...pendingApprovals.loans
+  ]
+
   return (
     <div className="space-y-12">
       <DashboardBannerCarousel announcements={announcements} />
@@ -55,7 +60,7 @@ export default async function DashboardPage() {
         user={user}
         stats={stats}
         recentActivity={recentActivity}
-        pendingApprovals={pendingApprovals}
+        pendingApprovals={flattenedApprovals}
         reminders={reminders}
       />
     </div>

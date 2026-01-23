@@ -25,11 +25,16 @@ export async function verifyToken(token: string) {
     }
 }
 
-export async function getSession() {
+export async function getSession(): Promise<SessionPayload | null> {
     const cookieStore = await cookies();
     const token = cookieStore.get('auth_token')?.value;
     if (!token) return null;
-    return await verifyToken(token);
+    const payload = await verifyToken(token);
+    return payload ? {
+        userId: payload.userId as string,
+        role: payload.role as string,
+        ...payload
+    } : null;
 }
 
 export interface SessionPayload {

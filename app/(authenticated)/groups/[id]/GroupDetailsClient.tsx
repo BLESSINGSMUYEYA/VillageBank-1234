@@ -91,22 +91,33 @@ export default function GroupDetailsClient({
                 className="space-y-6 sm:space-y-8 pb-20"
             >
                 {/* Header Section */}
-                <motion.div variants={fadeIn}>
-                    <Link href="/groups" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-emerald-600 dark:hover:text-banana transition-all duration-300 group mb-6">
-                        <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300 relative z-10" />
-                        Back to Hub
+                <motion.div variants={fadeIn} className="relative">
+                    {/* Ambient Background Glow */}
+                    <div className="absolute -top-20 -left-20 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+
+                    <Link href="/groups" className="inline-flex items-center text-xs font-bold text-muted-foreground hover:text-emerald-600 dark:hover:text-banana transition-colors duration-300 group mb-8 relative z-10">
+                        <div className="w-8 h-8 rounded-full bg-white/50 dark:bg-black/20 flex items-center justify-center mr-3 group-hover:bg-emerald-500/10 transition-colors">
+                            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform duration-300" />
+                        </div>
+                        <span className="tracking-wide">Back to Hub</span>
                     </Link>
-                    <div className="hidden md:block mb-8">
+
+                    <div className="hidden md:block mb-10 relative z-10">
                         <div className="flex items-end justify-between gap-6">
                             <div>
-                                <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter text-main mb-2 text-left break-words">
+                                <h1 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 mb-4 text-left break-words leading-tight">
                                     {group.name}
-                                    <span className="text-banana">.</span>
+                                    <span className="text-emerald-500 dark:text-banana">.</span>
                                 </h1>
-                                <p className="text-xs sm:text-sm md:text-base font-medium text-slate-500 leading-relaxed max-w-xl flex items-center gap-2">
-                                    <Shield className="w-4 h-4 text-blue-600 dark:text-banana" />
-                                    Group Terminal & Ledger
-                                </p>
+                                <div className="text-sm sm:text-base font-medium text-slate-500 dark:text-slate-400 leading-relaxed max-w-xl flex items-center gap-3">
+                                    <div className="px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+                                        <Shield className="w-3 h-3" />
+                                        Secure Ledger
+                                    </div>
+                                    <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700" />
+                                    <span>Village Banking Terminal</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -156,53 +167,64 @@ export default function GroupDetailsClient({
                                 </div>
 
                                 {/* Actions Toolbar */}
-                                <GroupActions group={group} isAdmin={isAdmin} isTreasurer={isTreasurer} />
+                                <div className="pt-4 sm:pt-0">
+                                    <GroupActions group={group} isAdmin={isAdmin} isTreasurer={isTreasurer} />
+                                </div>
                             </div>
                         </div>
 
-                        {/* Stats Grid - Pulse Style */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 md:p-6 lg:p-8 bg-slate-50/20 dark:bg-black/20">
-                            <div className="p-5 rounded-2xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/5 hover:border-emerald-500/20 transition-colors group">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground opacity-70 mb-2 flex items-center gap-1.5">
-                                    <DollarSign className="w-3 h-3" />
+                        {/* Stats Grid - Premium Financial Style */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-slate-200/50 dark:bg-white/5">
+                            <div className="p-6 md:p-8 bg-white dark:bg-black/40 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                                    <DollarSign className="w-16 h-16" />
+                                </div>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70 mb-3 flex items-center gap-1.5">
                                     Monthly Share
                                 </p>
-                                <p className="text-xl sm:text-2xl font-black text-foreground tracking-tight group-hover:scale-105 transition-transform origin-left">
+                                <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                                     {formatCurrency(group.monthlyContribution)}
                                 </p>
                             </div>
 
-                            <div className="p-5 rounded-2xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/5 hover:border-emerald-500/20 transition-colors group">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground opacity-70 mb-2 flex items-center gap-1.5">
-                                    <TrendingUp className="w-3 h-3" />
-                                    Interest
+                            <div className="p-6 md:p-8 bg-white dark:bg-black/40 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                                    <TrendingUp className="w-16 h-16 text-blue-500" />
+                                </div>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70 mb-3 flex items-center gap-1.5">
+                                    Growth Rate
                                 </p>
-                                <p className="text-xl sm:text-2xl font-black text-blue-600 dark:text-banana tracking-tight group-hover:scale-105 transition-transform origin-left">
+                                <p className="text-2xl sm:text-3xl font-black text-blue-600 dark:text-blue-400 tracking-tight">
                                     {group.interestRate}%
+                                    <span className="text-sm text-muted-foreground font-bold ml-1">p.m.</span>
                                 </p>
                             </div>
 
-                            <div className="p-5 rounded-2xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/5 hover:border-emerald-500/20 transition-colors group">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground opacity-70 mb-2 flex items-center gap-1.5">
-                                    <Users className="w-3 h-3" />
-                                    Members
+                            <div className="p-6 md:p-8 bg-white dark:bg-black/40 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                                    <Users className="w-16 h-16" />
+                                </div>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70 mb-3 flex items-center gap-1.5">
+                                    Community
                                 </p>
-                                <p className="text-xl sm:text-2xl font-black text-foreground tracking-tight group-hover:scale-105 transition-transform origin-left">
+                                <p className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                                     {group._count.members}
                                 </p>
                             </div>
 
-                            <div className="p-5 rounded-2xl bg-white/40 dark:bg-white/5 border border-white/20 dark:border-white/5 hover:border-green-500/20 transition-colors group">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground opacity-70 mb-2 flex items-center gap-1.5">
-                                    <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                            <div className="p-6 md:p-8 bg-white dark:bg-black/40 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                                    <CheckCircle2 className="w-16 h-16 text-emerald-500" />
+                                </div>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70 mb-3 flex items-center gap-1.5">
                                     Status
                                 </p>
-                                <div className="flex items-center gap-2">
-                                    <span className="relative flex h-2 w-2">
+                                <div className="flex items-center gap-3">
+                                    <div className="relative flex h-3 w-3">
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                                    </span>
-                                    <p className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight group-hover:scale-105 transition-transform origin-left">
+                                        <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                                    </div>
+                                    <p className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight">
                                         Active
                                     </p>
                                 </div>

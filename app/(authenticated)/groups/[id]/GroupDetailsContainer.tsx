@@ -30,11 +30,11 @@ export default function GroupDetailsContainer({
 }: GroupDetailsContainerProps) {
     return (
         <Tabs defaultValue="members" className="space-y-6 sm:space-y-8">
-            <div className="flex items-center justify-between gap-4 overflow-x-auto no-scrollbar pb-2">
+            <div className="flex items-center justify-between gap-4 overflow-x-auto no-scrollbar pb-4 border-b border-slate-200 dark:border-white/5">
                 <ZenTabsList>
                     <ZenTabsTrigger value="members">
                         Members
-                        <span className="ml-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-200 py-0.5 px-2 rounded-full text-[9px] font-black">
+                        <span className="ml-2 bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-300 py-0.5 px-2 rounded-full text-[10px] font-black">
                             {group.members.filter((m: any) => m.status === 'ACTIVE').length}
                         </span>
                     </ZenTabsTrigger>

@@ -34,6 +34,20 @@ model User {
   pushSubscriptions PushSubscription[]
   reminders         Reminder[]
   createdAnnouncements Announcement[]  @relation("CreatedAnnouncements")
+  passkeys          Passkey[]
+}
+
+model Passkey {
+  id           String   @id @default(cuid())
+  credentialID String   @unique
+  userId       String
+  publicKey    Bytes
+  counter      Int
+  transports   String[]
+  createdAt    DateTime @default(now())
+  lastUsedAt   DateTime?
+  
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Group {
@@ -50,6 +64,7 @@ model Group {
   socialFundAmount         Float            @default(0)
   maxLoanMultiplier        Int              @default(3)
   interestRate             Float            @default(10)
+  minLoanAmount            Float            @default(0)
   loanInterestType         InterestType     @default(FLAT_RATE)
   penaltyAmount            Float            @default(0)
   lateContributionFee      Float            @default(0)

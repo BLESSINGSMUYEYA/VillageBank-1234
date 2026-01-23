@@ -24,7 +24,7 @@ export async function POST(req: Request) {
         // Determine mime type from URL or default to image/jpeg
         const mimeType = imageUrl.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg';
 
-        const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
         const prompt = `Analyze this transaction receipt from a mobile money service in Malawi (Airtel Money or TNM Mpamba).
         

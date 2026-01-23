@@ -41,6 +41,7 @@ interface Group {
   monthlyContribution: number
   maxLoanMultiplier: number
   interestRate: number
+  minLoanAmount: number
   loanInterestType?: 'FLAT_RATE' | 'REDUCING_BALANCE'
   region: string
   cycleEndDate?: string // ISO Date string
@@ -170,11 +171,22 @@ function NewLoanPageContent() {
   }, [loanAmount, loanDuration, selectedGroup])
 
   // Helpers
+  const fetchJson = async (url: string) => {
+    const res = await fetch(url)
+    const text = await res.text()
+    try {
+      if (!res.ok) throw new Error(text || res.statusText)
+      return JSON.parse(text)
+    } catch (e) {
+      console.error('Fetch Error:', url, text.substring(0, 500))
+      throw new Error('Network response was not ok')
+    }
+  }
+
   const fetchGroups = async () => {
     try {
-      const res = await fetch('/api/groups')
-      const data = await res.json()
-      if (res.ok) {
+      const data = await fetchJson('/api/groups')
+      if (data) {
         const activeGroups = data.groups.filter((g: any) =>
           g.members?.some((m: any) => m.status === 'ACTIVE')
         ).map((g: any) => ({
@@ -183,6 +195,7 @@ function NewLoanPageContent() {
           monthlyContribution: g.monthlyContribution,
           maxLoanMultiplier: g.maxLoanMultiplier,
           interestRate: g.interestRate,
+          minLoanAmount: g.minLoanAmount,
           loanInterestType: g.loanInterestType,
           region: g.region,
           cycleEndDate: g.cycleEndDate
@@ -200,9 +213,8 @@ function NewLoanPageContent() {
 
   const fetchSavedBankDetails = async () => {
     try {
-      const res = await fetch('/api/member/bank-details')
-      if (res.ok) {
-        const data = await res.json()
+      const data = await fetchJson('/api/member/bank-details')
+      if (data) {
         setSavedBankDetails(data.bankDetails)
         const primary = data.bankDetails.find((d: BankDetail) => d.isPrimary)
         if (primary && !selectedBankId) {
@@ -214,9 +226,8 @@ function NewLoanPageContent() {
 
   const fetchGroupDetails = async (groupId: string) => {
     try {
-      const res = await fetch(`/api/groups/${groupId}`)
-      if (res.ok) {
-        const group = await res.json()
+      const group = await fetchJson(`/api/groups/${groupId}`)
+      if (group) {
         setSelectedGroup(group)
       }
     } catch (err) { console.error(err) }
@@ -224,9 +235,8 @@ function NewLoanPageContent() {
 
   const checkEligibility = async (groupId: string) => {
     try {
-      const res = await fetch(`/api/loans/check-eligibility?groupId=${groupId}`)
-      const data = await res.json()
-      if (res.ok) {
+      const data = await fetchJson(`/api/loans/check-eligibility?groupId=${groupId}`)
+      if (data) {
         setEligibility(data)
       }
     } catch (err) { console.error(err) }
@@ -241,24 +251,32 @@ function NewLoanPageContent() {
     if (isNaN(amount) || amount <= 0) return setError('Please enter a valid amount')
     if (!selectedGroup) return setError('Please select a group')
     if (!eligibility?.eligible) return setError('Not eligible')
+    if (selectedGroup.minLoanAmount && amount < selectedGroup.minLoanAmount) return setError(`Amount must be at least ${formatCurrency(selectedGroup.minLoanAmount)}`)
     if (eligibility.maxAmount && amount > eligibility.maxAmount) return setError(`Amount exceeds limit of ${formatCurrency(eligibility.maxAmount)}`)
 
     // Cycle Check
     if (cycleInfo?.isExpired) return setError('Banking cycle has ended.')
 
-    if (!isAddingNewAccount && !selectedBankId) return setError('Select disbursement account')
+    // Disbursement Check
+    const primaryBank = savedBankDetails.find(b => b.isPrimary)
+    const activeBank = savedBankDetails.find(b => b.id === selectedBankId) || primaryBank
 
-    if (isAddingNewAccount) {
+    // Determine if we are effectively adding a new account (either explicitly or implicitly because no active bank exists)
+    const effectiveIsAdding = isAddingNewAccount || !activeBank
+
+    if (effectiveIsAdding) {
       if (newAccountForm.accountName.length < 2) return setError('Invalid account name')
       if (newAccountForm.accountNumber.length < 5) return setError('Invalid account number')
       if (newAccountForm.method === 'BANK_CARD' && !newAccountForm.bankName) return setError('Bank name required')
+    } else {
+      if (!activeBank) return setError('Select disbursement account')
     }
 
     setLoading(true)
 
     try {
       let disbursementData
-      if (isAddingNewAccount) {
+      if (effectiveIsAdding) {
         disbursementData = {
           disbursementMethod: newAccountForm.method,
           disbursementAccountName: newAccountForm.accountName,
@@ -266,13 +284,13 @@ function NewLoanPageContent() {
           disbursementBankName: newAccountForm.bankName || undefined
         }
       } else {
-        const bank = savedBankDetails.find(d => d.id === selectedBankId)
-        if (bank) {
+        // use activeBank
+        if (activeBank) {
           disbursementData = {
-            disbursementMethod: bank.type,
-            disbursementAccountName: bank.accountName,
-            disbursementAccountNumber: bank.accountNumber,
-            disbursementBankName: bank.bankName
+            disbursementMethod: activeBank.type,
+            disbursementAccountName: activeBank.accountName,
+            disbursementAccountNumber: activeBank.accountNumber,
+            disbursementBankName: activeBank.bankName
           }
         }
       }
@@ -374,7 +392,7 @@ function NewLoanPageContent() {
                 type="number"
               />
               <div className="flex justify-between text-xs font-bold text-muted-foreground">
-                <span>Min: {formatCurrency(0)}</span>
+                <span>Min: {formatCurrency(selectedGroup.minLoanAmount || 0)}</span>
                 <span>Limit: {formatCurrency(eligibility.maxAmount || 0)}</span>
               </div>
             </div>
@@ -427,7 +445,7 @@ function NewLoanPageContent() {
                 <span className="font-bold">{calculations ? formatCurrency(calculations.principal) : '---'}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Interest ({selectedGroup.interestRate}%)</span>
+                <span className="text-muted-foreground">Interest ({selectedGroup.interestRate}% / mo)</span>
                 <span className="font-bold text-banana">
                   {calculations ? formatCurrency(calculations.totalRepayment - calculations.principal) : '---'}
                 </span>

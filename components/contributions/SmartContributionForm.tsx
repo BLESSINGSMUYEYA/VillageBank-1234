@@ -12,7 +12,7 @@ import { SectionHeader } from '@/components/ui/section-header'
 import { Badge } from '@/components/ui/badge'
 import { motion, AnimatePresence } from 'framer-motion'
 import { fadeIn, itemFadeIn, staggerContainer } from '@/lib/motions'
-import { DollarSign, Calculator, ArrowRight, Shield, TrendingUp, CheckCircle, AlertTriangle, Sparkles, Receipt, ArrowLeft, Send } from 'lucide-react'
+import { DollarSign, Calculator, ArrowRight, Shield, TrendingUp, CheckCircle, AlertTriangle, Sparkles, Receipt, ArrowLeft, Send, X } from 'lucide-react'
 import { InlineLogoLoader } from '@/components/ui/LogoLoader'
 import { cn, formatCurrency } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -406,7 +406,7 @@ export default function SmartContributionForm({ isModal, onClose }: SmartContrib
                                 <GlassCard className="p-4 sm:p-6 border-white/10" hover={false}>
                                     <div className="space-y-6">
                                         <FormGroup label="Target Group *">
-                                            <Select value={selectedGroupId} onValueChange={setSelectedGroupId} disabled={scanning}>
+                                            <Select value={selectedGroupId} onValueChange={setSelectedGroupId}>
                                                 <SelectTrigger className="h-12 bg-muted/20 border-white/10 rounded-xl">
                                                     <SelectValue placeholder="Select Group" />
                                                 </SelectTrigger>
@@ -427,7 +427,6 @@ export default function SmartContributionForm({ isModal, onClose }: SmartContrib
                                                     onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
                                                     type="number"
                                                     prefix="MWK"
-                                                    disabled={scanning}
                                                 />
                                             </FormGroup>
                                             <FormGroup label="Payment Date">
@@ -435,19 +434,30 @@ export default function SmartContributionForm({ isModal, onClose }: SmartContrib
                                                     value={paymentDate}
                                                     onChange={(e) => setPaymentDate(e.target.value)}
                                                     type="datetime-local"
-                                                    disabled={scanning}
+                                                />
+                                            </FormGroup>
+                                            <FormGroup label="Payment Method">
+                                                <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                                                    <SelectTrigger className="h-14 bg-white/50 dark:bg-black/20 border-white/20 dark:border-white/10 rounded-xl font-bold">
+                                                        <SelectValue placeholder="Select Method" />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="rounded-xl">
+                                                        <SelectItem value="CASH" className="font-bold">Cash</SelectItem>
+                                                        <SelectItem value="AIRTEL_MONEY" className="font-bold">Airtel Money</SelectItem>
+                                                        <SelectItem value="MPAMBA" className="font-bold">Mpamba</SelectItem>
+                                                        <SelectItem value="BANK_CARD" className="font-bold">Bank Transfer</SelectItem>
+                                                        <SelectItem value="OTHER" className="font-bold">Other</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </FormGroup>
+                                            <FormGroup label="Transaction Reference">
+                                                <PremiumInput
+                                                    value={transactionRef}
+                                                    onChange={(e) => setTransactionRef(e.target.value)}
+                                                    placeholder="e.g. CI2409822..."
                                                 />
                                             </FormGroup>
                                         </div>
-
-                                        <FormGroup label="Transaction Reference">
-                                            <PremiumInput
-                                                value={transactionRef}
-                                                onChange={(e) => setTransactionRef(e.target.value)}
-                                                placeholder="e.g. CI2409822..."
-                                                disabled={scanning}
-                                            />
-                                        </FormGroup>
                                     </div>
                                 </GlassCard>
 
@@ -456,9 +466,38 @@ export default function SmartContributionForm({ isModal, onClose }: SmartContrib
                                         <ArrowLeft className="mr-2 w-4 h-4" /> Back to Scanner
                                     </Button>
                                     <div className="flex gap-2">
-                                        {receiptFile && <Badge variant="secondary" className="h-8 rounded-full border-blue-500/20 px-3 flex items-center gap-1.5 font-bold">
-                                            <Receipt className="w-3.5 h-3.5 text-blue-500" /> Receipt Attached
-                                        </Badge>}
+                                        {receiptFile ? (
+                                            <div className="flex items-center gap-2">
+                                                <Badge variant="secondary" className="h-8 rounded-full border-blue-500/20 px-3 flex items-center gap-1.5 font-bold">
+                                                    <Receipt className="w-3.5 h-3.5 text-blue-500" /> Receipt Attached
+                                                </Badge>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-8 w-8 rounded-full hover:bg-red-500/10 hover:text-red-500"
+                                                    onClick={() => setReceiptFile(null)}
+                                                >
+                                                    <X className="w-4 h-4" />
+                                                </Button>
+                                            </div>
+                                        ) : (
+                                            <div className="relative">
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="absolute inset-0 opacity-0 cursor-pointer"
+                                                    onChange={(e) => {
+                                                        if (e.target.files?.[0]) {
+                                                            setReceiptFile(e.target.files[0])
+                                                            toast.success("Receipt attached!")
+                                                        }
+                                                    }}
+                                                />
+                                                <Button variant="outline" className="font-bold border-dashed border-2 hover:border-solid hover:border-blue-500 hover:text-blue-500">
+                                                    <Receipt className="mr-2 w-4 h-4" /> Attach Proof
+                                                </Button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>

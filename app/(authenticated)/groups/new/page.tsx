@@ -133,6 +133,7 @@ export default function CreateGroupPage() {
           contributionDueDay: parseInt(formData.contributionDueDay),
           minContributionMonths: parseInt(formData.minContributionMonths),
           loanGracePeriodDays: parseInt(formData.loanGracePeriodDays),
+          minLoanAmount: parseFloat((formData as any).minLoanAmount) || 0,
           cycleEndDate: (formData as any).cycleEndDate,
         }),
       })
@@ -278,6 +279,15 @@ export default function CreateGroupPage() {
                         type="number"
                         value={formData.maxLoanMultiplier}
                         onChange={(e) => handleInputChange('maxLoanMultiplier', e.target.value)}
+                      />
+                    </FormGroup>
+
+                    <FormGroup label="Min Loan Amount (MWK)">
+                      <PremiumInput
+                        type="number"
+                        value={(formData as any).minLoanAmount || '0'}
+                        onChange={(e) => handleInputChange('minLoanAmount', e.target.value)}
+                        placeholder="0"
                       />
                     </FormGroup>
 

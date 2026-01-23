@@ -16,7 +16,7 @@ export async function DashboardHeroLoader({ user }: { user: any }) {
         <DashboardHero
             user={user}
             stats={stats}
-            pendingApprovalsCount={pendingApprovals.length}
+            pendingApprovalsCount={pendingApprovals.contributions.length + pendingApprovals.loans.length}
             recentActivityCount={recentActivity.length}
         />
     )

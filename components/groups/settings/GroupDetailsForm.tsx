@@ -406,6 +406,27 @@ export function GroupDetailsForm({ group, onSuccess }: GroupDetailsFormProps) {
                         </div>
                         <p className="text-xs text-muted-foreground">Monthly interest rate applied to loans.</p>
                     </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                    <div className="grid gap-3">
+                        <Label htmlFor="minLoanAmount" className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Min Loan Amount (MWK)</Label>
+                        <div className="relative">
+                            <span className="absolute left-4 top-3 text-muted-foreground font-medium">$</span>
+                            <Input
+                                id="minLoanAmount"
+                                name="minLoanAmount"
+                                type="number"
+                                min="0"
+                                step="1"
+                                className="pl-8 h-12 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-white/10 rounded-xl"
+                                defaultValue={group?.minLoanAmount || 0}
+                                placeholder="0"
+                            />
+                        </div>
+                        <p className="text-xs text-muted-foreground">Minimum amount a member can request.</p>
+                    </div>
+
                     <div className="grid gap-3">
                         <Label htmlFor="maxLoanMultiplier" className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Max Loan Multiplier</Label>
                         <Input

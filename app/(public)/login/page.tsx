@@ -4,13 +4,15 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { useRouter } from 'next/navigation';
+import { startAuthentication } from '@simplewebauthn/browser';
 import Link from 'next/link';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Zap, ArrowRight, ShieldCheck, Mail, Lock } from 'lucide-react';
+import { Zap, ArrowRight, ShieldCheck, Mail, Lock, Fingerprint } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions';
 import { GlassCard } from '@/components/ui/GlassCard';
@@ -27,11 +29,12 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
     const { login } = useAuth();
+    const router = useRouter();
     const { t } = useLanguage();
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({
+    const { register, handleSubmit, getValues, formState: { errors } } = useForm<LoginForm>({
         resolver: zodResolver(loginSchema),
     });
 
@@ -42,6 +45,47 @@ export default function LoginPage() {
             await login(data);
         } catch (err: any) {
             setError(err.message || 'Failed to login');
+            setLoading(false);
+        }
+    };
+
+    const handlePasskeyLogin = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const email = getValues('email');
+            const url = email
+                ? `/api/auth/webauthn/login/options?email=${encodeURIComponent(email)}`
+                : '/api/auth/webauthn/login/options';
+
+            const resp = await fetch(url, { headers: { 'Cache-Control': 'no-store' } });
+            if (!resp.ok) throw new Error('Failed to initialize biometric login');
+
+            const options = await resp.json();
+            const authResp = await startAuthentication(options);
+
+            const verifyResp = await fetch('/api/auth/webauthn/login/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(authResp),
+            });
+
+            const verification = await verifyResp.json();
+
+            if (verification.verified) {
+                router.push('/dashboard');
+                router.refresh();
+            } else {
+                throw new Error('Verification failed');
+            }
+        } catch (err: any) {
+            console.error(err);
+            if (err.name === 'NotAllowedError') {
+                setError('Biometric login cancelled');
+            } else {
+                setError('Biometric login failed. Please try again.');
+            }
+        } finally {
             setLoading(false);
         }
     };
@@ -166,6 +210,25 @@ export default function LoginPage() {
                                         )}
                                     </Button>
                                 </form>
+
+                                <div className="mt-4 relative">
+                                    <div className="absolute inset-0 flex items-center">
+                                        <span className="w-full border-t border-slate-200 dark:border-white/10" />
+                                    </div>
+                                    <div className="relative flex justify-center text-xs uppercase">
+                                        <span className="bg-white dark:bg-slate-900 px-2 text-muted-foreground font-bold tracking-widest">Or continue with</span>
+                                    </div>
+                                </div>
+
+                                <Button
+                                    onClick={handlePasskeyLogin}
+                                    disabled={loading}
+                                    variant="outline"
+                                    className="w-full mt-4 h-12 rounded-2xl border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 font-bold gap-2 group"
+                                >
+                                    <Fingerprint className="w-5 h-5 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform" />
+                                    Biometric Login
+                                </Button>
                             </CardContent>
                             <CardFooter className="flex justify-center p-8 bg-blue-600/5 dark:bg-white/5 border-t border-white/10 dark:border-white/5">
                                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">

@@ -399,6 +399,40 @@ export async function getPendingApprovals() {
         }
     })
 
+    const pendingLoans = await prisma.loan.findMany({
+        where: {
+            status: 'PENDING',
+            group: {
+                members: {
+                    some: {
+                        userId: userId,
+                        role: { in: ['ADMIN', 'TREASURER'] },
+                        status: 'ACTIVE'
+                    }
+                }
+            }
+        },
+        include: {
+            user: {
+                select: {
+                    firstName: true,
+                    lastName: true,
+                    email: true
+                }
+            },
+            group: {
+                select: {
+                    name: true,
+                    interestRate: true,
+                    loanInterestType: true
+                }
+            }
+        },
+        orderBy: {
+            createdAt: 'desc'
+        }
+    })
+
     // Enrich with member balance and penalties
     // Optimization: Fetch all needed group members in one query instead of N+1
     const memberKeys = pendingContributions.map(c => ({
@@ -429,6 +463,13 @@ export async function getPendingApprovals() {
         };
     });
 
-    return enrichedPending
+    // Combine results
+    return {
+        contributions: enrichedPending,
+        loans: pendingLoans.map(loan => ({
+            ...loan,
+            type: 'LOAN'
+        }))
+    }
 }
 

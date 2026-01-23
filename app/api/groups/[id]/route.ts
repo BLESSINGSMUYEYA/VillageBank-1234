@@ -15,6 +15,7 @@ const updateGroupSchema = z.object({
   socialFundAmount: z.number().min(0).optional(),
   maxLoanMultiplier: z.number().min(1).max(10).optional(),
   interestRate: z.number().min(0).max(100).optional(),
+  minLoanAmount: z.number().min(0).optional(),
   loanInterestType: z.enum(['FLAT_RATE', 'REDUCING_BALANCE']).optional(),
   penaltyAmount: z.number().min(0).optional(),
   lateContributionFee: z.number().min(0).optional(),

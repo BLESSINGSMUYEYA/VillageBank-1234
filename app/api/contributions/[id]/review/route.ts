@@ -145,6 +145,9 @@ export async function POST(
             }
 
             return { updatedContribution, penaltyPaid: 0, balanceIncrement: 0 }
+        }, {
+            maxWait: 5000, // Wait longer for a connection
+            timeout: 10000 // Allow more time for the transaction to complete
         })
 
         const { updatedContribution, penaltyPaid, balanceIncrement } = result

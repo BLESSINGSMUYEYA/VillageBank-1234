@@ -5,7 +5,7 @@ import { checkLoanEligibility } from '@/lib/permissions'
 import { z } from 'zod'
 
 const createLoanSchema = z.object({
-  groupId: z.string().uuid('Invalid group ID'),
+  groupId: z.string().min(1, 'Group ID is required'),
   amountRequested: z.number().positive('Amount must be positive'),
   repaymentPeriodMonths: z.number().min(1).max(24),
   purpose: z.string().optional(),

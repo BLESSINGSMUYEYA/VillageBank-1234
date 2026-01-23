@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Html5Qrcode } from 'html5-qrcode'
+import type { Html5Qrcode } from 'html5-qrcode'
 import { Button } from '@/components/ui/button'
 import {
     Dialog,
@@ -24,15 +24,38 @@ export function JoinGroupQR({ children }: JoinGroupQRProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [isCameraReady, setIsCameraReady] = useState(false)
     const [isScanning, setIsScanning] = useState(false)
+    const [isTimeout, setIsTimeout] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const router = useRouter()
     const scannerId = 'qr-reader'
     const scannerRef = useRef<Html5Qrcode | null>(null)
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+    const TIMEOUT_DURATION = 60000 // 60 seconds
+
+    const cleanupScanner = async () => {
+        if (scannerRef.current) {
+            try {
+                if (scannerRef.current.isScanning) {
+                    await scannerRef.current.stop()
+                }
+            } catch (e) {
+                console.error('Error stopping scanner cleanup:', e)
+            }
+            scannerRef.current = null
+        }
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current)
+            timeoutRef.current = null
+        }
+    }
 
     useEffect(() => {
         if (isOpen) {
             const startScanner = async () => {
                 try {
+                    const { Html5Qrcode } = await import('html5-qrcode')
+
                     // Cleanup any existing instance just in case
                     if (scannerRef.current) {
                         try { await scannerRef.current.stop(); } catch (e) { }
@@ -55,6 +78,7 @@ export function JoinGroupQR({ children }: JoinGroupQRProps) {
                                     const url = new URL(decodedText)
                                     if (url.pathname.includes('/shared/')) {
                                         toast.success('Group found! Redirecting...')
+                                        if (timeoutRef.current) clearTimeout(timeoutRef.current)
                                         scanner.stop().then(() => {
                                             router.push(url.pathname)
                                             setIsOpen(false)
@@ -70,6 +94,14 @@ export function JoinGroupQR({ children }: JoinGroupQRProps) {
                         )
                         setIsCameraReady(true)
                         setIsScanning(true)
+
+                        // Set timeout
+                        timeoutRef.current = setTimeout(async () => {
+                            await cleanupScanner()
+                            setIsScanning(false)
+                            setIsTimeout(true)
+                            setIsCameraReady(false)
+                        }, TIMEOUT_DURATION)
                     } else {
                         setError('No camera found on this device')
                     }
@@ -82,22 +114,18 @@ export function JoinGroupQR({ children }: JoinGroupQRProps) {
             const timeoutId = setTimeout(startScanner, 400)
             return () => {
                 clearTimeout(timeoutId)
-                if (scannerRef.current) {
-                    const s = scannerRef.current
-                    if (s.isScanning) {
-                        s.stop().catch(err => console.error('Error stopping scanner during cleanup:', err))
-                    }
-                    scannerRef.current = null
-                }
+                cleanupScanner()
             }
         }
-    }, [isOpen, router])
+    }, [isOpen, router, isTimeout])
 
     const handleClose = () => {
         setIsOpen(false)
         setIsCameraReady(false)
         setIsScanning(false)
+        setIsTimeout(false)
         setError(null)
+        cleanupScanner()
     }
 
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -105,6 +133,9 @@ export function JoinGroupQR({ children }: JoinGroupQRProps) {
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
             const file = e.target.files[0]
+
+            // Clear timeout if uploading file
+            if (timeoutRef.current) clearTimeout(timeoutRef.current)
 
             // Stop camera if running
             if (scannerRef.current && isScanning) {
@@ -117,9 +148,9 @@ export function JoinGroupQR({ children }: JoinGroupQRProps) {
                 }
             }
 
-            const scanner = new Html5Qrcode(scannerId)
-
             try {
+                const { Html5Qrcode } = await import('html5-qrcode')
+                const scanner = new Html5Qrcode(scannerId)
                 const decodedText = await scanner.scanFile(file, true)
                 const url = new URL(decodedText)
                 if (url.pathname.includes('/shared/')) {
@@ -186,6 +217,17 @@ export function JoinGroupQR({ children }: JoinGroupQRProps) {
                             <p className="text-red-600 dark:text-red-400 font-bold mb-4">{error}</p>
                             <Button variant="outline" className="rounded-xl px-8" onClick={handleClose}>
                                 Close Scanner
+                            </Button>
+                        </div>
+                    ) : isTimeout ? (
+                        <div className="text-center p-8 bg-slate-50 dark:bg-slate-900/50 rounded-[32px] w-full">
+                            <div className="w-16 h-16 bg-slate-200 dark:bg-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-pulse">
+                                <ScanLine className="w-8 h-8 text-muted-foreground" />
+                            </div>
+                            <h3 className="text-lg font-black text-foreground mb-2">Scanner Paused</h3>
+                            <p className="text-sm text-muted-foreground mb-6">The camera was stopped to save battery.</p>
+                            <Button size="lg" variant="banana" className="rounded-xl px-8 w-full font-bold shadow-lg shadow-yellow-500/20" onClick={() => setIsTimeout(false)}>
+                                Resume Scanning
                             </Button>
                         </div>
                     ) : (

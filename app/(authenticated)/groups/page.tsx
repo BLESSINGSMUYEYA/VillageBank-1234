@@ -46,7 +46,7 @@ export default async function GroupsPage() {
       <GroupsContent
         userGroups={userGroups}
         userRole={user?.role}
-        pendingApprovalsCount={pendingApprovals.length}
+        pendingApprovalsCount={pendingApprovals.contributions.length + pendingApprovals.loans.length}
       />
     </div>
   )

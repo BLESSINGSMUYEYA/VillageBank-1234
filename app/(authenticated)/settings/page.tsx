@@ -1,6 +1,7 @@
 'use client'
 
 import { useAuth } from '@/components/providers/AuthProvider'
+import PasskeyManager from '@/components/auth/PasskeyManager'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -275,6 +276,58 @@ export default function SettingsPage() {
                   </div>
                 </div>
               </form>
+            </div>
+          </GlassCard>
+        </motion.div>
+      </div>
+
+      <div className="max-w-4xl mx-auto mt-8">
+        <motion.div variants={itemFadeIn}>
+          <GlassCard className="p-0 overflow-hidden" hover={false}>
+            {/* Header Section */}
+            <div className="relative border-b border-white/10 dark:border-white/5 p-5 sm:p-6 bg-slate-50/50 dark:bg-white/5">
+              <div className="flex items-center gap-5 sm:gap-6">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/20 dark:from-banana/10 dark:to-banana/20 flex items-center justify-center text-blue-600 dark:text-banana shadow-inner ring-1 ring-white/20 shrink-0">
+                  <Lock className="w-6 h-6 sm:w-7 sm:h-7" />
+                </div>
+                <div>
+                  <h2 className="text-lg sm:text-xl font-black text-foreground tracking-tight">Security</h2>
+                  <p className="text-xs sm:text-sm font-bold text-muted-foreground/70 mt-1">
+                    Manage your login methods and security keys.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-5 sm:p-6 sm:p-8 relative">
+              <PasskeyManager />
+            </div>
+          </GlassCard>
+        </motion.div>
+      </div>
+
+      <div className="max-w-4xl mx-auto">
+        <motion.div variants={itemFadeIn}>
+          <GlassCard className="p-0 overflow-hidden" hover={false}>
+            {/* Header Section */}
+            <div className="relative border-b border-white/10 dark:border-white/5 p-5 sm:p-6 bg-slate-50/50 dark:bg-white/5">
+              <div className="flex items-center gap-5 sm:gap-6">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/20 dark:from-banana/10 dark:to-banana/20 flex items-center justify-center text-blue-600 dark:text-banana shadow-inner ring-1 ring-white/20 shrink-0">
+                  <Lock className="w-6 h-6 sm:w-7 sm:h-7" />
+                </div>
+                <div>
+                  <h2 className="text-lg sm:text-xl font-black text-foreground tracking-tight">Security</h2>
+                  <p className="text-xs sm:text-sm font-bold text-muted-foreground/70 mt-1">
+                    Manage your login methods and security keys.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-5 sm:p-6 sm:p-8 relative">
+              <PasskeyManager />
             </div>
           </GlassCard>
         </motion.div>

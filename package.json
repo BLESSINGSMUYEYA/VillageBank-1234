@@ -28,6 +28,8 @@
     "@serwist/next": "^9.5.0",
     "@serwist/precaching": "^9.5.0",
     "@serwist/sw": "^9.5.0",
+    "@simplewebauthn/browser": "^13.2.2",
+    "@simplewebauthn/server": "^13.2.2",
     "@types/bcryptjs": "^2.4.6",
     "@types/canvas-confetti": "^1.9.0",
     "@types/cookie": "^0.6.0",
