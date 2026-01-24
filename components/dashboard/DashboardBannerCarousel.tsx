@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
@@ -22,7 +22,7 @@ interface BannerSlide {
 const DEFAULT_BANNERS: BannerSlide[] = [
     {
         id: '1',
-        title: 'New: uBank University',
+        title: 'uBank University',
         description: 'Master your community finances with our step-by-step guides.',
         image: '/banners/education.jpg',
         ctaText: 'Start Learning',
@@ -93,7 +93,7 @@ export function DashboardBannerCarousel({ announcements = [] }: DashboardBannerC
                     initial={{ opacity: 0, height: 0, marginBottom: 0 }}
                     animate={{ opacity: 1, height: 'auto', marginBottom: 24 }}
                     exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-                    className="relative w-full overflow-hidden rounded-[1.5rem] shadow-xl shadow-emerald-900/5 group"
+                    className="relative w-full overflow-hidden rounded-[1.5rem] shadow-2xl shadow-black/20 group bg-slate-950"
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}
                 >
@@ -104,17 +104,18 @@ export function DashboardBannerCarousel({ announcements = [] }: DashboardBannerC
                                 <img
                                     src={currentSlide.image}
                                     alt=""
-                                    className="w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-700"
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/95 to-transparent" />
                             </div>
                         ) : null}
 
-                        {/* Subtle Background glow */}
-                        <div className={cn(
-                            "absolute inset-0 opacity-30 blur-3xl transition-colors duration-1000 mix-blend-color-dodge",
-                            currentSlide.accentColor
-                        )} />
+                        {/* Ambient Glows (Pulse Style) */}
+                        <div className="absolute -top-20 -left-20 w-80 h-80 bg-emerald-500/20 rounded-full blur-[100px] pointer-events-none mix-blend-screen" />
+                        <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen" />
+
+                        {/* Subtle Glass Border */}
+                        <div className="absolute inset-0 rounded-[1.5rem] border border-white/5 pointer-events-none z-20" />
 
                         <AnimatePresence mode="wait">
                             <motion.div
@@ -122,44 +123,48 @@ export function DashboardBannerCarousel({ announcements = [] }: DashboardBannerC
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -20 }}
-                                transition={{ duration: 0.5, ease: "circOut" }}
+                                transition={{ duration: 0.5, ease: "circOut" as const }}
                                 className="relative w-full h-full flex items-center z-10"
                             >
-                                <div className="w-full px-6 sm:px-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                                    {/* Text Content */}
-                                    <div className="flex flex-col gap-2 max-w-2xl relative z-10">
-                                        <div className="flex items-center gap-3">
-                                            <div className={cn(
-                                                "flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-white/10 backdrop-blur-md",
-                                                currentSlide.accentColor,
-                                                "bg-opacity-20 text-white"
-                                            )}>
-                                                <span className="relative flex h-1.5 w-1.5">
-                                                    <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75", currentSlide.accentColor)}></span>
-                                                    <span className={cn("relative inline-flex rounded-full h-1.5 w-1.5 bg-white")}></span>
-                                                </span>
-                                                <span className="text-[9px] font-black uppercase tracking-widest text-white/90">Featured</span>
+                                <div className="w-full px-6 sm:px-8 flex flex-col items-start justify-center h-full relative z-10">
+                                    {/* Content Group */}
+                                    <div className="flex flex-col items-start gap-4 max-w-2xl">
+
+                                        {/* "Featured" Badge & Text */}
+                                        <div className="space-y-3">
+                                            <div className="flex items-center gap-3">
+                                                <div className={cn(
+                                                    "flex items-center gap-2 px-2.5 py-1 rounded-full border backdrop-blur-md",
+                                                    currentSlide.accentColor === 'bg-emerald-600'
+                                                        ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                                                        : "bg-blue-500/10 border-blue-500/20 text-blue-400"
+                                                )}>
+                                                    <div className={cn("w-1.5 h-1.5 rounded-full animate-pulse shadow-[0_0_8px_currentColor]",
+                                                        currentSlide.accentColor === 'bg-emerald-600' ? "bg-emerald-500" : "bg-blue-500"
+                                                    )} />
+                                                    <span className="text-[9px] font-black uppercase tracking-widest leading-none pt-0.5">Featured</span>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-none mb-2 shadow-black/50 drop-shadow-md">
+                                                    {currentSlide.title}
+                                                </h2>
+                                                <p className="text-sm text-slate-200 font-medium opacity-90 line-clamp-1 max-w-lg shadow-black/50 drop-shadow-sm">
+                                                    {currentSlide.description}
+                                                </p>
                                             </div>
                                         </div>
 
-                                        <div>
-                                            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-none mb-1 shadow-black/50 drop-shadow-md">
-                                                {currentSlide.title}
-                                            </h2>
-                                            <p className="text-sm text-slate-200 font-medium opacity-90 line-clamp-2 max-w-lg shadow-black/50 drop-shadow-sm">
-                                                {currentSlide.description}
-                                            </p>
+                                        {/* CTA Button - Squeezed with content */}
+                                        <div className="flex items-center">
+                                            <Link href={currentSlide.ctaLink}>
+                                                <Button className="h-9 px-5 rounded-lg bg-white text-slate-900 font-bold hover:bg-slate-100 transition-colors border-0">
+                                                    <span className="whitespace-nowrap text-sm">{currentSlide.ctaText}</span>
+                                                    <ChevronRight className="w-3.5 h-3.5 ml-1.5 text-slate-500" />
+                                                </Button>
+                                            </Link>
                                         </div>
-                                    </div>
-
-                                    {/* CTA Button */}
-                                    <div className="flex items-center gap-4 relative z-10 shrink-0">
-                                        <Link href={currentSlide.ctaLink} className="w-full sm:w-auto">
-                                            <Button className="h-10 sm:h-11 px-5 sm:px-6 w-full sm:w-auto rounded-xl bg-white text-slate-900 font-bold hover:bg-emerald-50 hover:scale-105 transition-all shadow-lg active:scale-95 group/btn border-0">
-                                                <span className="whitespace-nowrap">{currentSlide.ctaText}</span>
-                                                <ChevronRight className="w-4 h-4 ml-1.5 text-slate-400 group-hover/btn:text-slate-900 transition-colors" />
-                                            </Button>
-                                        </Link>
                                     </div>
                                 </div>
                             </motion.div>
