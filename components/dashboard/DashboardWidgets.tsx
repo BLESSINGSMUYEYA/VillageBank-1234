@@ -28,10 +28,10 @@ export function DashboardWidgets({ stats, reminders = [], userId = '' }: Dashboa
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
             {/* Reminders Widget */}
             <motion.div variants={fadeIn}>
-                <GlassCard className="p-6 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl shadow-emerald-900/5 flex flex-col justify-between min-h-[280px] sm:min-h-[320px] h-full border-slate-200/60 dark:border-white/5 bg-slate-100/80 dark:bg-black/20" blur="xl">
+                <GlassCard className="p-6 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl shadow-emerald-900/5 flex flex-col justify-between min-h-[280px] sm:min-h-[320px] h-full border-slate-200/60 dark:border-white/5 bg-white/60 dark:bg-white/5" blur="xl">
                     <div className="w-full">
                         <div className="flex items-center justify-between mb-6 sm:mb-8">
-                            <h3 className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">Reminders</h3>
+                            <h3 className="text-[10px] sm:text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Reminders</h3>
                             <CreateReminderDialog userId={userId} />
                         </div>
 
@@ -93,8 +93,8 @@ export function DashboardWidgets({ stats, reminders = [], userId = '' }: Dashboa
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* Loan Progress */}
                 <motion.div variants={fadeIn}>
-                    <GlassCard className="p-6 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl shadow-emerald-900/5 flex flex-col justify-between min-h-[280px] sm:min-h-[320px] h-full border-slate-200/60 dark:border-white/5 bg-slate-100/80 dark:bg-black/20" blur="xl">
-                        <h3 className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">Loan Health</h3>
+                    <GlassCard className="p-6 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl shadow-emerald-900/5 flex flex-col justify-between min-h-[280px] sm:min-h-[320px] h-full border-slate-200/60 dark:border-white/5 bg-white/60 dark:bg-white/5" blur="xl">
+                        <h3 className="text-[10px] sm:text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Loan Health</h3>
                         <div className="flex flex-col items-center justify-center space-y-4 py-4">
                             <div className="relative">
                                 <ProgressRing

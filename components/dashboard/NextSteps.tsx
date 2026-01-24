@@ -54,7 +54,7 @@ export function NextSteps({ user, stats }: NextStepsProps) {
   return (
     <section className="space-y-6 w-full">
       <div className="flex items-center justify-between px-1">
-        <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+        <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">
           {allCompleted ? 'Pulse Insights' : 'Onboarding Progress'}
         </h3>
         <div className="flex items-center gap-3">
@@ -79,7 +79,7 @@ export function NextSteps({ user, stats }: NextStepsProps) {
         viewport={{ once: true }}
       >
         <GlassCard
-          className="rounded-[2.5rem] border-slate-200/60 dark:border-white/5 overflow-hidden relative shadow-2xl shadow-emerald-900/5 bg-slate-100/80 dark:bg-black/20"
+          className="rounded-[2.5rem] border-slate-200/60 dark:border-white/5 overflow-hidden relative shadow-2xl shadow-emerald-900/5 bg-white/60 dark:bg-white/5"
           blur="xl"
           hover={false}
         >

@@ -56,9 +56,13 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                 blur="xl"
                 hover={false}
             >
-                <div className="p-5 sm:p-10 bg-gradient-to-br from-white/60 via-white/40 to-emerald-50/20 dark:from-slate-900/60 dark:to-emerald-900/10">
+                <div className="p-5 sm:p-10 relative overflow-hidden">
+                    {/* Ambient Background Glows */}
+                    <div className="absolute -top-20 -left-20 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+
                     {/* Top Identity Section */}
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 relative z-10">
                         <div className="space-y-4 max-w-2xl">
                             <div className="space-y-1">
                                 <motion.div
@@ -66,18 +70,25 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ duration: 0.8, ease: "easeOut" }}
                                 >
-                                    <h1 className="text-page-title text-main">
+                                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 mb-3 sm:mb-4 text-left break-words leading-tight">
                                         {t('common.dashboard')}
-                                        <span className="text-banana">.</span>
+                                        <span className="text-emerald-500 dark:text-banana">.</span>
                                     </h1>
                                 </motion.div>
-                                <p className="text-body-primary text-slate-500 leading-relaxed max-w-xl">
-                                    {t('dashboard.welcome')}, <span className="text-main font-black">{user.firstName}</span>
-                                </p>
+                                <div className="text-xs sm:text-sm md:text-base font-medium text-slate-500 dark:text-slate-400 leading-relaxed max-w-xl flex flex-wrap items-center gap-2 sm:gap-3">
+                                    <div className="px-2.5 sm:px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 sm:gap-2">
+                                        <Shield className="w-3 h-3" />
+                                        Secure Hub
+                                    </div>
+                                    <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700" />
+                                    <span className="hidden sm:inline">
+                                        {t('dashboard.welcome')}, <span className="text-slate-900 dark:text-white font-black">{user.firstName}</span>
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="w-full md:w-auto shrink-0">
+                        <div className="w-full md:w-auto shrink-0 relative z-10">
                             <Button
                                 size="xl"
                                 onClick={() => {
@@ -92,7 +103,7 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                                     }
                                 }}
                                 variant="banana"
-                                className="w-full md:w-auto font-bold tracking-wide shadow-xl group/btn transition-all active:scale-95"
+                                className="w-full md:w-auto font-bold tracking-wide shadow-xl group/btn transition-all active:scale-95 px-8"
                             >
                                 <DollarSign className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
                                 <span className="whitespace-nowrap">{t('dashboard.make_contribution')}</span>
@@ -102,7 +113,7 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                     </div>
 
                     {/* Stats Grid - Premium Layout */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 relative z-10">
                         {/* Total Contributions - Large Card */}
                         <div className="col-span-2 p-3 sm:p-4 bg-white/50 dark:bg-white/5 border border-white/40 dark:border-white/10 rounded-2xl flex items-center justify-between group hover:border-emerald-200 hover:shadow-lg transition-all">
                             <div className="space-y-2">
