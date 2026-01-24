@@ -19,29 +19,6 @@ interface BannerSlide {
     accentColor: string;
 }
 
-const DEFAULT_BANNERS: BannerSlide[] = [
-    {
-        id: '1',
-        title: 'uBank University',
-        description: 'Master your community finances with our step-by-step guides.',
-        image: '/banners/education.jpg',
-        ctaText: 'Start Learning',
-        ctaLink: '/help',
-        theme: 'dark',
-        accentColor: 'bg-blue-600'
-    },
-    {
-        id: '2',
-        title: 'Secure Your Account',
-        description: 'Enable Two-Factor Authentication for better security.',
-        image: '/banners/security.jpg',
-        ctaText: 'Setup 2FA',
-        ctaLink: '/profile',
-        theme: 'dark',
-        accentColor: 'bg-emerald-600'
-    }
-];
-
 interface DashboardBannerCarouselProps {
     announcements?: Announcement[];
 }
@@ -69,8 +46,8 @@ export function DashboardBannerCarousel({ announcements = [] }: DashboardBannerC
         };
     });
 
-    // Merge default and db slides (DB slides first)
-    const banners = [...dbSlides, ...DEFAULT_BANNERS];
+    // Use only database slides
+    const banners = dbSlides;
 
     useEffect(() => {
         if (isHovered || !isVisible || banners.length <= 1) return;
