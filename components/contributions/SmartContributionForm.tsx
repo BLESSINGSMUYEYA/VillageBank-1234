@@ -209,7 +209,20 @@ export default function SmartContributionForm({ isModal, onClose }: SmartContrib
         if (!selectedGroupId || amount <= 0) {
             console.log("Validation failed", { selectedGroupId, amount })
             toast.error("Please ensure group and amount are valid.")
-            // alert("Validation Failed: Check Group and Amount")
+            return
+        }
+
+        // [VALIDATION] Check for future dates
+        const selectedDate = new Date(paymentDate)
+        const now = new Date()
+        if (selectedDate > now) {
+            toast.error("Payment date cannot be in the future.")
+            return
+        }
+
+        // [VALIDATION] Check for minimum contribution amount
+        if (selectedGroup && amount < selectedGroup.monthlyContribution) {
+            toast.error(`Amount cannot be less than the minimum contribution of ${formatCurrency(selectedGroup.monthlyContribution)}`)
             return
         }
 
@@ -427,13 +440,20 @@ export default function SmartContributionForm({ isModal, onClose }: SmartContrib
                                                     onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
                                                     type="number"
                                                     prefix="MWK"
+                                                    min={selectedGroup?.monthlyContribution || 0}
                                                 />
+                                                {selectedGroup && amount > 0 && amount < selectedGroup.monthlyContribution && (
+                                                    <p className="text-xs text-red-500 font-bold mt-1">
+                                                        Minimum contribution is {formatCurrency(selectedGroup.monthlyContribution)}
+                                                    </p>
+                                                )}
                                             </FormGroup>
                                             <FormGroup label="Payment Date">
                                                 <PremiumInput
                                                     value={paymentDate}
                                                     onChange={(e) => setPaymentDate(e.target.value)}
                                                     type="datetime-local"
+                                                    max={new Date().toISOString().slice(0, 16)}
                                                 />
                                             </FormGroup>
                                             <FormGroup label="Payment Method">
