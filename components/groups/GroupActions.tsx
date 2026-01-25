@@ -59,7 +59,7 @@ export default function GroupActions({
                 paymentMethods={group.paymentMethods || []}
             />
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
                 {isAdmin && (
                     <GroupShareModal groupId={group.id} groupName={group.name} />
                 )}
@@ -68,21 +68,21 @@ export default function GroupActions({
                     <Button
                         variant="outline"
                         onClick={() => setIsSettingsOpen(true)}
-                        className="w-full h-12 rounded-xl px-4 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 font-bold text-xs gap-2 group"
+                        className="w-full h-12 rounded-xl px-2 sm:px-4 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 font-bold text-[10px] sm:text-xs gap-1.5 sm:gap-2 group"
                     >
-                        <Settings className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
-                        <span className="truncate">Settings</span>
+                        <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                        <span className="truncate hidden sm:inline">Settings</span>
                     </Button>
                 )}
 
                 {/* Treasurer: Manage Accounts */}
-                {(isTreasurer || isAdmin) && (
+                {isTreasurer && (
                     <Button
                         variant="outline"
                         onClick={() => setIsManageAccountsOpen(true)}
-                        className="w-full h-12 rounded-xl px-4 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 font-bold text-xs gap-2 group"
+                        className="w-full h-12 rounded-xl px-2 sm:px-4 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 font-bold text-[10px] sm:text-xs gap-1.5 sm:gap-2 group"
                     >
-                        <Settings className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                        <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                         <span className="truncate">Man. Accounts</span>
                     </Button>
                 )}
@@ -94,10 +94,10 @@ export default function GroupActions({
 
                 <Button
                     onClick={() => setIsContributionModalOpen(true)}
-                    className={`relative h-12 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs gap-2 overflow-hidden border-0 ${isAdmin ? "col-span-2" : ""}`}
+                    className={`relative h-12 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[10px] sm:text-xs gap-1.5 sm:gap-2 overflow-hidden border-0 ${isAdmin ? "col-span-2" : ""}`}
                 >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out" />
-                    <DollarSign className="w-4 h-4 relative z-10" />
+                    <DollarSign className="w-3.5 h-3.5 sm:w-4 sm:h-4 relative z-10" />
                     <span className="truncate relative z-10">Make Contribution</span>
                 </Button>
             </div>

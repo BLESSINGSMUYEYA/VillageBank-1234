@@ -185,15 +185,15 @@ export default function GroupDetailsClient({
                 <motion.div variants={itemFadeIn}>
                     <GlassCard className="p-0 overflow-hidden" hover={false}>
                         {/* Hero Identity Section */}
-                        <div className="relative border-b border-white/10 dark:border-white/5 p-4 sm:p-6 md:p-8 bg-slate-50/50 dark:bg-white/5">
-                            <div className="flex flex-col lg:flex-row justify-between items-start gap-6 sm:gap-8">
+                        <div className="relative border-b border-white/10 dark:border-white/5 p-3 sm:p-6 md:p-8 bg-slate-50/50 dark:bg-white/5">
+                            <div className="flex flex-col lg:flex-row justify-between items-start gap-4 sm:gap-8">
 
                                 {/* Group Info Wrapper */}
                                 <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 md:gap-8 items-start w-full lg:w-auto">
-                                    <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 shrink-0 rounded-2xl sm:rounded-[2rem] bg-gradient-to-br from-emerald-600 to-teal-700 dark:from-banana dark:to-yellow-500 flex items-center justify-center text-white dark:text-emerald-950 text-2xl sm:text-3xl md:text-4xl font-black shadow-inner ring-1 ring-white/10">
+                                    <div className="w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 shrink-0 rounded-2xl sm:rounded-[2rem] bg-gradient-to-br from-emerald-600 to-teal-700 dark:from-banana dark:to-yellow-500 flex items-center justify-center text-white dark:text-emerald-950 text-xl sm:text-3xl md:text-4xl font-black shadow-inner ring-1 ring-white/10">
                                         {group.name.substring(0, 2).toUpperCase()}
                                     </div>
-                                    <div className="space-y-3 sm:space-y-4 pt-0 sm:pt-1 w-full">
+                                    <div className="space-y-2 sm:space-y-4 pt-0 sm:pt-1 w-full">
                                         <div>
                                             <p className="text-sm sm:text-base font-medium text-muted-foreground line-clamp-2 max-w-xl leading-relaxed">
                                                 {group.description || 'A community focused savings circle dedicated to mutual growth and financial stability.'}
@@ -201,15 +201,15 @@ export default function GroupDetailsClient({
                                         </div>
 
                                         <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                                            <Badge variant="outline" className="rounded-lg border-emerald-500/20 text-emerald-600 dark:text-banana bg-emerald-500/5 dark:bg-banana/5 font-black text-[9px] sm:text-[10px] uppercase tracking-wider px-2 sm:px-2.5 py-0.5 sm:py-1 flex items-center gap-1 sm:gap-1.5">
+                                            <Badge variant="outline" className="rounded-lg border-emerald-500/20 text-emerald-600 dark:text-banana bg-emerald-500/5 dark:bg-banana/5 font-black text-[9px] sm:text-[10px] uppercase tracking-wider px-1.5 sm:px-2.5 py-0.5 sm:py-1 flex items-center gap-1 sm:gap-1.5">
                                                 <MapPin className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                                                 {group.region}
                                             </Badge>
-                                            <Badge variant="outline" className="rounded-lg border-emerald-500/20 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 dark:bg-emerald-950/20 font-black text-[9px] sm:text-[10px] uppercase tracking-wider px-2 sm:px-2.5 py-0.5 sm:py-1 flex items-center gap-1 sm:gap-1.5">
+                                            <Badge variant="outline" className="rounded-lg border-emerald-500/20 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 dark:bg-emerald-950/20 font-black text-[9px] sm:text-[10px] uppercase tracking-wider px-1.5 sm:px-2.5 py-0.5 sm:py-1 flex items-center gap-1 sm:gap-1.5">
                                                 <Calendar className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                                                 Cycle {new Date().getFullYear()}
                                             </Badge>
-                                            <Badge variant="outline" className="rounded-lg border-purple-500/20 text-purple-600 dark:text-purple-400 bg-purple-500/5 dark:bg-purple-950/20 font-black text-[9px] sm:text-[10px] uppercase tracking-wider px-2 sm:px-2.5 py-0.5 sm:py-1 flex items-center gap-1 sm:gap-1.5">
+                                            <Badge variant="outline" className="rounded-lg border-purple-500/20 text-purple-600 dark:text-purple-400 bg-purple-500/5 dark:bg-purple-950/20 font-black text-[9px] sm:text-[10px] uppercase tracking-wider px-1.5 sm:px-2.5 py-0.5 sm:py-1 flex items-center gap-1 sm:gap-1.5">
                                                 <CheckCircle2 className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                                                 Verified
                                             </Badge>
@@ -218,7 +218,7 @@ export default function GroupDetailsClient({
                                 </div>
 
                                 {/* Actions Toolbar */}
-                                <div className="w-full lg:w-auto pt-4 lg:pt-0">
+                                <div className="w-full lg:w-auto pt-2 lg:pt-0">
                                     <GroupActions group={group} isAdmin={isAdmin} isTreasurer={isTreasurer} />
                                 </div>
                             </div>
@@ -228,7 +228,7 @@ export default function GroupDetailsClient({
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200/50 dark:bg-white/5">
                             <div className="p-4 sm:p-6 md:p-8 bg-white dark:bg-black/40 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group relative overflow-hidden">
                                 <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                                    <DollarSign className="w-16 h-16" />
+                                    <DollarSign className="w-12 h-12 sm:w-14 sm:h-14" />
                                 </div>
                                 <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground/70 mb-2 sm:mb-3 flex items-center gap-1.5">
                                     Monthly Share
@@ -240,7 +240,7 @@ export default function GroupDetailsClient({
 
                             <div className="p-4 sm:p-6 md:p-8 bg-white dark:bg-black/40 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group relative overflow-hidden">
                                 <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                                    <TrendingUp className="w-16 h-16 text-blue-500" />
+                                    <TrendingUp className="w-12 h-12 sm:w-14 sm:h-14 text-blue-500" />
                                 </div>
                                 <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground/70 mb-2 sm:mb-3 flex items-center gap-1.5">
                                     Growth Rate
@@ -253,7 +253,7 @@ export default function GroupDetailsClient({
 
                             <div className="p-4 sm:p-6 md:p-8 bg-white dark:bg-black/40 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group relative overflow-hidden">
                                 <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                                    <Users className="w-16 h-16" />
+                                    <Users className="w-12 h-12 sm:w-14 sm:h-14" />
                                 </div>
                                 <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground/70 mb-2 sm:mb-3 flex items-center gap-1.5">
                                     Community
@@ -265,7 +265,7 @@ export default function GroupDetailsClient({
 
                             <div className="p-4 sm:p-6 md:p-8 bg-white dark:bg-black/40 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group relative overflow-hidden">
                                 <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                                    <CheckCircle2 className="w-16 h-16 text-emerald-500" />
+                                    <CheckCircle2 className="w-12 h-12 sm:w-14 sm:h-14 text-emerald-500" />
                                 </div>
                                 <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground/70 mb-2 sm:mb-3 flex items-center gap-1.5">
                                     Status

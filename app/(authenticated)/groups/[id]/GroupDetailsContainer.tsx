@@ -30,7 +30,7 @@ export default function GroupDetailsContainer({
 }: GroupDetailsContainerProps) {
     return (
         <Tabs defaultValue="members" className="space-y-6 sm:space-y-8">
-            <div className="flex items-center justify-between gap-4 overflow-x-auto scrollbar-hide pb-4 border-b border-slate-200 dark:border-white/5 snap-x snap-mandatory">
+            <div className="flex items-center justify-start gap-4 overflow-x-auto scrollbar-hide pb-4 border-b border-slate-200 dark:border-white/5 snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0">
                 <ZenTabsList>
                     <ZenTabsTrigger value="members" className="snap-start">
                         Members
