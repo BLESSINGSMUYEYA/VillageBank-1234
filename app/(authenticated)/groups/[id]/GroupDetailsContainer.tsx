@@ -52,7 +52,7 @@ export default function GroupDetailsContainer({
 
             <motion.div variants={itemFadeIn}>
                 <TabsContent value="members" className="mt-0 border-none outline-none focus-visible:ring-0">
-                    <GlassCard className="flex flex-col p-6 overflow-hidden" hover={false}>
+                    <GlassCard className="flex flex-col p-3 sm:p-6 overflow-hidden" hover={false}>
                         <GroupMembersList
                             members={group.members}
                             groupId={group.id}
@@ -79,7 +79,7 @@ export default function GroupDetailsContainer({
                 </TabsContent>
 
                 <TabsContent value="payment-info" className="mt-0 border-none outline-none focus-visible:ring-0">
-                    <GlassCard className="p-6" hover={false}>
+                    <GlassCard className="p-4 sm:p-6" hover={false}>
                         <h3 className="text-lg font-black mb-6">Payment Accounts</h3>
                         {group.paymentMethods && group.paymentMethods.length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
