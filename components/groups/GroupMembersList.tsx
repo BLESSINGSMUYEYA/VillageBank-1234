@@ -145,23 +145,23 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
           {activeMembers.map((member) => (
             <div
               key={member.id}
-              className="group flex flex-col sm:flex-row sm:items-center justify-between p-4 hover:bg-white/5 transition-colors border-b border-border/10 last:border-0 gap-4"
+              className="group flex items-center justify-between p-3 sm:p-4 hover:bg-white/5 transition-colors border-b border-border/10 last:border-0 gap-3 sm:gap-4"
             >
-              <div className="flex items-center gap-4">
-                <Avatar className="w-10 h-10 border-2 border-white/10 shadow-sm group-hover:scale-105 transition-transform">
-                  <AvatarFallback className="font-black text-xs text-blue-600 bg-blue-50 dark:text-blue-100 dark:bg-blue-900/50">
+              <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                <Avatar className="w-9 h-9 sm:w-10 sm:h-10 border-2 border-white/10 shadow-sm shrink-0">
+                  <AvatarFallback className="font-black text-[10px] sm:text-xs text-blue-600 bg-blue-50 dark:text-blue-100 dark:bg-blue-900/50">
                     {(member.user?.firstName?.charAt(0) || '') + (member.user?.lastName?.charAt(0) || '')}
                   </AvatarFallback>
                 </Avatar>
-                <div>
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
-                    <p className="text-body-primary font-black text-foreground tracking-tight whitespace-nowrap">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <p className="text-body-primary font-black text-foreground tracking-tight whitespace-nowrap truncate max-w-[140px] sm:max-w-none">
                       {member.user?.firstName || ''} {member.user?.lastName || ''}
                     </p>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 shrink-0">
                       <Badge
                         className={cn(
-                          "text-tab-label px-2 py-0 border-0 shrink-0",
+                          "text-[9px] sm:text-[10px] px-1.5 py-0 border-0 shrink-0 h-5",
                           member.role === 'ADMIN' ? 'bg-blue-600 text-white' :
                             member.role === 'TREASURER' ? 'bg-banana text-yellow-950' :
                               'bg-slate-100 dark:bg-slate-800 text-slate-500'
@@ -170,24 +170,24 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
                         {member.role}
                       </Badge>
                       {member.unpaidPenalties > 0 && (
-                        <Badge variant="destructive" className="bg-red-500/10 text-red-500 border-red-500/20 px-2 py-0 text-[10px] font-black uppercase tracking-wider flex items-center gap-1 shrink-0">
-                          <AlertTriangle className="w-3 h-3" />
-                          Owing {formatCurrency(member.unpaidPenalties)}
+                        <Badge variant="destructive" className="bg-red-500/10 text-red-500 border-red-500/20 px-1.5 py-0 text-[9px] font-black uppercase tracking-wider flex items-center gap-1 shrink-0 h-5">
+                          <AlertTriangle className="w-2.5 h-2.5" />
+                          <span className="hidden sm:inline">Owing</span> {formatCurrency(member.unpaidPenalties)}
                         </Badge>
                       )}
                     </div>
                   </div>
-                  <p className="text-micro font-bold text-muted-foreground uppercase tracking-wider opacity-70">
-                    {member.user?.email || 'No email'} • Joined {new Date(member.joinedAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
+                  <p className="text-[10px] sm:text-xs font-bold text-muted-foreground tracking-wide opacity-70 truncate">
+                    <span className="lowercase">{member.user?.email || 'No email'}</span> <span className="uppercase hidden sm:inline">• Joined {new Date(member.joinedAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}</span>
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4 pl-14 sm:pl-0">
+              <div className="shrink-0">
                 {canManageMembers && member.userId !== currentUserId && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-white/10">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-white/10 -mr-2 sm:mr-0">
                         <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -256,31 +256,31 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
 
           <div className="space-y-1">
             {pendingMembers.map((member) => (
-              <div key={member.id} className="group flex flex-col sm:flex-row sm:items-center justify-between p-4 hover:bg-orange-500/5 transition-colors border-b border-white/5 last:border-0 gap-4">
-                <div className="flex items-center gap-4">
-                  <Avatar className="w-10 h-10 border-2 border-orange-500/20 shadow-sm">
-                    <AvatarFallback className="font-black text-xs text-orange-600 bg-orange-50 dark:bg-orange-900/20">
+              <div key={member.id} className="group flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 hover:bg-orange-500/5 transition-colors border-b border-white/5 last:border-0 gap-3 sm:gap-4">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <Avatar className="w-9 h-9 sm:w-10 sm:h-10 border-2 border-orange-500/20 shadow-sm shrink-0">
+                    <AvatarFallback className="font-black text-[10px] sm:text-xs text-orange-600 bg-orange-50 dark:bg-orange-900/20">
                       {(member.user?.firstName?.charAt(0) || '') + (member.user?.lastName?.charAt(0) || '')}
                     </AvatarFallback>
                   </Avatar>
-                  <div>
-                    <p className="text-body-primary font-black text-foreground tracking-tight">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-body-primary font-black text-foreground tracking-tight truncate max-w-[200px] sm:max-w-none">
                       {member.user?.firstName || ''} {member.user?.lastName || ''}
                     </p>
-                    <p className="text-micro font-bold text-muted-foreground uppercase tracking-wider opacity-70">
+                    <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-wider opacity-70 truncate">
                       Requested {new Date(member.joinedAt).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 pl-14 sm:pl-0">
+                <div className="grid grid-cols-2 gap-2 w-full sm:w-auto sm:flex sm:items-center sm:pl-0">
                   {currentUserRole === 'ADMIN' && (
                     <>
                       <Button
                         size="sm"
                         onClick={() => handleRoleChange(member.id, 'MEMBER')}
                         disabled={loading}
-                        className="h-8 bg-blue-600 hover:bg-blue-700 text-white text-tab-label rounded-lg px-4"
+                        className="h-9 sm:h-8 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg w-full sm:w-auto"
                       >
                         Approve
                       </Button>
@@ -289,7 +289,7 @@ export default function GroupMembersList({ members, groupId, currentUserRole, cu
                         variant="ghost"
                         onClick={() => handleRemoveMember(member.id)}
                         disabled={loading}
-                        className="h-8 text-red-500 hover:text-red-400 hover:bg-red-500/10 text-tab-label rounded-lg px-3"
+                        className="h-9 sm:h-8 text-red-500 hover:text-red-400 hover:bg-red-500/10 text-xs font-bold rounded-lg w-full sm:w-auto"
                       >
                         Reject
                       </Button>

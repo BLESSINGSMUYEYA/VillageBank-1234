@@ -44,7 +44,7 @@ export default function GroupDetailsClient({
                 variants={staggerContainer}
                 initial="initial"
                 animate="animate"
-                className="space-y-6 sm:space-y-8 pb-20"
+                className="max-w-7xl mx-auto w-full space-y-6 sm:space-y-8 pb-20"
             >
                 {/* Header Section - Same as main view */}
                 <motion.div variants={fadeIn} className="relative">
@@ -146,7 +146,7 @@ export default function GroupDetailsClient({
                 variants={staggerContainer}
                 initial="initial"
                 animate="animate"
-                className="space-y-6 sm:space-y-8 pb-20"
+                className="max-w-7xl mx-auto w-full space-y-6 sm:space-y-8 pb-20"
             >
                 {/* Header Section */}
                 <motion.div variants={fadeIn} className="relative">
