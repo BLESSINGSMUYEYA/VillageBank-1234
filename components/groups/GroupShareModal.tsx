@@ -78,9 +78,9 @@ export function GroupShareModal({ groupId, groupName }: GroupShareModalProps) {
             <Button
                 variant="outline"
                 onClick={() => setOpen(true)}
-                className="h-12 rounded-xl px-4 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 font-bold text-xs gap-2 group"
+                className="h-14 rounded-xl px-2 sm:px-4 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 font-bold text-xs sm:text-sm gap-1.5 sm:gap-2 group"
             >
-                <Share2 className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                <Share2 className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
                 <span className="truncate">Invite</span>
             </Button>
             {createPortal(modalContent, document.body)}
