@@ -20,6 +20,8 @@ import { ContributionModal } from '@/components/contributions/ContributionModal'
 import { GroupDetailsForm } from './settings/GroupDetailsForm'
 import { GroupShareModal } from './GroupShareModal'
 
+import { ManageAccountsModal } from './ManageAccountsModal'
+
 interface GroupActionsProps {
     group: any
     isAdmin: boolean
@@ -33,6 +35,7 @@ export default function GroupActions({
 }: GroupActionsProps) {
     const [isContributionModalOpen, setIsContributionModalOpen] = useState(false)
     const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+    const [isManageAccountsOpen, setIsManageAccountsOpen] = useState(false)
 
     return (
         <div className="flex flex-col gap-3 w-full xl:w-auto mt-2 xl:mt-0 xl:min-w-[300px]">
@@ -49,6 +52,13 @@ export default function GroupActions({
                 </DialogContent>
             </Dialog>
 
+            <ManageAccountsModal
+                isOpen={isManageAccountsOpen}
+                onClose={() => setIsManageAccountsOpen(false)}
+                groupId={group.id}
+                paymentMethods={group.paymentMethods || []}
+            />
+
             <div className="grid grid-cols-2 gap-3">
                 {isAdmin && (
                     <GroupShareModal groupId={group.id} groupName={group.name} />
@@ -62,6 +72,18 @@ export default function GroupActions({
                     >
                         <Settings className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                         <span className="truncate">Settings</span>
+                    </Button>
+                )}
+
+                {/* Treasurer: Manage Accounts */}
+                {(isTreasurer || isAdmin) && (
+                    <Button
+                        variant="outline"
+                        onClick={() => setIsManageAccountsOpen(true)}
+                        className="w-full h-12 rounded-xl px-4 border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 font-bold text-xs gap-2 group"
+                    >
+                        <Settings className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                        <span className="truncate">Man. Accounts</span>
                     </Button>
                 )}
 

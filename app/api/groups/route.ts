@@ -179,6 +179,11 @@ export async function GET(request: NextRequest) {
             userId: userId,
           },
         },
+        paymentMethods: {
+          where: {
+            isActive: true
+          }
+        },
       },
       orderBy: {
         createdAt: 'desc',

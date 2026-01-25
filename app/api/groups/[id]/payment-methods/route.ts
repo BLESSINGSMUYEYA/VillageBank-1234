@@ -153,3 +153,79 @@ export async function POST(
         )
     }
 }
+
+// DELETE - Archive/Delete payment method (Treasurer/Admin only)
+export async function DELETE(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const session = await getSession()
+        const userId = session?.userId
+
+        if (!userId) {
+            return NextResponse.json(
+                { error: 'Unauthorized' },
+                { status: 401 }
+            )
+        }
+
+        const { id: groupId } = await params
+        const url = new URL(request.url)
+        const methodId = url.searchParams.get('methodId')
+
+        if (!methodId) {
+            return NextResponse.json(
+                { error: 'Method ID is required' },
+                { status: 400 }
+            )
+        }
+
+        // Check if user is admin or treasurer of the group
+        const membership = await prisma.groupMember.findFirst({
+            where: {
+                groupId,
+                userId: userId as string,
+                status: 'ACTIVE',
+                role: { in: ['ADMIN', 'TREASURER'] },
+            },
+        })
+
+        if (!membership) {
+            return NextResponse.json(
+                { error: 'Only group admins or treasurers can delete payment methods' },
+                { status: 403 }
+            )
+        }
+
+        // Soft delete
+        await prisma.paymentMethod.update({
+            where: { id: methodId },
+            data: { isActive: false },
+        })
+
+        // Create activity log
+        await prisma.activity.create({
+            data: {
+                userId: userId as string,
+                groupId,
+                actionType: 'PAYMENT_METHOD_REMOVED',
+                description: 'Removed a payment method',
+                metadata: {
+                    paymentMethodId: methodId,
+                },
+            },
+        })
+
+        return NextResponse.json({
+            message: 'Payment method removed successfully',
+            success: true
+        })
+    } catch (error) {
+        console.error('Delete group payment method error:', error)
+        return NextResponse.json(
+            { error: 'Internal server error' },
+            { status: 500 }
+        )
+    }
+}
