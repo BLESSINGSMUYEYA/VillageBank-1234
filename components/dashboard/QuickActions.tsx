@@ -23,7 +23,7 @@ export function QuickActions({ pendingApprovals = [], user }: QuickActionsProps)
         { label: 'Contribute', icon: Zap, action: () => setIsContributionModalOpen(true) },
         { label: 'Borrow', icon: PiggyBank, href: '/loans/new' },
         { label: 'Join', icon: Users, href: '/groups' },
-        { label: 'More', icon: Plus, href: '/dashboard' }
+        { label: 'Create', icon: Plus, href: '/groups/new' }
     ]
 
     return (

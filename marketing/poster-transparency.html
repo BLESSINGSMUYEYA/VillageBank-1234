@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>uBank Poster - Transparency</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        emerald: {
+                            900: '#064e3b',
+                            950: '#022c22',
+                        },
+                        // "Nano Banana" - Ultra Bright & Premium
+                        banana: {
+                            DEFAULT: '#FACC15', // Yellow-400 base
+                            400: '#FACC15',
+                            500: '#EAB308',
+                            glow: '#FEF08A', // Yellow-200
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* A4 Print Size */
+        @media print {
+            @page { size: A4 portrait; margin: 0; }
+            body { -webkit-print-color-adjust: exact; }
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .banana-glow {
+            box-shadow: 0 0 40px rgba(250, 204, 21, 0.4);
+        }
+        .text-glow {
+            text-shadow: 0 0 20px rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body class="bg-emerald-950 min-h-screen flex justify-center items-center py-10 print:py-0">
+
+    <!-- Poster Container (A4 Aspect Ratio approx) -->
+    <div class="relative w-[800px] h-[1131px] bg-gradient-to-br from-emerald-900 via-emerald-950 to-black overflow-hidden shadow-2xl print:w-full print:h-screen print:shadow-none flex flex-col">
+        
+        <!-- Background Accents -->
+        <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/20 blur-[120px] rounded-full mix-blend-screen"></div>
+        <div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-emerald-800/20 blur-[100px] rounded-full mix-blend-screen"></div>
+
+        <!-- Content Wrapper -->
+        <div class="relative z-10 flex-1 flex flex-col p-16">
+            
+            <!-- Header Section -->
+            <div class="mb-12">
+                <div class="flex items-center gap-3 mb-6">
+                    <!-- Logo Placeholder -->
+                    <div class="w-12 h-12 bg-banana-500 rounded-lg flex items-center justify-center font-display font-black text-emerald-950 text-2xl">
+                        uB
+                    </div>
+                    <span class="text-white font-display font-medium tracking-widest text-lg opacity-80">VILLAGE BANKING</span>
+                </div>
+                
+                <h1 class="font-display font-black text-8xl text-white leading-[0.9] text-glow mb-4">
+                    NO MORE<br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-banana-400 to-banana-500">LOST BOOKS.</span>
+                </h1>
+                <p class="text-emerald-100/80 text-2xl font-light max-w-xl">
+                    Digital record keeping that everyone can see. <br>
+                    Transparent. Instant. Secure.
+                </p>
+            </div>
+
+            <!-- Visual Metaphor Section -->
+            <div class="flex-1 relative flex items-center justify-center mb-12">
+                
+                <!-- "Old Way" (Symbolic - Faded Background) -->
+                <div class="absolute left-0 top-10 opacity-10 blur-sm transform -rotate-6 grayscale">
+                    <div class="w-64 h-80 bg-stone-200 rounded-sm border-l-4 border-stone-800 p-4 font-mono text-xs">
+                        [Paper Ledger]<br>
+                        Jan: 50... ??<br>
+                        Feb: Missing<br>
+                        Total: Unknown
+                    </div>
+                </div>
+
+                <!-- "New Way" (Hero - Glass Interface) -->
+                <div class="glass-card rounded-[2rem] p-6 w-[420px] transform rotate-3 transition-transform hover:scale-105 duration-500 banana-glow">
+                    <!-- Fake UI Header -->
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <div class="text-xs text-emerald-200 uppercase tracking-wider mb-1">Total Savings</div>
+                            <div class="text-4xl font-display font-bold text-white">MWK 4,500,000</div>
+                        </div>
+                        <div class="h-10 w-10 bg-banana-500 rounded-full flex items-center justify-center text-emerald-950 text-lg">✨</div>
+                    </div>
+
+                    <!-- Fake UI Graph -->
+                    <div class="h-32 w-full bg-gradient-to-t from-emerald-500/20 to-transparent rounded-xl border-b border-white/20 mb-6 flex items-end justify-between px-2 pb-2">
+                        <div class="w-4 bg-emerald-400/50 h-[40%] rounded-t"></div>
+                        <div class="w-4 bg-emerald-400/50 h-[50%] rounded-t"></div>
+                        <div class="w-4 bg-emerald-400/50 h-[65%] rounded-t"></div>
+                        <div class="w-4 bg-banana-400 h-[85%] rounded-t shadow-[0_0_15px_rgba(250,204,21,0.6)]"></div>
+                    </div>
+
+                    <!-- Fake UI List -->
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-emerald-500/20"></div>
+                                <div>
+                                    <div class="text-sm text-white font-medium">Blessings M.</div>
+                                    <div class="text-xs text-emerald-200/60">Just now</div>
+                                </div>
+                            </div>
+                            <div class="text-banana-400 font-bold">+ MWK 50,000</div>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-purple-500/20"></div>
+                                <div>
+                                    <div class="text-sm text-white font-medium">Grace K.</div>
+                                    <div class="text-xs text-emerald-200/60">2 mins ago</div>
+                                </div>
+                            </div>
+                            <div class="text-banana-400 font-bold">+ MWK 25,000</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer / CTA -->
+            <div class="bg-emerald-900/50 backdrop-blur-md rounded-3xl p-8 border border-white/10 flex justify-between items-center">
+                <div>
+                    <div class="text-emerald-200 text-lg font-medium mb-1">Download for iOS & Android</div>
+                    <div class="text-3xl text-white font-display font-bold">ubank.app</div>
+                </div>
+                <!-- Banana Button -->
+                <button class="bg-banana-500 text-emerald-950 px-8 py-4 rounded-xl font-display font-black text-xl uppercase tracking-wide hover:bg-banana-400 transition-colors shadow-lg shadow-banana-500/20">
+                    Get Started
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
