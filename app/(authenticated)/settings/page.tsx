@@ -2,6 +2,7 @@
 
 import { useAuth } from '@/components/providers/AuthProvider'
 import PasskeyManager from '@/components/auth/PasskeyManager'
+import { VerificationForm } from '@/components/settings/VerificationForm'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -281,6 +282,17 @@ export default function SettingsPage() {
         </motion.div>
       </div>
 
+
+
+      <div className="max-w-4xl mx-auto mt-8">
+        <motion.div variants={itemFadeIn}>
+          {/* Verification Section */}
+          <div className="mb-8">
+            <VerificationForm />
+          </div>
+        </motion.div>
+      </div>
+
       <div className="max-w-4xl mx-auto mt-8">
         <motion.div variants={itemFadeIn}>
           <GlassCard className="p-0 overflow-hidden" hover={false}>
@@ -306,7 +318,7 @@ export default function SettingsPage() {
           </GlassCard>
         </motion.div>
       </div>
-    </motion.div>
+    </motion.div >
   )
 }
 

@@ -112,12 +112,20 @@ export function MobileNavigation() {
                     </DropdownMenuItem>
 
                     {(user?.role === 'REGIONAL_ADMIN' || user?.role === 'SUPER_ADMIN') && (
-                      <DropdownMenuItem asChild className="rounded-2xl focus:bg-emerald-50 dark:focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:text-emerald-400">
-                        <Link href="/admin/regional" className="flex items-center p-3 font-bold text-sm text-slate-600 dark:text-slate-300">
-                          <Shield className="mr-3 h-4 w-4 opacity-70" />
-                          {t('admin.regional')}
-                        </Link>
-                      </DropdownMenuItem>
+                      <>
+                        <DropdownMenuItem asChild className="rounded-2xl focus:bg-emerald-50 dark:focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:text-emerald-400">
+                          <Link href="/admin/regional" className="flex items-center p-3 font-bold text-sm text-slate-600 dark:text-slate-300">
+                            <Shield className="mr-3 h-4 w-4 opacity-70" />
+                            {t('admin.regional')}
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild className="rounded-2xl focus:bg-emerald-50 dark:focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:text-emerald-400">
+                          <Link href="/admin/verifications" className="flex items-center p-3 font-bold text-sm text-slate-600 dark:text-slate-300">
+                            <Shield className="mr-3 h-4 w-4 opacity-70" />
+                            Verifications
+                          </Link>
+                        </DropdownMenuItem>
+                      </>
                     )}
                   </div>
                   <DropdownMenuSeparator className="bg-slate-100 dark:bg-white/5 mx-2" />

@@ -4,7 +4,7 @@ import { useAuth } from '@/components/providers/AuthProvider'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Zap, Landmark, Users, User, BarChart3, Settings, LogOut, Smartphone, Wallet, History } from 'lucide-react'
+import { Zap, Landmark, Users, User, BarChart3, Settings, LogOut, Smartphone, Wallet, History, Shield } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { itemFadeIn } from '@/lib/motions'
 import { UBankLogo } from '@/components/ui/Logo'
@@ -47,7 +47,7 @@ const NavigationLink = ({ item, isActive }: { item: any; isActive: boolean }) =>
 )
 
 export function DesktopNavigation() {
-  const { logout } = useAuth()
+  const { user, logout } = useAuth()
   const pathname = usePathname()
 
   const menuItems = [
@@ -56,6 +56,10 @@ export function DesktopNavigation() {
     { name: 'Groups', href: '/groups', icon: Users },
     { name: 'Profile', href: '/profile', icon: User },
   ]
+
+  if (user?.role === 'SUPER_ADMIN' || user?.role === 'REGIONAL_ADMIN') {
+    menuItems.push({ name: 'Verifications', href: '/admin/verifications', icon: Shield })
+  }
 
   return (
     <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-72 flex-col z-50 bg-[#F8FAFC]">

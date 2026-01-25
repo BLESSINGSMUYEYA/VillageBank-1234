@@ -60,6 +60,15 @@ export class PenaltyService {
             }
 
             for (const member of group.members) {
+                // [FIX] Check if member joined AFTER the deadline this month
+                const joinDate = new Date(member.joinedAt)
+                if (
+                    joinDate.getFullYear() === currentYear &&
+                    joinDate.getMonth() + 1 === currentMonth &&
+                    joinDate.getDate() > group.contributionDueDay
+                ) {
+                    continue // Skip penalty for this new member
+                }
                 // Check if contribution exists for this month
                 const existingContribution = await prisma.contribution.findFirst({
                     where: {

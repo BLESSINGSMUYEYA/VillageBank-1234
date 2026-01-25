@@ -35,6 +35,7 @@ model User {
   passkeys             Passkey[]
   pushSubscriptions    PushSubscription[]
   reminders            Reminder[]
+  identityVerification IdentityVerification?
 }
 
 model Passkey {
@@ -398,4 +399,35 @@ enum ReminderType {
 enum AnnouncementType {
   BANNER
   BROADCAST_ONLY
+}
+
+enum IdentityType {
+  NATIONAL_ID
+  PASSPORT
+  DRIVING_LICENSE
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model IdentityVerification {
+  id              String             @id @default(cuid())
+  userId          String             @unique
+  type            IdentityType
+  documentNumber  String
+  frontImageUrl   String // Front of ID
+  backImageUrl    String? // Back of ID (Optional for some doc types)
+  selfieImageUrl  String // Selfie holding ID
+  status          VerificationStatus @default(PENDING)
+  rejectionReason String?
+  submittedAt     DateTime           @default(now())
+  verifiedAt      DateTime?
+  verifiedById    String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status])
 }
