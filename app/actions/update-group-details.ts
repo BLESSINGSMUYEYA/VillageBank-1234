@@ -16,12 +16,12 @@ export async function updateGroupDetails(
     formData: FormData
 ): Promise<UpdateGroupDetailsState> {
     const session = await getSession()
-    if (!session?.user) {
+    if (!session || !session.userId) {
         return { error: 'Unauthorized: No active session found. Please log in again.' }
     }
 
     const groupId = formData.get('groupId') as string
-    const userId = (session.user as any).id
+    const userId = session.userId as string
 
     // Validate user is admin of the group
     const membership = await prisma.groupMember.findUnique({
