@@ -1,6 +1,7 @@
 'use client'
 
 import { useAuth } from '@/components/providers/AuthProvider'
+import { useLanguage } from '@/components/providers/LanguageProvider'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Zap, Landmark, Users, User, Shield } from 'lucide-react'
@@ -53,13 +54,14 @@ const NavigationLink = ({ item, isActive }: { item: any; isActive: boolean }) =>
 
 export function DesktopNavigation() {
   const { user } = useAuth()
+  const { t } = useLanguage()
   const pathname = usePathname()
 
   const menuItems = [
-    { name: 'Pulse', href: '/dashboard', icon: Zap },
-    { name: 'Vault', href: '/vault', icon: Landmark },
-    { name: 'Groups', href: '/groups', icon: Users },
-    { name: 'Profile', href: '/profile', icon: User },
+    { name: t('common.pulse'), href: '/dashboard', icon: Zap },
+    { name: t('common.vault'), href: '/vault', icon: Landmark },
+    { name: t('common.groups'), href: '/groups', icon: Users },
+    { name: t('common.profile'), href: '/profile', icon: User },
   ]
 
   if (user?.role === 'SUPER_ADMIN' || user?.role === 'REGIONAL_ADMIN') {

@@ -61,6 +61,11 @@ export default async function ProfilePage() {
         orderBy: {
           createdAt: 'desc'
         }
+      },
+      identityVerification: {
+        select: {
+          status: true
+        }
       }
     }
   })
@@ -100,6 +105,7 @@ export default async function ProfilePage() {
     joinedAt: user.createdAt,
     ubankId: user.ubankId,
     isActive: true, // Assuming active if they can login
+    isVerified: user.identityVerification?.status === 'VERIFIED'
   }
 
   const memberships = user.groupMembers.map((member) => ({

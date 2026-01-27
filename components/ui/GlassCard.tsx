@@ -55,7 +55,7 @@ export function GlassCard({
                 <div className="absolute inset-0 z-0 pointer-events-none translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
             )}
 
-            <div className="relative z-10">{children}</div>
+            <div className="relative z-10 w-full h-full">{children}</div>
         </motion.div>
     );
 }

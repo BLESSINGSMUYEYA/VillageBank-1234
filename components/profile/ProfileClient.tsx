@@ -41,6 +41,7 @@ interface ProfileData {
     ubankId: string | null
     joinedAt: Date
     isActive: boolean
+    isVerified: boolean
 }
 
 interface GroupMembership {
@@ -229,13 +230,15 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                             </div>
                                         </div>
 
-                                        <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                                        <div className="flex flex-wrap items-center justify-center gap-2 pt-1 h-6">
                                             <Badge variant="secondary" className="font-bold text-[10px] uppercase tracking-wider px-2.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-0">
                                                 {profile?.role?.replace('_', ' ')}
                                             </Badge>
-                                            <Badge variant="secondary" className="font-bold text-[10px] uppercase tracking-wider px-2.5 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-0 flex items-center gap-1">
-                                                <CheckCircle2 className="w-3 h-3" /> Verified
-                                            </Badge>
+                                            {profile.isVerified && (
+                                                <Badge variant="secondary" className="font-bold text-[10px] uppercase tracking-wider px-2.5 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-0 flex items-center gap-1 animate-in fade-in zoom-in">
+                                                    <CheckCircle2 className="w-3 h-3" /> Verified
+                                                </Badge>
+                                            )}
                                         </div>
                                     </div>
 
