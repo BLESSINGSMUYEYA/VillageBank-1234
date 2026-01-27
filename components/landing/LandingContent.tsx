@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { Button } from '@/components/ui/button'
-import { Users, DollarSign, TrendingUp, ArrowRight, Sparkles } from 'lucide-react'
+import { Users, DollarSign, TrendingUp, ArrowRight, Sparkles, ShieldCheck, Eye, Globe } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
 import { GlassCard } from '@/components/ui/GlassCard'
@@ -47,6 +47,7 @@ export function LandingContent() {
                 variants={staggerContainer}
                 initial="initial"
                 animate="animate"
+                viewport={{ once: true }}
                 className="text-center space-y-8 mb-32"
             >
                 {/* Hero Badge */}
@@ -58,7 +59,7 @@ export function LandingContent() {
                 {/* Main Title */}
                 <motion.h1 variants={fadeIn} className="text-page-title text-slate-900 dark:text-white max-w-5xl mx-auto">
                     {t('landing.main_title')}
-                    <span className="text-emerald-500">.</span>
+                    <span className="bg-gradient-to-r from-emerald-500 to-teal-400 bg-clip-text text-transparent">.</span>
                 </motion.h1>
 
                 {/* Subtitle */}
@@ -69,7 +70,7 @@ export function LandingContent() {
                 {/* CTA Buttons */}
                 <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                     <Link href="/register" className="w-full sm:w-auto">
-                        <Button variant="premium" size="xl" className="w-full sm:w-auto h-16 px-12 rounded-2xl">
+                        <Button variant="premium" size="xl" className="w-full sm:w-auto h-16 px-12 rounded-2xl shadow-xl shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] transition-all">
                             {t('landing.start_moving')}
                             <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                         </Button>
@@ -82,18 +83,22 @@ export function LandingContent() {
                 </motion.div>
 
                 {/* Stats Preview */}
-                <motion.div variants={fadeIn} className="pt-20 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-                    {stats.map((stat, i) => (
-                        <div key={i} className="space-y-1">
-                            <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">{stat.value}</p>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{stat.label}</p>
+                <motion.div variants={fadeIn} className="pt-20 max-w-5xl mx-auto">
+                    <GlassCard className="p-8 border-white/20 dark:border-white/5 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md" hover={false}>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                            {stats.map((stat, i) => (
+                                <div key={i} className="space-y-1">
+                                    <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">{stat.value}</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{stat.label}</p>
+                                </div>
+                            ))}
                         </div>
-                    ))}
+                    </GlassCard>
                 </motion.div>
             </motion.div>
 
             {/* Features Grid */}
-            <div className="mb-20">
+            <div className="mb-32">
                 <div className="text-center mb-16">
                     <h2 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter mb-4">{t('landing.features_title')}</h2>
                 </div>
@@ -120,19 +125,20 @@ export function LandingContent() {
                 </motion.div>
             </div>
 
-            {/* University / Help Promo Section */}
+            {/* University / Floating Ledger Section */}
             <div className="mb-40 relative">
-                <div className="absolute inset-0 bg-emerald-600/5 dark:bg-white/5 skew-y-3 transform -z-10 rounded-3xl" />
-                <div className="py-20 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-12 max-w-7xl mx-auto">
-                    <div className="md:w-1/2 space-y-6">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 dark:bg-white/10 text-emerald-700 dark:text-emerald-300 font-bold text-xs uppercase tracking-widest">
+                <div className="absolute inset-0 bg-emerald-600/5 dark:bg-white/5 skew-y-3 transform -z-10 rounded-[3rem]" />
+                <div className="py-24 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-16 max-w-7xl mx-auto">
+                    <div className="md:w-1/2 space-y-8">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 font-black text-xs uppercase tracking-widest border border-emerald-200 dark:border-emerald-800">
                             <Sparkles className="w-4 h-4" />
                             <span>New: uBank University</span>
                         </div>
-                        <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-tight">
-                            Master Your Community Finances
+                        <h2 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tighter leading-[1.1]">
+                            Master Your <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-400">Community Finances</span>
                         </h2>
-                        <p className="text-lg text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
+                        <p className="text-xl text-slate-600 dark:text-slate-300 font-medium leading-relaxed max-w-lg">
                             Whether you are a Treasurer needing to record cash, or a Member looking for a loan, our detailed step-by-step guides have you covered.
                         </p>
                         <div className="pt-4">
@@ -144,28 +150,69 @@ export function LandingContent() {
                             </Link>
                         </div>
                     </div>
-                    <div className="md:w-1/2">
-                        <GlassCard className="p-8 rotate-3 hover:rotate-0 transition-transform duration-500 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md border-white/20">
-                            <div className="space-y-4">
-                                <div className="flex items-center gap-4 border-b border-slate-200 dark:border-white/10 pb-4">
-                                    <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold">1</div>
-                                    <div className="font-bold text-slate-700 dark:text-slate-200">Create a Group</div>
+
+                    {/* Floating Ledger Animation */}
+                    <div className="md:w-1/2 relative h-[500px] w-full flex items-center justify-center">
+                        <motion.div
+                            animate={{ y: [0, -20, 0] }}
+                            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                            className="relative z-10 w-full max-w-md"
+                        >
+                            <GlassCard className="p-8 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border-white/20 shadow-2xl">
+                                <div className="flex items-center justify-between mb-8">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-2xl bg-emerald-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-emerald-500/30">
+                                            $
+                                        </div>
+                                        <div>
+                                            <div className="text-sm font-bold opacity-60 uppercase tracking-wider">Total Savings</div>
+                                            <div className="text-2xl font-black text-slate-900 dark:text-white">MWK 1,250,400</div>
+                                        </div>
+                                    </div>
+                                    <div className="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-black uppercase tracking-wider">
+                                        +12.5%
+                                    </div>
                                 </div>
-                                <div className="flex items-center gap-4 border-b border-slate-200 dark:border-white/10 pb-4">
-                                    <div className="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/50 flex items-center justify-center text-teal-600 dark:text-teal-400 font-bold">2</div>
-                                    <div className="font-bold text-slate-700 dark:text-slate-200">Invite Members</div>
+
+                                <div className="space-y-4">
+                                    {[1, 2, 3].map((_, i) => (
+                                        <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
+                                            <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 animate-pulse" />
+                                            <div className="space-y-2 flex-1">
+                                                <div className="h-3 w-1/3 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
+                                                <div className="h-2 w-1/2 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center text-green-600 dark:text-green-400 font-bold">3</div>
-                                    <div className="font-bold text-slate-700 dark:text-slate-200">Grow Capital</div>
+                                <div className="mt-8 pt-6 border-t border-slate-200 dark:border-white/10 text-center">
+                                    <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+                                        Real-time Ledger Sync
+                                    </p>
                                 </div>
-                            </div>
-                            <div className="mt-8 pt-6 border-t border-slate-200 dark:border-white/10 text-center">
-                                <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-                                    Available for all roles
-                                </p>
-                            </div>
-                        </GlassCard>
+                            </GlassCard>
+
+                            {/* Floating Elements */}
+                            <motion.div
+                                animate={{ y: [0, 30, 0], x: [0, 10, 0] }}
+                                transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                                className="absolute -top-10 -right-10 z-20"
+                            >
+                                <GlassCard className="p-4 rounded-2xl bg-white dark:bg-slate-800 shadow-xl border-none" hover={false}>
+                                    <ShieldCheck className="w-8 h-8 text-emerald-500" />
+                                </GlassCard>
+                            </motion.div>
+
+                            <motion.div
+                                animate={{ y: [0, -20, 0], x: [0, -10, 0] }}
+                                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                                className="absolute -bottom-5 -left-5 z-20"
+                            >
+                                <GlassCard className="px-6 py-3 rounded-full bg-slate-900 dark:bg-white shadow-xl border-none" hover={false}>
+                                    <span className="text-white dark:text-slate-900 font-bold whitespace-nowrap">Verified</span>
+                                </GlassCard>
+                            </motion.div>
+                        </motion.div>
                     </div>
                 </div>
             </div>
@@ -175,13 +222,29 @@ export function LandingContent() {
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="mt-40 space-y-16"
+                className="mt-40 space-y-20 max-w-7xl mx-auto"
             >
-                <div className="text-center space-y-4">
+                <div className="text-center space-y-6">
                     <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight">{t('landing.trust_title')}</h2>
-                    <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto font-bold">
+                    <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto font-bold text-xl">
                         {t('landing.trust_desc')}
                     </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {[
+                        { icon: ShieldCheck, title: "Bank-Grade Security", desc: "Your data is encrypted with AES-256 protocols, ensuring your financial records remain private and secure." },
+                        { icon: Eye, title: "Total Transparency", desc: "Every transaction is recorded on an immutable ledger. Every member sees exactly where the money goes." },
+                        { icon: Globe, title: "Community First", desc: "Built for Malawians, by Malawians. We understand the unique needs of local village banking groups." }
+                    ].map((item, i) => (
+                        <GlassCard key={i} className="p-8 text-left border-white/10" hover={true}>
+                            <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-6 text-slate-900 dark:text-white">
+                                <item.icon className="w-7 h-7" />
+                            </div>
+                            <h3 className="text-xl font-black text-slate-900 dark:text-white mb-3">{item.title}</h3>
+                            <p className="text-slate-600 dark:text-slate-400 font-medium leading-relaxed">{item.desc}</p>
+                        </GlassCard>
+                    ))}
                 </div>
             </motion.div>
 

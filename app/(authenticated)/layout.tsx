@@ -19,9 +19,9 @@ export default function AuthenticatedLayout({
     return (
         <div className="min-h-screen bg-[#F1F5F9] dark:bg-[#020617] relative selection:bg-banana selection:text-banana-foreground overflow-x-hidden">
             {/* Ambient Background Layer 1: Global Glow */}
-            <div className="fixed inset-0 z-0 pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-500/5 dark:bg-emerald-600/5 rounded-full blur-[120px]" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 dark:bg-blue-600/5 rounded-full blur-[120px]" />
+            <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-600/5 dark:bg-emerald-500/5 rounded-full blur-[120px] animate-pulse-slow" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-teal-600/5 dark:bg-teal-500/5 rounded-full blur-[120px] animate-pulse-slow delay-1000" />
             </div>
 
             <div className="relative z-10 flex min-h-screen">
