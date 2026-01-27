@@ -60,7 +60,7 @@ export function MobileNavigation() {
         }}
         animate={isHidden ? "hidden" : "visible"}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed top-0 left-0 right-0 z-40 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl border-b border-white/20 dark:border-white/5 shadow-sm"
+        className="fixed top-0 left-0 right-0 z-40 bg-white/60 dark:bg-slate-950/60 backdrop-blur-3xl border-b border-white/20 dark:border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.03)]"
       >
         <div className="flex items-center justify-between p-4 px-5">
           <Link href="/dashboard" className="group">

@@ -19,7 +19,7 @@ export function DashboardHeader() {
     const { user } = useAuth();
 
     return (
-        <header className="sticky top-0 z-40 w-full px-4 sm:px-8 py-4">
+        <header className="hidden lg:block sticky top-0 z-40 w-full px-4 sm:px-8 py-4">
             <GlassCard className="rounded-2xl border-white/40 dark:border-white/10 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl shadow-sm px-4 h-16 flex items-center justify-between" hover={false}>
                 {/* Left: Mobile Menu & Breadcrumbs */}
                 <div className="flex items-center gap-4">
@@ -33,7 +33,6 @@ export function DashboardHeader() {
                             <MobileNavigation />
                         </SheetContent>
                     </Sheet>
-
                     {/* Breadcrumbs (Desktop) */}
                     <div className="hidden md:flex items-center gap-2 text-sm">
                         <span className="text-slate-400 font-bold">uBank</span>

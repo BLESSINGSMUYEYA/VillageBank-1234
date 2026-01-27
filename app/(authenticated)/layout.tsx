@@ -34,7 +34,7 @@ export default function AuthenticatedLayout({
                     <DashboardHeader />
 
                     {/* Main Content with Transition */}
-                    <main className="px-4 sm:px-8 py-2 relative z-10 w-full flex-1">
+                    <main className="px-4 sm:px-8 py-2 pt-24 lg:pt-2 relative z-10 w-full flex-1">
                         {children}
                         <InstallPrompt />
                     </main>
