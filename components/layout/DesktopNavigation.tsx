@@ -18,8 +18,8 @@ const NavigationLink = ({ item, isActive }: { item: any; isActive: boolean }) =>
       className={cn(
         "relative group px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center gap-3",
         isActive
-          ? "text-[#1B4332] bg-transparent"
-          : "text-[#94A3B8] hover:text-[#1B4332] hover:bg-slate-50"
+          ? "text-sidebar-primary-foreground bg-sidebar-primary shadow-lg shadow-sidebar-primary/20"
+          : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
       )}
     >
       {/* Active Line Indicator */}
@@ -37,11 +37,9 @@ const NavigationLink = ({ item, isActive }: { item: any; isActive: boolean }) =>
       )} />
       <span className="whitespace-nowrap">{item.name}</span>
 
-      {item.badge && (
-        <span className="ml-auto bg-[#1B4332] text-white text-[10px] px-2 py-0.5 rounded-md font-bold">
-          {item.badge}
-        </span>
-      )}
+      <span className="ml-auto bg-white/20 text-white text-[10px] px-2 py-0.5 rounded-md font-bold">
+        {item.badge}
+      </span>
     </Link>
   </motion.div>
 )
@@ -62,15 +60,15 @@ export function DesktopNavigation() {
   }
 
   return (
-    <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-72 flex-col z-50 bg-[#F8FAFC]">
-      <div className="relative flex flex-col h-full p-8 border-r border-slate-200">
+    <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-72 flex-col z-50 bg-sidebar text-sidebar-foreground">
+      <div className="relative flex flex-col h-full p-8 border-r border-sidebar-border/50">
         {/* Logo Section */}
         <div className="mb-12">
           <Link href="/dashboard" className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#D8F3DC] rounded-xl flex items-center justify-center">
-              <UBankLogo className="w-6 h-6 text-[#2D6A4F]" />
+            <div className="w-10 h-10 bg-sidebar-primary/10 rounded-xl flex items-center justify-center">
+              <UBankLogo className="w-6 h-6" />
             </div>
-            <span className="text-xl font-bold text-[#1B4332]">uBank</span>
+            <span className="text-xl font-black text-sidebar-foreground tracking-tight">uBank</span>
           </Link>
         </div>
 

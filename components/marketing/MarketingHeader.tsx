@@ -51,7 +51,7 @@ export function MarketingHeader() {
                     ))}
                 </nav>
                 <Link href="/login">
-                    <Button size="xl" className="bg-slate-950 dark:bg-white text-white dark:text-slate-950 shadow-xl hover:scale-105 transition-all">
+                    <Button size="xl" variant="premium">
                         {t('landing.launch_app')}
                     </Button>
                 </Link>
@@ -65,7 +65,7 @@ export function MarketingHeader() {
                             <Menu className="w-6 h-6 text-slate-900 dark:text-white" />
                         </Button>
                     </SheetTrigger>
-                    <SheetContent side="right" className="w-[300px] border-l border-white/10 bg-slate-950/95 backdrop-blur-xl">
+                    <SheetContent side="right" className="w-[300px] border-l border-white/10 bg-slate-950/80 backdrop-blur-xl">
                         <SheetTitle className="hidden">Mobile Navigation</SheetTitle>
                         <div className="flex flex-col h-full pt-10">
                             <div className="flex items-center gap-3 mb-10 px-2">
@@ -94,7 +94,7 @@ export function MarketingHeader() {
                             </nav>
                             <div className="mt-auto pb-8 space-y-4">
                                 <Link href="/login" className="block">
-                                    <Button size="xl" className="w-full bg-emerald-600 text-white shadow-xl hover:bg-emerald-700 transition-all">
+                                    <Button size="xl" variant="premium" className="w-full">
                                         {t('landing.launch_app')}
                                     </Button>
                                 </Link>

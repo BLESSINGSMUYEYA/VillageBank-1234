@@ -102,8 +102,18 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     // This also solves hydration mismatch concepts because we only render children when ready on client
     if (!isLoaded) {
         return (
-            <div className="h-screen w-screen flex items-center justify-center bg-background">
-                <LogoLoader className="w-20 h-20 text-primary" />
+            <div className="h-screen w-screen flex flex-col items-center justify-center bg-slate-900 relative overflow-hidden">
+                {/* Ambient Background Glows */}
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-emerald-600/20 rounded-full blur-[120px] animate-pulse-slow" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-teal-600/20 rounded-full blur-[120px] animate-pulse-slow delay-700" />
+
+                <div className="relative z-10 flex flex-col items-center gap-6">
+                    <LogoLoader className="w-24 h-24 text-white" variant="gold" />
+                    <div className="flex flex-col items-center gap-2">
+                        <span className="text-2xl font-black text-white tracking-tighter">uBank</span>
+                        <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-[0.3em] animate-pulse">Initializing WealthOS</span>
+                    </div>
+                </div>
             </div>
         )
     }

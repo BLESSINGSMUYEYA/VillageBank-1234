@@ -56,7 +56,7 @@ export function LandingContent() {
                 </motion.div>
 
                 {/* Main Title */}
-                <motion.h1 variants={fadeIn} className="text-5xl md:text-7xl lg:text-8xl font-black text-slate-900 dark:text-white tracking-tighter leading-[0.9] max-w-5xl mx-auto">
+                <motion.h1 variants={fadeIn} className="text-page-title text-slate-900 dark:text-white max-w-5xl mx-auto">
                     {t('landing.main_title')}
                     <span className="text-emerald-500">.</span>
                 </motion.h1>
@@ -69,7 +69,7 @@ export function LandingContent() {
                 {/* CTA Buttons */}
                 <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                     <Link href="/register" className="w-full sm:w-auto">
-                        <Button className="w-full sm:w-auto h-16 px-12 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-lg shadow-2xl shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all group">
+                        <Button variant="premium" size="xl" className="w-full sm:w-auto h-16 px-12 rounded-2xl">
                             {t('landing.start_moving')}
                             <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                         </Button>
@@ -106,12 +106,12 @@ export function LandingContent() {
                 >
                     {features.map((feature, i) => (
                         <motion.div key={i} variants={itemFadeIn}>
-                            <GlassCard className="h-full p-10 flex flex-col items-center text-center group" hover={true}>
+                            <GlassCard className="h-full p-10 flex flex-col items-center text-center group" hover={true} variant="premium">
                                 <div className={cn("w-20 h-20 rounded-3xl flex items-center justify-center mb-8 shadow-inner group-hover:rotate-6 transition-transform", feature.color)}>
                                     <feature.icon className="w-10 h-10 text-white" />
                                 </div>
-                                <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">{feature.title}</h3>
-                                <p className="text-slate-600 dark:text-slate-400 font-bold leading-relaxed">
+                                <h3 className="text-card-title text-2xl mb-4">{feature.title}</h3>
+                                <p className="text-body-primary text-slate-600 dark:text-slate-400 leading-relaxed">
                                     {feature.desc}
                                 </p>
                             </GlassCard>
@@ -198,7 +198,7 @@ export function LandingContent() {
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
                             <Link href="/register" className="w-full sm:w-auto">
-                                <Button className="h-16 px-12 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-lg shadow-2xl hover:scale-105 transition-all w-full">
+                                <Button variant="banana" className="h-16 px-12 rounded-2xl w-full text-lg shadow-2xl hover:scale-105 transition-all">
                                     {t('landing.create_first_group')}
                                 </Button>
                             </Link>

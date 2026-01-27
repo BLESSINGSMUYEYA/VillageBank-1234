@@ -11,7 +11,7 @@ export function DashboardHeader() {
     const { user } = useAuth()
 
     return (
-        <header className="h-16 sm:h-20 flex items-center justify-between px-4 sm:px-8 bg-transparent">
+        <header className="h-16 sm:h-20 flex items-center justify-between px-4 sm:px-8 border-b border-white/5 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md sticky top-0 z-40 transition-all duration-300">
             {/* Search Bar - Responsive Width */}
             {/* Search Bar - Hidden/Removed */}
             <div className="flex-1" />

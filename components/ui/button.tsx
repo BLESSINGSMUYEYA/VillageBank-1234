@@ -16,7 +16,8 @@ const buttonVariants = cva(
         outline: "border border-input bg-transparent hover:bg-accent hover:text-accent-foreground",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         destructive: "bg-red-500 text-white hover:bg-red-600 shadow-sm",
-        banana: "bg-gradient-to-r from-[var(--banana)] to-yellow-500 text-black font-bold shadow-md hover:shadow-lg",
+        banana: "bg-gradient-to-r from-[#FFD700] to-[#FDB931] text-amber-950 font-black shadow-lg shadow-amber-500/20 hover:shadow-amber-500/40 hover:brightness-110",
+        premium: "bg-gradient-to-r from-emerald-900 to-slate-900 dark:from-white dark:to-slate-200 text-white dark:text-slate-950 font-black shadow-xl hover:scale-105 border border-white/10",
         supporting: "bg-gradient-to-r from-[var(--supporting)] to-emerald-500 text-white font-bold shadow-md hover:shadow-lg hover:brightness-110",
         glass: "bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30 shadow-sm",
         link: "text-primary underline-offset-4 hover:underline",
@@ -52,7 +53,7 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, isLoading = false, children, leftIcon, rightIcon, disabled, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
-    const isPrimary = variant === 'primary' || variant === 'destructive' || variant === 'banana';
+    const isPrimary = variant === 'primary' || variant === 'destructive' || variant === 'banana' || variant === 'premium';
     const spinnerVariant = isPrimary ? 'white' : 'primary';
 
     return (

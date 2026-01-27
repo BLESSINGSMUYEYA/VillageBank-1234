@@ -9,6 +9,7 @@ interface LoaderProps {
     className?: string
     showText?: boolean
     fullScreen?: boolean
+    variant?: 'emerald' | 'gold'
 }
 
 // Smooth curved growth arrow path using cubic Bezier curves
@@ -20,6 +21,7 @@ export function GrowthLoader({
     text = 'Loading...',
     className,
     showText = false,
+    variant = 'emerald',
 }: LoaderProps) {
     const sizeMap = {
         xs: { width: 55, height: 36 },
@@ -78,6 +80,15 @@ export function GrowthLoader({
                             <stop offset="0%" stopColor="#34D399" />
                             <stop offset="100%" stopColor="#6EE7B7" />
                         </linearGradient>
+                        <linearGradient id="goldGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#FFD700" stopOpacity="0.9" />
+                            <stop offset="50%" stopColor="#FDB931" stopOpacity="1" />
+                            <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0.8" />
+                        </linearGradient>
+                        <linearGradient id="goldArrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#FDB931" />
+                            <stop offset="100%" stopColor="#FFD700" />
+                        </linearGradient>
                         <filter id="glow">
                             <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
                             <feMerge>
@@ -120,7 +131,7 @@ export function GrowthLoader({
                     <motion.path
                         d={growthPath}
                         fill="none"
-                        stroke="url(#growthGradient)"
+                        stroke={variant === 'gold' ? "url(#goldGradient)" : "url(#growthGradient)"}
                         strokeWidth="4.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -141,8 +152,8 @@ export function GrowthLoader({
                     {/* Arrow head at the end */}
                     <motion.path
                         d={arrowHead}
-                        fill="url(#arrowGradient)"
-                        stroke="url(#arrowGradient)"
+                        fill={variant === 'gold' ? "url(#goldArrowGradient)" : "url(#arrowGradient)"}
+                        stroke={variant === 'gold' ? "url(#goldArrowGradient)" : "url(#arrowGradient)"}
                         strokeWidth="1.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -173,7 +184,7 @@ export function GrowthLoader({
                             cx={dot.cx}
                             cy={dot.cy}
                             r="3"
-                            fill="url(#growthGradient)"
+                            fill={variant === 'gold' ? "url(#goldGradient)" : "url(#growthGradient)"}
                             initial={{ opacity: 0, scale: 0 }}
                             animate={{
                                 opacity: [0, 1, 1, 0],

@@ -10,6 +10,7 @@ interface GlassCardProps extends HTMLMotionProps<"div"> {
     gradient?: boolean;
     blur?: "sm" | "md" | "lg" | "xl";
     hover?: boolean;
+    variant?: "default" | "premium";
 }
 
 export function GlassCard({
@@ -18,6 +19,7 @@ export function GlassCard({
     gradient = true,
     blur = "md",
     hover = true,
+    variant = "default",
     ...props
 }: GlassCardProps) {
     const blurClasses = {
@@ -38,7 +40,9 @@ export function GlassCard({
                 "bg-white/60 dark:bg-slate-900/40",
                 blurClasses[blur],
                 gradient && "bg-gradient-to-br from-white/40 to-white/10 dark:from-white/5 dark:to-transparent",
-                hover && "hover:border-blue-500/30 hover:shadow-blue-500/5 hover:dark:shadow-banana/5 will-change-transform", // Hint browser
+                hover && variant === "default" && "hover:border-emerald-500/30 hover:shadow-emerald-500/10 hover:dark:shadow-emerald-500/5 will-change-transform",
+                hover && variant === "premium" && "hover:border-[var(--banana)]/40 hover:shadow-[var(--banana)]/10 dark:hover:shadow-[var(--banana)]/5 will-change-transform",
+                variant === "premium" && "border-[var(--banana)]/20 shadow-[var(--banana)]/5",
                 className
             )}
             {...props}
