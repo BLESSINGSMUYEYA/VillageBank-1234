@@ -43,8 +43,8 @@ export async function GET(request: Request) {
 
         const options = await generateAuthenticationOptions({
             rpID,
-            allowCredentials,
-            userVerification: 'preferred',
+            allowCredentials: allowCredentials.length > 0 ? allowCredentials : undefined,
+            userVerification: 'required',
         });
 
         console.log('[WebAuthn Login Options] Generated options:', JSON.stringify(options, null, 2));

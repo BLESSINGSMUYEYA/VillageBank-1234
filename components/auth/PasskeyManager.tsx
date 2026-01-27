@@ -35,7 +35,10 @@ export default function PasskeyManager() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(attResp),
+                body: JSON.stringify({
+                    ...attResp,
+                    transports: attResp.response.transports || [], // Send transports to be saved
+                }),
             });
 
             const verifyResult = await verifyResp.json();

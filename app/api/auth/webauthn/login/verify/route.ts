@@ -6,6 +6,7 @@ import { signToken } from '@/lib/auth';
 
 export async function POST(request: Request) {
     try {
+        console.log('[WebAuthn Login Verify] Endpoint hit');
         const body = await request.json();
         console.log('[WebAuthn Login Verify] Body received:', JSON.stringify(body, null, 2));
 
@@ -63,6 +64,7 @@ export async function POST(request: Request) {
                 counter: passkey.counter,
                 transports: passkey.transports as any,
             },
+            requireUserVerification: true,
         });
 
         const { verified, authenticationInfo } = verification;

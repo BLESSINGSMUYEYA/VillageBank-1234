@@ -63,14 +63,18 @@ export default function LoginPage() {
 
             if (!resp.ok) {
                 const errorData = await resp.json().catch(() => ({}));
-                throw new Error(errorData.error || 'Failed to initialize biometric login');
+                console.error('WebAuthn Options Error:', errorData); // Log full error object
+                throw new Error(errorData.message || errorData.error || 'Failed to initialize biometric login');
             }
 
             const options = await resp.json();
 
-            if (options.allowCredentials && options.allowCredentials.length === 0) {
+            if (options.allowCredentials && options.allowCredentials.length === 0 && email) {
+                // If email provided but no credentials found for it, fail early
                 throw new Error('NO_CREDENTIALS');
             }
+            // If email is empty, allowCredentials will be empty array (from backend logic usually), 
+            // but we want to proceed to allow browser to discover resident keys.
 
             const authResp = await startAuthentication(options);
 
@@ -80,7 +84,17 @@ export default function LoginPage() {
                 body: JSON.stringify(authResp),
             });
 
-            const verification = await verifyResp.json();
+            console.log('[Debug] Verify Response Status:', verifyResp.status);
+            const verifyText = await verifyResp.text();
+            console.log('[Debug] Verify Response Text:', verifyText);
+
+            let verification;
+            try {
+                verification = JSON.parse(verifyText);
+            } catch (e) {
+                console.error('Failed to parse verification response:', e);
+                verification = { error: 'Invalid server response' };
+            }
 
             if (verification.verified) {
                 const redirectUrl = searchParams.get('redirect') || searchParams.get('callbackUrl');
@@ -91,7 +105,8 @@ export default function LoginPage() {
                 }
                 router.refresh();
             } else {
-                throw new Error(verification.error || 'Verification failed');
+                console.error('WebAuthn Verify Error:', verification);
+                throw new Error(verification.message || verification.error || 'Verification failed');
             }
         } catch (err: any) {
             console.error('Passkey login error:', err);
