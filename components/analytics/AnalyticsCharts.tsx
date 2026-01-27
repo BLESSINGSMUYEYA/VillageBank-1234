@@ -16,7 +16,7 @@ import { formatCurrency, cn } from '@/lib/utils'
 import { GlassCard } from '@/components/ui/GlassCard'
 
 const THEME_COLORS = {
-    primary: '#3b82f6', // Blue
+    primary: '#10B981', // Emerald (Brand)
     secondary: '#F59E0B', // Banana/Amber
     accent: '#8b5cf6', // Violet
     success: '#10B981', // Emerald
@@ -66,11 +66,11 @@ export function AnalyticsCharts({ data, chartMode, setChartMode, projectedData, 
     return (
         <div className="space-y-6 sm:space-y-10">
             {/* Main Smart Graph */}
-            <GlassCard className="p-6 sm:p-8 min-h-[500px] flex flex-col" hover={false}>
+            <GlassCard className="p-4 sm:p-6 min-h-[400px] flex flex-col" hover={false}>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
                     <div>
-                        <h2 className="text-2xl font-black text-foreground tracking-tight flex items-center gap-2">
-                            <Activity className="w-6 h-6 text-blue-500" />
+                        <h2 className="text-xl sm:text-2xl font-black text-foreground tracking-tight flex items-center gap-2">
+                            <Activity className="w-6 h-6 text-emerald-500" />
                             Wealth Trajectory
                         </h2>
                         <p className="text-sm font-medium text-muted-foreground mt-1">
@@ -84,7 +84,7 @@ export function AnalyticsCharts({ data, chartMode, setChartMode, projectedData, 
                             className={cn(
                                 "px-4 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all relative z-10",
                                 chartMode === 'monthly'
-                                    ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-banana shadow-sm"
+                                    ? "bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-sm"
                                     : "text-muted-foreground hover:text-foreground"
                             )}
                         >
@@ -95,7 +95,7 @@ export function AnalyticsCharts({ data, chartMode, setChartMode, projectedData, 
                             className={cn(
                                 "px-4 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all relative z-10",
                                 chartMode === 'cumulative'
-                                    ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-banana shadow-sm"
+                                    ? "bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-sm"
                                     : "text-muted-foreground hover:text-foreground"
                             )}
                         >
@@ -106,7 +106,7 @@ export function AnalyticsCharts({ data, chartMode, setChartMode, projectedData, 
                             className={cn(
                                 "px-4 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all relative z-10",
                                 chartMode === 'active'
-                                    ? "bg-white dark:bg-slate-700 text-emerald-500 shadow-sm"
+                                    ? "bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-sm"
                                     : "text-muted-foreground hover:text-foreground"
                             )}
                         >
@@ -181,7 +181,7 @@ export function AnalyticsCharts({ data, chartMode, setChartMode, projectedData, 
 
             {/* Diversity Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <GlassCard className="p-6 min-h-[400px] flex flex-col" hover={false}>
+                <GlassCard className="p-4 sm:p-6 min-h-[400px] flex flex-col" hover={false}>
                     <div className="mb-6">
                         <h3 className="text-lg font-black text-foreground tracking-tight flex items-center gap-2">
                             <PieChartIcon className="w-5 h-5 text-purple-500" />
@@ -227,7 +227,7 @@ export function AnalyticsCharts({ data, chartMode, setChartMode, projectedData, 
                     </div>
                 </GlassCard>
 
-                <GlassCard className="p-6 min-h-[400px] flex flex-col" hover={false}>
+                <GlassCard className="p-4 sm:p-6 min-h-[400px] flex flex-col" hover={false}>
                     <div className="mb-6">
                         <h3 className="text-lg font-black text-foreground tracking-tight flex items-center gap-2">
                             <BarChart2 className="w-5 h-5 text-orange-500" />

@@ -14,7 +14,8 @@ import {
   User,
   Shield,
   Settings,
-  LogOut
+  LogOut,
+  Server
 } from 'lucide-react'
 import { NotificationCenter } from '@/components/notifications/NotificationCenter'
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher'
@@ -23,6 +24,7 @@ import { useState, memo } from 'react'
 
 import { cn } from '@/lib/utils'
 import { UBankLogo } from '@/components/ui/Logo'
+import { AppLogo } from '@/components/ui/AppLogo'
 
 // Interface for MobileNavigationProps removed as unreadNotifications was unused
 
@@ -64,12 +66,7 @@ export function MobileNavigation() {
       >
         <div className="flex items-center justify-between p-4 px-5">
           <Link href="/dashboard" className="group">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#D8F3DC] rounded-xl flex items-center justify-center group-active:scale-95 transition-transform">
-                <UBankLogo className="w-6 h-6 text-[#2D6A4F]" />
-              </div>
-              <span className="text-xl font-bold text-[#1B4332] dark:text-white">uBank</span>
-            </div>
+            <AppLogo />
           </Link>
 
           <div className="flex items-center gap-1.5">
@@ -110,6 +107,15 @@ export function MobileNavigation() {
                         {t('common.settings')}
                       </Link>
                     </DropdownMenuItem>
+
+                    {user?.role === 'SUPER_ADMIN' && (
+                      <DropdownMenuItem asChild className="rounded-2xl focus:bg-emerald-50 dark:focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:text-emerald-400">
+                        <Link href="/admin/system" className="flex items-center p-3 font-bold text-sm text-slate-600 dark:text-slate-300">
+                          <Server className="mr-3 h-4 w-4 opacity-70" />
+                          System Command
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
 
                     {(user?.role === 'REGIONAL_ADMIN' || user?.role === 'SUPER_ADMIN') && (
                       <>

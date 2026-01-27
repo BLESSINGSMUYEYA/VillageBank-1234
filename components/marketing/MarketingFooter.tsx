@@ -1,6 +1,7 @@
 'use client'
 
 import { UBankLogo } from '@/components/ui/Logo'
+import { AppLogo } from '@/components/ui/AppLogo'
 import { Globe } from 'lucide-react'
 import Link from 'next/link'
 import { useLanguage } from '@/components/providers/LanguageProvider'
@@ -11,8 +12,7 @@ export function MarketingFooter() {
     return (
         <footer className="container mx-auto px-6 py-12 border-t border-slate-200 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="flex items-center gap-2">
-                <UBankLogo className="w-6 h-6" />
-                <span className="font-black text-slate-900 dark:text-white tracking-tighter">uBank</span>
+                <AppLogo />
             </div>
             <p className="text-slate-500 text-sm font-black uppercase tracking-widest">
                 {t('landing.copyright', { year: new Date().getFullYear().toString() })}

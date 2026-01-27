@@ -9,9 +9,10 @@ import { StatsCard } from '@/components/ui/stats-card'
 import { ChartData } from '@/lib/dashboard-service'
 import { formatCurrency } from '@/lib/utils'
 import { staggerContainer } from '@/lib/motions'
-import { Target, TrendingUp, Shield } from 'lucide-react'
+import { Target, TrendingUp, Shield, Construction } from 'lucide-react'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { PageHeader } from '@/components/layout/PageHeader'
+import { EmptyState } from '@/components/ui/EmptyState'
 
 interface AnalyticsClientProps {
     data: ChartData
@@ -75,7 +76,7 @@ export function AnalyticsClient({ data }: AnalyticsClientProps) {
                 <PageHeader
                     title={
                         <>
-                            Growth & <span className="text-blue-600 dark:text-banana">Analysis</span>
+                            Growth & <span className="text-gradient-primary">Analysis</span>
                         </>
                     }
                     description="Deep dive into your financial performance, future projections, and community impact."
@@ -84,46 +85,14 @@ export function AnalyticsClient({ data }: AnalyticsClientProps) {
                     backLabel="Back to Dashboard"
                 />
 
-                {/* Smart Hero Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <StatsCard
-                        index={0}
-                        variant="glass"
-                        icon={Target}
-                        label="Net Wealth Accumulated"
-                        value={formatCurrency(data.summaryStats.totalContributions)}
-                        description="Total contributions across all groups"
-                        className="bg-blue-500/5 dark:bg-blue-500/10 border-blue-500/10"
-                    />
-                    <StatsCard
-                        index={1}
-                        variant="glass"
-                        icon={TrendingUp}
-                        label="Projected Annual"
-                        value={formatCurrency(data.summaryStats.averageMonthly * 12)}
-                        description="Based on current monthly average"
-                        className="bg-emerald-500/5 dark:bg-emerald-500/10 border-emerald-500/10"
-                    />
-                    <StatsCard
-                        index={2}
-                        variant="glass"
-                        icon={Shield}
-                        label="Safety Score"
-                        value="98/100" // Placeholder implementation
-                        description="High consistency & zero defaults"
-                        className="bg-purple-500/5 dark:bg-purple-500/10 border-purple-500/10"
+                <div className="py-20">
+                    <EmptyState
+                        icon={Construction}
+                        title="Analytics Engine Upgrading"
+                        description="We are currently enhancing our analytics engine to bring you deeper insights and AI-powered projections. Check back soon!"
                     />
                 </div>
-
-                {/* Main Smart Graph & Diversity Grid */}
-                <AnalyticsCharts
-                    data={data}
-                    chartMode={chartMode}
-                    setChartMode={setChartMode}
-                    projectedData={projectedData}
-                    cumulativeData={cumulativeData}
-                />
             </motion.div>
-        </PageContainer>
+        </PageContainer >
     )
 }

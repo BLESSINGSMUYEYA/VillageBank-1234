@@ -200,7 +200,7 @@ export default function SystemAdminPage() {
   }
 
   return (
-    <div className="min-h-screen pb-20 relative overflow-hidden bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen pb-20 relative overflow-hidden overflow-x-hidden bg-slate-50 dark:bg-slate-950">
       {/* Ambient Background */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute -top-20 right-0 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[100px]" />
@@ -221,7 +221,7 @@ export default function SystemAdminPage() {
               Return to Hub
             </Link>
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+              <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">
                 <span className="text-gradient-primary">System Command</span>
               </h1>
               <Badge variant={data?.systemHealth === 'HEALTHY' ? 'default' : 'destructive'} className="ml-2 animate-pulse">
@@ -308,7 +308,7 @@ export default function SystemAdminPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <AdminGlassCard title="Recent Alerts" description="System notifications and warnings">
-                <div className="space-y-4 p-2">
+                <div className="space-y-4 p-4 md:p-6">
                   {data?.systemHealth !== 'HEALTHY' && (
                     <div className="flex items-start gap-4 p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800">
                       <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5" />
@@ -333,22 +333,22 @@ export default function SystemAdminPage() {
               </AdminGlassCard>
 
               <AdminGlassCard title="Quick Actions" description="Common administrative tasks">
-                <div className="grid grid-cols-2 gap-4">
-                  <Button variant="outline" className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-primary/5 hover:border-primary/30">
-                    <Users className="w-6 h-6 text-primary" />
-                    <span>Add User</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 md:p-6">
+                  <Button variant="outline" className="h-16 sm:h-20 flex flex-col items-center justify-center gap-2 hover:bg-primary/5 hover:border-primary/30">
+                    <Users className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+                    <span className="text-sm">Add User</span>
                   </Button>
-                  <Button variant="outline" className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-primary/5 hover:border-primary/30">
-                    <Database className="w-6 h-6 text-emerald-600" />
-                    <span>Run Backup</span>
+                  <Button variant="outline" className="h-16 sm:h-20 flex flex-col items-center justify-center gap-2 hover:bg-primary/5 hover:border-primary/30">
+                    <Database className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600" />
+                    <span className="text-sm">Run Backup</span>
                   </Button>
-                  <Button variant="outline" className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-primary/5 hover:border-primary/30">
-                    <Globe className="w-6 h-6 text-purple-600" />
-                    <span>Region Settings</span>
+                  <Button variant="outline" className="h-16 sm:h-20 flex flex-col items-center justify-center gap-2 hover:bg-primary/5 hover:border-primary/30">
+                    <Globe className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
+                    <span className="text-sm">Region Settings</span>
                   </Button>
-                  <Button variant="outline" className="h-20 flex flex-col items-center justify-center gap-2 hover:bg-primary/5 hover:border-primary/30">
-                    <Shield className="w-6 h-6 text-rose-600" />
-                    <span>Security Audit</span>
+                  <Button variant="outline" className="h-16 sm:h-20 flex flex-col items-center justify-center gap-2 hover:bg-primary/5 hover:border-primary/30">
+                    <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-rose-600" />
+                    <span className="text-sm">Security Audit</span>
                   </Button>
                 </div>
               </AdminGlassCard>
@@ -359,7 +359,7 @@ export default function SystemAdminPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {regionalData.map((region) => (
                 <AdminGlassCard key={region.region} className="group hover:border-primary/40 transition-colors">
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-4 px-4 sm:px-6 pt-4 sm:pt-6">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                         <Globe className="w-5 h-5 text-blue-600" />
@@ -372,22 +372,22 @@ export default function SystemAdminPage() {
                     <Badge variant="outline">Active</Badge>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4 py-4 border-t border-b border-border/40">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-4 py-4 px-4 sm:px-6 border-t border-b border-border/40">
                     <div className="text-center">
-                      <div className="text-2xl font-bold">{region.users}</div>
-                      <div className="text-xs text-muted-foreground">Users</div>
+                      <div className="text-xl sm:text-2xl font-bold">{region.users}</div>
+                      <div className="text-[10px] sm:text-xs text-muted-foreground">Users</div>
                     </div>
                     <div className="text-center border-l border-border/40">
-                      <div className="text-2xl font-bold">{region.groups}</div>
-                      <div className="text-xs text-muted-foreground">Groups</div>
+                      <div className="text-xl sm:text-2xl font-bold">{region.groups}</div>
+                      <div className="text-[10px] sm:text-xs text-muted-foreground">Groups</div>
                     </div>
                     <div className="text-center border-l border-border/40">
-                      <div className="text-2xl font-bold">{region.loans}</div>
-                      <div className="text-xs text-muted-foreground">Active Loans</div>
+                      <div className="text-xl sm:text-2xl font-bold">{region.loans}</div>
+                      <div className="text-[10px] sm:text-xs text-muted-foreground">Active Loans</div>
                     </div>
                   </div>
 
-                  <div className="mt-4 flex gap-2">
+                  <div className="mt-4 flex gap-2 px-4 sm:px-6 pb-4 sm:pb-6">
                     <Button className="w-full" variant="secondary" onClick={() => router.push(`/admin/regional?region=${region.region.toLowerCase()}`)}>
                       Manage Territory
                     </Button>
@@ -400,7 +400,7 @@ export default function SystemAdminPage() {
           <TabsContent value="system">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <AdminGlassCard title="Infrastructure Health" className="col-span-2">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-4 md:p-6">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between p-3 border rounded-lg bg-emerald-50/50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-900/30">
                       <div className="flex items-center gap-3">
@@ -447,7 +447,7 @@ export default function SystemAdminPage() {
               </AdminGlassCard>
 
               <AdminGlassCard title="Maintenance">
-                <div className="space-y-4 pt-4">
+                <div className="space-y-4 p-4 md:p-6">
                   <Button onClick={handleBackupDatabase} variant="outline" className="w-full justify-start">
                     <Database className="w-4 h-4 mr-2" />
                     Backup Database Now
@@ -550,7 +550,7 @@ export default function SystemAdminPage() {
 
           <TabsContent value="logs">
             <AdminGlassCard title="Activity Stream" description="Real-time system audit logs">
-              <div className="space-y-4 p-2">
+              <div className="space-y-4 p-4 md:p-6">
                 {(!data?.recentActivities || data.recentActivities.length === 0) ? (
                   <div className="text-center py-10 text-muted-foreground">
                     No activity logs recorded yet.
@@ -564,7 +564,7 @@ export default function SystemAdminPage() {
                         </div>
                       </div>
                       <div className="flex-1">
-                        <div className="flex justify-between">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
                           <h4 className="font-bold text-sm">
                             {log.user} <span className="font-normal text-muted-foreground">performed</span> {log.action}
                           </h4>

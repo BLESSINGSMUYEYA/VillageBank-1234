@@ -33,10 +33,10 @@ export function AdminStatsCard({
             {/* Background Decor */}
             <div className="absolute -right-10 -top-10 w-40 h-40 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl group-hover:from-primary/20 transition-all duration-500" />
 
-            <div className="p-6 relative z-10">
+            <div className="p-4 md:p-6 relative z-10">
                 <div className="flex justify-between items-start mb-4">
                     <div className="p-3 bg-primary/10 dark:bg-primary/20 rounded-2xl group-hover:scale-110 transition-transform duration-500">
-                        <Icon className="w-6 h-6 text-primary dark:text-blue-400" />
+                        <Icon className="w-5 h-5 md:w-6 md:h-6 text-primary dark:text-blue-400" />
                     </div>
                     {trend && (
                         <div className={cn(
@@ -51,8 +51,8 @@ export function AdminStatsCard({
                 </div>
 
                 <div className="space-y-1">
-                    <h3 className="text-muted-foreground text-sm font-medium uppercase tracking-wider">{title}</h3>
-                    <div className="text-3xl font-black text-slate-800 dark:text-slate-100 tracking-tight">
+                    <h3 className="text-muted-foreground text-xs md:text-sm font-medium uppercase tracking-wider">{title}</h3>
+                    <div className="text-2xl md:text-3xl font-black text-slate-800 dark:text-slate-100 tracking-tight">
                         {value}
                     </div>
                     {trendLabel && (

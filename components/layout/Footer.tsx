@@ -6,6 +6,7 @@ import { useInstallPrompt } from '@/hooks/useInstallPrompt'
 import { Button } from '@/components/ui/button'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { UBankLogo } from '@/components/ui/Logo'
+import { AppLogo } from '@/components/ui/AppLogo'
 
 export function Footer() {
   const { showInstallPrompt, promptToInstall } = useInstallPrompt()
@@ -19,12 +20,7 @@ export function Footer() {
           <div className="col-span-1 md:col-span-2 space-y-6">
             <Link href="/" className="inline-block group">
               <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center p-2 rounded-xl bg-[#1B4332] group-hover:scale-105 transition-transform shadow-lg shadow-emerald-900/20">
-                  <UBankLogo className="w-6 h-6 brightness-200" />
-                </div>
-                <div className="flex flex-col">
-                  <h3 className="text-xl font-black text-[#1B4332] dark:text-white leading-none tracking-tighter italic">uBank</h3>
-                </div>
+                <AppLogo />
               </div>
             </Link>
             <p className="text-slate-500 text-sm max-w-sm leading-relaxed font-medium">

@@ -9,6 +9,7 @@ import { GlassCard } from '@/components/ui/GlassCard'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { UBankLogo } from '@/components/ui/Logo' // Imported Logo
+import { AppLogo } from '@/components/ui/AppLogo' // Imported AppLogo
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher' // Imported LanguageSwitcher
 import { NotificationCenter } from '@/components/notifications/NotificationCenter' // Imported NotificationCenter
 
@@ -28,12 +29,7 @@ export function DashboardHeader() {
                 <div className="w-full h-full flex items-center justify-between">
                     {/* Left: Logo & Brand */}
                     <Link href="/dashboard" className="group relative z-10">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-[#D8F3DC] rounded-xl flex items-center justify-center group-active:scale-95 transition-transform shadow-sm group-hover:shadow-md">
-                                <UBankLogo className="w-6 h-6 text-[#2D6A4F]" />
-                            </div>
-                            <span className="text-xl font-bold text-[#1B4332] dark:text-white tracking-tight">uBank</span>
-                        </div>
+                        <AppLogo />
                     </Link>
 
                     {/* Right: Actions */}

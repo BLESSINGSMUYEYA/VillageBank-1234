@@ -37,7 +37,7 @@ const regionData = [
 export function GrowthChart() {
     return (
         <AdminGlassCard title="Platform Growth" description="User acquisition and transaction volume trends">
-            <div className="h-[300px] w-full mt-4">
+            <div className="h-[300px] w-full p-4 md:p-6">
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={growthData}>
                         <defs>
@@ -99,39 +99,41 @@ export function GrowthChart() {
 export function RegionDistributionChart() {
     return (
         <AdminGlassCard title="Regional Distribution" description="Active user base by region">
-            <div className="h-[300px] w-full mt-4 flex items-center justify-center">
-                <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                        <Pie
-                            data={regionData}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={60}
-                            outerRadius={80}
-                            paddingAngle={5}
-                            dataKey="value"
-                        >
-                            {regionData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                        </Pie>
-                        <Tooltip
-                            contentStyle={{
-                                backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                                borderRadius: '12px',
-                                border: 'none'
-                            }}
-                        />
-                    </PieChart>
-                </ResponsiveContainer>
-            </div>
-            <div className="flex justify-center gap-6 pb-4">
-                {regionData.map((item) => (
-                    <div key={item.name} className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                        <span className="text-sm text-gray-600 dark:text-gray-300">{item.name}</span>
-                    </div>
-                ))}
+            <div className="p-4 md:p-6 flex flex-col h-full">
+                <div className="h-[300px] w-full flex items-center justify-center">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                            <Pie
+                                data={regionData}
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={60}
+                                outerRadius={80}
+                                paddingAngle={5}
+                                dataKey="value"
+                            >
+                                {regionData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                ))}
+                            </Pie>
+                            <Tooltip
+                                contentStyle={{
+                                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                    borderRadius: '12px',
+                                    border: 'none'
+                                }}
+                            />
+                        </PieChart>
+                    </ResponsiveContainer>
+                </div>
+                <div className="flex justify-center flex-wrap gap-4 mt-4">
+                    {regionData.map((item) => (
+                        <div key={item.name} className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+                            <span className="text-sm text-gray-600 dark:text-gray-300">{item.name}</span>
+                        </div>
+                    ))}
+                </div>
             </div>
         </AdminGlassCard>
     )

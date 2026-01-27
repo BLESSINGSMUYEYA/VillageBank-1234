@@ -3,6 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { UBankLogo } from "@/components/ui/Logo";
+import { AppLogo } from "@/components/ui/AppLogo";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { Copy, ShieldCheck } from "lucide-react";
 import { fadeIn, staggerContainer } from "@/lib/motions";
@@ -37,9 +38,9 @@ export function AuthLayout({
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="w-16 h-16 bg-[#D8F3DC] rounded-2xl flex items-center justify-center border border-[#B7E4C7] mb-6 shadow-xl"
+                        className="mb-6"
                     >
-                        <UBankLogo className="w-10 h-10" />
+                        <AppLogo showText={false} theme="dark" />
                     </motion.div>
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}
@@ -76,13 +77,8 @@ export function AuthLayout({
                 >
                     {/* Branding (Mobile Only) */}
                     {showBrandOnMobile && (
-                        <motion.div variants={fadeIn} className="flex flex-col items-center mb-8 text-center lg:hidden">
-                            <div className="w-16 h-16 bg-[#D8F3DC] dark:bg-emerald-950/30 rounded-2xl flex items-center justify-center shadow-xl mb-4 border border-emerald-100 dark:border-emerald-500/10">
-                                <UBankLogo className="w-10 h-10" />
-                            </div>
-                            <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">
-                                uBank
-                            </h1>
+                        <motion.div variants={fadeIn} className="flex flex-col items-center mb-8 lg:hidden">
+                            <AppLogo />
                         </motion.div>
                     )}
 

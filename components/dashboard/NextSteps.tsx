@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { CheckCircle2, Circle, ArrowRight, UserPlus, Wallet, Settings } from 'lucide-react'
+import { CheckCircle2, Circle, ArrowRight, UserPlus, Wallet, Settings, Construction } from 'lucide-react'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { fadeIn, staggerContainer } from '@/lib/motions'
 import Link from 'next/link'
@@ -84,24 +84,17 @@ export function NextSteps({ user, stats }: NextStepsProps) {
           hover={false}
         >
           {allCompleted ? (
-            /* Smart Insights View */
-            <div className="p-6 sm:p-10 flex flex-col md:flex-row items-center gap-6 sm:gap-8 text-center md:text-left">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-[2rem] bg-[#1B4332] flex items-center justify-center text-emerald-400 shadow-xl shadow-emerald-900/40 shrink-0">
-                <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10" />
+            /* Smart Insights View (Coming Soon) */
+            <div className="p-8 sm:p-12 flex flex-col items-center justify-center text-center space-y-4 min-h-[200px]">
+              <div className="w-16 h-16 rounded-3xl bg-emerald-100/50 dark:bg-emerald-900/20 flex items-center justify-center mb-2 ring-4 ring-white dark:ring-white/5">
+                <Construction className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
               </div>
-              <div className="flex-1 space-y-1 sm:space-y-2">
-                <h4 className="text-lg sm:text-xl font-black text-[#1B4332]">System Fully Optimized</h4>
-                <p className="text-[13px] sm:text-sm font-medium text-slate-500 max-w-xl">
-                  You've completed all essential setup steps. Your "Pulse" is now reflecting real-time group health and financial metrics.
+              <div className="space-y-2 max-w-lg">
+                <h4 className="text-xl font-black text-[#1B4332] dark:text-white">Insights Engine Upgrading</h4>
+                <p className="text-sm font-medium text-slate-500 max-w-md mx-auto">
+                  We are currently enhancing our AI-driven insights to help you maximize your group's growth. Check back soon for personalized recommendations.
                 </p>
               </div>
-              <Link
-                href="/analytics"
-                className="w-full md:w-auto h-11 sm:h-12 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-emerald-300 hover:text-emerald-600 px-6 sm:px-8 rounded-xl sm:rounded-2xl flex items-center justify-center font-bold text-sm transition-all shadow-sm group"
-              >
-                View Analytics
-                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Link>
             </div>
           ) : (
             /* Standard Onboarding View */

@@ -4,10 +4,11 @@ import { useAuth } from '@/components/providers/AuthProvider'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Zap, Landmark, Users, User, Shield } from 'lucide-react'
+import { Zap, Landmark, Users, User, Shield, Server } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { itemFadeIn } from '@/lib/motions'
 import { UBankLogo } from '@/components/ui/Logo'
+import { AppLogo } from '@/components/ui/AppLogo'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/GlassCard'
@@ -64,6 +65,10 @@ export function DesktopNavigation() {
     { name: t('common.profile'), href: '/profile', icon: User },
   ]
 
+  if (user?.role === 'SUPER_ADMIN') {
+    menuItems.push({ name: 'System', href: '/admin/system', icon: Server })
+  }
+
   if (user?.role === 'SUPER_ADMIN' || user?.role === 'REGIONAL_ADMIN') {
     menuItems.push({ name: 'Verifications', href: '/admin/verifications', icon: Shield })
   }
@@ -78,10 +83,7 @@ export function DesktopNavigation() {
         {/* Logo Section */}
         <div className="mb-10 px-2 pt-2">
           <Link href="/dashboard" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-emerald-900/20">
-              <UBankLogo className="w-6 h-6" />
-            </div>
-            <span className="text-xl font-black text-white tracking-tight group-hover:text-emerald-400 transition-colors">uBank</span>
+            <AppLogo theme="dark" />
           </Link>
         </div>
 

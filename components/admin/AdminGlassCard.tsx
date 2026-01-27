@@ -19,12 +19,12 @@ export function AdminGlassCard({
     return (
         <div className={cn("zen-card overflow-hidden", className)}>
             {(title || action) && (
-                <div className="p-6 border-b border-border/10 flex items-center justify-between">
+                <div className="p-4 md:p-6 border-b border-border/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                         {title && <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">{title}</h3>}
                         {description && <p className="text-sm text-muted-foreground mt-1">{description}</p>}
                     </div>
-                    {action && <div>{action}</div>}
+                    {action && <div className="w-full sm:w-auto">{action}</div>}
                 </div>
             )}
             <div className="p-0">
