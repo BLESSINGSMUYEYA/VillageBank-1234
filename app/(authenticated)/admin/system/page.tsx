@@ -266,7 +266,7 @@ export default function SystemAdminPage() {
             className="border-indigo-200/50 dark:border-indigo-800/50"
           />
           <AdminStatsCard
-            title="System Assets"
+            title="System Contributions"
             value={`MWK ${(data?.totalContributions || 0).toLocaleString()}`}
             icon={DollarSign}
             trend="+22%"

@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { LogoLoader } from '@/components/ui/LogoLoader'
 
-type Language = 'en' | 'ny'
+type Language = 'en' | 'ny' | 'bem' | 'fr'
 
 interface LanguageContextType {
     language: Language
@@ -55,12 +55,12 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     // Initial language detection
     useEffect(() => {
         const savedLang = localStorage.getItem('app-language') as Language
-        if (savedLang && ['en', 'ny'].includes(savedLang)) {
+        if (savedLang && ['en', 'ny', 'bem', 'fr'].includes(savedLang)) {
             setLanguageState(savedLang)
         } else {
             // Detect browser language
             const browserLang = navigator.language.split('-')[0]
-            if (['en', 'ny'].includes(browserLang)) {
+            if (['en', 'ny', 'bem', 'fr'].includes(browserLang)) {
                 setLanguageState(browserLang as Language)
             }
         }

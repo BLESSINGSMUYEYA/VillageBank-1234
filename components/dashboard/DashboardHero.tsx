@@ -37,9 +37,9 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
 
     const getGreeting = () => {
         const hour = new Date().getHours()
-        if (hour < 12) return 'Good Morning'
-        if (hour < 18) return 'Good Afternoon'
-        return 'Good Evening'
+        if (hour < 12) return t('dashboard.welcome_morning')
+        if (hour < 18) return t('dashboard.welcome_afternoon')
+        return t('dashboard.welcome_evening')
     }
 
     const handleToggleVisibility = () => {
@@ -85,7 +85,7 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                                 <div className="text-xs sm:text-sm md:text-base font-medium text-slate-500 dark:text-slate-400 leading-relaxed max-w-xl flex flex-wrap items-center gap-2 sm:gap-3">
                                     <div className="px-2.5 sm:px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 sm:gap-2">
                                         <Shield className="w-3 h-3" />
-                                        Secure Hub
+                                        {t('dashboard.secure_hub')}
                                     </div>
                                     <span className="inline-block w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700" />
                                     <span className="inline">
@@ -102,8 +102,8 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                                     if (stats.totalGroups > 0) {
                                         setIsContributionModalOpen(true)
                                     } else {
-                                        toast.info("Join a Group First", {
-                                            description: "You need to be a member of a group to make contributions.",
+                                        toast.info(t('dashboard.join_group_error'), {
+                                            description: t('dashboard.join_group_error_desc'),
                                             duration: 5000,
                                         })
                                         router.push('/groups')
@@ -126,7 +126,7 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                             <div className="space-y-2">
                                 <div className="flex items-center gap-3">
                                     <p className="text-label-caps text-slate-400">
-                                        {t('dashboard.total_contributions') || 'Total Savings'}
+                                        {t('dashboard.total_contributions_label')}
                                     </p>
                                     <button
                                         onClick={handleToggleVisibility}
@@ -156,7 +156,7 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                             </div>
                             <div className="mt-3 sm:mt-4">
                                 <p className="text-card-title text-main">{stats.totalGroups}</p>
-                                <p className="text-micro text-slate-400 mt-1 uppercase font-bold">Memberships</p>
+                                <p className="text-micro text-slate-400 mt-1 uppercase font-bold">{t('dashboard.total_groups')}</p>
                             </div>
                         </div>
 
@@ -172,7 +172,7 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                                             "text-label-caps",
                                             pendingApprovalsCount > 0 ? "text-red-500" : "text-slate-400"
                                         )}>
-                                            {t('dashboard.pending_approvals') ? 'Pending' : 'Pending'}
+                                            {t('dashboard.pending_approvals')}
                                         </p>
                                         <div className={cn(
                                             "p-1.5 sm:p-2 rounded-lg sm:rounded-xl transition-all",
@@ -186,7 +186,7 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                                             <p className={cn("text-card-title", pendingApprovalsCount > 0 ? "text-red-500" : "text-main")}>
                                                 {pendingApprovalsCount}
                                             </p>
-                                            <p className="text-micro text-slate-400 mt-1 uppercase font-bold">Pending</p>
+                                            <p className="text-micro text-slate-400 mt-1 uppercase font-bold">{t('dashboard.status')}</p>
                                         </div>
                                         {pendingApprovalsCount > 0 && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse mb-1" />}
                                     </div>
@@ -196,15 +196,15 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                             <div className="p-3 sm:p-4 bg-white/50 dark:bg-white/5 border border-white/40 dark:border-white/10 rounded-2xl flex flex-col justify-between group hover:border-emerald-200 transition-all">
                                 <div className="flex justify-between items-start">
                                     <p className="text-label-caps text-slate-400">
-                                        Status
+                                        {t('dashboard.status')}
                                     </p>
                                     <div className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600">
                                         <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
                                     </div>
                                 </div>
                                 <div className="mt-3 sm:mt-4">
-                                    <p className="text-card-title text-emerald-600 uppercase">Healthy</p>
-                                    <p className="text-micro text-slate-400 mt-1 uppercase font-bold">Verified</p>
+                                    <p className="text-card-title text-emerald-600 uppercase">{t('dashboard.healthy')}</p>
+                                    <p className="text-micro text-slate-400 mt-1 uppercase font-bold">{t('dashboard.verified')}</p>
                                 </div>
                             </div>
                         )}

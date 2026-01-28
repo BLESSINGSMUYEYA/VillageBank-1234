@@ -79,7 +79,7 @@ export function GroupsContent({ userGroups, userRole, pendingApprovalsCount = 0 
                             className="zen-card overflow-hidden"
                         >
                             <div className="relative p-3 sm:p-4 md:p-6 bg-slate-100/80 dark:bg-black/40 backdrop-blur-xl border-b border-white/20 dark:border-white/5 shadow-sm">
-                                <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
+                                <div className="flex items-start gap-3 sm:gap-4 mb-1">
                                     <button
                                         onClick={() => setShowStats(false)}
                                         className="shrink-0 w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-muted-foreground hover:bg-slate-200 dark:hover:bg-white/20 transition-colors"

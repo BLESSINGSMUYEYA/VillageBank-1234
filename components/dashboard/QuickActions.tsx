@@ -20,10 +20,10 @@ export function QuickActions({ pendingApprovals = [], user }: QuickActionsProps)
     const [isContributionModalOpen, setIsContributionModalOpen] = useState(false)
 
     const actions = [
-        { label: 'Contribute', icon: Zap, action: () => setIsContributionModalOpen(true) },
-        { label: 'Borrow', icon: PiggyBank, href: '/loans/new' },
-        { label: 'Join', icon: Users, href: '/groups' },
-        { label: 'Create', icon: Plus, href: '/groups/new' }
+        { label: t('dashboard.action_contribute'), icon: Zap, action: () => setIsContributionModalOpen(true) },
+        { label: t('dashboard.action_borrow'), icon: PiggyBank, href: '/loans/new' },
+        { label: t('dashboard.action_join'), icon: Users, href: '/groups' },
+        { label: t('dashboard.action_create'), icon: Plus, href: '/groups/new' }
     ]
 
     return (
@@ -39,7 +39,7 @@ export function QuickActions({ pendingApprovals = [], user }: QuickActionsProps)
                             <Plus className="w-3.5 h-3.5 text-white stroke-[3px]" />
                         </div>
                         <span className="text-[11px] font-black text-[#1B4332] uppercase tracking-[0.15em] whitespace-nowrap">
-                            {t('dashboard.quick_actions') || 'Quick Actions'}
+                            {t('dashboard.quick_actions')}
                         </span>
                     </div>
 

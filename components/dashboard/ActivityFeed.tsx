@@ -24,7 +24,7 @@ export function ActivityFeed({ recentActivity }: ActivityFeedProps) {
                         {t('dashboard.recent_activity')}
                     </h3>
                     <Link href="/activity" className="group flex items-center gap-1.5 text-[10px] font-black text-emerald-600 hover:text-emerald-700 transition-colors uppercase tracking-widest">
-                        View All
+                        {t('dashboard.view_all_activity')}
                         <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                     </Link>
                 </div>
@@ -72,7 +72,7 @@ export function ActivityFeed({ recentActivity }: ActivityFeedProps) {
                                                     )}
                                                     <div className="flex items-center justify-end gap-1 mt-0 sm:mt-0.5">
                                                         <div className="w-1 h-1 rounded-full bg-emerald-500" />
-                                                        <span className="text-[9px] font-bold text-emerald-600/80 uppercase tracking-tighter">Success</span>
+                                                        <span className="text-[9px] font-bold text-emerald-600/80 uppercase tracking-tighter">{t('dashboard.activity_success')}</span>
                                                     </div>
                                                 </div>
                                             </div>

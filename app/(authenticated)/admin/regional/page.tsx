@@ -284,7 +284,7 @@ export default function RegionalAdminPage() {
             className="border-indigo-200/50 dark:border-indigo-800/50"
           />
           <AdminStatsCard
-            title="Total Assets"
+            title="Total Contributions"
             value={`MWK ${(data?.totalContributions || 0).toLocaleString()}`}
             icon={DollarSign}
             trend="+18%"

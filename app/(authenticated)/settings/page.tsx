@@ -1,6 +1,7 @@
 'use client'
 
 import { useAuth } from '@/components/providers/AuthProvider'
+import { useLanguage } from '@/components/providers/LanguageProvider'
 import PasskeyManager from '@/components/auth/PasskeyManager'
 import { VerificationForm } from '@/components/settings/VerificationForm'
 import { useState, useEffect } from 'react'
@@ -36,6 +37,7 @@ interface UserProfile {
 
 export default function SettingsPage() {
   const { user } = useAuth()
+  const { language, setLanguage, t } = useLanguage()
   const [isLoading, setIsLoading] = useState(false)
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [formData, setFormData] = useState({
@@ -44,13 +46,6 @@ export default function SettingsPage() {
     phoneNumber: '',
     region: '',
   })
-  // Hardcoded for now to match strict Pulse style, can be moved to i18n later
-  const t = {
-    title: 'Profile Settings',
-    subtitle: 'Manage your personal identity details.',
-    update_identity: 'Update Identity',
-    syncing: 'Syncing...',
-  }
 
   useEffect(() => {
     fetchProfile()
@@ -109,15 +104,15 @@ export default function SettingsPage() {
       <motion.div variants={fadeIn} className="max-w-4xl mx-auto w-full">
         <Link href="/profile" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-emerald-600 dark:hover:text-banana transition-all duration-300 group mb-6">
           <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300 relative z-10" />
-          Back to Profile
+          {t('settings_page.back_to_profile')}
         </Link>
         <div className="hidden md:block mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter text-main mb-2 text-left break-words">
-            {t.title}
+            {t('settings_page.title')}
             <span className="text-banana">.</span>
           </h1>
           <p className="text-xs sm:text-sm md:text-base font-medium text-slate-500 leading-relaxed max-w-xl">
-            {t.subtitle}
+            {t('settings_page.subtitle')}
           </p>
         </div>
       </motion.div>
@@ -132,9 +127,9 @@ export default function SettingsPage() {
                   <Fingerprint className="w-6 h-6 sm:w-7 sm:h-7" />
                 </div>
                 <div>
-                  <h2 className="text-lg sm:text-xl font-black text-foreground tracking-tight">Personal Identity</h2>
+                  <h2 className="text-lg sm:text-xl font-black text-foreground tracking-tight">{t('settings_page.personal_identity')}</h2>
                   <p className="text-xs sm:text-sm font-bold text-muted-foreground/70 mt-1">
-                    Updates here will sync across all your community groups immediately.
+                    {t('settings_page.updates_sync_desc')}
                   </p>
                 </div>
               </div>
@@ -147,7 +142,7 @@ export default function SettingsPage() {
                 {/* Name Section */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                   <div className="space-y-2 group/input">
-                    <Label htmlFor="firstName" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 group-focus-within/input:text-emerald-600 dark:group-focus-within/input:text-banana transition-colors">First Legal Name</Label>
+                    <Label htmlFor="firstName" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 group-focus-within/input:text-emerald-600 dark:group-focus-within/input:text-banana transition-colors">{t('settings_page.first_name')}</Label>
                     <Input
                       id="firstName"
                       value={formData.firstName}
@@ -157,7 +152,7 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div className="space-y-2 group/input">
-                    <Label htmlFor="lastName" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 group-focus-within/input:text-emerald-600 dark:group-focus-within/input:text-banana transition-colors">Surname / Family Name</Label>
+                    <Label htmlFor="lastName" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 group-focus-within/input:text-emerald-600 dark:group-focus-within/input:text-banana transition-colors">{t('settings_page.last_name')}</Label>
                     <Input
                       id="lastName"
                       value={formData.lastName}
@@ -172,10 +167,10 @@ export default function SettingsPage() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 flex items-center gap-2">
-                      Primary Authentication Email
+                      {t('settings_page.email_label')}
                     </Label>
                     <span className="text-[9px] font-black bg-emerald-500/10 text-emerald-600 px-2 py-0.5 rounded-full flex items-center gap-1">
-                      <ShieldCheck className="w-3 h-3" /> VERIFIED
+                      <ShieldCheck className="w-3 h-3" /> {t('settings_page.verified')}
                     </span>
                   </div>
                   <div className="relative group/locked cursor-not-allowed opacity-80 hover:opacity-100 transition-opacity">
@@ -193,7 +188,7 @@ export default function SettingsPage() {
                 {/* Contact & Region */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                   <div className="space-y-2 group/input">
-                    <Label htmlFor="phone" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 group-focus-within/input:text-emerald-600 dark:group-focus-within/input:text-banana transition-colors">Contact Dial Code</Label>
+                    <Label htmlFor="phone" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 group-focus-within/input:text-emerald-600 dark:group-focus-within/input:text-banana transition-colors">{t('settings_page.phone_label')}</Label>
                     <div className="relative">
                       <Input
                         id="phone"
@@ -208,15 +203,15 @@ export default function SettingsPage() {
                   </div>
 
                   <div className="space-y-2 group/input">
-                    <Label htmlFor="region" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 group-focus-within/input:text-emerald-600 dark:group-focus-within/input:text-banana transition-colors">Geographic Domain</Label>
+                    <Label htmlFor="region" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 group-focus-within/input:text-emerald-600 dark:group-focus-within/input:text-banana transition-colors">{t('settings_page.region_label')}</Label>
                     <Select value={formData.region} onValueChange={(value) => setFormData(prev => ({ ...prev, region: value }))}>
                       <SelectTrigger className="rounded-2xl bg-slate-50/50 dark:bg-slate-900/50 border-slate-200 dark:border-white/5 h-12 sm:h-14 font-bold shadow-sm focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 px-4 sm:px-6 hover:bg-slate-100 dark:hover:bg-slate-900/80 transition-all text-sm sm:text-base">
-                        <SelectValue placeholder="Select Domain" />
+                        <SelectValue placeholder={t('settings_page.select_domain')} />
                       </SelectTrigger>
                       <SelectContent className="rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-white/20 dark:border-white/10 shadow-2xl overflow-hidden p-1">
-                        <SelectItem value="NORTHERN" className="font-bold cursor-pointer rounded-xl focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:bg-emerald-500/10 dark:focus:text-emerald-400 py-3 px-4 transition-colors">NORTHERN REGION (MZUZU)</SelectItem>
-                        <SelectItem value="CENTRAL" className="font-bold cursor-pointer rounded-xl focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:bg-emerald-500/10 dark:focus:text-emerald-400 py-3 px-4 transition-colors">CENTRAL REGION (LILONGWE)</SelectItem>
-                        <SelectItem value="SOUTHERN" className="font-bold cursor-pointer rounded-xl focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:bg-emerald-500/10 dark:focus:text-emerald-400 py-3 px-4 transition-colors">SOUTHERN REGION (BLANTYRE)</SelectItem>
+                        <SelectItem value="NORTHERN" className="font-bold cursor-pointer rounded-xl focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:bg-emerald-500/10 dark:focus:text-emerald-400 py-3 px-4 transition-colors">{t('settings_page.northern_region')}</SelectItem>
+                        <SelectItem value="CENTRAL" className="font-bold cursor-pointer rounded-xl focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:bg-emerald-500/10 dark:focus:text-emerald-400 py-3 px-4 transition-colors">{t('settings_page.central_region')}</SelectItem>
+                        <SelectItem value="SOUTHERN" className="font-bold cursor-pointer rounded-xl focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:bg-emerald-500/10 dark:focus:text-emerald-400 py-3 px-4 transition-colors">{t('settings_page.southern_region')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -224,34 +219,34 @@ export default function SettingsPage() {
 
                 {/* Preferences */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 pt-2">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 flex items-center gap-2">
-                      <Globe className="w-3 h-3" /> Preferred Language
-                    </Label>
-                    <Select defaultValue="EN">
-                      <SelectTrigger className="rounded-2xl bg-slate-50/50 dark:bg-slate-900/50 border-slate-200 dark:border-white/5 h-12 sm:h-14 font-bold shadow-sm focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 px-4 sm:px-6 hover:bg-slate-100 dark:hover:bg-slate-900/80 transition-all text-sm sm:text-base">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-white/20 dark:border-white/10 shadow-2xl overflow-hidden p-1">
-                        <SelectItem value="EN" className="font-bold cursor-pointer rounded-xl focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:bg-emerald-500/10 dark:focus:text-emerald-400 py-3 px-4 transition-colors">English (International)</SelectItem>
-                        <SelectItem value="CH" className="font-bold cursor-pointer rounded-xl focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:bg-emerald-500/10 dark:focus:text-emerald-400 py-3 px-4 transition-colors">Chichewa (Local)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 flex items-center gap-2">
-                      <Clock className="w-3 h-3" /> Timezone
-                    </Label>
-                    <Select defaultValue="CAT">
-                      <SelectTrigger className="rounded-2xl bg-slate-50/50 dark:bg-slate-900/50 border-slate-200 dark:border-white/5 h-12 sm:h-14 font-bold shadow-sm focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 px-4 sm:px-6 hover:bg-slate-100 dark:hover:bg-slate-900/80 transition-all text-sm sm:text-base">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-white/20 dark:border-white/10 shadow-2xl overflow-hidden p-1">
-                        <SelectItem value="CAT" className="font-bold cursor-pointer rounded-xl focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:bg-emerald-500/10 dark:focus:text-emerald-400 py-3 px-4 transition-colors">Central African Time (UTC+2)</SelectItem>
-                        <SelectItem value="UTC" className="font-bold cursor-pointer rounded-xl focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:bg-emerald-500/10 dark:focus:text-emerald-400 py-3 px-4 transition-colors">Universal Time (UTC+0)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 flex items-center gap-2">
+                    <Globe className="w-3 h-3" /> {t('settings_page.preferred_language')}
+                  </Label>
+                  <Select value={language} onValueChange={(val: any) => setLanguage(val)}>
+                    <SelectTrigger className="rounded-2xl bg-slate-50/50 dark:bg-slate-900/50 border-slate-200 dark:border-white/5 h-12 sm:h-14 font-bold shadow-sm focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 px-4 sm:px-6 hover:bg-slate-100 dark:hover:bg-slate-900/80 transition-all text-sm sm:text-base">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-white/20 dark:border-white/10 shadow-2xl overflow-hidden p-1">
+                      <SelectItem value="en" className="font-bold cursor-pointer rounded-xl focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:bg-emerald-500/10 dark:focus:text-emerald-400 py-3 px-4 transition-colors">English (International)</SelectItem>
+                      <SelectItem value="ny" className="font-bold cursor-pointer rounded-xl focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:bg-emerald-500/10 dark:focus:text-emerald-400 py-3 px-4 transition-colors">Chichewa (Malawi)</SelectItem>
+                      <SelectItem value="bem" className="font-bold cursor-pointer rounded-xl focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:bg-emerald-500/10 dark:focus:text-emerald-400 py-3 px-4 transition-colors">Bemba (Zambia)</SelectItem>
+                      <SelectItem value="fr" className="font-bold cursor-pointer rounded-xl focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:bg-emerald-500/10 dark:focus:text-emerald-400 py-3 px-4 transition-colors">Français (Global)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1 flex items-center gap-2">
+                    <Clock className="w-3 h-3" /> {t('settings_page.timezone')}
+                  </Label>
+                  <Select defaultValue="CAT">
+                    <SelectTrigger className="rounded-2xl bg-slate-50/50 dark:bg-slate-900/50 border-slate-200 dark:border-white/5 h-12 sm:h-14 font-bold shadow-sm focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 px-4 sm:px-6 hover:bg-slate-100 dark:hover:bg-slate-900/80 transition-all text-sm sm:text-base">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-white/20 dark:border-white/10 shadow-2xl overflow-hidden p-1">
+                      <SelectItem value="CAT" className="font-bold cursor-pointer rounded-xl focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:bg-emerald-500/10 dark:focus:text-emerald-400 py-3 px-4 transition-colors">Central African Time (UTC+2)</SelectItem>
+                      <SelectItem value="UTC" className="font-bold cursor-pointer rounded-xl focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:bg-emerald-500/10 dark:focus:text-emerald-400 py-3 px-4 transition-colors">Universal Time (UTC+0)</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {/* Footer / Actions */}
@@ -260,7 +255,7 @@ export default function SettingsPage() {
                     <Badge className="bg-emerald-500 text-white font-black border-none px-3 py-1 rounded-lg text-[9px] tracking-widest uppercase shadow-sm">
                       {profile?.role || user?.role || 'MEMBER'}
                     </Badge>
-                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest opacity-60">System Clearance</span>
+                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest opacity-60">{t('settings_page.system_clearance')}</span>
                   </div>
 
                   {/* Shimmer Button Container */}
@@ -272,15 +267,15 @@ export default function SettingsPage() {
                     >
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-in-out" />
                       <Save className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform relative z-10" />
-                      <span className="relative z-10">{isLoading ? t.syncing : t.update_identity}</span>
+                      <span className="relative z-10">{isLoading ? t('settings_page.syncing') : t('settings_page.update_identity')}</span>
                     </Button>
                   </div>
                 </div>
               </form>
             </div>
           </GlassCard>
-        </motion.div>
-      </div>
+        </motion.div >
+      </div >
 
 
 
@@ -303,9 +298,9 @@ export default function SettingsPage() {
                   <Lock className="w-6 h-6 sm:w-7 sm:h-7" />
                 </div>
                 <div>
-                  <h2 className="text-lg sm:text-xl font-black text-foreground tracking-tight">Security</h2>
+                  <h2 className="text-lg sm:text-xl font-black text-foreground tracking-tight">{t('settings_page.security_title')}</h2>
                   <p className="text-xs sm:text-sm font-bold text-muted-foreground/70 mt-1">
-                    Manage your login methods and security keys.
+                    {t('settings_page.security_desc')}
                   </p>
                 </div>
               </div>

@@ -22,27 +22,27 @@ export function NextSteps({ user, stats }: NextStepsProps) {
   const { t } = useLanguage()
   const steps = [
     {
-      title: 'Complete your Profile',
-      description: 'Ensure your account details are up to date.',
+      title: t('dashboard.complete_profile'),
+      description: t('dashboard.ensure_details'),
       icon: UserPlus,
       completed: !!(user.firstName && user.lastName),
-      action: 'Edit Profile',
+      action: t('dashboard.edit_profile'),
       href: '/profile'
     },
     {
-      title: 'Join or Create a Circle',
-      description: 'Start participating in a village circle.',
+      title: t('dashboard.join_create_circle'),
+      description: t('dashboard.start_participating'),
       icon: Settings,
       completed: stats.totalGroups > 0,
-      action: 'Browse Circles',
+      action: t('dashboard.browse_circles'),
       href: '/groups'
     },
     {
-      title: 'Make a Contribution',
-      description: 'Record your first savings entry.',
+      title: t('dashboard.make_contribution'),
+      description: t('dashboard.record_first_entry'),
       icon: Wallet,
       completed: stats.totalContributions > 0,
-      action: 'Record Now',
+      action: t('dashboard.record_now'),
       href: '/vault'
     }
   ]
@@ -55,18 +55,18 @@ export function NextSteps({ user, stats }: NextStepsProps) {
     <section className="space-y-6 w-full">
       <div className="flex items-center justify-between px-1">
         <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">
-          {allCompleted ? 'Pulse Insights' : 'Onboarding Progress'}
+          {allCompleted ? t('dashboard.pulse_insights') : t('dashboard.onboarding_progress')}
         </h3>
         <div className="flex items-center gap-3">
           {!allCompleted && (
             <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-xl border border-emerald-100">
-              {completedCount}/{steps.length} COMPLETED
+              {completedCount}/{steps.length} {t('dashboard.completed')}
             </span>
           )}
           {allCompleted && (
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Live Optimization</span>
+              <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">{t('dashboard.live_optimization')}</span>
             </div>
           )}
         </div>
@@ -90,9 +90,9 @@ export function NextSteps({ user, stats }: NextStepsProps) {
                 <Construction className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
               </div>
               <div className="space-y-2 max-w-lg">
-                <h4 className="text-xl font-black text-[#1B4332] dark:text-white">Insights Engine Upgrading</h4>
+                <h4 className="text-xl font-black text-[#1B4332] dark:text-white">{t('dashboard.insights_engine_upgrading')}</h4>
                 <p className="text-sm font-medium text-slate-500 max-w-md mx-auto">
-                  We are currently enhancing our AI-driven insights to help you maximize your group's growth. Check back soon for personalized recommendations.
+                  {t('dashboard.insights_desc')}
                 </p>
               </div>
             </div>
@@ -101,8 +101,8 @@ export function NextSteps({ user, stats }: NextStepsProps) {
             <>
               <div className="px-8 pt-8">
                 <div className="flex items-center justify-between mb-3 px-1">
-                  <span className="text-[10px] font-black text-emerald-600 uppercase tracking-tighter">Setup {Math.round(progressPercentage)}%</span>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Next Milestone: Optimized Pulse</span>
+                  <span className="text-[10px] font-black text-emerald-600 uppercase tracking-tighter">{t('dashboard.setup')} {Math.round(progressPercentage)}%</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{t('dashboard.next_milestone')}</span>
                 </div>
                 <div className="w-full h-2 bg-slate-100/50 dark:bg-white/5 rounded-full overflow-hidden">
                   <motion.div

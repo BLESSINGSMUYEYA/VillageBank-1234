@@ -14,9 +14,11 @@ import { InlineLogoLoader } from '@/components/ui/LogoLoader'
 import { toast } from 'sonner'
 import { Shield, CheckCircle, AlertTriangle } from 'lucide-react'
 import { IdentityType } from '@prisma/client'
+import { useLanguage } from '@/components/providers/LanguageProvider'
 
 export function VerificationForm() {
     const router = useRouter()
+    const { t } = useLanguage()
     const [loading, setLoading] = useState(false)
     const [success, setSuccess] = useState(false)
 
@@ -81,9 +83,9 @@ export function VerificationForm() {
                     <Shield className="w-10 h-10 text-emerald-500" />
                 </div>
                 <div className="space-y-2">
-                    <h2 className="text-2xl font-black text-foreground">Verification Submitted</h2>
+                    <h2 className="text-2xl font-black text-foreground">{t('verification_form.submitted_title')}</h2>
                     <p className="text-muted-foreground font-medium">
-                        Our team will review your documents shortly. You will receive a notification once verified.
+                        {t('verification_form.submitted_desc')}
                     </p>
                 </div>
             </GlassCard>
@@ -95,61 +97,61 @@ export function VerificationForm() {
             <div className="space-y-2">
                 <h2 className="text-2xl font-black text-foreground flex items-center gap-3">
                     <Shield className="w-6 h-6 text-blue-500" />
-                    Identity Verification
+                    {t('verification_form.title')}
                 </h2>
                 <p className="text-muted-foreground font-medium">
-                    Upload your official documents to verify your identity and unlock verified status.
+                    {t('verification_form.subtitle')}
                 </p>
             </div>
 
             <GlassCard className="p-4 sm:p-6 space-y-8" hover={false}>
                 {/* ID Details */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormGroup label="Document Type">
+                    <FormGroup label={t('verification_form.document_type')}>
                         <Select value={type} onValueChange={(v) => setType(v as IdentityType)}>
                             <SelectTrigger className="h-14 rounded-xl bg-muted/20 border-white/10 font-bold">
-                                <SelectValue placeholder="Select Type" />
+                                <SelectValue placeholder={t('verification_form.select_type')} />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl">
-                                <SelectItem value="NATIONAL_ID" className="font-bold">National ID</SelectItem>
-                                <SelectItem value="PASSPORT" className="font-bold">International Passport</SelectItem>
-                                <SelectItem value="DRIVING_LICENSE" className="font-bold">Driving License</SelectItem>
+                                <SelectItem value="NATIONAL_ID" className="font-bold">{t('verification_form.national_id')}</SelectItem>
+                                <SelectItem value="PASSPORT" className="font-bold">{t('verification_form.passport')}</SelectItem>
+                                <SelectItem value="DRIVING_LICENSE" className="font-bold">{t('verification_form.driving_license')}</SelectItem>
                             </SelectContent>
                         </Select>
                     </FormGroup>
 
-                    <FormGroup label="Document Number">
+                    <FormGroup label={t('verification_form.document_number')}>
                         <PremiumInput
                             value={documentNumber}
                             onChange={(e) => setDocumentNumber(e.target.value)}
-                            placeholder={type === 'NATIONAL_ID' ? 'e.g. M12345678' : 'Enter number'}
+                            placeholder={type === 'NATIONAL_ID' ? 'e.g. M12345678' : t('verification_form.enter_number')}
                         />
                     </FormGroup>
                 </div>
 
                 {/* File Uploads Grid */}
                 <div className="space-y-4">
-                    <h3 className="text-sm font-black uppercase tracking-wider text-muted-foreground">Proof Documents</h3>
+                    <h3 className="text-sm font-black uppercase tracking-wider text-muted-foreground">{t('verification_form.proof_documents')}</h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <DocumentUploader
-                            label="Front of ID"
-                            subLabel="Clear photo of the front side"
+                            label={t('verification_form.front_id')}
+                            subLabel={t('verification_form.front_sub')}
                             onFileSelect={setFrontFile}
                         // previewUrl={frontFile ? URL.createObjectURL(frontFile) : undefined}
                         />
 
                         {type !== 'PASSPORT' && (
                             <DocumentUploader
-                                label="Back of ID"
-                                subLabel="Clear photo of the back side"
+                                label={t('verification_form.back_id')}
+                                subLabel={t('verification_form.back_sub')}
                                 onFileSelect={setBackFile}
                             />
                         )}
 
                         <DocumentUploader
-                            label="Selfie with ID"
-                            subLabel="Hold your ID next to your face"
+                            label={t('verification_form.selfie_id')}
+                            subLabel={t('verification_form.selfie_sub')}
                             onFileSelect={setSelfieFile}
                         />
                     </div>
@@ -163,13 +165,13 @@ export function VerificationForm() {
                         onClick={handleSubmit}
                         disabled={loading}
                     >
-                        {loading ? <InlineLogoLoader size="sm" /> : "Submit for Verification"}
+                        {loading ? <InlineLogoLoader size="sm" /> : t('verification_form.submit_btn')}
                     </Button>
                 </div>
 
                 <div className="bg-blue-500/5 border border-blue-500/10 rounded-xl p-4 flex gap-3 text-sm text-muted-foreground">
                     <Shield className="w-5 h-5 text-blue-500 shrink-0" />
-                    <p>Your documents are encrypted and stored securely. They are only visible to authorized administrators for verification purposes.</p>
+                    <p>{t('verification_form.secure_note')}</p>
                 </div>
             </GlassCard>
         </div>
