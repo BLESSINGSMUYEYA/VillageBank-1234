@@ -35,6 +35,13 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
     const [isContributionModalOpen, setIsContributionModalOpen] = useState(false)
     const router = useRouter()
 
+    const getGreeting = () => {
+        const hour = new Date().getHours()
+        if (hour < 12) return 'Good Morning'
+        if (hour < 18) return 'Good Afternoon'
+        return 'Good Evening'
+    }
+
     const handleToggleVisibility = () => {
         if (isContributionsVisible) {
             setIsContributionsVisible(false)
@@ -70,7 +77,7 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ duration: 0.8, ease: "easeOut" }}
                                 >
-                                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 mb-3 sm:mb-4 text-left break-words leading-tight">
+                                    <h1 className="hidden sm:block text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 mb-3 sm:mb-4 text-left break-words leading-tight">
                                         {t('common.dashboard')}
                                         <span className="text-emerald-500 dark:text-banana">.</span>
                                     </h1>
@@ -80,15 +87,15 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                                         <Shield className="w-3 h-3" />
                                         Secure Hub
                                     </div>
-                                    <span className="hidden sm:inline-block w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700" />
-                                    <span className="hidden sm:inline">
-                                        {t('dashboard.welcome')}, <span className="text-slate-900 dark:text-white font-black">{user.firstName}</span>
+                                    <span className="inline-block w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700" />
+                                    <span className="inline">
+                                        {getGreeting()}, <span className="text-slate-900 dark:text-white font-black">{user.firstName}</span>
                                     </span>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="w-full md:w-auto shrink-0 relative z-10">
+                        <div className="hidden sm:block w-full md:w-auto shrink-0 relative z-10">
                             <Button
                                 size="xl"
                                 onClick={() => {

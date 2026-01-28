@@ -104,7 +104,7 @@ export function GroupsContent({ userGroups, userRole, pendingApprovalsCount = 0 
                                 )}>
                                     <StatsCard
                                         variant="glass"
-                                        label={t('groups.total_groups') || 'Total Groups'}
+                                        label={t('groups.total_groups') || 'Total Circles'}
                                         value={userGroups.length.toString()}
                                         icon={Users}
                                         className="bg-white dark:bg-slate-800 border-none shadow-sm ring-1 ring-black/5"
@@ -226,7 +226,7 @@ export function GroupsContent({ userGroups, userRole, pendingApprovalsCount = 0 
                                                 : "text-muted-foreground hover:text-foreground hover:bg-white/50"
                                         )}
                                     >
-                                        {f === 'ALL' ? 'All Groups' : f === 'ADMIN' ? 'Admin' : 'Member'}
+                                        {f === 'ALL' ? 'All Circles' : f === 'ADMIN' ? 'Admin' : 'Member'}
                                     </button>
                                 ))}
                             </div>
@@ -259,7 +259,7 @@ export function GroupsContent({ userGroups, userRole, pendingApprovalsCount = 0 
                         ) : (
                             <EmptyState
                                 icon={Users}
-                                title={searchTerm ? 'No groups found' : t('groups.no_groups')}
+                                title={searchTerm ? 'No circles found' : t('groups.no_groups')}
                                 description={searchTerm ? 'Try adjusting your search or filters.' : t('groups.no_groups_desc')}
                                 action={
                                     !searchTerm ? (

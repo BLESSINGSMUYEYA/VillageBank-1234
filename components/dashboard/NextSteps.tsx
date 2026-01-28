@@ -30,11 +30,11 @@ export function NextSteps({ user, stats }: NextStepsProps) {
       href: '/profile'
     },
     {
-      title: 'Join or Create a Group',
-      description: 'Start participating in a village bank.',
+      title: 'Join or Create a Circle',
+      description: 'Start participating in a village circle.',
       icon: Settings,
       completed: stats.totalGroups > 0,
-      action: 'Browse Groups',
+      action: 'Browse Circles',
       href: '/groups'
     },
     {

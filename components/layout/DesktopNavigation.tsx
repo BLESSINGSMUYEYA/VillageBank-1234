@@ -111,10 +111,10 @@ export function DesktopNavigation() {
                 <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400">
                   <Users className="w-4 h-4" />
                 </div>
-                <h4 className="text-white font-bold text-sm">Grow circle</h4>
+                <h4 className="text-white font-bold text-sm">Grow Circle</h4>
               </div>
               <p className="text-slate-400 text-[11px] leading-relaxed font-medium">
-                Banking is better together. Invite friends to your group.
+                Banking is better together. Invite friends to your circle.
               </p>
               <Link href="/groups" className="w-full">
                 <Button
