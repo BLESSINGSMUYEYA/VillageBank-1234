@@ -42,20 +42,31 @@ export async function POST(req: Request) {
                 phoneNumber,
                 ubankId,
                 verificationToken,
-                // emailVerified is null by default now
+                emailVerified: new Date(), // Auto-verify immediately
             },
         });
 
-        // Send verification email
-        // We import dynamically to avoid circular deps if any, or just standard import
-        const { sendVerificationEmail } = await import('@/lib/mail');
-        await sendVerificationEmail(email, verificationToken);
+        // Email sending removed to allow immediate access
+        // const { sendVerificationEmail } = await import('@/lib/mail');
+        // await sendVerificationEmail(email, verificationToken);
 
-        // DO NOT log the user in automatically
+        // Creates session immediately
+        const token = await signToken({
+            userId: user.id,
+            email: user.email,
+            role: user.role,
+        });
+
+        (await cookies()).set('auth_token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 86400, // 1 day
+            path: '/',
+        });
 
         return NextResponse.json({
-            message: 'verification_required',
-            user: { id: user.id, email: user.email }
+            user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role }
         });
     } catch (error) {
         console.error('Registration error:', error);
