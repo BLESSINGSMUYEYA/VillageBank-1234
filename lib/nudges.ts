@@ -1,9 +1,17 @@
 import { prisma } from '@/lib/prisma'
-import { VerificationStatus } from '@prisma/client'
+import { VerificationStatus, Prisma } from '@prisma/client'
 
 export type NudgeType = 'VERIFY_IDENTITY' | 'ENABLE_NOTIFICATIONS' | null
 
-export async function getUsersForNudge() {
+// Define the type with includes
+export type UserForNudge = Prisma.UserGetPayload<{
+    include: {
+        identityVerification: true,
+        pushSubscriptions: true
+    }
+}>
+
+export async function getUsersForNudge(): Promise<UserForNudge[]> {
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000)
 
     try {

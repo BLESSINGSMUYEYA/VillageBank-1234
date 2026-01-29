@@ -3,6 +3,7 @@ import { getUsersForNudge, determineNudgeType, updateNudgeTimestamp } from '@/li
 import { sendNudgeEmail } from '@/lib/mail'
 import { sendNotification } from '@/lib/web-push'
 import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
 
 export async function GET(request: Request) {
     if (request.headers.get('Authorization') !== `Bearer ${process.env.CRON_SECRET}`) {
@@ -45,7 +46,14 @@ export async function GET(request: Request) {
                 }
 
                 const result = await sendNotification(pushSubscription, payload)
-                if (result.success) sent = true
+                if (result.success) {
+                    sent = true
+                } else if ((result.error as any)?.statusCode === 410) {
+                    console.log(`Deleting expired subscription: ${sub.endpoint}`)
+                    await prisma.pushSubscription.delete({
+                        where: { endpoint: sub.endpoint }
+                    }).catch(err => console.error('Failed to delete subscription', err))
+                }
             }
         }
 
