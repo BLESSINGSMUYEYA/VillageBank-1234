@@ -55,11 +55,7 @@ export function DashboardWidgets({ stats, reminders = [], userId = '' }: Dashboa
                                             </p>
                                         </div>
                                     </div>
-                                    <form action={async () => {
-                                        'use server'
-                                        const { dismissReminder } = await import('@/lib/reminders')
-                                        await dismissReminder(nextReminder.id, userId)
-                                    }}>
+                                    <form action={dismissReminderAction.bind(null, nextReminder.id, userId)}>
                                         <button
                                             type="submit"
                                             className="shrink-0 w-7 h-7 rounded-full bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
