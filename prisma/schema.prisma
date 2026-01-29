@@ -280,22 +280,26 @@ model MemberBankDetail {
 }
 
 model Reminder {
-  id          String       @id @default(cuid())
-  title       String
-  description String?
-  datetime    DateTime
-  type        ReminderType @default(MEETING)
-  link        String?
-  userId      String
-  groupId     String?
-  isRead          Boolean      @default(false)
+  id               String       @id @default(cuid())
+  title            String
+  description      String?
+  datetime         DateTime
+  type             ReminderType @default(MEETING)
+  link             String?
+  userId           String
+  groupId          String?
+  isRead           Boolean      @default(false)
   notificationSent Boolean      @default(false)
-  createdAt       DateTime     @default(now())
-  group       Group?       @relation(fields: [groupId], references: [id])
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isDismissed      Boolean      @default(false)
+  lastDismissedAt  DateTime?
+  isRecurring      Boolean      @default(true)
+  createdAt        DateTime     @default(now())
+  group            Group?       @relation(fields: [groupId], references: [id])
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, datetime])
   @@index([groupId, datetime])
+  @@index([userId, isDismissed])
 }
 
 model Announcement {

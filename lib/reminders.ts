@@ -2,16 +2,33 @@
 
 import { prisma } from './prisma'
 import { revalidatePath } from 'next/cache'
-import { Reminder, ReminderType } from '@prisma/client'
+import { Reminder, ReminderType, Prisma } from '@prisma/client'
 
 export const getUpcomingReminders = async (userId: string) => {
     try {
+        const now = new Date()
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+
         const reminders = await prisma.reminder.findMany({
             where: {
                 userId,
-                datetime: {
-                    gte: new Date(),
-                },
+                OR: [
+                    // Not dismissed at all
+                    { isDismissed: false },
+                    // Dismissed but from a previous day (for recurring reminders)
+                    {
+                        AND: [
+                            { isDismissed: true },
+                            { isRecurring: true },
+                            {
+                                OR: [
+                                    { lastDismissedAt: null },
+                                    { lastDismissedAt: { lt: startOfToday } }
+                                ]
+                            }
+                        ]
+                    }
+                ]
             },
             orderBy: {
                 datetime: 'asc',
@@ -33,12 +50,14 @@ export const createReminder = async (data: {
     link?: string
     userId: string
     groupId?: string
+    isRecurring?: boolean
 }) => {
     try {
         const reminder = await prisma.reminder.create({
             data: {
                 ...data,
-                datetime: new Date(data.datetime)
+                datetime: new Date(data.datetime),
+                isRecurring: data.isRecurring ?? true // Default to recurring
             },
         })
         revalidatePath('/dashboard')
@@ -46,6 +65,26 @@ export const createReminder = async (data: {
     } catch (error) {
         console.error('Error creating reminder:', error)
         return { success: false, error: 'Failed to create reminder' }
+    }
+}
+
+export const dismissReminder = async (id: string, userId: string) => {
+    try {
+        await prisma.reminder.update({
+            where: {
+                id,
+                userId, // Ensure ownership
+            },
+            data: {
+                isDismissed: true,
+                lastDismissedAt: new Date()
+            }
+        })
+        revalidatePath('/dashboard')
+        return { success: true }
+    } catch (error) {
+        console.error('Error dismissing reminder:', error)
+        return { success: false, error: 'Failed to dismiss reminder' }
     }
 }
 

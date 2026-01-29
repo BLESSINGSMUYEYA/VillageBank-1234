@@ -12,6 +12,23 @@ export async function GET(request: Request) {
         }
     }
 
+    // Reset dismissed recurring reminders from previous days
+    const now = new Date()
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+
+    await prisma.reminder.updateMany({
+        where: {
+            isDismissed: true,
+            isRecurring: true,
+            lastDismissedAt: {
+                lt: startOfToday
+            }
+        },
+        data: {
+            isDismissed: false
+        }
+    })
+
     const { success, data: reminders, error } = await getDueReminders()
 
     if (!success || !reminders) {

@@ -39,19 +39,36 @@ export function DashboardWidgets({ stats, reminders = [], userId = '' }: Dashboa
 
                         {nextReminder ? (
                             <div className="space-y-4">
-                                <div>
-                                    <h4 className="text-lg sm:text-xl font-bold text-main line-clamp-2">{nextReminder.title}</h4>
-                                    <div className="flex items-center gap-2 text-slate-500 mt-2">
-                                        <Calendar className="w-3.5 h-3.5 text-banana" />
-                                        <p className="text-xs font-medium">
-                                            {new Date(nextReminder.datetime).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
-                                        </p>
-                                        <div className="w-1 h-1 rounded-full bg-slate-300" />
-                                        <Clock className="w-3.5 h-3.5 text-slate-400" />
-                                        <p className="text-xs font-medium">
-                                            {new Date(nextReminder.datetime).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
-                                        </p>
+                                <div className="flex items-start justify-between gap-3">
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="text-lg sm:text-xl font-bold text-main line-clamp-2">{nextReminder.title}</h4>
+                                        <div className="flex items-center gap-2 text-slate-500 mt-2">
+                                            <Calendar className="w-3.5 h-3.5 text-banana" />
+                                            <p className="text-xs font-medium">
+                                                {new Date(nextReminder.datetime).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
+                                            </p>
+                                            <div className="w-1 h-1 rounded-full bg-slate-300" />
+                                            <Clock className="w-3.5 h-3.5 text-slate-400" />
+                                            <p className="text-xs font-medium">
+                                                {new Date(nextReminder.datetime).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+                                            </p>
+                                        </div>
                                     </div>
+                                    <form action={async () => {
+                                        'use server'
+                                        const { dismissReminder } = await import('@/lib/reminders')
+                                        await dismissReminder(nextReminder.id, userId)
+                                    }}>
+                                        <button
+                                            type="submit"
+                                            className="shrink-0 w-7 h-7 rounded-full bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+                                            title="Dismiss for today"
+                                        >
+                                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </form>
                                 </div>
                                 {nextReminder.description && (
                                     <p className="text-xs text-slate-400 line-clamp-2 bg-white/50 dark:bg-white/5 p-3 rounded-xl">
