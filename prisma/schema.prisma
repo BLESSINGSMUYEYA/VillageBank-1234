@@ -36,6 +36,7 @@ model User {
   pushSubscriptions    PushSubscription[]
   reminders            Reminder[]
   identityVerification IdentityVerification?
+  lastOnboardingNudgeSentAt DateTime?
 }
 
 model Passkey {
@@ -287,8 +288,9 @@ model Reminder {
   link        String?
   userId      String
   groupId     String?
-  isRead      Boolean      @default(false)
-  createdAt   DateTime     @default(now())
+  isRead          Boolean      @default(false)
+  notificationSent Boolean      @default(false)
+  createdAt       DateTime     @default(now())
   group       Group?       @relation(fields: [groupId], references: [id])
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 

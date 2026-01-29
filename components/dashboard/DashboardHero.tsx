@@ -83,13 +83,13 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                                     </h1>
                                 </motion.div>
                                 <div className="text-xs sm:text-sm md:text-base font-medium text-slate-500 dark:text-slate-400 leading-relaxed max-w-xl flex flex-wrap items-center gap-2 sm:gap-3">
-                                    <div className="px-2.5 sm:px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 sm:gap-2">
+                                    <div className="px-2.5 sm:px-3 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] sm:text-xs font-medium uppercase tracking-wider flex items-center gap-1.5 sm:gap-2">
                                         <Shield className="w-3 h-3" />
                                         {t('dashboard.secure_hub')}
                                     </div>
                                     <span className="inline-block w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700" />
                                     <span className="inline">
-                                        {getGreeting()}, <span className="text-slate-900 dark:text-white font-black">{user.firstName}</span>
+                                        {getGreeting()}, <span className="text-slate-900 dark:text-white font-bold">{user.firstName}</span>
                                     </span>
                                 </div>
                             </div>
@@ -156,7 +156,7 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                             </div>
                             <div className="mt-3 sm:mt-4">
                                 <p className="text-card-title text-main">{stats.totalGroups}</p>
-                                <p className="text-micro text-slate-400 mt-1 uppercase font-bold">{t('dashboard.total_groups')}</p>
+                                <p className="text-micro text-slate-400 mt-1 uppercase font-medium">{t('dashboard.total_groups')}</p>
                             </div>
                         </div>
 
@@ -186,7 +186,7 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                                             <p className={cn("text-card-title", pendingApprovalsCount > 0 ? "text-red-500" : "text-main")}>
                                                 {pendingApprovalsCount}
                                             </p>
-                                            <p className="text-micro text-slate-400 mt-1 uppercase font-bold">{t('dashboard.status')}</p>
+                                            <p className="text-micro text-slate-400 mt-1 uppercase font-medium">{t('dashboard.status')}</p>
                                         </div>
                                         {pendingApprovalsCount > 0 && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse mb-1" />}
                                     </div>
@@ -204,7 +204,7 @@ export function DashboardHero({ user, stats, pendingApprovalsCount, recentActivi
                                 </div>
                                 <div className="mt-3 sm:mt-4">
                                     <p className="text-card-title text-emerald-600 uppercase">{t('dashboard.healthy')}</p>
-                                    <p className="text-micro text-slate-400 mt-1 uppercase font-bold">{t('dashboard.verified')}</p>
+                                    <p className="text-micro text-slate-400 mt-1 uppercase font-medium">{t('dashboard.verified')}</p>
                                 </div>
                             </div>
                         )}

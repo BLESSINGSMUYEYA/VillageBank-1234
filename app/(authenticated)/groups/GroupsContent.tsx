@@ -80,7 +80,7 @@ export function GroupsContent({ userGroups, userRole, pendingApprovalsCount = 0 
                                     placeholder="Search groups..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full h-10 pl-9 pr-3 sm:pl-10 sm:pr-4 rounded-xl bg-slate-100 dark:bg-slate-900/50 border-none text-base sm:text-sm font-bold focus:ring-2 focus:ring-emerald-500/50"
+                                    className="w-full h-10 pl-9 pr-3 sm:pl-10 sm:pr-4 rounded-xl bg-slate-100 dark:bg-slate-900/50 border-none text-base sm:text-sm font-medium focus:ring-2 focus:ring-emerald-500/50"
                                 />
                                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                                     <Search className="w-4 h-4" />
@@ -94,7 +94,7 @@ export function GroupsContent({ userGroups, userRole, pendingApprovalsCount = 0 
                                         key={f}
                                         onClick={() => setFilter(f)}
                                         className={cn(
-                                            "px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-[9px] sm:text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap",
+                                            "px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-[9px] sm:text-[10px] font-bold uppercase tracking-wider transition-all whitespace-nowrap",
                                             filter === f
                                                 ? "bg-white dark:bg-slate-800 text-foreground shadow-sm"
                                                 : "text-muted-foreground hover:text-foreground hover:bg-white/50"
@@ -186,14 +186,14 @@ function GroupCardVault({ membership }: { membership: any }) {
                             </span>
                         </div>
                         <div className="min-w-0 flex-1">
-                            <h3 className="font-black text-sm sm:text-base text-foreground group-hover:text-emerald-600 transition-colors truncate mb-1">
+                            <h3 className="font-bold text-sm sm:text-base text-foreground group-hover:text-emerald-600 transition-colors truncate mb-1">
                                 {group.name}
                             </h3>
                             <div className="flex items-center gap-1.5">
                                 <Badge variant="outline" className="border-emerald-500/20 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 text-[8px] uppercase tracking-widest px-1.5 h-4">
                                     {membership.role}
                                 </Badge>
-                                <span className="text-[9px] font-bold text-slate-400 flex items-center gap-0.5">
+                                <span className="text-[9px] font-medium text-slate-400 flex items-center gap-0.5">
                                     <Users className="w-2.5 h-2.5" />
                                     {group._count?.members || 0}
                                 </span>
@@ -225,10 +225,10 @@ function GroupCardVault({ membership }: { membership: any }) {
                 <div className="space-y-2">
                     <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-white/5">
                         <div>
-                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                            <p className="text-[9px] font-medium text-slate-400 uppercase tracking-wider mb-1">
                                 {t('dashboard.monthly_contribution')}
                             </p>
-                            <p className="text-base sm:text-lg font-black text-foreground">
+                            <p className="text-base sm:text-lg font-bold text-foreground">
                                 {formatCurrency(group.monthlyContribution)}
                             </p>
                         </div>
@@ -246,10 +246,10 @@ function GroupCardVault({ membership }: { membership: any }) {
                                 <Shield className="w-3.5 h-3.5 text-emerald-600 dark:text-supporting" />
                             </div>
                             <div>
-                                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">
+                                <p className="text-[8px] font-medium text-slate-400 uppercase tracking-wider">
                                     {t('groups.cycle_status')}
                                 </p>
-                                <p className="text-xs font-black text-foreground">
+                                <p className="text-xs font-medium text-foreground">
                                     {membership.status === 'ACTIVE' ? 'Active' : 'Awaiting Admin'}
                                 </p>
                             </div>

@@ -20,10 +20,10 @@ export function ActivityFeed({ recentActivity }: ActivityFeedProps) {
         <section className="space-y-6">
             <motion.div variants={itemFadeIn}>
                 <div className="flex items-center justify-between px-1 mb-6">
-                    <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+                    <h3 className="text-[11px] font-medium text-slate-400 uppercase tracking-[0.2em]">
                         {t('dashboard.recent_activity')}
                     </h3>
-                    <Link href="/activity" className="group flex items-center gap-1.5 text-[10px] font-black text-emerald-600 hover:text-emerald-700 transition-colors uppercase tracking-widest">
+                    <Link href="/activity" className="group flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 hover:text-emerald-700 transition-colors uppercase tracking-widest">
                         {t('dashboard.view_all_activity')}
                         <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                     </Link>
@@ -57,22 +57,22 @@ export function ActivityFeed({ recentActivity }: ActivityFeedProps) {
 
                                             <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-4">
                                                 <div className="min-w-0 pr-2">
-                                                    <p className="text-[13px] font-bold text-[#1B4332] truncate group-hover:text-emerald-700 transition-colors leading-snug">
+                                                    <p className="text-[13px] font-medium text-[#1B4332] truncate group-hover:text-emerald-700 transition-colors leading-snug">
                                                         {activity.description}
                                                     </p>
-                                                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-tight mt-0.5 truncate">
+                                                    <p className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mt-0.5 truncate">
                                                         {activity.groupTag ? `@${activity.groupTag}` : activity.groupName} • {new Date(activity.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                                                     </p>
                                                 </div>
                                                 <div className="text-left sm:text-right shrink-0 mt-1 sm:mt-0 flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 sm:gap-0">
                                                     {activity.amount && (
-                                                        <p className="text-[13px] font-black text-[#1B4332] tabular-nums">
+                                                        <p className="text-[13px] font-bold text-[#1B4332] tabular-nums">
                                                             {formatCurrency(activity.amount)}
                                                         </p>
                                                     )}
                                                     <div className="flex items-center justify-end gap-1 mt-0 sm:mt-0.5">
                                                         <div className="w-1 h-1 rounded-full bg-emerald-500" />
-                                                        <span className="text-[9px] font-bold text-emerald-600/80 uppercase tracking-tighter">{t('dashboard.activity_success')}</span>
+                                                        <span className="text-[9px] font-medium text-emerald-600/80 uppercase tracking-tighter">{t('dashboard.activity_success')}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -85,7 +85,7 @@ export function ActivityFeed({ recentActivity }: ActivityFeedProps) {
                                 <div className="p-4 rounded-full bg-slate-50">
                                     <Zap className="w-8 h-8 text-slate-300" />
                                 </div>
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('dashboard.no_activity_detected')}</p>
+                                <p className="text-[10px] font-medium uppercase tracking-widest text-slate-400">{t('dashboard.no_activity_detected')}</p>
                             </div>
                         )}
                     </div>

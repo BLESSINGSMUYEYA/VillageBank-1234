@@ -64,3 +64,40 @@ export const deleteReminder = async (id: string, userId: string) => {
         return { success: false, error: 'Failed to delete reminder' }
     }
 }
+
+export const getDueReminders = async () => {
+    try {
+        const reminders = await prisma.reminder.findMany({
+            where: {
+                datetime: {
+                    lte: new Date(),
+                },
+                notificationSent: false,
+            },
+            include: {
+                user: {
+                    include: {
+                        pushSubscriptions: true,
+                    },
+                },
+            },
+        })
+        return { success: true, data: reminders }
+    } catch (error) {
+        console.error('Error fetching due reminders:', error)
+        return { success: false, error: 'Failed to fetch due reminders' }
+    }
+}
+
+export const markReminderAsNotified = async (id: string) => {
+    try {
+        await prisma.reminder.update({
+            where: { id },
+            data: { notificationSent: true },
+        })
+        return { success: true }
+    } catch (error) {
+        console.error('Error marking reminder as notified:', error)
+        return { success: false }
+    }
+}

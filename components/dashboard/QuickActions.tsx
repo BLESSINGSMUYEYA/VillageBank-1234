@@ -38,7 +38,7 @@ export function QuickActions({ pendingApprovals = [], user }: QuickActionsProps)
                         <div className="w-6 h-6 shrink-0 rounded-full bg-emerald-500 flex items-center justify-center">
                             <Plus className="w-3.5 h-3.5 text-white stroke-[3px]" />
                         </div>
-                        <span className="text-[11px] font-black text-[#1B4332] uppercase tracking-[0.15em] whitespace-nowrap">
+                        <span className="text-[11px] font-bold text-[#1B4332] uppercase tracking-[0.15em] whitespace-nowrap">
                             {t('dashboard.quick_actions')}
                         </span>
                     </div>

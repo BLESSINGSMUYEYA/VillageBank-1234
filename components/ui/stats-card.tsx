@@ -77,7 +77,7 @@ export function StatsCard({
                 <CardHeader className="pb-2 p-3 sm:p-4 relative z-10">
                     <div className="flex items-center justify-between">
                         <CardTitle className={cn(
-                            "text-[9px] font-black uppercase tracking-[0.2em] whitespace-normal break-words leading-tight",
+                            "text-[9px] font-bold uppercase tracking-[0.2em] whitespace-normal break-words leading-tight",
                             variant === 'default' || variant === 'glass'
                                 ? 'text-muted-foreground'
                                 : variant === 'featured'
@@ -101,7 +101,7 @@ export function StatsCard({
 
                 <CardContent className="p-3 sm:p-4 pt-0 relative z-10">
                     <div className={cn(
-                        "text-xl sm:text-2xl font-black break-words leading-none",
+                        "text-xl sm:text-2xl font-bold break-words leading-none",
                         isColorVariant ? 'text-white' : 'text-foreground'
                     )}>
                         {value}
@@ -110,7 +110,7 @@ export function StatsCard({
                     <div className="flex items-center justify-between mt-3">
                         {description && (
                             <p className={cn(
-                                "text-xs font-bold",
+                                "text-xs font-medium",
                                 variant === 'default' || variant === 'glass'
                                     ? 'text-muted-foreground/70'
                                     : variant === 'featured'
@@ -123,7 +123,7 @@ export function StatsCard({
 
                         {trend && (
                             <div className={cn(
-                                "flex items-center text-[10px] font-black px-2 py-1 rounded-lg backdrop-blur-md",
+                                "flex items-center text-[10px] font-bold px-2 py-1 rounded-lg backdrop-blur-md",
                                 trend.positive
                                     ? 'bg-green-500/10 text-green-600 dark:text-green-400'
                                     : 'bg-red-500/10 text-red-600 dark:text-red-400'

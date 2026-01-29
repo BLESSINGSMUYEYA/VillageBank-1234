@@ -141,7 +141,7 @@ export function VaultClient({
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     // Mobile: text-base (16px) prevents iOS zoom. Tablet+: text-sm.
-                                    className="w-full h-10 pl-9 pr-3 sm:pl-10 sm:pr-4 rounded-xl bg-slate-100 dark:bg-slate-900/50 border-none text-base sm:text-sm font-bold focus:ring-2 focus:ring-emerald-500/50"
+                                    className="w-full h-10 pl-9 pr-3 sm:pl-10 sm:pr-4 rounded-xl bg-slate-100 dark:bg-slate-900/50 border-none text-base sm:text-sm font-medium focus:ring-2 focus:ring-emerald-500/50"
                                 />
                                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                                     <Search className="w-4 h-4" />
@@ -154,7 +154,7 @@ export function VaultClient({
                                         key={f}
                                         onClick={() => setFilter(f)}
                                         className={cn(
-                                            "px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-[9px] sm:text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap snap-start",
+                                            "px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-[9px] sm:text-[10px] font-bold uppercase tracking-wider transition-all whitespace-nowrap snap-start",
                                             filter === f
                                                 ? "bg-white dark:bg-slate-800 text-foreground shadow-sm"
                                                 : "text-muted-foreground hover:text-foreground hover:bg-white/50"
@@ -216,11 +216,11 @@ export function VaultClient({
                                                     <div className="min-w-0 flex-1">
                                                         {/* Group name + Type badge: wrap on mobile */}
                                                         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                                                            <p className="font-black text-sm text-foreground truncate max-w-[150px] sm:max-w-[200px] md:max-w-none" title={item.groupName}>
+                                                            <p className="font-bold text-sm text-foreground truncate max-w-[150px] sm:max-w-[200px] md:max-w-none" title={item.groupName}>
                                                                 {item.groupName}
                                                             </p>
                                                             <span className={cn(
-                                                                "text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider shrink-0",
+                                                                "text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider shrink-0",
                                                                 item.type === 'CONTRIBUTION' ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400"
                                                             )}>
                                                                 {item.type === 'CONTRIBUTION' ? 'Deposit' : 'Loan'}
@@ -228,12 +228,12 @@ export function VaultClient({
                                                         </div>
                                                         {/* Date + Pending badge */}
                                                         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-0.5">
-                                                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                                                            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1">
                                                                 <Calendar className="w-3 h-3" />
                                                                 {item.date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                                                             </p>
                                                             {item.status === 'PENDING' && (
-                                                                <span className="text-[9px] font-bold text-orange-500 bg-orange-500/10 px-1.5 rounded-sm">
+                                                                <span className="text-[9px] font-medium text-orange-500 bg-orange-500/10 px-1.5 rounded-sm">
                                                                     Pending Review
                                                                 </span>
                                                             )}
@@ -244,13 +244,13 @@ export function VaultClient({
                                                 {/* Right Section: Amount & Status */}
                                                 <div className="flex items-center justify-between sm:justify-end sm:flex-col sm:items-end gap-1 pl-13 sm:pl-0 shrink-0">
                                                     <p className={cn(
-                                                        "text-sm sm:text-base font-black tracking-tight",
+                                                        "text-sm sm:text-base font-bold tracking-tight",
                                                         item.type === 'CONTRIBUTION' ? "text-emerald-600 dark:text-emerald-400" : "text-foreground"
                                                     )}>
                                                         {item.type === 'CONTRIBUTION' ? '+' : ''} {formatCurrency(item.amount)}
                                                     </p>
                                                     <Badge className={cn(
-                                                        "text-[9px] px-1.5 py-0 border-0 h-4",
+                                                        "text-[9px] px-1.5 py-0 border-0 h-4 font-medium",
                                                         item.status === 'COMPLETED' || item.status === 'ACTIVE'
                                                             ? "bg-slate-100 dark:bg-slate-800 text-slate-500"
                                                             : item.status === 'PENDING'
@@ -279,7 +279,7 @@ export function VaultClient({
                     {/* Pagination (Kept from existing) */}
                     {pagination.totalPages > 1 && (
                         <div className="p-3 sm:p-4 border-t border-white/10 dark:border-white/5 flex items-center justify-between bg-zinc-50/50 dark:bg-white/5">
-                            <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">
+                            <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-60">
                                 Page {pagination.currentPage} of {pagination.totalPages}
                             </p>
                             <div className="flex gap-1.5 sm:gap-2">
@@ -317,7 +317,7 @@ export function VaultClient({
                         </div>
                     )}
                 </GlassCard>
-            </motion.div>
+            </motion.div >
 
             <ContributionModal
                 isOpen={isContributionModalOpen}

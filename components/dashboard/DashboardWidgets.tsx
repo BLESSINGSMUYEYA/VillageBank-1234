@@ -33,14 +33,14 @@ export function DashboardWidgets({ stats, reminders = [], userId = '' }: Dashboa
                 <GlassCard className="p-6 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl shadow-emerald-900/5 flex flex-col justify-between min-h-[280px] sm:min-h-[320px] h-full border-slate-200/60 dark:border-white/5 bg-white/60 dark:bg-white/5" blur="xl">
                     <div className="w-full">
                         <div className="flex items-center justify-between mb-6 sm:mb-8">
-                            <h3 className="text-[10px] sm:text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">{t('dashboard.reminders')}</h3>
+                            <h3 className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">{t('dashboard.reminders')}</h3>
                             <CreateReminderDialog userId={userId} />
                         </div>
 
                         {nextReminder ? (
                             <div className="space-y-4">
                                 <div>
-                                    <h4 className="text-lg sm:text-xl font-black text-main line-clamp-2">{nextReminder.title}</h4>
+                                    <h4 className="text-lg sm:text-xl font-bold text-main line-clamp-2">{nextReminder.title}</h4>
                                     <div className="flex items-center gap-2 text-slate-500 mt-2">
                                         <Calendar className="w-3.5 h-3.5 text-banana" />
                                         <p className="text-xs font-medium">
@@ -64,7 +64,7 @@ export function DashboardWidgets({ stats, reminders = [], userId = '' }: Dashboa
                                 <div className="w-12 h-12 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center mb-2">
                                     <CheckCircle2 className="w-6 h-6 text-slate-400" />
                                 </div>
-                                <p className="text-sm font-bold text-slate-500">{t('dashboard.all_caught_up')}</p>
+                                <p className="text-sm font-medium text-slate-500">{t('dashboard.all_caught_up')}</p>
                                 <p className="text-[10px] uppercase tracking-wide text-slate-400">{t('dashboard.no_upcoming_events')}</p>
                             </div>
                         )}
@@ -96,7 +96,7 @@ export function DashboardWidgets({ stats, reminders = [], userId = '' }: Dashboa
                 {/* Loan Progress */}
                 <motion.div variants={fadeIn}>
                     <GlassCard className="p-6 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl shadow-emerald-900/5 flex flex-col justify-between min-h-[280px] sm:min-h-[320px] h-full border-slate-200/60 dark:border-white/5 bg-white/60 dark:bg-white/5" blur="xl">
-                        <h3 className="text-[10px] sm:text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">{t('dashboard.loan_health')}</h3>
+                        <h3 className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em]">{t('dashboard.loan_health')}</h3>
                         <div className="flex flex-col items-center justify-center space-y-4 py-4">
                             <div className="relative">
                                 <ProgressRing
@@ -107,12 +107,12 @@ export function DashboardWidgets({ stats, reminders = [], userId = '' }: Dashboa
                                     trackClassName="stroke-emerald-100/50"
                                 />
                                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                    <span className="text-xl sm:text-2xl font-black text-main">{progress}%</span>
-                                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">{t('dashboard.repaid')}</span>
+                                    <span className="text-xl sm:text-2xl font-bold text-main">{progress}%</span>
+                                    <span className="text-[8px] font-medium text-slate-400 uppercase tracking-widest">{t('dashboard.repaid')}</span>
                                 </div>
                             </div>
                             <div className="text-center">
-                                <p className="text-xs font-bold text-emerald-700">{t('dashboard.healthy_standing')}</p>
+                                <p className="text-xs font-medium text-emerald-700">{t('dashboard.healthy_standing')}</p>
                                 <p className="text-[9px] text-slate-400 font-medium">{t('dashboard.on_track')}</p>
                             </div>
                         </div>
@@ -127,11 +127,11 @@ export function DashboardWidgets({ stats, reminders = [], userId = '' }: Dashboa
                             <div>
                                 <div className="flex items-center gap-2 mb-6 sm:mb-8">
                                     <Activity className="w-4 h-4 text-banana animate-pulse" />
-                                    <h3 className="text-banana/80 text-[10px] font-bold uppercase tracking-[0.2em]">{t('dashboard.pulse_health')}</h3>
+                                    <h3 className="text-banana/80 text-[10px] font-medium uppercase tracking-[0.2em]">{t('dashboard.pulse_health')}</h3>
                                 </div>
                                 <div className="space-y-1">
-                                    <div className="text-3xl sm:text-4xl font-black text-white tracking-tighter">9.8</div>
-                                    <p className="text-[10px] font-bold text-banana uppercase tracking-widest">{t('dashboard.system_score')}</p>
+                                    <div className="text-3xl sm:text-4xl font-bold text-white tracking-tighter">9.8</div>
+                                    <p className="text-[10px] font-medium text-banana uppercase tracking-widest">{t('dashboard.system_score')}</p>
                                 </div>
                             </div>
 
@@ -145,7 +145,7 @@ export function DashboardWidgets({ stats, reminders = [], userId = '' }: Dashboa
                                             className="h-full bg-banana"
                                         />
                                     </div>
-                                    <span className="text-[10px] font-black text-white/40">{t('dashboard.perfect')}</span>
+                                    <span className="text-[10px] font-medium text-white/40">{t('dashboard.perfect')}</span>
                                 </div>
                                 <p className="text-[10px] text-emerald-100/60 font-medium leading-tight">
                                     {t('dashboard.optimal_state')}
