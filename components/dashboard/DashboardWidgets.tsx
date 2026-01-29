@@ -8,6 +8,7 @@ import { fadeIn } from '@/lib/motions'
 import { ProgressRing } from '@/components/ui/ProgressRing'
 import { toast } from 'sonner'
 import { CreateReminderDialog } from './CreateReminderDialog'
+import { dismissReminderAction } from '@/app/actions/reminder-actions'
 
 import { GlassCard } from '@/components/ui/GlassCard'
 import { Reminder } from '@prisma/client'
