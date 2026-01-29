@@ -59,7 +59,6 @@ export function VaultClient({
     const [activeTab, setActiveTab] = useState('savings') // Keeping for safety, though unused in new layout? No, remove it.
     const [filter, setFilter] = useState<'ALL' | 'INCOME' | 'OUTFLOW'>('ALL')
     const [searchTerm, setSearchTerm] = useState('')
-    const [showStats, setShowStats] = useState(false)
     const [isContributionModalOpen, setIsContributionModalOpen] = useState(false)
 
     // Check for shared receipt to auto-open modal
@@ -127,84 +126,6 @@ export function VaultClient({
             animate="animate"
             className="space-y-4 sm:space-y-6 animate-fade-in"
         >
-            {/* 1. Simplified Hero Section */}
-            <motion.div variants={itemFadeIn}>
-                <AnimatePresence mode="wait">
-                    {showStats ? (
-                        <motion.div
-                            key="stats-visible"
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20, height: 0 }}
-                            className="zen-card overflow-hidden"
-                        >
-                            <div className="relative p-3 sm:p-4 md:p-6 bg-gradient-to-b from-white/40 to-white/10 dark:from-slate-900/40 dark:to-slate-900/10 border-b border-white/10">
-
-                                <div className="flex items-start gap-3 sm:gap-4 mb-1">
-                                    <button
-                                        onClick={() => setShowStats(false)}
-                                        className="shrink-0 w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-muted-foreground hover:bg-slate-200 dark:hover:bg-white/20 transition-colors"
-                                    >
-                                        <X className="w-4 h-4" />
-                                    </button>
-
-                                    <div className="flex-1 min-w-0">
-                                        <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter text-main mb-1 sm:mb-2 text-left break-words">
-                                            {t('common.vault')}
-                                            <span className="text-banana">.</span>
-                                        </h1>
-                                        <p className="text-xs sm:text-sm md:text-base font-medium text-slate-500 leading-relaxed max-w-xl break-words">
-                                            {t('vault.unified_community_hub')}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6">
-                                    {/* Net Savings */}
-                                    <StatsCard
-                                        variant="glass"
-                                        label={t('vault.net_savings')}
-                                        value={formatCurrency(totalSaved)}
-                                        icon={Wallet}
-                                        className="bg-white/40 dark:bg-slate-900/40"
-                                    />
-
-                                    {/* Active Debt */}
-                                    <StatsCard
-                                        variant="glass"
-                                        label={t('vault.active_liability')}
-                                        value={formatCurrency(activeDebt)}
-                                        icon={CreditCard}
-                                        className="bg-white/40 dark:bg-slate-900/40"
-                                    // Override icon color logic inside component if needed or rely on default
-                                    />
-                                </div>
-                            </div>
-                        </motion.div>
-                    ) : (
-                        <motion.div
-                            key="stats-hidden"
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.8 }}
-                            className="flex justify-between items-center bg-white/50 dark:bg-white/5 p-4 rounded-3xl border border-white/20 backdrop-blur-md"
-                        >
-                            <div>
-                                <h1 className="text-lg sm:text-xl font-black text-main tracking-tighter">
-                                    {t('common.vault')}
-                                    <span className="text-banana">.</span>
-                                </h1>
-                            </div>
-                            <button
-                                onClick={() => setShowStats(true)}
-                                className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 shadow-sm flex items-center justify-center text-emerald-600 dark:text-banana hover:scale-110 transition-all"
-                            >
-                                <LinkIcon className="w-5 h-5" />
-                            </button>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </motion.div>
 
             {/* 2. Unified Timeline & Controls */}
             <motion.div variants={itemFadeIn}>

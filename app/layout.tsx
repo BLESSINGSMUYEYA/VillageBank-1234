@@ -42,6 +42,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
+    // Force re-render to fix ChunkLoadError
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
       <body className={`${inter.variable} ${outfit.variable} antialiased font-sans`}>
         <AuthProvider>

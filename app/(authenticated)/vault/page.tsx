@@ -129,7 +129,7 @@ export default async function VaultPage({
     }
 
     return (
-        <div className="w-full max-w-7xl mx-auto py-4 sm:py-8 px-0 sm:px-6 lg:px-8 pb-24 space-y-6">
+        <div className="w-full max-w-7xl mx-auto pt-0 pb-24 sm:pb-24 sm:pt-4 px-0 sm:px-6 lg:px-8 space-y-6">
             <VaultClient
                 contributions={filteredContributions}
                 loans={loans}

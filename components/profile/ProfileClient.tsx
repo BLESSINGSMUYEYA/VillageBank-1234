@@ -174,7 +174,7 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.8 }}
-                            className="flex justify-between items-center bg-white/50 dark:bg-white/5 p-4 rounded-3xl border border-white/20 backdrop-blur-md"
+                            className="flex justify-between items-center bg-white/50 dark:bg-white/5 p-4 rounded-3xl border border-white/20 backdrop-blur-md w-full md:w-1/2 mx-auto"
                         >
                             <div>
                                 <h1 className="text-lg sm:text-xl font-black text-main tracking-tighter">

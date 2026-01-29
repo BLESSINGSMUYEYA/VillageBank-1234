@@ -120,7 +120,7 @@ export function DashboardWidgets({ stats, reminders = [], userId = '' }: Dashboa
                 </motion.div>
 
                 {/* Pulse Health - System Score */}
-                <motion.div variants={fadeIn}>
+                <motion.div variants={fadeIn} className="hidden md:block">
                     <GlassCard className="bg-[#1B4332] dark:bg-emerald-950 p-6 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl shadow-emerald-900/20 overflow-hidden relative group min-h-[280px] sm:min-h-[320px] h-full border-none ring-1 ring-white/10" blur="xl" hover={true} gradient={false}>
                         <div className="absolute top-0 right-0 w-32 h-32 bg-banana/20 rounded-full blur-[60px]" />
                         <div className="relative z-10 flex flex-col justify-between h-full">

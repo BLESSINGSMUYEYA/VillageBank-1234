@@ -36,7 +36,6 @@ interface GroupsContentProps {
 
 export function GroupsContent({ userGroups, userRole, pendingApprovalsCount = 0 }: GroupsContentProps) {
     const { t } = useLanguage()
-    const [showStats, setShowStats] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
     const [filter, setFilter] = useState<'ALL' | 'ADMIN' | 'MEMBER'>('ALL')
 
@@ -67,131 +66,6 @@ export function GroupsContent({ userGroups, userRole, pendingApprovalsCount = 0 
             animate="animate"
             className="space-y-4 sm:space-y-6 animate-fade-in"
         >
-            {/* Collapsible Header */}
-            <motion.div variants={itemFadeIn}>
-                <AnimatePresence mode="wait">
-                    {showStats ? (
-                        <motion.div
-                            key="stats-visible"
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20, height: 0 }}
-                            className="zen-card overflow-hidden"
-                        >
-                            <div className="relative p-3 sm:p-4 md:p-6 bg-slate-100/80 dark:bg-black/40 backdrop-blur-xl border-b border-white/20 dark:border-white/5 shadow-sm">
-                                <div className="flex items-start gap-3 sm:gap-4 mb-1">
-                                    <button
-                                        onClick={() => setShowStats(false)}
-                                        className="shrink-0 w-8 h-8 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center text-muted-foreground hover:bg-slate-200 dark:hover:bg-white/20 transition-colors"
-                                    >
-                                        <X className="w-4 h-4" />
-                                    </button>
-
-                                    <div className="flex-1 min-w-0">
-                                        <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black tracking-tighter text-main mb-1 sm:mb-2 text-left break-words">
-                                            {t('groups.my_groups')}
-                                            <span className="text-supporting">.</span>
-                                        </h1>
-                                        <p className="text-xs sm:text-sm md:text-base font-medium text-slate-500 leading-relaxed max-w-xl break-words">
-                                            {t('groups.manage_circles_desc')}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className={cn(
-                                    "grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 lg:gap-6",
-                                    (userRole === 'ADMIN' || userRole === 'TREASURER' || pendingApprovalsCount > 0) && "lg:grid-cols-4"
-                                )}>
-                                    <StatsCard
-                                        variant="glass"
-                                        label={t('groups.total_groups') || 'Total Circles'}
-                                        value={userGroups.length.toString()}
-                                        icon={Users}
-                                        className="bg-white dark:bg-slate-800 border-none shadow-sm ring-1 ring-black/5"
-                                    />
-                                    <StatsCard
-                                        variant="glass"
-                                        label={t('groups.monthly_commitment') || 'Monthly Commitment'}
-                                        value={formatCurrency(totalCommitment)}
-                                        icon={DollarSign}
-                                        className="bg-white dark:bg-slate-800 border-none shadow-sm ring-1 ring-black/5"
-                                    />
-                                    <StatsCard
-                                        variant="glass"
-                                        label={t('groups.community_size') || 'Community Size'}
-                                        value={totalMembers.toString()}
-                                        icon={TrendingUp}
-                                        className="bg-white dark:bg-slate-800 border-none shadow-sm ring-1 ring-black/5"
-                                    />
-
-                                    {(userRole === 'ADMIN' || userRole === 'TREASURER' || pendingApprovalsCount > 0) && (
-                                        <Link href="/treasurer/approvals" className="block h-full group">
-                                            <div className={cn(
-                                                "relative p-3 rounded-2xl border transition-all duration-300 overflow-hidden h-full flex flex-col justify-between group-hover:-translate-y-1 group-hover:shadow-lg",
-                                                pendingApprovalsCount > 0
-                                                    ? "bg-red-500/10 border-red-500/20 hover:border-red-500/40"
-                                                    : "bg-white dark:bg-slate-800 border-none shadow-sm ring-1 ring-black/5 hover:ring-emerald-500/50"
-                                            )}>
-                                                {pendingApprovalsCount > 0 && (
-                                                    <div className="absolute top-0 right-0 w-20 h-20 bg-red-500/20 blur-2xl -mr-10 -mt-10 animate-pulse" />
-                                                )}
-
-                                                <div className="flex justify-between items-start mb-2 relative z-10">
-                                                    <p className={cn(
-                                                        "text-[9px] font-black uppercase tracking-[0.2em]",
-                                                        pendingApprovalsCount > 0 ? "text-red-500" : "text-slate-400"
-                                                    )}>
-                                                        Approvals
-                                                    </p>
-                                                    <div className={cn(
-                                                        "w-6 h-6 rounded-lg flex items-center justify-center transition-colors",
-                                                        pendingApprovalsCount > 0 ? "bg-red-500 text-white shadow-md shadow-red-500/20" : "bg-white/10 text-slate-400"
-                                                    )}>
-                                                        <Shield className="w-3.5 h-3.5" />
-                                                    </div>
-                                                </div>
-
-                                                <div className="mt-auto relative z-10">
-                                                    <p className={cn(
-                                                        "text-xl font-black tracking-tighter",
-                                                        pendingApprovalsCount > 0 ? "text-red-500" : "text-foreground"
-                                                    )}>
-                                                        {pendingApprovalsCount > 0 ? pendingApprovalsCount : 'Done'}
-                                                    </p>
-                                                    <p className="text-[9px] font-medium text-slate-500 mt-0.5">
-                                                        {pendingApprovalsCount > 0 ? 'Pending Compliance' : 'All Clear'}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </Link>
-                                    )}
-                                </div>
-                            </div>
-                        </motion.div>
-                    ) : (
-                        <motion.div
-                            key="stats-hidden"
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.8 }}
-                            className="flex justify-between items-center bg-slate-100/90 dark:bg-slate-900/90 p-4 rounded-3xl border border-white/20 dark:border-white/10 shadow-sm backdrop-blur-md"
-                        >
-                            <div>
-                                <h1 className="text-lg sm:text-xl font-black text-main tracking-tighter">
-                                    {t('groups.my_groups')}
-                                    <span className="text-supporting">.</span>
-                                </h1>
-                            </div>
-                            <button
-                                onClick={() => setShowStats(true)}
-                                className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 shadow-sm flex items-center justify-center text-emerald-600 dark:text-supporting hover:scale-110 transition-all"
-                            >
-                                <LinkIcon className="w-5 h-5" />
-                            </button>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </motion.div>
 
             {/* Groups List with Controls */}
             <motion.div variants={itemFadeIn}>

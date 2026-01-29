@@ -1,4 +1,4 @@
-'use client'
+0'use client';
 
 import { useAuth } from '@/components/providers/AuthProvider'
 import { useLanguage } from '@/components/providers/LanguageProvider'

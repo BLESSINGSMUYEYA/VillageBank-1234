@@ -52,7 +52,7 @@ export function NextSteps({ user, stats }: NextStepsProps) {
   const progressPercentage = (completedCount / steps.length) * 100
 
   return (
-    <section className="space-y-6 w-full">
+    <section className="space-y-6 w-full hidden md:block">
       <div className="flex items-center justify-between px-1">
         <h3 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">
           {allCompleted ? t('dashboard.pulse_insights') : t('dashboard.onboarding_progress')}
