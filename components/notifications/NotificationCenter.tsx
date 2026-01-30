@@ -62,7 +62,7 @@ export function NotificationCenter({
       const intervalId = setInterval(() => {
         // Only fetch if the tab is visible to save resources
         if (document.visibilityState === 'visible') {
-          fetchNotifications()
+          fetchNotifications(true)
         }
       }, 30000)
 
@@ -82,7 +82,7 @@ export function NotificationCenter({
     }
   }, [isMobile])
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = async (isBackground = false) => {
     try {
       const response = await fetch('/api/notifications')
       if (response.ok) {
@@ -90,9 +90,12 @@ export function NotificationCenter({
         setNotifications(data.notifications || [])
       }
     } catch (error) {
-      console.error('Failed to fetch notifications:', error)
+      // Only log errors if not a background poll to reduce noise
+      if (!isBackground) {
+        console.error('Failed to fetch notifications:', error)
+      }
     } finally {
-      setLoading(false)
+      if (!isBackground) setLoading(false)
     }
   }
 

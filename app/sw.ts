@@ -27,8 +27,8 @@ self.addEventListener('push', (event: any) => {
     event.waitUntil(
         self.registration.showNotification(data.title, {
             body: data.message,
-            icon: '/android-chrome-192x192.png',
-            badge: '/favicon-32x32.png',
+            icon: '/icon-192x192.png',
+            badge: '/icon-192x192.png', // Small icon for status bar
             image: data.image,
             data: { url: data.url || '/' },
             actions: data.actions

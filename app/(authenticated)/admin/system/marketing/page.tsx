@@ -17,6 +17,8 @@ interface Announcement {
     link?: string
     imageUrl?: string
     actionText?: string
+    target?: string
+    targetRegion?: string
     type: string
     isActive: boolean
     createdAt: string
@@ -52,10 +54,8 @@ export default function MarketingPage() {
     const [bannerButtonText, setBannerButtonText] = useState('')
 
     useEffect(() => {
-        if (activeTab === 'banners') {
-            fetchAnnouncements()
-        }
-    }, [activeTab])
+        fetchAnnouncements()
+    }, [])
 
     async function fetchAnnouncements() {
         try {
@@ -98,6 +98,9 @@ export default function MarketingPage() {
                 setBroadcastMessage('')
                 setBroadcastImage('')
                 setBroadcastActionText('')
+                setTargetAudience('ALL')
+                setTargetRegion('')
+                fetchAnnouncements()
             } else {
                 toast.error(data.error || 'Failed to send')
             }
@@ -106,6 +109,18 @@ export default function MarketingPage() {
         } finally {
             setLoading(false)
         }
+    }
+
+    function resendBroadcast(announcement: Announcement) {
+        setBroadcastTitle(announcement.title)
+        setBroadcastMessage(announcement.message)
+        setBroadcastImage(announcement.imageUrl || '')
+        setBroadcastActionText(announcement.actionText || '')
+        setTargetAudience(announcement.target || 'ALL')
+        setTargetRegion(announcement.targetRegion || '')
+
+        toast.info('Broadcast form populated with past data')
+        window.scrollTo({ top: 0, behavior: 'smooth' })
     }
 
     function editBanner(announcement: Announcement) {
@@ -169,15 +184,15 @@ export default function MarketingPage() {
         }
     }
 
-    async function deleteBanner(id: string) {
-        if (!confirm('Are you sure you want to remove this banner?')) return
+    async function deleteAnnouncement(id: string) {
+        if (!confirm('Are you sure you want to remove this item?')) return
 
         try {
             const res = await fetch(`/api/admin/announcements?id=${id}`, {
                 method: 'DELETE'
             })
             if (res.ok) {
-                toast.success('Banner removed')
+                toast.success('Item removed')
                 fetchAnnouncements()
             }
         } catch (error) {
@@ -290,6 +305,90 @@ export default function MarketingPage() {
                             </Button>
                         </CardContent>
                     </Card>
+
+                    <div className="space-y-4 pt-6">
+                        <div className="flex items-center justify-between">
+                            <h3 className="font-semibold text-lg">Recent Broadcasts</h3>
+                            <Button variant="ghost" size="sm" onClick={fetchAnnouncements} disabled={loading}>
+                                <Loader2 className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                            </Button>
+                        </div>
+                        {announcements.filter(a => a.type === 'BROADCAST_ONLY').length === 0 && (
+                            <p className="text-muted-foreground text-sm">No recent broadcasts.</p>
+                        )}
+                        {announcements.filter(a => a.type === 'BROADCAST_ONLY').map((announcement) => (
+                            <Card key={announcement.id} className="overflow-hidden">
+                                <div className="p-4 flex items-start gap-4">
+                                    <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 shrink-0">
+                                        <Bell className="w-5 h-5" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-start justify-between gap-2">
+                                            <h4 className="font-bold text-sm truncate">{announcement.title}</h4>
+                                            <div className="flex gap-1">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="h-8 text-blue-500 hover:text-blue-600"
+                                                    onClick={() => resendBroadcast(announcement)}
+                                                >
+                                                    <Loader2 className="w-3 h-3 mr-1" />
+                                                    Resend
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-8 w-8 text-red-500 hover:text-red-600"
+                                                    onClick={() => deleteAnnouncement(announcement.id)}
+                                                >
+                                                    <Trash2 className="w-3 h-3" />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                        <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{announcement.message}</p>
+
+                                        <div className="mt-2 flex flex-wrap gap-2 text-[10px] text-muted-foreground">
+                                            {announcement.target && (
+                                                <span className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
+                                                    Target: {announcement.target} {announcement.targetRegion ? `(${announcement.targetRegion})` : ''}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        {/* Stats Display */}
+                                        {announcement.stats && announcement.stats.sent > 0 && (
+                                            <div className="mt-3 flex items-center gap-4">
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] uppercase font-bold text-muted-foreground/70">Reach</span>
+                                                    <span className="text-xs font-black">{announcement.stats.sent}</span>
+                                                </div>
+                                                <div className="flex flex-col flex-1 max-w-[200px]">
+                                                    <div className="flex justify-between items-end mb-1">
+                                                        <span className="text-[10px] uppercase font-bold text-muted-foreground/70">Engagement</span>
+                                                        <span className="text-[10px] font-bold text-emerald-600">
+                                                            {Math.round((announcement.stats.read / announcement.stats.sent) * 100)}%
+                                                        </span>
+                                                    </div>
+                                                    <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                                        <div
+                                                            className="h-full bg-emerald-500 rounded-full"
+                                                            style={{ width: `${(announcement.stats.read / announcement.stats.sent) * 100}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div className="mt-2 flex items-center gap-2 text-[10px] text-muted-foreground/60 border-t border-slate-100 dark:border-white/5 pt-2">
+                                            <span>Posted by {announcement.createdBy.firstName}</span>
+                                            <span>•</span>
+                                            <span>{new Date(announcement.createdAt).toLocaleDateString()}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Card>
+                        ))}
+                    </div>
                 </TabsContent>
 
                 <TabsContent value="banners" className="space-y-4 mt-4">
@@ -385,7 +484,7 @@ export default function MarketingPage() {
                                                         variant="ghost"
                                                         size="icon"
                                                         className="h-6 w-6 text-red-500 hover:text-red-600"
-                                                        onClick={() => deleteBanner(announcement.id)}
+                                                        onClick={() => deleteAnnouncement(announcement.id)}
                                                     >
                                                         <Trash2 className="w-3 h-3" />
                                                     </Button>

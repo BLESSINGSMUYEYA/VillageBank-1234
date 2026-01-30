@@ -316,6 +316,8 @@ model Announcement {
   createdAt   DateTime         @default(now())
   createdById String
   actionText  String?
+  target      String?  @default("ALL")
+  targetRegion String?
   createdBy   User             @relation("CreatedAnnouncements", fields: [createdById], references: [id])
   notifications Notification[]
 }

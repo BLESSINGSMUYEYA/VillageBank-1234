@@ -57,6 +57,8 @@ export async function POST(request: NextRequest) {
         })
 
         // 2. Send notifications in parallel
+        const actions = actionText ? [{ action: 'open_url', title: actionText }] : undefined
+
         const results = await Promise.allSettled(subscriptions.map(async (sub) => {
             try {
                 await webpush.sendNotification(
@@ -70,7 +72,9 @@ export async function POST(request: NextRequest) {
                     JSON.stringify({
                         title,
                         message,
-                        url: url || '/dashboard'
+                        url: url || '/dashboard',
+                        image: imageUrl,
+                        actions: actions
                     })
                 )
                 return { status: 'fulfilled', id: sub.id }
@@ -92,6 +96,10 @@ export async function POST(request: NextRequest) {
                 title,
                 message,
                 link: url,
+                imageUrl,
+                actionText,
+                target,
+                targetRegion: region,
                 type: 'BROADCAST_ONLY',
                 createdById: session.userId,
                 isActive: false // purely for history
