@@ -19,14 +19,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { AdminGlassCard } from './AdminGlassCard'
 
-const growthData = [
-    { name: 'Jan', users: 400, volume: 2400 },
-    { name: 'Feb', users: 600, volume: 3200 },
-    { name: 'Mar', users: 900, volume: 5100 },
-    { name: 'Apr', users: 1200, volume: 7800 },
-    { name: 'May', users: 1500, volume: 9500 },
-    { name: 'Jun', users: 2100, volume: 13000 },
-]
+
 
 const regionData = [
     { name: 'Northern', value: 30, color: '#3b82f6' },
@@ -34,12 +27,24 @@ const regionData = [
     { name: 'Southern', value: 25, color: '#10b981' },
 ]
 
-export function GrowthChart() {
+interface GrowthData {
+    name: string
+    users: number
+    volume: number
+}
+
+interface GrowthChartProps {
+    data?: GrowthData[]
+}
+
+export function GrowthChart({ data }: GrowthChartProps) {
+    if (!data) return null
+
     return (
         <AdminGlassCard title="Platform Growth" description="User acquisition and transaction volume trends">
             <div className="h-[300px] w-full p-4 md:p-6">
                 <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={growthData}>
+                    <AreaChart data={data}>
                         <defs>
                             <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
                                 <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />

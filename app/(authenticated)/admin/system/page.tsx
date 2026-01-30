@@ -51,6 +51,11 @@ interface SystemData {
   pendingApprovals: number
   systemHealth: 'HEALTHY' | 'WARNING' | 'CRITICAL'
   databaseStatus: 'ONLINE' | 'OFFLINE' | 'MAINTENANCE'
+  growthHistory: {
+    name: string
+    users: number
+    volume: number
+  }[]
   recentActivities: ActivityLog[]
   users: UserData[]
   configurationHealth: {
@@ -299,7 +304,7 @@ export default function SystemAdminPage() {
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
-                <GrowthChart />
+                <GrowthChart data={data?.growthHistory} />
               </div>
               <div className="lg:col-span-1">
                 <RegionDistributionChart />

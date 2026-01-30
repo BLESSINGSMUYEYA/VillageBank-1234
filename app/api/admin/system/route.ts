@@ -96,6 +96,49 @@ export async function GET(request: NextRequest) {
       }
     })
 
+    // Get growth history (last 6 months)
+    const growthHistory = await Promise.all(
+      Array.from({ length: 6 }).map(async (_, i) => {
+        const date = new Date()
+        date.setMonth(date.getMonth() - (5 - i)) // Going back 5 months to current
+
+        const year = date.getFullYear()
+        const month = date.getMonth()
+
+        const startDate = new Date(year, month, 1)
+        const endDate = new Date(year, month + 1, 0, 23, 59, 59, 999)
+
+        const monthName = date.toLocaleString('default', { month: 'short' })
+
+        const [usersCount, contributionsSum] = await Promise.all([
+          prisma.user.count({
+            where: {
+              createdAt: {
+                gte: startDate,
+                lte: endDate
+              }
+            }
+          }),
+          prisma.contribution.aggregate({
+            where: {
+              status: 'COMPLETED',
+              createdAt: {
+                gte: startDate,
+                lte: endDate
+              }
+            },
+            _sum: { amount: true }
+          })
+        ])
+
+        return {
+          name: monthName,
+          users: usersCount,
+          volume: contributionsSum._sum.amount || 0
+        }
+      })
+    )
+
     const systemData = {
       totalUsers,
       totalGroups,
@@ -105,6 +148,7 @@ export async function GET(request: NextRequest) {
       systemHealth: 'HEALTHY' as const,
       databaseStatus: 'ONLINE' as const,
       regionalSummaries,
+      growthHistory,
       recentActivities: recentActivities.map(activity => ({
         id: activity.id,
         user: `${activity.user.firstName} ${activity.user.lastName}`,
