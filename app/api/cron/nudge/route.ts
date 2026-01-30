@@ -66,6 +66,21 @@ export async function GET(request: Request) {
 
         if (sent) {
             await updateNudgeTimestamp(user.id)
+
+            // Create persistent notification
+            await prisma.notification.create({
+                data: {
+                    userId: user.id,
+                    type: 'INFO',
+                    title: nudgeType === 'VERIFY_IDENTITY' ? 'Complete your Profile' : 'Stay Connected',
+                    message: nudgeType === 'VERIFY_IDENTITY'
+                        ? 'Please verify your identity to access all features.'
+                        : 'Turn on notifications to get important updates.',
+                    actionUrl: nudgeType === 'VERIFY_IDENTITY' ? '/profile' : '/dashboard',
+                    actionText: nudgeType === 'VERIFY_IDENTITY' ? 'Verify Now' : 'Enable',
+                }
+            })
+
             results.push({ userId: user.id, email: user.email, type: nudgeType, status: 'sent' })
         }
     }

@@ -24,6 +24,10 @@ interface Announcement {
         firstName: string
         lastName: string
     }
+    stats?: {
+        sent: number
+        read: number
+    }
 }
 
 export default function MarketingPage() {
@@ -34,6 +38,10 @@ export default function MarketingPage() {
     // Broadcast Form
     const [broadcastTitle, setBroadcastTitle] = useState('')
     const [broadcastMessage, setBroadcastMessage] = useState('')
+    const [broadcastImage, setBroadcastImage] = useState('')
+    const [broadcastActionText, setBroadcastActionText] = useState('')
+    const [targetAudience, setTargetAudience] = useState('ALL')
+    const [targetRegion, setTargetRegion] = useState('')
 
     // Banner Form
     const [editingId, setEditingId] = useState<string | null>(null)
@@ -74,7 +82,11 @@ export default function MarketingPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     title: broadcastTitle,
-                    message: broadcastMessage
+                    message: broadcastMessage,
+                    imageUrl: broadcastImage,
+                    actionText: broadcastActionText,
+                    target: targetAudience,
+                    region: targetRegion
                 })
             })
 
@@ -84,6 +96,8 @@ export default function MarketingPage() {
                 toast.success(`Sent to ${data.sent} users!`)
                 setBroadcastTitle('')
                 setBroadcastMessage('')
+                setBroadcastImage('')
+                setBroadcastActionText('')
             } else {
                 toast.error(data.error || 'Failed to send')
             }
@@ -215,6 +229,61 @@ export default function MarketingPage() {
                                     onChange={(e) => setBroadcastMessage(e.target.value)}
                                 />
                             </div>
+
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium">Notification Image (Optional)</label>
+                                <ImageUpload
+                                    value={broadcastImage}
+                                    onChange={(url) => setBroadcastImage(url)}
+                                    onRemove={() => setBroadcastImage('')}
+                                />
+                                <p className="text-[10px] text-muted-foreground">
+                                    Images will be displayed in the notification shade on supported Android devices.
+                                </p>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium">Action Button Text (Optional)</label>
+                                <Input
+                                    placeholder="e.g. View Details, Pay Now"
+                                    value={broadcastActionText}
+                                    onChange={(e) => setBroadcastActionText(e.target.value)}
+                                />
+                                <p className="text-[10px] text-muted-foreground">
+                                    Adds a button to the push notification that opens the link.
+                                </p>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Target Audience</label>
+                                    <select
+                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        value={targetAudience}
+                                        onChange={(e) => setTargetAudience(e.target.value)}
+                                    >
+                                        <option value="ALL">All Users</option>
+                                        <option value="REGIONAL_ADMINS">Regional Admins Only</option>
+                                        <option value="UNVERIFIED_IDENTITY">Unverified Identity</option>
+                                        <option value="REGION">Specific Region</option>
+                                    </select>
+                                </div>
+                                {targetAudience === 'REGION' && (
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Select Region</label>
+                                        <select
+                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                            value={targetRegion}
+                                            onChange={(e) => setTargetRegion(e.target.value)}
+                                        >
+                                            <option value="">Select a region...</option>
+                                            <option value="NORTHERN">Northern</option>
+                                            <option value="CENTRAL">Central</option>
+                                            <option value="SOUTHERN">Southern</option>
+                                        </select>
+                                    </div>
+                                )}
+                            </div>
                             <Button onClick={sendBroadcast} disabled={loading} className="w-full sm:w-auto">
                                 {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                                 Send Broadcast
@@ -323,7 +392,32 @@ export default function MarketingPage() {
                                                 </div>
                                             </div>
                                             <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{announcement.message}</p>
-                                            <div className="mt-2 flex items-center gap-2 text-[10px] text-muted-foreground/60">
+
+                                            {/* Stats Display */}
+                                            {announcement.stats && announcement.stats.sent > 0 && (
+                                                <div className="mt-3 flex items-center gap-4">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[10px] uppercase font-bold text-muted-foreground/70">Reach</span>
+                                                        <span className="text-xs font-black">{announcement.stats.sent}</span>
+                                                    </div>
+                                                    <div className="flex flex-col flex-1">
+                                                        <div className="flex justify-between items-end mb-1">
+                                                            <span className="text-[10px] uppercase font-bold text-muted-foreground/70">Engagement</span>
+                                                            <span className="text-[10px] font-bold text-emerald-600">
+                                                                {Math.round((announcement.stats.read / announcement.stats.sent) * 100)}%
+                                                            </span>
+                                                        </div>
+                                                        <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                                            <div
+                                                                className="h-full bg-emerald-500 rounded-full"
+                                                                style={{ width: `${(announcement.stats.read / announcement.stats.sent) * 100}%` }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            <div className="mt-2 flex items-center gap-2 text-[10px] text-muted-foreground/60 border-t border-slate-100 dark:border-white/5 pt-2">
                                                 <span>Posted by {announcement.createdBy.firstName}</span>
                                                 <span>•</span>
                                                 <span>{new Date(announcement.createdAt).toLocaleDateString()}</span>

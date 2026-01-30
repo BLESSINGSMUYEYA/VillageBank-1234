@@ -9,10 +9,48 @@ export async function GET(request: NextRequest) {
             include: {
                 createdBy: {
                     select: { firstName: true, lastName: true }
+                },
+                _count: {
+                    select: { notifications: true } // Total Sent
                 }
             }
         })
-        return NextResponse.json(announcements)
+
+        // Initial stats structure
+
+
+        const data = announcements.map(a => ({
+            ...a,
+            stats: {
+                sent: (a as any)._count.notifications,
+                read: 0
+            }
+        }))
+
+        // Also fetch "read" counts effectively
+        // Prisma doesn't support filtered relation counts in the same query easily without raw query or separate queries
+        // Let's do a separate group by for speed
+        if (announcements.length > 0) {
+            const announcementIds = announcements.map(a => a.id)
+
+            const readCounts = await prisma.notification.groupBy({
+                by: ['announcementId'],
+                where: {
+                    announcementId: { in: announcementIds },
+                    read: true
+                },
+                _count: {
+                    _all: true
+                }
+            })
+
+            data.forEach(a => {
+                const readEntry = readCounts.find(r => r.announcementId === a.id)
+                a.stats.read = readEntry?._count._all || 0
+            })
+        }
+
+        return NextResponse.json(data)
     } catch (error) {
         return NextResponse.json({ error: 'Failed to fetch announcements' }, { status: 500 })
     }

@@ -15,7 +15,8 @@ import {
   Shield,
   Settings,
   LogOut,
-  Server
+  Server,
+  Megaphone
 } from 'lucide-react'
 import { NotificationCenter } from '@/components/notifications/NotificationCenter'
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher'
@@ -113,6 +114,15 @@ export function MobileNavigation() {
                         <Link href="/admin/system" className="flex items-center p-3 font-bold text-sm text-slate-600 dark:text-slate-300">
                           <Server className="mr-3 h-4 w-4 opacity-70" />
                           System Command
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+
+                    {user?.role === 'SUPER_ADMIN' && (
+                      <DropdownMenuItem asChild className="rounded-2xl focus:bg-emerald-50 dark:focus:bg-emerald-500/10 focus:text-emerald-600 dark:focus:text-emerald-400">
+                        <Link href="/admin/system/marketing" className="flex items-center p-3 font-bold text-sm text-slate-600 dark:text-slate-300">
+                          <Megaphone className="mr-3 h-4 w-4 opacity-70" />
+                          Marketing
                         </Link>
                       </DropdownMenuItem>
                     )}

@@ -212,8 +212,10 @@ model Notification {
   read       Boolean          @default(false)
   actionUrl  String?
   actionText String?
+  announcementId String? // Optional because nudges might not be announcements
   createdAt  DateTime         @default(now())
   user       User             @relation(fields: [userId], references: [id])
+  announcement Announcement? @relation(fields: [announcementId], references: [id])
 
   @@index([userId, read])
   @@index([userId, createdAt])
@@ -315,6 +317,7 @@ model Announcement {
   createdById String
   actionText  String?
   createdBy   User             @relation("CreatedAnnouncements", fields: [createdById], references: [id])
+  notifications Notification[]
 }
 
 enum UserRole {

@@ -4,7 +4,7 @@ import { useAuth } from '@/components/providers/AuthProvider'
 import { useLanguage } from '@/components/providers/LanguageProvider'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Zap, Landmark, Users, User, Shield, Server } from 'lucide-react'
+import { Zap, Landmark, Users, User, Shield, Server, Megaphone } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { itemFadeIn } from '@/lib/motions'
 import { UBankLogo } from '@/components/ui/Logo'
@@ -67,6 +67,7 @@ export function DesktopNavigation() {
 
   if (user?.role === 'SUPER_ADMIN') {
     menuItems.push({ name: 'System', href: '/admin/system', icon: Server })
+    menuItems.push({ name: 'Marketing', href: '/admin/system/marketing', icon: Megaphone })
   }
 
   if (user?.role === 'SUPER_ADMIN' || user?.role === 'REGIONAL_ADMIN') {

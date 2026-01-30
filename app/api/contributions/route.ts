@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Create contribution record
-      return await tx.contribution.create({
+      const newContribution = await tx.contribution.create({
         data: {
           groupId: validatedData.groupId,
           userId: userId as string,
@@ -136,6 +136,20 @@ export async function POST(request: NextRequest) {
           penaltyApplied: finalPenaltyApplied, // How much of THIS money went to penalties
         },
       })
+
+      // Notify the user
+      await tx.notification.create({
+        data: {
+          userId: userId as string,
+          type: 'INFO',
+          title: 'Contribution Submitted',
+          message: `Your contribution of MWK ${validatedData.amount.toLocaleString()} has been submitted for review.`,
+          actionUrl: `/groups/${validatedData.groupId}`,
+          actionText: 'View Group'
+        }
+      })
+
+      return newContribution
     })
 
     // Create activity log

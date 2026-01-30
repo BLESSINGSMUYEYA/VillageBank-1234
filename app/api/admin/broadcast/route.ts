@@ -19,14 +19,42 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        const { title, message, url } = await request.json()
+        const { title, message, url, target, region, imageUrl, actionText } = await request.json()
 
         if (!title || !message) {
             return NextResponse.json({ error: 'Title and message are required' }, { status: 400 })
         }
 
-        // 1. Get all subscriptions
-        const subscriptions = await prisma.pushSubscription.findMany()
+        // Define where clause based on target
+        let whereClause: any = {}
+
+        switch (target) {
+            case 'REGIONAL_ADMINS':
+                whereClause = { role: 'REGIONAL_ADMIN' }
+                break
+            case 'UNVERIFIED_IDENTITY':
+                whereClause = { identityVerification: null }
+                break
+            case 'REGION':
+                if (region) {
+                    whereClause = { region: region }
+                }
+                break
+            case 'ALL':
+            default:
+                whereClause = {}
+                break
+        }
+
+        // 1. Get all subscriptions for target users
+        const subscriptions = await prisma.pushSubscription.findMany({
+            where: {
+                user: whereClause
+            },
+            include: {
+                user: true
+            }
+        })
 
         // 2. Send notifications in parallel
         const results = await Promise.allSettled(subscriptions.map(async (sub) => {
@@ -57,9 +85,9 @@ export async function POST(request: NextRequest) {
 
         const successCount = results.filter(r => r.status === 'fulfilled').length
 
-        // 3. Log to persistent notifications for all users (optional, but good for history)
-        // This can be heavy if many users, for now let's just create an announcement record of type BROADCAST_ONLY
-        await prisma.announcement.create({
+        // 3. Log to persistent notifications for target users
+        // Create announcement first
+        const announcement = await prisma.announcement.create({
             data: {
                 title,
                 message,
@@ -69,6 +97,27 @@ export async function POST(request: NextRequest) {
                 isActive: false // purely for history
             }
         })
+
+        // Fetch user IDs matching the same filter criteria
+        const targetUsers = await prisma.user.findMany({
+            where: whereClause,
+            select: { id: true }
+        })
+
+        if (targetUsers.length > 0) {
+            await prisma.notification.createMany({
+                data: targetUsers.map(u => ({
+                    userId: u.id,
+                    type: 'INFO',
+                    title: title,
+                    message: message,
+                    actionUrl: url || '/dashboard',
+                    actionText: actionText || 'View', // Use custom action text
+                    announcementId: announcement.id,
+                    read: false
+                }))
+            })
+        }
 
         return NextResponse.json({
             success: true,

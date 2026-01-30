@@ -57,6 +57,16 @@ export function NotificationCenter({
   useEffect(() => {
     if (user) {
       fetchNotifications()
+
+      // Poll for new notifications every 30 seconds
+      const intervalId = setInterval(() => {
+        // Only fetch if the tab is visible to save resources
+        if (document.visibilityState === 'visible') {
+          fetchNotifications()
+        }
+      }, 30000)
+
+      return () => clearInterval(intervalId)
     }
   }, [user])
 

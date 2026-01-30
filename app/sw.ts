@@ -28,14 +28,25 @@ self.addEventListener('push', (event: any) => {
         self.registration.showNotification(data.title, {
             body: data.message,
             icon: '/android-chrome-192x192.png',
-            badge: '/favicon-32x32.png', // Add a suitable badge image
-            data: { url: data.url || '/' }
+            badge: '/favicon-32x32.png',
+            image: data.image,
+            data: { url: data.url || '/' },
+            actions: data.actions
         })
     )
 })
 
 self.addEventListener('notificationclick', (event: any) => {
     event.notification.close()
+
+    // Handle action buttons
+    if (event.action === 'open_url') {
+        event.waitUntil(
+            self.clients.openWindow(event.notification.data.url)
+        )
+        return
+    }
+
     event.waitUntil(
         self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList: any) => {
             if (clientList.length > 0) {
