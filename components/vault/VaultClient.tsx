@@ -126,8 +126,7 @@ export function VaultClient({
             animate="animate"
             className="space-y-4 sm:space-y-6 animate-fade-in"
         >
-
-            {/* 2. Unified Timeline & Controls */}
+            {/* Unified Timeline & Controls */}
             <motion.div variants={itemFadeIn}>
                 <GlassCard className="p-0 overflow-hidden" hover={false}>
                     {/* Controls Bar */}

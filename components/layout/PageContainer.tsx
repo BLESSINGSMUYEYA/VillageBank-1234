@@ -27,8 +27,8 @@ export function PageContainer({
     return (
         <div
             className={cn(
-                "container mx-auto px-4 py-8 sm:py-12 pb-20 sm:pb-24 animate-fade-in",
-                maxWidths[size],
+                "w-full px-0 py-8 sm:py-12 pb-20 sm:pb-24 animate-fade-in",
+                // maxWidths[size], // Removed to allow full-width alignment with header
                 variant === 'scrollable' && "h-full overflow-y-auto",
                 className
             )}

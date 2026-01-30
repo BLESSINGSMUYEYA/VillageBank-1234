@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
 import { VaultClient } from '@/components/vault/VaultClient'
 import { PaymentStatus } from '@prisma/client'
+import { PageContainer } from '@/components/layout/PageContainer'
+import { PageHeader } from '@/components/layout/PageHeader'
 
 export default async function VaultPage({
     searchParams,
@@ -81,42 +83,56 @@ export default async function VaultPage({
         },
     })
 
-    // 4. Calculate Eligibility (Server Side)
+    // 4. Calculate Eligibility (Server Side) - Optimized with single query
     const eligibilityChecks = []
-    for (const groupMember of userGroups) {
-        const completedContributions = await prisma.contribution.count({
+
+    if (userGroups.length > 0) {
+        // Fetch all contribution stats in one query
+        const contributionStats = await prisma.contribution.groupBy({
+            by: ['groupId'],
             where: {
                 userId: userId as string,
-                groupId: groupMember.groupId,
+                groupId: { in: userGroups.map(g => g.groupId) },
                 status: 'COMPLETED',
             },
-        })
-
-        const totalContributionsValue = await prisma.contribution.aggregate({
-            where: {
-                userId: userId as string,
-                groupId: groupMember.groupId,
-                status: 'COMPLETED',
+            _count: {
+                id: true
             },
             _sum: {
                 amount: true
             }
-        }).then(res => Number(res._sum.amount || 0))
+        })
 
-        const hasActiveLoan = loans.some(l =>
-            l.groupId === groupMember.groupId &&
-            ['PENDING', 'APPROVED', 'ACTIVE'].includes(l.status)
+        // Create a map for quick lookup
+        const statsMap = new Map(
+            contributionStats.map(stat => [
+                stat.groupId,
+                {
+                    count: stat._count.id,
+                    total: Number(stat._sum.amount || 0)
+                }
+            ])
         )
 
-        eligibilityChecks.push({
-            group: groupMember.group,
-            eligible: completedContributions >= (groupMember.group.minContributionMonths || 3) && !hasActiveLoan,
-            contributionsCount: completedContributions,
-            totalContributions: totalContributionsValue,
-            maxLoanAmount: totalContributionsValue * groupMember.group.maxLoanMultiplier,
-            hasActiveLoan,
-            unpaidPenalties: groupMember.unpaidPenalties
-        })
+        // Build eligibility checks using the stats map
+        for (const groupMember of userGroups) {
+            const stats = statsMap.get(groupMember.groupId) || { count: 0, total: 0 }
+
+            const hasActiveLoan = loans.some(l =>
+                l.groupId === groupMember.groupId &&
+                ['PENDING', 'APPROVED', 'ACTIVE'].includes(l.status)
+            )
+
+            eligibilityChecks.push({
+                group: groupMember.group,
+                eligible: stats.count >= (groupMember.group.minContributionMonths || 3) && !hasActiveLoan,
+                contributionsCount: stats.count,
+                totalContributions: stats.total,
+                maxLoanAmount: stats.total * groupMember.group.maxLoanMultiplier,
+                hasActiveLoan,
+                unpaidPenalties: groupMember.unpaidPenalties
+            })
+        }
     }
 
     // Search filtering logic for UI
@@ -129,7 +145,19 @@ export default async function VaultPage({
     }
 
     return (
-        <div className="w-full max-w-7xl mx-auto pt-0 pb-24 sm:pb-24 sm:pt-4 px-0 sm:px-6 lg:px-8 space-y-6">
+        <PageContainer size="default">
+            <PageHeader
+                title={
+                    <>
+                        Your <span className="text-gradient-primary">Vault</span>
+                    </>
+                }
+                description="Track your contributions, loans, and financial journey across all circles."
+                badge="Financial Hub"
+                backHref="/dashboard"
+                backLabel="Back to Dashboard"
+            />
+
             <VaultClient
                 contributions={filteredContributions}
                 loans={loans}
@@ -142,6 +170,6 @@ export default async function VaultPage({
                     totalItems: totalContributions
                 }}
             />
-        </div>
+        </PageContainer>
     )
 }
