@@ -47,7 +47,7 @@ export function MarketingHeader() {
                     ))}
                 </nav>
                 <Link href="/login">
-                    <Button size="xl" variant="premium">
+                    <Button className="h-11 rounded-xl px-6 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 transition-all">
                         {t('landing.launch_app')}
                     </Button>
                 </Link>
@@ -91,7 +91,7 @@ export function MarketingHeader() {
                                 </Link>
                                 <Link href="/register" className="block">
                                     <Button size="xl" variant="outline" className="w-full border-white/10 text-white hover:bg-white/5">
-                                        Create Account
+                                        Become a Member
                                     </Button>
                                 </Link>
                             </div>

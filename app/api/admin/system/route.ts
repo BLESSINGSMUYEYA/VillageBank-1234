@@ -139,6 +139,66 @@ export async function GET(request: NextRequest) {
       })
     )
 
+    // --- ADVANCED GROWTH METRICS ---
+
+    // 1. Viral Funnel (Views vs Conversions)
+    // We use QrAnalytics for views and Activity logs for join requests
+    const [totalViews, totalJoinRequests] = await Promise.all([
+      (prisma as any).qrAnalytics.count(), // Cast to any because QrAnalytics might be new to client type
+      prisma.activity.count({
+        where: { actionType: 'JOIN_REQUESTED' }
+      })
+    ])
+
+    // 2. Retention Pulse (Active User Rate - 7 Days)
+    const sevenDaysAgo = new Date()
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+
+    // Count unique users who have an activity log in the last 7 days
+    const activeUsersCount = await prisma.activity.groupBy({
+      by: ['userId'],
+      where: {
+        createdAt: { gte: sevenDaysAgo }
+      }
+    }).then(groups => groups.length)
+
+    const activeUserRate = totalUsers > 0 ? (activeUsersCount / totalUsers) * 100 : 0
+
+    // 3. Growth Leaderboard (Top 5 Groups by New Members in 30 Days)
+    const thirtyDaysAgo = new Date()
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+    const topGrowingGroupsRaw = await prisma.groupMember.groupBy({
+      by: ['groupId'],
+      where: {
+        joinedAt: { gte: thirtyDaysAgo }
+      },
+      _count: {
+        _all: true
+      },
+      orderBy: {
+        _count: {
+          joinedAt: 'desc' // This might need to be _all or specific field depending on prisma version, usually _count._all works for ordering in aggregations but explicit is safer
+        }
+      },
+      take: 5
+    })
+
+    // Fetch names for these groups
+    const topGrowingGroups = await Promise.all(
+      topGrowingGroupsRaw.map(async (item) => {
+        const group = await prisma.group.findUnique({
+          where: { id: item.groupId },
+          select: { name: true, region: true }
+        })
+        return {
+          name: group?.name || 'Unknown Group',
+          region: group?.region || 'Global',
+          newMembers: item._count._all
+        }
+      })
+    )
+
     const systemData = {
       totalUsers,
       totalGroups,
@@ -149,6 +209,18 @@ export async function GET(request: NextRequest) {
       databaseStatus: 'ONLINE' as const,
       regionalSummaries,
       growthHistory,
+      growthEngine: {
+        funnel: {
+          views: totalViews,
+          conversions: totalJoinRequests,
+          rate: totalViews > 0 ? ((totalJoinRequests / totalViews) * 100).toFixed(1) : '0.0'
+        },
+        retention: {
+          activeUsers: activeUsersCount,
+          rate: activeUserRate.toFixed(1)
+        },
+        leaderboard: topGrowingGroups
+      },
       recentActivities: recentActivities.map(activity => ({
         id: activity.id,
         user: `${activity.user.firstName} ${activity.user.lastName}`,

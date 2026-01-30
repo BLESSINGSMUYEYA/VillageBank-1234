@@ -68,15 +68,15 @@ export function LandingContent() {
                 </motion.p>
 
                 {/* CTA Buttons */}
-                <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
                     <Link href="/register" className="w-full sm:w-auto">
-                        <Button variant="premium" size="xl" className="w-full sm:w-auto h-16 px-12 rounded-2xl shadow-xl shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] transition-all">
+                        <Button className="w-full sm:w-auto h-16 px-10 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold text-lg shadow-2xl shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:scale-[1.02] transition-all border border-emerald-400/20 group">
                             {t('landing.start_moving')}
                             <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                         </Button>
                     </Link>
                     <Link href="/login" className="w-full sm:w-auto">
-                        <Button variant="outline" className="w-full sm:w-auto h-16 px-12 rounded-2xl border-2 border-slate-200 dark:border-white/10 dark:bg-white/5 font-black text-lg hover:bg-slate-100 dark:hover:bg-white/10 transition-all hover:text-emerald-600 dark:hover:text-emerald-400">
+                        <Button variant="outline" className="w-full sm:w-auto h-16 px-10 rounded-2xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-sm font-bold text-lg text-slate-700 dark:text-white hover:bg-white/80 dark:hover:bg-white/10 transition-all hover:scale-[1.02]">
                             {t('landing.access_ledger')}
                         </Button>
                     </Link>
@@ -259,14 +259,14 @@ export function LandingContent() {
                         <p className="text-lg text-slate-400 dark:text-slate-600 max-w-xl font-bold">
                             {t('landing.cta_desc')}
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+                        <div className="flex flex-col sm:flex-row gap-6 w-full justify-center">
                             <Link href="/register" className="w-full sm:w-auto">
-                                <Button variant="banana" className="h-16 px-12 rounded-2xl w-full text-lg shadow-2xl hover:scale-105 transition-all">
+                                <Button className="h-16 px-12 rounded-2xl w-full text-lg font-bold bg-[#FFD700] text-slate-900 shadow-[0_0_40px_-10px_rgba(255,215,0,0.5)] hover:shadow-[0_0_60px_-10px_rgba(255,215,0,0.7)] hover:bg-[#FFE033] hover:scale-105 transition-all border border-yellow-300/50">
                                     {t('landing.create_first_group')}
                                 </Button>
                             </Link>
                             <Link href="/login" className="w-full sm:w-auto">
-                                <Button variant="outline" className="h-16 px-12 rounded-2xl border-white/20 dark:border-slate-950/20 text-white dark:text-slate-950 font-black text-lg hover:bg-white/10 dark:hover:bg-slate-950/5 transition-all w-full">
+                                <Button variant="outline" className="h-16 px-12 rounded-2xl border-white/20 dark:border-slate-950/20 text-white dark:text-slate-950 font-bold text-lg hover:bg-white/10 dark:hover:bg-slate-950/5 transition-all w-full backdrop-blur-md">
                                     {t('landing.member_login')}
                                 </Button>
                             </Link>

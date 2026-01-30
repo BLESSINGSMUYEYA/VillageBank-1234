@@ -42,6 +42,7 @@ import { fadeIn, staggerContainer } from '@/lib/motions'
 import { AdminGlassCard } from '@/components/admin/AdminGlassCard'
 import { AdminStatsCard } from '@/components/admin/AdminStatsCard'
 import { GrowthChart, RegionDistributionChart } from '@/components/admin/SuperAdminCharts'
+import { ViralFunnelChart, RetentionPulse, GrowthLeaderboard } from '@/components/admin/GrowthEngineCharts'
 
 interface SystemData {
   totalUsers: number
@@ -56,6 +57,22 @@ interface SystemData {
     users: number
     volume: number
   }[]
+  growthEngine: {
+    funnel: {
+      views: number
+      conversions: number
+      rate: string
+    }
+    retention: {
+      activeUsers: number
+      rate: string
+    }
+    leaderboard: {
+      name: string
+      region: string
+      newMembers: number
+    }[]
+  }
   recentActivities: ActivityLog[]
   users: UserData[]
   configurationHealth: {
@@ -358,6 +375,24 @@ export default function SystemAdminPage() {
                 </div>
               </AdminGlassCard>
             </div>
+          </TabsContent>
+
+          <TabsContent value="growth" className="space-y-6">
+            {data?.growthEngine && (
+              <>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-2">
+                    <ViralFunnelChart data={data.growthEngine.funnel} />
+                  </div>
+                  <div className="lg:col-span-1">
+                    <RetentionPulse data={data.growthEngine.retention} />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1">
+                  <GrowthLeaderboard data={data.growthEngine.leaderboard} />
+                </div>
+              </>
+            )}
           </TabsContent>
 
           <TabsContent value="regions">

@@ -313,9 +313,9 @@
     "hero_badge": "The Future of Cooperative Wealth",
     "main_title": "Cooperative Wealth. Reimagined.",
     "subtitle": "The premium operating system for modern investment circles. Secure, transparent, and built for exponential growth.",
-    "start_moving": "Start Building Wealth",
-    "access_ledger": "Access Ledger",
-    "launch_app": "Launch Terminal",
+    "start_moving": "Become a Member",
+    "access_ledger": "Sign In",
+    "launch_app": "Sign In",
     "ecosystem": "Ecosystem",
     "security": "Security",
     "features": "Platform",
@@ -342,8 +342,8 @@
     "elite_interface_desc": "A beautiful, intuitive interface designed for the modern saver.",
     "cta_title": "Ready to modernize your Village Bank?",
     "cta_desc": "Join the financial revolution. Bring your community circle into the digital age today.",
-    "create_first_group": "Create Your First Circle",
-    "member_login": "Member Login",
+    "create_first_group": "Become a Member",
+    "member_login": "Sign In",
     "copyright": "© {year} uBank. All rights reserved."
   },
   "security_page": {
