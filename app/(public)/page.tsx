@@ -1,25 +1,42 @@
-import { Users, DollarSign, TrendingUp } from 'lucide-react'
-import { MarketingHeader } from '@/components/marketing/MarketingHeader'
-import { MarketingFooter } from '@/components/marketing/MarketingFooter'
-import { LandingContent } from '@/components/landing/LandingContent'
+'use client'
 
-// Enable ISR - revalidate every hour
-export const revalidate = 3600
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Loader2 } from 'lucide-react'
 
 export default function Home() {
+    const router = useRouter()
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+        const timer = setTimeout(() => {
+            router.push('/login')
+        }, 2000)
+
+        return () => clearTimeout(timer)
+    }, [router])
+
+    if (!mounted) return null
+
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 selection:bg-emerald-500/30 overflow-x-hidden font-sans">
+        <div className="min-h-screen bg-emerald-900 flex flex-col items-center justify-center relative overflow-hidden">
             {/* Ambient Background */}
-            <div className="fixed inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-emerald-600/10 dark:bg-emerald-600/20 rounded-full blur-[120px] animate-pulse-slow" />
-                <div className="absolute top-[20%] -right-[5%] w-[35%] h-[35%] bg-teal-600/10 dark:bg-teal-600/20 rounded-full blur-[100px] animate-pulse-slow delay-700" />
-                <div className="absolute -bottom-[10%] left-[20%] w-[30%] h-[30%] bg-emerald-400/10 dark:bg-emerald-400/20 rounded-full blur-[110px] animate-pulse-slow delay-1000" />
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-emerald-800/20 rounded-full blur-[120px] animate-pulse-slow" />
             </div>
 
-            <div className="relative z-10">
-                <MarketingHeader />
-                <LandingContent />
-                <MarketingFooter />
+            <div className="relative z-10 flex flex-col items-center gap-8 animate-in fade-in zoom-in duration-700">
+                {/* Logo / Icon Area */}
+                <div className="w-32 h-32 bg-emerald-800/50 rounded-3xl flex items-center justify-center backdrop-blur-xl border border-emerald-700/50 shadow-2xl">
+                    <span className="text-6xl font-black text-emerald-50 font-heading">u</span>
+                </div>
+
+                {/* Loading Indicator */}
+                <div className="flex flex-col items-center gap-4">
+                    <Loader2 className="w-8 h-8 text-emerald-200/80 animate-spin" />
+                    <p className="text-emerald-200/60 font-medium text-sm tracking-wider uppercase animate-pulse">Loading uBank</p>
+                </div>
             </div>
         </div>
     )

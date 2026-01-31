@@ -18,7 +18,7 @@ export default function Icon() {
             <div
                 style={{
                     fontSize: 320,
-                    background: '#1B4332', // Brand Dark Green
+                    background: '#064e3b', // Emerald 900 (Matching landing page)
                     width: '100%',
                     height: '100%',
                     display: 'flex',
