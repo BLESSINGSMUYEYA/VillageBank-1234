@@ -4,18 +4,26 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import { useAuth } from '@/components/providers/AuthProvider'
+import Image from 'next/image'
 
 export default function Home() {
     const router = useRouter()
     const { user, loading, isAuthenticated } = useAuth()
     const [mounted, setMounted] = useState(false)
+    const [minLoadComplete, setMinLoadComplete] = useState(false)
 
     useEffect(() => {
         setMounted(true)
+        // Minimum visible time of 500ms to prevent flickering/flashing
+        const timer = setTimeout(() => {
+            setMinLoadComplete(true)
+        }, 500)
+        return () => clearTimeout(timer)
     }, [])
 
     useEffect(() => {
-        if (!loading && mounted) {
+        // Wait for BOTH auth to finish AND minimum timer to complete
+        if (!loading && mounted && minLoadComplete) {
             if (isAuthenticated && user) {
                 if (user.role === 'REGIONAL_ADMIN') {
                     router.push('/admin/regional');
@@ -28,7 +36,7 @@ export default function Home() {
                 router.push('/login');
             }
         }
-    }, [loading, isAuthenticated, user, router, mounted])
+    }, [loading, isAuthenticated, user, router, mounted, minLoadComplete])
 
     if (!mounted) return null
 
@@ -42,7 +50,14 @@ export default function Home() {
             <div className="relative z-10 flex flex-col items-center gap-8 animate-in fade-in zoom-in duration-700">
                 {/* Logo / Icon Area */}
                 <div className="w-32 h-32 bg-emerald-800/50 rounded-3xl flex items-center justify-center backdrop-blur-xl border border-emerald-700/50 shadow-2xl">
-                    <span className="text-6xl font-black text-emerald-50 font-heading">u</span>
+                    <Image
+                        src="/ubank-logo.png"
+                        alt="uBank Logo"
+                        width={80}
+                        height={80}
+                        className="object-contain"
+                        priority
+                    />
                 </div>
 
                 {/* Loading Indicator */}
