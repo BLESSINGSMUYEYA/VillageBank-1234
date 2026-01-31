@@ -37,6 +37,7 @@ model User {
   reminders            Reminder[]
   identityVerification IdentityVerification?
   lastOnboardingNudgeSentAt DateTime?
+  status               UserStatus         @default(ACTIVE)
 }
 
 model Passkey {
@@ -124,8 +125,8 @@ model Contribution {
   rejectionReason String?
   reviewDate      DateTime?
   reviewedById    String?
-  group           Group         @relation(fields: [groupId], references: [id])
-  user            User          @relation(fields: [userId], references: [id])
+  group           Group         @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([groupId, userId, month, year])
   @@index([status])
@@ -154,8 +155,8 @@ model Loan {
   disbursementBankName      String?
   disbursementMethod        PaymentMethodType?
   interestType              InterestType       @default(FLAT_RATE)
-  group                     Group              @relation(fields: [groupId], references: [id])
-  user                      User               @relation(fields: [userId], references: [id])
+  group                     Group              @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user                      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   repayments                LoanRepayment[]
 
   @@index([groupId, status])
@@ -171,8 +172,8 @@ model LoanRepayment {
   paidAt         DateTime @default(now())
   createdAt      DateTime @default(now())
   userId         String
-  loan           Loan     @relation(fields: [loanId], references: [id])
-  user           User     @relation(fields: [userId], references: [id])
+  loan           Loan     @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model PaymentMethod {
@@ -185,7 +186,7 @@ model PaymentMethod {
   addedById     String
   createdAt     DateTime          @default(now())
   bankName      String?
-  group         Group             @relation(fields: [groupId], references: [id])
+  group         Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
 }
 
 model Activity {
@@ -196,8 +197,8 @@ model Activity {
   description String
   metadata    Json?
   createdAt   DateTime @default(now())
-  group       Group?   @relation(fields: [groupId], references: [id])
-  user        User     @relation(fields: [userId], references: [id])
+  group       Group?   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, groupId, createdAt])
   @@index([groupId, createdAt])
@@ -214,7 +215,7 @@ model Notification {
   actionText String?
   announcementId String? // Optional because nudges might not be announcements
   createdAt  DateTime         @default(now())
-  user       User             @relation(fields: [userId], references: [id])
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   announcement Announcement? @relation(fields: [announcementId], references: [id])
 
   @@index([userId, read])
@@ -234,8 +235,8 @@ model GroupShare {
   customMessage String?
   isActive      Boolean         @default(true)
   createdAt     DateTime        @default(now())
-  group         Group           @relation(fields: [groupId], references: [id])
-  sharedBy      User            @relation(fields: [sharedById], references: [id])
+  group         Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  sharedBy      User            @relation(fields: [sharedById], references: [id], onDelete: Cascade)
   qrAnalytics   QrAnalytics[]
 
   @@index([shareToken])
@@ -296,7 +297,7 @@ model Reminder {
   lastDismissedAt  DateTime?
   isRecurring      Boolean      @default(true)
   createdAt        DateTime     @default(now())
-  group            Group?       @relation(fields: [groupId], references: [id])
+  group            Group?       @relation(fields: [groupId], references: [id], onDelete: Cascade)
   user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, datetime])
@@ -318,7 +319,7 @@ model Announcement {
   actionText  String?
   target      String?  @default("ALL")
   targetRegion String?
-  createdBy   User             @relation("CreatedAnnouncements", fields: [createdById], references: [id])
+  createdBy   User             @relation("CreatedAnnouncements", fields: [createdById], references: [id], onDelete: Cascade)
   notifications Notification[]
 }
 
@@ -326,6 +327,12 @@ enum UserRole {
   MEMBER
   REGIONAL_ADMIN
   SUPER_ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+  SUSPENDED
 }
 
 enum Region {

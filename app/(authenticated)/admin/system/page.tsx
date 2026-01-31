@@ -1,4 +1,4 @@
-'use client'
+'use client' // Re-trigger build
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -42,7 +42,8 @@ import { fadeIn, staggerContainer } from '@/lib/motions'
 import { AdminGlassCard } from '@/components/admin/AdminGlassCard'
 import { AdminStatsCard } from '@/components/admin/AdminStatsCard'
 import { GrowthChart, RegionDistributionChart } from '@/components/admin/SuperAdminCharts'
-import { ViralFunnelChart, RetentionPulse, GrowthLeaderboard } from '@/components/admin/GrowthEngineCharts'
+import { ViralFunnelChart, RetentionPulse, GrowthLeaderboard, HealthPulse } from '@/components/admin/GrowthEngineCharts'
+import { QuickActionsWidget } from '@/components/admin/QuickActionsWidget'
 
 interface SystemData {
   totalUsers: number
@@ -80,6 +81,7 @@ interface SystemData {
     gemini: boolean
     database: boolean
   }
+  regionalSummaries: RegionalSummary[]
 }
 
 interface UserData {
@@ -133,7 +135,11 @@ export default function SystemAdminPage() {
     setLoading(true)
     try {
       const response = await fetch('/api/admin/system')
-      if (!response.ok) throw new Error('Failed to fetch system data')
+      if (!response.ok) {
+        const text = await response.text()
+        console.error('Fetch System Data Failed:', { status: response.status, statusText: response.statusText, body: text })
+        throw new Error(`Failed to fetch system data: ${response.status} ${text}`)
+      }
 
       const data = await response.json()
 
@@ -236,104 +242,189 @@ export default function SystemAdminPage() {
         animate="animate"
         className="max-w-7xl mx-auto py-8 px-4 sm:px-6 relative z-10"
       >
-        <motion.div variants={fadeIn} className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <Link href="/dashboard" className="inline-flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors duration-300 group mb-2">
-              <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
-              Return to Hub
-            </Link>
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-                <span className="text-gradient-primary">System Command</span>
-              </h1>
-              <Badge variant={data?.systemHealth === 'HEALTHY' ? 'default' : 'destructive'} className="ml-2 animate-pulse">
-                {data?.systemHealth}
-              </Badge>
-            </div>
-            <p className="text-muted-foreground mt-1 font-medium">
-              Global Overview • v2.4.0 • UBank Core
-            </p>
+        <motion.div
+          className="mb-5 md:mb-8"
+          variants={fadeIn}
+        >
+          {/* Title and Badge */}
+          <div className="flex items-center gap-1.5 mb-1">
+            <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-tight leading-tight">
+              <span className="text-gradient-primary">System Command</span>
+            </h1>
+            <Badge
+              variant={data?.systemHealth === 'HEALTHY' ? 'default' : 'destructive'}
+              className="animate-pulse text-[9px] sm:text-xs px-1.5 py-0 h-4 sm:h-5 font-bold shrink-0"
+            >
+              {data?.systemHealth}
+            </Badge>
           </div>
 
-          <div className="flex gap-3">
-            <Button variant="outline" className="glass-morphism border-white/20" onClick={() => toast.info('Generating system report...')}>
-              <Download className="w-4 h-4 mr-2" />
-              Report
-            </Button>
-            <Button className="shadow-lg shadow-primary/20">
-              <Settings className="w-4 h-4 mr-2" />
-              Global Config
-            </Button>
+          {/* Subtitle and Buttons Row */}
+          <div className="flex items-center gap-3 flex-wrap">
+            <p className="text-muted-foreground text-[11px] sm:text-sm font-medium leading-tight">
+              Global Overview • v2.4.0
+            </p>
+
+            {/* Action Buttons */}
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="glass-morphism border-white/20"
+                onClick={() => toast.info('Generating system report...')}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Report
+              </Button>
+              <Button size="sm" className="shadow-lg shadow-primary/20">
+                <Settings className="w-4 h-4 mr-2" />
+                Config
+              </Button>
+            </div>
           </div>
         </motion.div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <AdminStatsCard
-            title="Total Users"
-            value={data?.totalUsers || 0}
-            icon={Users}
-            trend="+8.2%"
-            trendDirection="up"
-            delay={100}
-            className="border-blue-200/50 dark:border-blue-800/50"
-          />
-          <AdminStatsCard
-            title="Total Groups"
-            value={data?.totalGroups || 0}
-            icon={Building2}
-            trend="+5 New"
-            trendDirection="up"
-            delay={200}
-            className="border-indigo-200/50 dark:border-indigo-800/50"
-          />
-          <AdminStatsCard
-            title="System Contributions"
-            value={`MWK ${(data?.totalContributions || 0).toLocaleString()}`}
-            icon={DollarSign}
-            trend="+22%"
-            trendDirection="up"
-            delay={300}
-            className="border-emerald-200/50 dark:border-emerald-800/50"
-          />
-          <AdminStatsCard
-            title="Pending Tasks"
-            value={data?.pendingApprovals || 0}
-            icon={AlertTriangle}
-            trend="Action Required"
-            trendDirection="down"
-            delay={400}
-            className="border-amber-200/50 dark:border-amber-800/50 bg-amber-50/30 dark:bg-amber-900/10"
-          />
+        {/* Stats - Mobile Carousel / Desktop Grid */}
+        <div className="mb-6 md:mb-8">
+          {/* Mobile: Horizontal Carousel with Snap Scroll */}
+          {/* Mobile: Horizontal Carousel with Snap Scroll */}
+          <div className="md:hidden">
+            <div className="flex gap-2.5 overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-4 px-4 pb-1">
+              <div className="min-w-[calc(100vw-2.5rem)] sm:min-w-[300px] snap-center flex-shrink-0 h-full">
+                <AdminStatsCard
+                  title="Total Users"
+                  value={data?.totalUsers || 0}
+                  icon={Users}
+                  trend="+8.2%"
+                  trendDirection="up"
+                  delay={0}
+                  className="border-blue-200/50 dark:border-blue-800/50 h-full snap-align-center"
+                />
+              </div>
+              <div className="min-w-[calc(100vw-2.5rem)] sm:min-w-[300px] snap-center flex-shrink-0 h-full">
+                <AdminStatsCard
+                  title="Total Groups"
+                  value={data?.totalGroups || 0}
+                  icon={Building2}
+                  trend="+5 New"
+                  trendDirection="up"
+                  delay={0}
+                  className="border-indigo-200/50 dark:border-indigo-800/50 h-full snap-align-center"
+                />
+              </div>
+              <div className="min-w-[calc(100vw-2.5rem)] sm:min-w-[300px] snap-center flex-shrink-0 h-full">
+                <AdminStatsCard
+                  title="System Contributions"
+                  value={`MWK ${(data?.totalContributions || 0).toLocaleString()}`}
+                  icon={DollarSign}
+                  trend="+22%"
+                  trendDirection="up"
+                  delay={0}
+                  className="border-emerald-200/50 dark:border-emerald-800/50 h-full snap-align-center"
+                />
+              </div>
+              <div className="min-w-[calc(100vw-2.5rem)] sm:min-w-[300px] snap-center flex-shrink-0 h-full">
+                <AdminStatsCard
+                  title="Pending Tasks"
+                  value={data?.pendingApprovals || 0}
+                  icon={AlertTriangle}
+                  trend="Action Required"
+                  trendDirection="down"
+                  delay={0}
+                  className="border-amber-200/50 dark:border-amber-800/50 bg-amber-50/30 dark:bg-amber-900/10 h-full snap-align-center"
+                />
+              </div>
+            </div>
+            {/* Scroll Indicator Dots */}
+            <div className="flex justify-center gap-1.5 mt-3">
+              <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
+              <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></div>
+              <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></div>
+              <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"></div>
+            </div>
+          </div>
+
+          {/* Desktop: Grid Layout */}
+          <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+            <AdminStatsCard
+              title="Total Users"
+              value={data?.totalUsers || 0}
+              icon={Users}
+              trend="+8.2%"
+              trendDirection="up"
+              delay={100}
+              className="border-blue-200/50 dark:border-blue-800/50"
+            />
+            <AdminStatsCard
+              title="Total Groups"
+              value={data?.totalGroups || 0}
+              icon={Building2}
+              trend="+5 New"
+              trendDirection="up"
+              delay={200}
+              className="border-indigo-200/50 dark:border-indigo-800/50"
+            />
+            <AdminStatsCard
+              title="System Contributions"
+              value={`MWK ${(data?.totalContributions || 0).toLocaleString()}`}
+              icon={DollarSign}
+              trend="+22%"
+              trendDirection="up"
+              delay={300}
+              className="border-emerald-200/50 dark:border-emerald-800/50"
+            />
+            <AdminStatsCard
+              title="Pending Tasks"
+              value={data?.pendingApprovals || 0}
+              icon={AlertTriangle}
+              trend="Action Required"
+              trendDirection="down"
+              delay={400}
+              className="border-amber-200/50 dark:border-amber-800/50 bg-amber-50/30 dark:bg-amber-900/10"
+            />
+          </div>
         </div>
 
-        <Tabs defaultValue="overview" className="space-y-8">
-          <div className="flex items-center justify-between overflow-x-auto pb-2">
-            <TabsList className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-md p-1 h-12 rounded-full border border-white/20 min-w-max">
-              <TabsTrigger value="overview" className="rounded-full px-6 h-10 data-[state=active]:bg-primary data-[state=active]:text-white">Overview</TabsTrigger>
-              <TabsTrigger value="regions" className="rounded-full px-6 h-10 data-[state=active]:bg-primary data-[state=active]:text-white">Regions</TabsTrigger>
-              <TabsTrigger value="users" className="rounded-full px-6 h-10 data-[state=active]:bg-primary data-[state=active]:text-white">Users</TabsTrigger>
-              <TabsTrigger value="system" className="rounded-full px-6 h-10 data-[state=active]:bg-primary data-[state=active]:text-white">System Health</TabsTrigger>
-              <TabsTrigger value="logs" className="rounded-full px-6 h-10 data-[state=active]:bg-primary data-[state=active]:text-white">Audit Logs</TabsTrigger>
-            </TabsList>
+        <Tabs defaultValue="overview" className="space-y-4 md:space-y-6 lg:space-y-8">
+          {/* Tab Navigation - Sticky & Responsive */}
+          <div className="sticky top-0 z-30 -mx-4 px-4 md:mx-0 md:px-0 bg-slate-50/80 dark:bg-slate-950/80 backdrop-blur-xl py-3 border-b border-border/10 transition-all duration-300">
+            <div className="overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth">
+              <div className="flex items-center justify-start">
+
+                <TabsList className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-md p-0.5 md:p-1 h-10 md:h-12 rounded-full border border-white/20 inline-flex gap-0.5 md:gap-1">
+                  <TabsTrigger value="overview" className="rounded-full px-3 md:px-6 h-8 md:h-10 text-[11px] md:text-sm data-[state=active]:bg-primary data-[state=active]:text-white whitespace-nowrap snap-center transition-all duration-200 font-medium">Overview</TabsTrigger>
+                  <TabsTrigger value="regions" className="rounded-full px-3 md:px-6 h-8 md:h-10 text-[11px] md:text-sm data-[state=active]:bg-primary data-[state=active]:text-white whitespace-nowrap snap-center transition-all duration-200 font-medium">Regions</TabsTrigger>
+                  <TabsTrigger value="users" className="rounded-full px-3 md:px-6 h-8 md:h-10 text-[11px] md:text-sm data-[state=active]:bg-primary data-[state=active]:text-white whitespace-nowrap snap-center transition-all duration-200 font-medium">Users</TabsTrigger>
+                  <TabsTrigger value="growth" className="rounded-full px-3 md:px-6 h-8 md:h-10 text-[11px] md:text-sm data-[state=active]:bg-primary data-[state=active]:text-white whitespace-nowrap snap-center transition-all duration-200 font-medium">Growth</TabsTrigger>
+                  <TabsTrigger value="system" className="rounded-full px-3 md:px-6 h-8 md:h-10 text-[11px] md:text-sm data-[state=active]:bg-primary data-[state=active]:text-white whitespace-nowrap snap-center transition-all duration-200 font-medium">System</TabsTrigger>
+                  <TabsTrigger value="logs" className="rounded-full px-3 md:px-6 h-8 md:h-10 text-[11px] md:text-sm data-[state=active]:bg-primary data-[state=active]:text-white whitespace-nowrap snap-center transition-all duration-200 font-medium">Logs</TabsTrigger>
+                </TabsList>
+              </div>
+            </div>
           </div>
 
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2">
+              <div className="hidden md:block lg:col-span-2">
                 <GrowthChart data={data?.growthHistory} />
               </div>
               <div className="lg:col-span-1">
-                <RegionDistributionChart />
+                <RegionDistributionChart data={data?.regionalSummaries} />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <AdminGlassCard title="System Health Pulse" description="Real-time vital signs">
+                <div className="h-[200px] w-full">
+                  <HealthPulse data={[{ name: 'CPU', value: 45 }, { name: 'Memory', value: 60 }, { name: 'Network', value: 25 }]} />
+                </div>
+              </AdminGlassCard>
+
               <AdminGlassCard title="Recent Alerts" description="System notifications and warnings">
-                <div className="space-y-4 p-4 md:p-6">
+                <div className="space-y-3 sm:space-y-4 p-3 sm:p-4 md:p-6">
                   {data?.systemHealth !== 'HEALTHY' && (
-                    <div className="flex items-start gap-4 p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800">
-                      <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5" />
+                    <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800">
+                      <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 mt-0.5 shrink-0" />
                       <div>
                         <h4 className="text-sm font-bold text-amber-800 dark:text-amber-400">System Warning</h4>
                         <p className="text-xs text-amber-700 dark:text-amber-500 mt-1">
@@ -342,8 +433,8 @@ export default function SystemAdminPage() {
                       </div>
                     </div>
                   )}
-                  <div className="flex items-start gap-4 p-4 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-                    <Server className="w-5 h-5 text-blue-500 mt-0.5" />
+                  <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                    <Server className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 mt-0.5 shrink-0" />
                     <div>
                       <h4 className="text-sm font-bold text-slate-800 dark:text-slate-300">Backup Completed</h4>
                       <p className="text-xs text-slate-600 dark:text-slate-500 mt-1">
@@ -353,28 +444,9 @@ export default function SystemAdminPage() {
                   </div>
                 </div>
               </AdminGlassCard>
-
-              <AdminGlassCard title="Quick Actions" description="Common administrative tasks">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 md:p-6">
-                  <Button variant="outline" className="h-16 sm:h-20 flex flex-col items-center justify-center gap-2 hover:bg-primary/5 hover:border-primary/30">
-                    <Users className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
-                    <span className="text-sm">Add User</span>
-                  </Button>
-                  <Button variant="outline" className="h-16 sm:h-20 flex flex-col items-center justify-center gap-2 hover:bg-primary/5 hover:border-primary/30">
-                    <Database className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600" />
-                    <span className="text-sm">Run Backup</span>
-                  </Button>
-                  <Button variant="outline" className="h-16 sm:h-20 flex flex-col items-center justify-center gap-2 hover:bg-primary/5 hover:border-primary/30">
-                    <Globe className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
-                    <span className="text-sm">Region Settings</span>
-                  </Button>
-                  <Button variant="outline" className="h-16 sm:h-20 flex flex-col items-center justify-center gap-2 hover:bg-primary/5 hover:border-primary/30">
-                    <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-rose-600" />
-                    <span className="text-sm">Security Audit</span>
-                  </Button>
-                </div>
-              </AdminGlassCard>
             </div>
+
+            <QuickActionsWidget />
           </TabsContent>
 
           <TabsContent value="growth" className="space-y-6">
@@ -396,39 +468,39 @@ export default function SystemAdminPage() {
           </TabsContent>
 
           <TabsContent value="regions">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
               {regionalData.map((region) => (
-                <AdminGlassCard key={region.region} className="group hover:border-primary/40 transition-colors">
-                  <div className="flex items-center justify-between mb-4 px-4 sm:px-6 pt-4 sm:pt-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                        <Globe className="w-5 h-5 text-blue-600" />
+                <AdminGlassCard key={region.region} className="group hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
+                  <div className="flex items-center justify-between mb-3 md:mb-4 px-2.5 md:px-6 pt-3 md:pt-6">
+                    <div className="flex items-center gap-1.5 md:gap-3 min-w-0 flex-1">
+                      <div className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+                        <Globe className="w-4 h-4 md:w-6 md:h-6 text-white" />
                       </div>
-                      <div>
-                        <h3 className="font-bold text-lg">{region.region} Region</h3>
-                        <p className="text-xs text-muted-foreground">{region.admin}</p>
+                      <div className="min-w-0">
+                        <h3 className="font-bold text-xs md:text-lg truncate">{region.region}</h3>
+                        <p className="text-[9px] md:text-xs text-muted-foreground truncate">{region.admin}</p>
                       </div>
                     </div>
-                    <Badge variant="outline">Active</Badge>
+                    <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 font-semibold text-[9px] md:text-xs px-1 md:px-2 shrink-0">Active</Badge>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2 sm:gap-4 py-4 px-4 sm:px-6 border-t border-b border-border/40">
+                  <div className="grid grid-cols-3 gap-1 md:gap-4 py-3 md:py-4 px-3 md:px-6 border-t border-b border-border/40 bg-gradient-to-br from-slate-50/50 to-transparent dark:from-slate-800/30 dark:to-transparent">
                     <div className="text-center">
-                      <div className="text-xl sm:text-2xl font-bold">{region.users}</div>
-                      <div className="text-[10px] sm:text-xs text-muted-foreground">Users</div>
+                      <div className="text-lg md:text-2xl font-bold bg-gradient-to-br from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">{region.users}</div>
+                      <div className="text-[9px] md:text-xs text-muted-foreground font-medium">Users</div>
                     </div>
                     <div className="text-center border-l border-border/40">
-                      <div className="text-xl sm:text-2xl font-bold">{region.groups}</div>
-                      <div className="text-[10px] sm:text-xs text-muted-foreground">Groups</div>
+                      <div className="text-lg md:text-2xl font-bold bg-gradient-to-br from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">{region.groups}</div>
+                      <div className="text-[9px] md:text-xs text-muted-foreground font-medium">Groups</div>
                     </div>
                     <div className="text-center border-l border-border/40">
-                      <div className="text-xl sm:text-2xl font-bold">{region.loans}</div>
-                      <div className="text-[10px] sm:text-xs text-muted-foreground">Active Loans</div>
+                      <div className="text-lg md:text-2xl font-bold bg-gradient-to-br from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">{region.loans}</div>
+                      <div className="text-[9px] md:text-xs text-muted-foreground font-medium leading-tight"><span className="hidden md:inline">Active </span>Loans</div>
                     </div>
                   </div>
 
-                  <div className="mt-4 flex gap-2 px-4 sm:px-6 pb-4 sm:pb-6">
-                    <Button className="w-full" variant="secondary" onClick={() => router.push(`/admin/regional?region=${region.region.toLowerCase()}`)}>
+                  <div className="mt-3 md:mt-4 flex gap-2 px-3 md:px-6 pb-3 md:pb-6">
+                    <Button className="w-full group-hover:shadow-md group-hover:shadow-primary/20 transition-all duration-300 h-9 md:h-10 text-xs md:text-sm" variant="secondary" onClick={() => router.push(`/admin/regional?region=${region.region.toLowerCase()}`)}>
                       Manage Territory
                     </Button>
                   </div>
@@ -436,7 +508,6 @@ export default function SystemAdminPage() {
               ))}
             </div>
           </TabsContent>
-
           <TabsContent value="system">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <AdminGlassCard title="Infrastructure Health" className="col-span-2">
@@ -507,23 +578,80 @@ export default function SystemAdminPage() {
 
           <TabsContent value="users">
             <AdminGlassCard
-              title="Global User Registry"
+              title={`Global User Registry (${data?.totalUsers || 0})`}
               description="Manage users across all regions."
               action={
-                <div className="relative w-64">
+                <div className="relative w-full sm:w-64">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input type="search" placeholder="Search users by name/email..." className="pl-9 bg-white/50 border-border/40" />
+                  <Input type="search" placeholder="Search users..." className="pl-9 bg-white/50 border-border/40" />
                 </div>
               }
             >
-              <div className="overflow-x-auto">
+              {/* Mobile: Card-Based User List */}
+              <div className="md:hidden space-y-2.5 p-3">
+                {(!data?.users || data.users.length === 0) ? (
+                  <div className="text-center py-16 px-4">
+                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center">
+                      <Users className="w-10 h-10 text-slate-400 dark:text-slate-600" />
+                    </div>
+                    <h3 className="font-bold text-sm mb-1">No Users Found</h3>
+                    <p className="text-xs text-muted-foreground">Start by adding your first user to the system.</p>
+                  </div>
+                ) : (
+                  data.users.map((user) => (
+                    <div key={user.id} className="flex items-start gap-3 p-3.5 rounded-xl bg-gradient-to-br from-white to-slate-50 dark:from-slate-800/50 dark:to-slate-900/30 border border-slate-200/70 dark:border-slate-700/50 hover:border-primary/40 hover:shadow-md hover:shadow-primary/5 transition-all duration-300 active:scale-[0.98]">
+                      <div className="w-11 h-11 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-base ring-2 ring-white dark:ring-slate-900 shadow-lg shadow-indigo-500/30 flex-shrink-0">
+                        {user.name.charAt(0)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <div className="font-bold text-sm truncate">{user.name}</div>
+                        </div>
+                        <div className="text-xs text-muted-foreground truncate mb-1.5">{user.email}</div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Badge
+                            className={`text-[10px] h-5 px-1.5 font-semibold ${user.role === 'SUPER_ADMIN'
+                              ? 'bg-rose-100 text-rose-700 border-rose-200 dark:bg-rose-900/30 dark:text-rose-300'
+                              : user.role === 'REGIONAL_ADMIN'
+                                ? 'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300'
+                                : 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300'
+                              }`}
+                            variant="outline"
+                          >
+                            {user.role.replace('_', ' ')}
+                          </Badge>
+                          {user.region && (
+                            <span className="text-[10px] text-muted-foreground capitalize px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded font-medium">
+                              {user.region.toLowerCase()}
+                            </span>
+                          )}
+                          {user.status === 'BLOCKED' && (
+                            <Badge variant="destructive" className="text-[10px] h-5 px-1.5 font-semibold">BLOCKED</Badge>
+                          )}
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleManageUser(user)}
+                        className="h-9 w-9 p-0 hover:bg-primary/10 hover:text-primary hover:scale-110 transition-all duration-200 flex-shrink-0 rounded-full"
+                      >
+                        <MoreVertical className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Desktop: Table View */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-primary/5 border-b border-primary/10">
                     <tr>
                       <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">User</th>
-                      <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider hidden md:table-cell">Contact</th>
+                      <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">Contact</th>
                       <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">Role</th>
-                      <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider hidden md:table-cell">Region</th>
+                      <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">Region</th>
                       <th className="text-right p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">Actions</th>
                     </tr>
                   </thead>
@@ -630,7 +758,7 @@ export default function SystemAdminPage() {
 
         {/* User Management Dialog */}
         <Dialog open={isUserDialogOpen} onOpenChange={setIsUserDialogOpen}>
-          <DialogContent className="sm:max-w-[425px] glass-morphism border-white/20">
+          <DialogContent className="w-[95vw] sm:w-full sm:max-w-[425px] max-h-[85vh] overflow-y-auto glass-morphism border-white/20">
             <DialogHeader>
               <DialogTitle>Manage User Profile</DialogTitle>
               <DialogDescription>

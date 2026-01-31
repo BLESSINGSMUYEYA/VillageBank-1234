@@ -64,53 +64,88 @@ export function VerificationsList({ verifications }: VerificationsListProps) {
 
     return (
         <>
-            <GlassCard className="p-0 overflow-hidden">
-                <Table>
-                    <TableHeader>
-                        <TableRow className="hover:bg-transparent">
-                            <TableHead className="font-black uppercase tracking-wider text-[10px]">User</TableHead>
-                            <TableHead className="font-black uppercase tracking-wider text-[10px]">Type</TableHead>
-                            <TableHead className="font-black uppercase tracking-wider text-[10px]">Region</TableHead>
-                            <TableHead className="font-black uppercase tracking-wider text-[10px]">Submitted</TableHead>
-                            <TableHead className="text-right font-black uppercase tracking-wider text-[10px]">Action</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {verifications.map((item) => (
-                            <TableRow key={item.id} className="group hover:bg-white/5">
-                                <TableCell>
-                                    <div className="flex flex-col">
-                                        <span className="font-bold text-foreground">{item.user.firstName} {item.user.lastName}</span>
-                                        <span className="text-xs text-muted-foreground">{item.user.email}</span>
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <Badge variant="outline" className="font-bold">
-                                        {item.type.replace('_', ' ')}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-                                        <MapPin className="w-3 h-3" />
-                                        {item.user.region || 'Unknown'}
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-                                        <Calendar className="w-3 h-3" />
-                                        {format(new Date(item.submittedAt), 'MMM d, yyyy')}
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <Button size="sm" onClick={() => setSelected(item)} className="font-bold rounded-lg bg-blue-500/10 text-blue-600 hover:bg-blue-500 hover:text-white">
-                                        <Eye className="w-4 h-4 mr-2" />
-                                        Review
-                                    </Button>
-                                </TableCell>
+            <GlassCard className="p-0 overflow-hidden bg-transparent border-0 md:bg-white/5 md:border-white/10">
+                {/* Desktop: Table View */}
+                <div className="hidden md:block overflow-x-auto">
+                    <Table>
+                        <TableHeader>
+                            <TableRow className="hover:bg-transparent">
+                                <TableHead className="font-black uppercase tracking-wider text-[10px]">User</TableHead>
+                                <TableHead className="font-black uppercase tracking-wider text-[10px]">Type</TableHead>
+                                <TableHead className="font-black uppercase tracking-wider text-[10px]">Region</TableHead>
+                                <TableHead className="font-black uppercase tracking-wider text-[10px]">Submitted</TableHead>
+                                <TableHead className="text-right font-black uppercase tracking-wider text-[10px]">Action</TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {verifications.map((item) => (
+                                <TableRow key={item.id} className="group hover:bg-white/5">
+                                    <TableCell>
+                                        <div className="flex flex-col">
+                                            <span className="font-bold text-foreground">{item.user.firstName} {item.user.lastName}</span>
+                                            <span className="text-xs text-muted-foreground">{item.user.email}</span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline" className="font-bold">
+                                            {item.type.replace('_', ' ')}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
+                                            <MapPin className="w-3 h-3" />
+                                            {item.user.region || 'Unknown'}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
+                                            <Calendar className="w-3 h-3" />
+                                            {format(new Date(item.submittedAt), 'MMM d, yyyy')}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <Button size="sm" onClick={() => setSelected(item)} className="font-bold rounded-lg bg-blue-500/10 text-blue-600 hover:bg-blue-500 hover:text-white">
+                                            <Eye className="w-4 h-4 mr-2" />
+                                            Review
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+
+                {/* Mobile: Card View */}
+                <div className="md:hidden space-y-4">
+                    {verifications.map((item) => (
+                        <div key={item.id} className="p-4 rounded-2xl bg-white/5 border border-white/10 flex flex-col gap-4">
+                            <div className="flex justify-between items-start">
+                                <div className="flex flex-col">
+                                    <span className="font-bold text-base text-foreground">{item.user.firstName} {item.user.lastName}</span>
+                                    <span className="text-xs text-muted-foreground">{item.user.email}</span>
+                                    <div className="flex items-center gap-2 mt-2">
+                                        <Badge variant="outline" className="font-bold text-[10px]">
+                                            {item.type.replace('_', ' ')}
+                                        </Badge>
+                                        {item.user.region && (
+                                            <Badge variant="secondary" className="text-[10px] bg-white/10">
+                                                {item.user.region}
+                                            </Badge>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="text-xs text-muted-foreground font-medium bg-black/20 px-2 py-1 rounded-lg">
+                                    {format(new Date(item.submittedAt), 'MMM d')}
+                                </div>
+                            </div>
+
+                            <Button size="sm" onClick={() => setSelected(item)} className="w-full font-bold rounded-xl bg-blue-600 hover:bg-blue-500 text-white h-10">
+                                <Eye className="w-4 h-4 mr-2" />
+                                Review Request
+                            </Button>
+                        </div>
+                    ))}
+                </div>
             </GlassCard>
 
             {/* Review Modal */}

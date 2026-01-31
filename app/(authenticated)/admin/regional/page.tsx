@@ -1,5 +1,7 @@
 'use client'
 
+import { deleteGroup } from '@/app/actions/admin'
+
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/components/providers/AuthProvider'
 import Link from 'next/link'
@@ -143,6 +145,24 @@ export default function RegionalAdminPage() {
     } catch (error) {
       console.error('Failed to suspend group:', error)
       toast.error('Failed to suspend group')
+    }
+  }
+
+  const handleDeleteGroup = async (groupId: string, groupName: string) => {
+    const confirmed = window.confirm(`Are you sure you want to PERMANENTLY delete group "${groupName}"? All data will be lost.`)
+    if (!confirmed) return
+
+    try {
+      const result = await deleteGroup(groupId)
+      if (result.success) {
+        toast.success(result.message)
+        fetchRegionalData()
+      } else {
+        toast.error(result.error)
+      }
+    } catch (error) {
+      console.error(error)
+      toast.error('Failed to delete group')
     }
   }
 
@@ -318,7 +338,7 @@ export default function RegionalAdminPage() {
               title="Active Groups"
               description="Monitor and manage village banks in your territory."
             >
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto hidden md:block">
                 <table className="w-full">
                   <thead className="bg-primary/5 border-b border-primary/10">
                     <tr>
@@ -376,6 +396,16 @@ export default function RegionalAdminPage() {
                                 Activate
                               </Button>
                             )}
+                            {user?.role === 'SUPER_ADMIN' && (
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => handleDeleteGroup(group.id, group.name)}
+                                className="h-8"
+                              >
+                                Delete
+                              </Button>
+                            )}
                             <Button variant="ghost" size="icon" className="h-8 w-8">
                               <MoreVertical className="w-4 h-4" />
                             </Button>
@@ -385,6 +415,62 @@ export default function RegionalAdminPage() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+
+              {/* Mobile Card View for Groups */}
+              <div className="md:hidden space-y-3">
+                {groups.map((group) => (
+                  <div key={group.id} className="p-4 rounded-xl bg-gradient-to-br from-white to-slate-50 dark:from-slate-800/50 dark:to-slate-900/30 border border-slate-200/70 dark:border-slate-700/50 shadow-sm">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h3 className="font-bold text-slate-800 dark:text-slate-200">{group.name}</h3>
+                        <p className="text-xs text-muted-foreground">Est. {new Date(group.createdAt).toLocaleDateString()}</p>
+                      </div>
+                      <Badge variant={group.status === 'ACTIVE' ? 'default' : 'secondary'} className={group.status === 'ACTIVE' ? 'bg-emerald-500/15 text-emerald-700 border-emerald-200' : ''}>
+                        {group.status}
+                      </Badge>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
+                      <div className="bg-slate-100 dark:bg-slate-800/50 p-2 rounded-lg">
+                        <div className="text-xs text-muted-foreground mb-1">Members</div>
+                        <div className="font-semibold flex items-center gap-1">
+                          <Users className="w-3 h-3 text-primary" /> {group.members}
+                        </div>
+                      </div>
+                      <div className="bg-slate-100 dark:bg-slate-800/50 p-2 rounded-lg">
+                        <div className="text-xs text-muted-foreground mb-1">Total Assets</div>
+                        <div className="font-semibold text-emerald-600 dark:text-emerald-400">
+                          MWK {(group.totalContributions / 1000).toFixed(1)}k
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                      {group.status === 'ACTIVE' ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleSuspendGroup(group.id)}
+                          className="flex-1 h-9 text-rose-600 hover:text-rose-700 hover:bg-rose-50 border-rose-200"
+                        >
+                          Suspend
+                        </Button>
+                      ) : (
+                        <Button
+                          size="sm"
+                          onClick={() => handleApproveGroup(group.id)}
+                          className="flex-1 h-9 bg-emerald-600 hover:bg-emerald-700 text-white"
+                        >
+                          Activate
+                        </Button>
+                      )}
+                      <Button variant="ghost" size="icon" className="h-9 w-9 border border-border/50">
+                        <MoreVertical className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </AdminGlassCard>
           </TabsContent>
@@ -400,59 +486,105 @@ export default function RegionalAdminPage() {
                 </div>
               }
             >
-              <table className="w-full">
-                <thead className="bg-primary/5 border-b border-primary/10">
-                  <tr>
-                    <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">User</th>
-                    <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider hidden md:table-cell">Contact</th>
-                    <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">Role</th>
-                    <th className="text-right p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/50">
-                  {users.map((user) => (
-                    <tr key={user.id} className="hover:bg-primary/5 transition-colors">
-                      <td className="p-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-white font-bold text-xs ring-2 ring-white dark:ring-slate-900 shadow-md">
-                            {user.name.charAt(0)}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-primary/5 border-b border-primary/10">
+                    <tr>
+                      <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">User</th>
+                      <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider hidden md:table-cell">Contact</th>
+                      <th className="text-left p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">Role</th>
+                      <th className="text-right p-4 text-xs font-black uppercase text-muted-foreground tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/50">
+                    {users.map((user) => (
+                      <tr key={user.id} className="hover:bg-primary/5 transition-colors">
+                        <td className="p-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-white font-bold text-xs ring-2 ring-white dark:ring-slate-900 shadow-md">
+                              {user.name.charAt(0)}
+                            </div>
+                            <div>
+                              <div className="font-bold text-slate-800 dark:text-slate-200">{user.name}</div>
+                              <div className="text-xs text-muted-foreground md:hidden">{user.email}</div>
+                            </div>
                           </div>
-                          <div>
-                            <div className="font-bold text-slate-800 dark:text-slate-200">{user.name}</div>
-                            <div className="text-xs text-muted-foreground md:hidden">{user.email}</div>
-                          </div>
+                        </td>
+                        <td className="p-4 hidden md:table-cell">
+                          <div className="text-sm">{user.email}</div>
+                          {user.phoneNumber && <div className="text-xs text-muted-foreground">{user.phoneNumber}</div>}
+                        </td>
+                        <td className="p-4">
+                          <Badge
+                            className={
+                              user.role === 'REGIONAL_ADMIN'
+                                ? 'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300'
+                                : 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300'
+                            }
+                            variant="outline"
+                          >
+                            {user.role.replace('_', ' ')}
+                          </Badge>
+                        </td>
+                        <td className="p-4 text-right">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleManageUser(user)}
+                            className="h-8 hover:bg-primary/10 hover:text-primary"
+                          >
+                            Manage
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card View for Users */}
+              <div className="md:hidden space-y-2.5">
+                {users.map((user) => (
+                  <div key={user.id} className="flex items-start gap-3 p-3.5 rounded-xl bg-gradient-to-br from-white to-slate-50 dark:from-slate-800/50 dark:to-slate-900/30 border border-slate-200/70 dark:border-slate-700/50 hover:border-primary/40 hover:shadow-md hover:shadow-primary/5 transition-all duration-300">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm ring-2 ring-white dark:ring-slate-900 shadow-lg shadow-indigo-500/30 flex-shrink-0">
+                      {user.name.charAt(0)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="font-bold text-sm text-slate-800 dark:text-slate-200 truncate">{user.name}</div>
+                          <div className="text-xs text-muted-foreground truncate mb-1">{user.email}</div>
                         </div>
-                      </td>
-                      <td className="p-4 hidden md:table-cell">
-                        <div className="text-sm">{user.email}</div>
-                        {user.phoneNumber && <div className="text-xs text-muted-foreground">{user.phoneNumber}</div>}
-                      </td>
-                      <td className="p-4">
-                        <Badge
-                          className={
-                            user.role === 'REGIONAL_ADMIN'
-                              ? 'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300'
-                              : 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300'
-                          }
-                          variant="outline"
-                        >
-                          {user.role.replace('_', ' ')}
-                        </Badge>
-                      </td>
-                      <td className="p-4 text-right">
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => handleManageUser(user)}
-                          className="h-8 hover:bg-primary/10 hover:text-primary"
+                          className="h-8 w-8 p-0 -mr-2 text-muted-foreground"
                         >
-                          Manage
+                          <MoreVertical className="w-4 h-4" />
                         </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      </div>
+
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge
+                          className={`text-[10px] h-5 px-1.5 ${user.role === 'REGIONAL_ADMIN'
+                              ? 'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300'
+                              : 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300'
+                            }`}
+                          variant="outline"
+                        >
+                          {user.role.replace('_', ' ')}
+                        </Badge>
+                        {user.phoneNumber && (
+                          <span className="text-[10px] text-muted-foreground bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
+                            {user.phoneNumber}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </AdminGlassCard>
           </TabsContent>
 
@@ -479,7 +611,7 @@ export default function RegionalAdminPage() {
 
         {/* User Management Dialog */}
         <Dialog open={isUserDialogOpen} onOpenChange={setIsUserDialogOpen}>
-          <DialogContent className="sm:max-w-[425px] glass-morphism border-white/20">
+          <DialogContent className="w-[95vw] sm:w-full sm:max-w-[425px] max-h-[85vh] overflow-y-auto glass-morphism border-white/20">
             <DialogHeader>
               <DialogTitle>Manage User Profile</DialogTitle>
               <DialogDescription>
@@ -534,7 +666,7 @@ export default function RegionalAdminPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </motion.div>
-    </div>
+      </motion.div >
+    </div >
   )
 }

@@ -69,32 +69,32 @@ export default async function AuditLogPage() {
                     ) : (
                         activities.map((log) => (
                             <div key={log.id} className="p-4 hover:bg-white/5 transition-colors group">
-                                <div className="flex items-start justify-between gap-4">
+                                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                                     <div className="flex gap-4">
-                                        <div className="mt-1 p-2 rounded-lg bg-blue-500/10 text-blue-500">
+                                        <div className="mt-1 p-2 rounded-lg bg-blue-500/10 text-blue-500 shrink-0">
                                             <Shield className="w-4 h-4" />
                                         </div>
                                         <div className="space-y-1">
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-2 flex-wrap">
                                                 <span className="font-bold text-foreground">
                                                     {log.actionType}
                                                 </span>
-                                                <span className="text-xs text-muted-foreground hidden sm:inline-block">
+                                                <span className="text-xs text-muted-foreground">
                                                     • {log.user.email}
                                                 </span>
                                             </div>
-                                            <p className="text-sm text-muted-foreground">
+                                            <p className="text-sm text-muted-foreground break-all">
                                                 {log.description}
                                             </p>
                                         </div>
                                     </div>
 
-                                    <div className="text-right shrink-0">
+                                    <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 text-right shrink-0 pl-14 sm:pl-0">
                                         <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
                                             <Clock className="w-3 h-3" />
                                             {formatDistanceToNow(new Date(log.createdAt), { addSuffix: true })}
                                         </div>
-                                        <Badge variant="secondary" className="mt-2 text-[10px] uppercase tracking-wider scale-90 origin-right opacity-50 group-hover:opacity-100 transition-opacity">
+                                        <Badge variant="secondary" className="text-[10px] uppercase tracking-wider scale-90 origin-right opacity-70 group-hover:opacity-100 transition-opacity">
                                             {log.user.role}
                                         </Badge>
                                     </div>

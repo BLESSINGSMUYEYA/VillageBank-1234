@@ -144,7 +144,7 @@ export async function GET(request: NextRequest) {
     // 1. Viral Funnel (Views vs Conversions)
     // We use QrAnalytics for views and Activity logs for join requests
     const [totalViews, totalJoinRequests] = await Promise.all([
-      (prisma as any).qrAnalytics.count(), // Cast to any because QrAnalytics might be new to client type
+      prisma.qrAnalytics.count(), // Cast removed as model exists in schema
       prisma.activity.count({
         where: { actionType: 'JOIN_REQUESTED' }
       })
@@ -199,6 +199,71 @@ export async function GET(request: NextRequest) {
       })
     )
 
+    // 4. User Trends (Day/Week/Month) - Javascript Aggregation for Flexibility
+    const oneYearAgo = new Date()
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
+
+    const recentUsers = await prisma.user.findMany({
+      where: { createdAt: { gte: oneYearAgo } },
+      select: { createdAt: true }
+    })
+
+    const processTimeData = (users: { createdAt: Date }[], period: 'day' | 'week' | 'month', count: number) => {
+      const result = []
+
+      // Helper for week number
+      function getWeekNumber(d: Date) {
+        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+        d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+        var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+        var weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+        return weekNo;
+      }
+
+      for (let i = count - 1; i >= 0; i--) {
+        const d = new Date()
+        let countInPeriod = 0
+        let label = ''
+
+        if (period === 'day') {
+          d.setDate(d.getDate() - i)
+          const startOfDay = new Date(d.setHours(0, 0, 0, 0))
+          const endOfDay = new Date(d.setHours(23, 59, 59, 999))
+          countInPeriod = users.filter(u => new Date(u.createdAt) >= startOfDay && new Date(u.createdAt) <= endOfDay).length
+          label = startOfDay.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        } else if (period === 'week') {
+          d.setDate(d.getDate() - (i * 7))
+          const startOfWeek = new Date(d)
+          const day = startOfWeek.getDay()
+          const diff = startOfWeek.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+          startOfWeek.setDate(diff)
+          startOfWeek.setHours(0, 0, 0, 0)
+
+          const endOfWeek = new Date(startOfWeek)
+          endOfWeek.setDate(startOfWeek.getDate() + 6)
+          endOfWeek.setHours(23, 59, 59, 999)
+
+          countInPeriod = users.filter(u => new Date(u.createdAt) >= startOfWeek && new Date(u.createdAt) <= endOfWeek).length
+          label = `Wk ${getWeekNumber(startOfWeek)}`
+        } else if (period === 'month') {
+          d.setMonth(d.getMonth() - i)
+          const startOfMonth = new Date(d.getFullYear(), d.getMonth(), 1)
+          const endOfMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59)
+          countInPeriod = users.filter(u => new Date(u.createdAt) >= startOfMonth && new Date(u.createdAt) <= endOfMonth).length
+          label = startOfMonth.toLocaleDateString('en-US', { month: 'short' })
+        }
+
+        result.push({ name: label, value: countInPeriod })
+      }
+      return result
+    }
+
+    const userTrends = {
+      daily: processTimeData(recentUsers, 'day', 30),
+      weekly: processTimeData(recentUsers, 'week', 12),
+      monthly: processTimeData(recentUsers, 'month', 12)
+    }
+
     const systemData = {
       totalUsers,
       totalGroups,
@@ -219,7 +284,8 @@ export async function GET(request: NextRequest) {
           activeUsers: activeUsersCount,
           rate: activeUserRate.toFixed(1)
         },
-        leaderboard: topGrowingGroups
+        leaderboard: topGrowingGroups,
+        userTrends
       },
       recentActivities: recentActivities.map(activity => ({
         id: activity.id,
@@ -249,7 +315,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(systemData)
   } catch (error) {
     console.error('System admin data fetch error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: error instanceof Error ? error.message : 'Internal server error' }, { status: 500 })
   }
 }
 

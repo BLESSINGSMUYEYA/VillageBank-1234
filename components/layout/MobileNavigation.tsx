@@ -46,12 +46,25 @@ export function MobileNavigation() {
   })
 
   // Define member-specific navigation
-  const navigation = [
+  const defaultNavigation = [
     { name: t('common.pulse'), href: '/dashboard', icon: Zap },
     { name: t('common.vault'), href: '/vault', icon: Landmark },
     { name: t('common.groups'), href: '/groups', icon: Users },
     { name: t('common.profile'), href: '/profile', icon: User },
   ]
+
+  const adminNavigation = [
+    { name: 'System', href: '/admin/system', icon: Server },
+    { name: 'Marketing', href: '/admin/system/marketing', icon: Megaphone },
+    { name: 'Verify', href: '/admin/verifications', icon: Shield },
+    { name: 'Exit', href: '/dashboard', icon: LogOut },
+  ]
+
+  const isOnAdminPage = pathname?.startsWith('/admin')
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN'
+
+  // Use admin navigation if user is super admin AND on an admin page
+  const navigation = (isSuperAdmin && isOnAdminPage) ? adminNavigation : defaultNavigation
 
   return (
     <div className="lg:hidden">

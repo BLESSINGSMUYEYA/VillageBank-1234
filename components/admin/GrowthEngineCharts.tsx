@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from 'react'
 import {
     BarChart,
     Bar,
@@ -13,12 +14,15 @@ import {
     Cell,
     FunnelChart,
     Funnel,
-    LabelList
+    LabelList,
+    Area,
+    AreaChart
 } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { AdminGlassCard } from './AdminGlassCard' // Assuming this exists based on previous files
 import { Badge } from '@/components/ui/badge'
-import { ArrowRight, Users, Eye, MousePointerClick, TrendingUp, Activity } from 'lucide-react'
+import { ArrowRight, Users, Eye, MousePointerClick, TrendingUp, Activity, Calendar } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 // --- Viral Funnel Component ---
 interface FunnelProps {
@@ -173,7 +177,40 @@ export function GrowthLeaderboard({ data }: LeaderboardProps) {
     return (
         <AdminGlassCard title="Growth Champions" description="Top groups by new member acquisition (30 days)">
             <div className="p-0">
-                <div className="overflow-x-auto">
+                {/* Mobile View: Card List */}
+                <div className="md:hidden space-y-3 p-4">
+                    {data.length === 0 ? (
+                        <div className="text-center py-8 text-muted-foreground text-sm">
+                            No significant growth recorded.
+                        </div>
+                    ) : (
+                        data.map((group, index) => (
+                            <div key={index} className="flex items-center gap-3 p-3 bg-white/50 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-xl relative overflow-hidden">
+                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-primary/50 to-transparent opacity-50" />
+                                <div className="w-8 h-8 flex items-center justify-center font-black text-xs text-muted-foreground bg-slate-100 dark:bg-slate-800 rounded-lg shrink-0">
+                                    #{index + 1}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="font-bold text-sm text-slate-900 dark:text-slate-100 truncate">{group.name}</div>
+                                    <div className="text-[10px] text-muted-foreground capitalize flex items-center gap-1.5 mt-0.5">
+                                        <Badge variant="outline" className="text-[9px] h-4 px-1 border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
+                                            {group.region || 'Unknown'}
+                                        </Badge>
+                                    </div>
+                                </div>
+                                <div className="text-right shrink-0">
+                                    <div className="inline-flex items-center px-2 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/50">
+                                        <TrendingUp className="w-3 h-3 mr-1" />
+                                        +{group.newMembers}
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+
+                {/* Desktop View: Table */}
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full">
                         <thead className="bg-slate-50/50 dark:bg-slate-900/20 border-b border-slate-100 dark:border-slate-800">
                             <tr>
@@ -215,4 +252,134 @@ export function GrowthLeaderboard({ data }: LeaderboardProps) {
             </div>
         </AdminGlassCard>
     )
+}
+
+// --- User Growth Trends Component ---
+interface UserGrowthProps {
+    data: {
+        daily: { name: string; value: number }[]
+        weekly: { name: string; value: number }[]
+        monthly: { name: string; value: number }[]
+    }
+}
+
+export function UserGrowthChart({ data }: UserGrowthProps) {
+    const [view, setView] = useState<'daily' | 'weekly' | 'monthly'>('daily')
+
+    const chartData = data[view]
+
+    return (
+        <AdminGlassCard
+            title="User Growth Trends"
+            description="New user registrations over time"
+            action={
+                <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+                    <button
+                        onClick={() => setView('daily')}
+                        className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${view === 'daily' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-300'}`}
+                    >
+                        Daily
+                    </button>
+                    <button
+                        onClick={() => setView('weekly')}
+                        className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${view === 'weekly' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-300'}`}
+                    >
+                        Weekly
+                    </button>
+                    <button
+                        onClick={() => setView('monthly')}
+                        className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${view === 'monthly' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-300'}`}
+                    >
+                        Monthly
+                    </button>
+                </div>
+            }
+        >
+            <div className="overflow-x-auto pb-2">
+                <div className="h-[300px] w-full min-w-[600px] p-4 md:p-6">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                            <defs>
+                                <linearGradient id="colorGrowth" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+                            <XAxis
+                                dataKey="name"
+                                fontSize={12}
+                                tickLine={false}
+                                axisLine={false}
+                                stroke="#94a3b8"
+                            />
+                            <YAxis
+                                fontSize={12}
+                                tickLine={false}
+                                axisLine={false}
+                                stroke="#94a3b8"
+                                allowDecimals={false}
+                            />
+                            <Tooltip
+                                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                            />
+                            <Area
+                                type="monotone"
+                                dataKey="value"
+                                stroke="#3b82f6"
+                                strokeWidth={3}
+                                fillOpacity={1}
+                                fill="url(#colorGrowth)"
+                                name="New Users"
+                            />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                </div>
+            </div>
+        </AdminGlassCard>
+    )
+}
+
+// --- Health Pulse Component ---
+interface HealthProps {
+    data: {
+        name: string
+        value: number
+    }[]
+}
+
+export function HealthPulse({ data }: HealthProps) {
+    return (
+        <div className="h-full w-full flex flex-col justify-center space-y-6 px-2">
+            {data.map((item, index) => (
+                <div key={index} className="space-y-2">
+                    <div className="flex justify-between items-end">
+                        <div className="flex items-center gap-2">
+                            <Activity className={cn(
+                                "w-4 h-4",
+                                item.name === 'CPU' ? "text-rose-500" :
+                                    item.name === 'Memory' ? "text-purple-500" : "text-blue-500"
+                            )} />
+                            <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{item.name}</span>
+                        </div>
+                        <span className="text-xs font-mono font-bold text-muted-foreground">{item.value}%</span>
+                    </div>
+                    <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div
+                            className={cn(
+                                "h-full rounded-full transition-all duration-1000 ease-out",
+                                item.name === 'CPU' ? "bg-rose-500" :
+                                    item.name === 'Memory' ? "bg-purple-500" : "bg-blue-500"
+                            )}
+                            style={{ width: `${item.value}%` }}
+                        />
+                    </div>
+                </div>
+            ))}
+        </div>
+    )
+}
+
+function cn(...classes: string[]) {
+    return classes.filter(Boolean).join(' ')
 }
