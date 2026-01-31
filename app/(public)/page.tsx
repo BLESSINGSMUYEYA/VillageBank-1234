@@ -3,19 +3,32 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
+import { useAuth } from '@/components/providers/AuthProvider'
 
 export default function Home() {
     const router = useRouter()
+    const { user, loading, isAuthenticated } = useAuth()
     const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
         setMounted(true)
-        const timer = setTimeout(() => {
-            router.push('/login')
-        }, 2000)
+    }, [])
 
-        return () => clearTimeout(timer)
-    }, [router])
+    useEffect(() => {
+        if (!loading && mounted) {
+            if (isAuthenticated && user) {
+                if (user.role === 'REGIONAL_ADMIN') {
+                    router.push('/admin/regional');
+                } else if (user.role === 'SUPER_ADMIN') {
+                    router.push('/admin/system');
+                } else {
+                    router.push('/dashboard');
+                }
+            } else {
+                router.push('/login');
+            }
+        }
+    }, [loading, isAuthenticated, user, router, mounted])
 
     if (!mounted) return null
 
