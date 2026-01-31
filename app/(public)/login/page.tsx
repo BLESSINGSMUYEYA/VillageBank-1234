@@ -134,8 +134,8 @@ export default function LoginPage() {
         <AuthLayout>
             <motion.div variants={itemFadeIn} className="w-full">
                 <div className="text-center space-y-2 mb-8">
-                    <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{t('auth.welcome_back')}</h1>
-                    <p className="text-sm font-bold opacity-70 text-slate-600 dark:text-slate-300">
+                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{t('auth.welcome_back')}</h1>
+                    <p className="text-sm font-medium opacity-70 text-slate-600 dark:text-slate-300">
                         {t('auth.sync_ledger')}
                     </p>
                 </div>
@@ -212,7 +212,7 @@ export default function LoginPage() {
                     Biometric Login
                 </Button>
 
-                <div className="mt-10 text-center">
+                <div className="mt-10 text-center space-y-4">
                     <p className="text-xs font-medium text-slate-500">
                         {t('auth.new_to_ecosystem')} <Link href="/register" className="text-emerald-600 dark:text-emerald-400 hover:underline">{t('auth.create_id')}</Link>
                     </p>

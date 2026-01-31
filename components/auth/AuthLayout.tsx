@@ -62,7 +62,7 @@ export function AuthLayout({
             </div>
 
             {/* Form Side (Right) */}
-            <div className="flex flex-col justify-center items-center p-6 py-12 relative bg-slate-50 dark:bg-background selection:bg-emerald-500/30 overflow-y-auto">
+            <div className="flex flex-col justify-center items-center p-12 sm:p-24 relative bg-slate-50 dark:bg-background selection:bg-emerald-500/30 overflow-y-auto">
                 {/* Ambient Background */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
                     <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-emerald-600/10 dark:bg-emerald-600/20 rounded-full blur-[120px] animate-pulse-slow" />
@@ -74,7 +74,7 @@ export function AuthLayout({
                     variants={staggerContainer}
                     initial="initial"
                     animate="animate"
-                    className="w-full max-w-md relative z-10"
+                    className="w-full max-w-sm relative z-10"
                 >
                     {/* Branding (Mobile Only) */}
                     {showBrandOnMobile && (

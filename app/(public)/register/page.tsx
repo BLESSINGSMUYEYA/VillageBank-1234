@@ -92,8 +92,8 @@ export default function RegisterPage() {
             ) : (
                 <motion.div variants={itemFadeIn} className="w-full">
                     <div className="text-center space-y-2 mb-8">
-                        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{t('register.create_identity')}</h1>
-                        <p className="text-sm font-bold opacity-70 text-slate-600 dark:text-slate-300">
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{t('register.create_identity')}</h1>
+                        <p className="text-sm font-medium opacity-70 text-slate-600 dark:text-slate-300">
                             {t('register.register_desc')}
                         </p>
                     </div>
@@ -205,7 +205,7 @@ export default function RegisterPage() {
                         </Button>
                     </form>
 
-                    <div className="mt-10 text-center">
+                    <div className="mt-10 text-center space-y-4">
                         <p className="text-xs font-medium text-slate-500">
                             {t('register.existing_node')} <Link href="/login" className="text-emerald-600 dark:text-emerald-400 hover:underline">{t('register.return_to_access')}</Link>
                         </p>
