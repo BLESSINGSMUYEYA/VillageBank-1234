@@ -405,7 +405,7 @@
     "team_desc": "A dedicated team of Malawian developers and financial experts passionate about technology and social impact."
   },
   "auth": {
-    "authorized_access": "Authorized Access Only",
+    "authorized_access": "Sign in",
     "welcome_back": "Welcome Back",
     "sync_ledger": "Syncing your group ledger...",
     "identity_email": "Email",

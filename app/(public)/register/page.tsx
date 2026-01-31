@@ -98,9 +98,9 @@ export default function RegisterPage() {
                         </p>
                     </div>
 
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <div className="space-y-2">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-1">
                                 <Label htmlFor="firstName" className="text-sm font-medium text-muted-foreground ml-1">{t('register.legal_name')}</Label>
                                 <PremiumInput
                                     id="firstName"
@@ -108,9 +108,10 @@ export default function RegisterPage() {
                                     icon={<User className="w-4 h-4" />}
                                     error={!!errors.firstName}
                                     errorMessage={errors.firstName?.message}
+                                    className="h-12"
                                 />
                             </div>
-                            <div className="space-y-2">
+                            <div className="space-y-1">
                                 <Label htmlFor="lastName" className="text-sm font-medium text-muted-foreground ml-1">{t('register.surname')}</Label>
                                 <PremiumInput
                                     id="lastName"
@@ -118,11 +119,12 @@ export default function RegisterPage() {
                                     icon={<User className="w-4 h-4" />}
                                     error={!!errors.lastName}
                                     errorMessage={errors.lastName?.message}
+                                    className="h-12"
                                 />
                             </div>
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                             <Label htmlFor="email" className="text-sm font-medium text-muted-foreground ml-1">{t('auth.identity_email')}</Label>
                             <PremiumInput
                                 id="email"
@@ -131,10 +133,11 @@ export default function RegisterPage() {
                                 icon={<Mail className="w-4 h-4" />}
                                 error={!!errors.email}
                                 errorMessage={errors.email?.message}
+                                className="h-12"
                             />
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                             <Label htmlFor="phone" className="text-sm font-medium text-muted-foreground ml-1">{t('register.phone_protocol')}</Label>
                             <PremiumInput
                                 id="phone"
@@ -142,11 +145,12 @@ export default function RegisterPage() {
                                 prefix="+265"
                                 error={!!errors.phone}
                                 errorMessage={errors.phone?.message}
+                                className="h-12"
                             />
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <div className="space-y-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-1">
                                 <Label htmlFor="password" className="text-sm font-medium text-muted-foreground ml-1">{t('register.security_code')}</Label>
                                 <PremiumInput
                                     id="password"
@@ -164,9 +168,10 @@ export default function RegisterPage() {
                                     }
                                     error={!!errors.password}
                                     errorMessage={errors.password?.message}
+                                    className="h-12"
                                 />
                             </div>
-                            <div className="space-y-2">
+                            <div className="space-y-1">
                                 <Label htmlFor="confirmPassword" className="text-sm font-medium text-muted-foreground ml-1">{t('register.verification')}</Label>
                                 <PremiumInput
                                     id="confirmPassword"
@@ -184,6 +189,7 @@ export default function RegisterPage() {
                                     }
                                     error={!!errors.confirmPassword}
                                     errorMessage={errors.confirmPassword?.message}
+                                    className="h-12"
                                 />
                             </div>
                         </div>
@@ -195,7 +201,7 @@ export default function RegisterPage() {
                             </div>
                         )}
 
-                        <Button type="submit" className="w-full h-14 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-lg shadow-xl shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all group" disabled={loading}>
+                        <Button type="submit" className="w-full h-12 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-lg shadow-xl shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all group" disabled={loading}>
                             {loading ? <InlineLogoLoader size="sm" /> : (
                                 <>
                                     {t('register.deploy_profile')}
@@ -205,7 +211,7 @@ export default function RegisterPage() {
                         </Button>
                     </form>
 
-                    <div className="mt-10 text-center space-y-4">
+                    <div className="mt-6 text-center space-y-4">
                         <p className="text-xs font-medium text-slate-500">
                             {t('register.existing_node')} <Link href="/login" className="text-emerald-600 dark:text-emerald-400 hover:underline">{t('register.return_to_access')}</Link>
                         </p>

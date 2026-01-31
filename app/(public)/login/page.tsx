@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { startAuthentication } from '@simplewebauthn/browser';
+import { startAuthentication, browserSupportsWebAuthn } from '@simplewebauthn/browser';
 import Link from 'next/link';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { Button } from '@/components/ui/button';
@@ -34,6 +34,12 @@ export default function LoginPage() {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [isPasskeySupported, setIsPasskeySupported] = useState(false);
+    const [passkeyLoading, setPasskeyLoading] = useState(false);
+
+    useEffect(() => {
+        setIsPasskeySupported(browserSupportsWebAuthn());
+    }, []);
 
     const { register, handleSubmit, getValues, formState: { errors } } = useForm<LoginForm>({
         resolver: zodResolver(loginSchema),
@@ -52,6 +58,7 @@ export default function LoginPage() {
 
     const handlePasskeyLogin = async () => {
         setLoading(true);
+        setPasskeyLoading(true);
         setError(null);
         try {
             const email = getValues('email');
@@ -127,6 +134,7 @@ export default function LoginPage() {
             }
         } finally {
             setLoading(false);
+            setPasskeyLoading(false);
         }
     };
 
@@ -140,79 +148,98 @@ export default function LoginPage() {
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                    <div className="space-y-4">
-                        <div className="space-y-2">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                    <div className="space-y-3">
+                        <div className="space-y-1">
                             <Label htmlFor="email" className="text-sm font-medium text-muted-foreground ml-1">{t('auth.identity_email')}</Label>
                             <PremiumInput
                                 id="email"
                                 type="email"
-                                {...register('email')}
-                                icon={<Mail className="w-5 h-5" />}
+                                {...register("email")}
+                                icon={<Mail className="w-4 h-4" />}
                                 error={!!errors.email}
                                 errorMessage={errors.email?.message}
+                                className="h-12"
                             />
                         </div>
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                             <div className="flex items-center justify-between px-1">
                                 <Label htmlFor="password" className="text-sm font-medium text-muted-foreground">{t('auth.encryption_key')}</Label>
                                 <Link href="/forgot-password" className="text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:underline opacity-80">{t('common.forgot_password')}</Link>
                             </div>
                             <PremiumInput
                                 id="password"
-                                type={showPassword ? 'text' : 'password'}
-                                {...register('password')}
-                                icon={<Lock className="w-5 h-5" />}
+                                type={showPassword ? "text" : "password"}
+                                {...register("password")}
+                                icon={<Lock className="w-4 h-4" />}
                                 suffix={
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
                                         className="hover:text-emerald-600 transition-colors focus:outline-none"
                                     >
-                                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                        {showPassword ? (
+                                            <EyeOff className="w-5 h-5" />
+                                        ) : (
+                                            <Eye className="w-5 h-5" />
+                                        )}
                                     </button>
                                 }
                                 error={!!errors.password}
                                 errorMessage={errors.password?.message}
+                                className="h-12"
                             />
                         </div>
                     </div>
+
                     {error && (
                         <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/10 flex items-center gap-3">
                             <ShieldCheck className="w-5 h-5 text-red-500 shrink-0" />
                             <p className="text-xs font-bold text-red-500 leading-tight">{error}</p>
                         </div>
                     )}
-                    <Button type="submit" className="w-full h-14 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-lg shadow-xl shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all group" disabled={loading}>
-                        {loading ? <InlineLogoLoader size="sm" /> : (
-                            <>
-                                {t('common.sign_in')}
-                                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                            </>
+
+                    <div className="space-y-3">
+                        <Button type="submit" className="w-full h-12 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-lg shadow-xl shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all group" disabled={loading}>
+                            {loading ? <InlineLogoLoader size="sm" /> : (
+                                <>
+                                    {t('auth.authorized_access')}
+                                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                                </>
+                            )}
+                        </Button>
+
+                        {isPasskeySupported && (
+                            <div className="relative">
+                                <div className="absolute inset-0 flex items-center">
+                                    <span className="w-full border-t border-slate-200 dark:border-slate-800" />
+                                </div>
+                                <div className="relative flex justify-center text-xs">
+                                    <span className="bg-slate-50 dark:bg-background px-2 text-muted-foreground font-medium">or</span>
+                                </div>
+                            </div>
                         )}
-                    </Button>
+
+                        {isPasskeySupported && (
+                            <Button
+                                type="button"
+                                variant="outline"
+                                className="w-full h-12 rounded-2xl border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold text-slate-700 dark:text-slate-200 transition-all flex items-center justify-center gap-2"
+                                onClick={handlePasskeyLogin}
+                                disabled={loading || passkeyLoading}
+                            >
+                                {passkeyLoading ? <InlineLogoLoader size="sm" /> : (
+                                    <>
+                                        <Fingerprint className="w-5 h-5" />
+                                        Sign in with Passkey
+                                    </>
+                                )}
+                            </Button>
+                        )}
+                    </div>
                 </form>
 
-                <div className="mt-8 relative">
-                    <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t border-slate-200 dark:border-white/10" />
-                    </div>
-                    <div className="relative flex justify-center text-[10px] uppercase">
-                        <span className="bg-slate-50 dark:bg-[#020817] px-2 text-muted-foreground font-bold tracking-widest">Or</span>
-                    </div>
-                </div>
-
-                <Button
-                    onClick={handlePasskeyLogin}
-                    disabled={loading}
-                    variant="outline"
-                    className="w-full mt-8 h-12 rounded-2xl border-slate-200 dark:border-white/10 hover:bg-white dark:hover:bg-white/5 font-bold gap-2 group bg-transparent"
-                >
-                    <Fingerprint className="w-5 h-5 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform" />
-                    Biometric Login
-                </Button>
-
-                <div className="mt-10 text-center space-y-4">
+                <div className="mt-6 text-center space-y-4">
                     <p className="text-xs font-medium text-slate-500">
                         {t('auth.new_to_ecosystem')} <Link href="/register" className="text-emerald-600 dark:text-emerald-400 hover:underline">{t('auth.create_id')}</Link>
                     </p>
