@@ -88,7 +88,7 @@ export function AuthLayout({
                     {/* Secure Badge */}
                     <motion.div variants={fadeIn} className="mt-8 flex items-center justify-center gap-2 opacity-40">
                         <ShieldCheck className="w-4 h-4" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.3em]">{t('auth.secure_badge') || 'BANK-GRADE SECURITY'}</span>
+                        <span className="text-xs font-medium">{t('auth.secure_badge') || 'Bank-grade security'}</span>
                     </motion.div>
                 </motion.div>
             </div>

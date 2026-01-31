@@ -10,12 +10,11 @@ import Link from 'next/link';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PremiumInput } from '@/components/ui/premium-input';
 import { Label } from '@/components/ui/label';
-import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, ShieldCheck, Mail, Lock, Fingerprint } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Mail, Lock, Fingerprint, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { itemFadeIn } from '@/lib/motions';
-import { GlassCard } from '@/components/ui/GlassCard';
 import { useLanguage } from '@/components/providers/LanguageProvider';
 import { InlineLogoLoader } from '@/components/ui/LogoLoader';
 import { AuthLayout } from '@/components/auth/AuthLayout';
@@ -34,6 +33,7 @@ export default function LoginPage() {
     const { t } = useLanguage();
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const { register, handleSubmit, getValues, formState: { errors } } = useForm<LoginForm>({
         resolver: zodResolver(loginSchema),
@@ -132,90 +132,91 @@ export default function LoginPage() {
 
     return (
         <AuthLayout>
-            <motion.div variants={itemFadeIn}>
-                <GlassCard className="p-0 border-none overflow-hidden shadow-2xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl" hover={false}>
-                    <div className="h-1.5 bg-gradient-to-r from-emerald-600 to-teal-600" />
-                    <CardHeader className="p-8 sm:p-10 text-center space-y-2">
-                        <CardTitle className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{t('auth.welcome_back')}</CardTitle>
-                        <CardDescription className="text-sm font-bold opacity-70">
-                            {t('auth.sync_ledger')}
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="px-8 sm:px-10 pb-8 sm:pb-10">
-                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">{t('auth.identity_email')}</Label>
-                                    <div className="relative">
-                                        <Input
-                                            id="email"
-                                            type="email"
-                                            placeholder="name@domain.com"
-                                            {...register('email')}
-                                            className="pl-12 font-bold"
-                                        />
-                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/40" />
-                                    </div>
-                                    {errors.email && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.email.message}</p>}
-                                </div>
-                                <div className="space-y-2">
-                                    <div className="flex items-center justify-between px-1">
-                                        <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{t('auth.encryption_key')}</Label>
-                                        <Link href="/forgot-password" className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest hover:underline opacity-80">{t('common.forgot_password')}</Link>
-                                    </div>
-                                    <div className="relative">
-                                        <Input
-                                            id="password"
-                                            type="password"
-                                            {...register('password')}
-                                            className="pl-12 font-bold"
-                                        />
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/40" />
-                                    </div>
-                                    {errors.password && <p className="text-[10px] font-bold text-red-500 uppercase tracking-wider ml-1">{errors.password.message}</p>}
-                                </div>
-                            </div>
-                            {error && (
-                                <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/10 flex items-center gap-3">
-                                    <ShieldCheck className="w-5 h-5 text-red-500 shrink-0" />
-                                    <p className="text-xs font-bold text-red-500 leading-tight">{error}</p>
-                                </div>
-                            )}
-                            <Button type="submit" className="w-full h-14 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-lg shadow-xl shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all group" disabled={loading}>
-                                {loading ? <InlineLogoLoader size="sm" /> : (
-                                    <>
-                                        {t('common.sign_in')}
-                                        <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                                    </>
-                                )}
-                            </Button>
-                        </form>
+            <motion.div variants={itemFadeIn} className="w-full">
+                <div className="text-center space-y-2 mb-8">
+                    <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{t('auth.welcome_back')}</h1>
+                    <p className="text-sm font-bold opacity-70 text-slate-600 dark:text-slate-300">
+                        {t('auth.sync_ledger')}
+                    </p>
+                </div>
 
-                        <div className="mt-4 relative">
-                            <div className="absolute inset-0 flex items-center">
-                                <span className="w-full border-t border-slate-200 dark:border-white/10" />
-                            </div>
-                            <div className="relative flex justify-center text-[10px] uppercase">
-                                <span className="bg-white dark:bg-slate-900 px-2 text-muted-foreground font-bold tracking-widest">Or continue with</span>
-                            </div>
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="email" className="text-sm font-medium text-muted-foreground ml-1">{t('auth.identity_email')}</Label>
+                            <PremiumInput
+                                id="email"
+                                type="email"
+                                {...register('email')}
+                                icon={<Mail className="w-5 h-5" />}
+                                error={!!errors.email}
+                                errorMessage={errors.email?.message}
+                            />
                         </div>
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between px-1">
+                                <Label htmlFor="password" className="text-sm font-medium text-muted-foreground">{t('auth.encryption_key')}</Label>
+                                <Link href="/forgot-password" className="text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:underline opacity-80">{t('common.forgot_password')}</Link>
+                            </div>
+                            <PremiumInput
+                                id="password"
+                                type={showPassword ? 'text' : 'password'}
+                                {...register('password')}
+                                icon={<Lock className="w-5 h-5" />}
+                                suffix={
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="hover:text-emerald-600 transition-colors focus:outline-none"
+                                    >
+                                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                    </button>
+                                }
+                                error={!!errors.password}
+                                errorMessage={errors.password?.message}
+                            />
+                        </div>
+                    </div>
+                    {error && (
+                        <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/10 flex items-center gap-3">
+                            <ShieldCheck className="w-5 h-5 text-red-500 shrink-0" />
+                            <p className="text-xs font-bold text-red-500 leading-tight">{error}</p>
+                        </div>
+                    )}
+                    <Button type="submit" className="w-full h-14 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-lg shadow-xl shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all group" disabled={loading}>
+                        {loading ? <InlineLogoLoader size="sm" /> : (
+                            <>
+                                {t('common.sign_in')}
+                                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                            </>
+                        )}
+                    </Button>
+                </form>
 
-                        <Button
-                            onClick={handlePasskeyLogin}
-                            disabled={loading}
-                            variant="outline"
-                            className="w-full mt-4 h-12 rounded-2xl border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/5 font-bold gap-2 group"
-                        >
-                            <Fingerprint className="w-5 h-5 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform" />
-                            Biometric Login
-                        </Button>
-                    </CardContent>
-                    <CardFooter className="flex justify-center p-8 bg-blue-600/5 dark:bg-white/5 border-t border-white/10 dark:border-white/5">
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
-                            {t('auth.new_to_ecosystem')} <Link href="/register" className="text-emerald-600 dark:text-emerald-400 hover:underline">{t('auth.create_id')}</Link>
-                        </p>
-                    </CardFooter>
-                </GlassCard>
+                <div className="mt-8 relative">
+                    <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t border-slate-200 dark:border-white/10" />
+                    </div>
+                    <div className="relative flex justify-center text-[10px] uppercase">
+                        <span className="bg-slate-50 dark:bg-[#020817] px-2 text-muted-foreground font-bold tracking-widest">Or</span>
+                    </div>
+                </div>
+
+                <Button
+                    onClick={handlePasskeyLogin}
+                    disabled={loading}
+                    variant="outline"
+                    className="w-full mt-8 h-12 rounded-2xl border-slate-200 dark:border-white/10 hover:bg-white dark:hover:bg-white/5 font-bold gap-2 group bg-transparent"
+                >
+                    <Fingerprint className="w-5 h-5 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform" />
+                    Biometric Login
+                </Button>
+
+                <div className="mt-10 text-center">
+                    <p className="text-xs font-medium text-slate-500">
+                        {t('auth.new_to_ecosystem')} <Link href="/register" className="text-emerald-600 dark:text-emerald-400 hover:underline">{t('auth.create_id')}</Link>
+                    </p>
+                </div>
             </motion.div>
         </AuthLayout>
     );

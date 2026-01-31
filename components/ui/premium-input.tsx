@@ -9,7 +9,7 @@ export interface PremiumInputProps
     errorMessage?: string;
     success?: boolean;
     prefix?: string;
-    suffix?: string;
+    suffix?: React.ReactNode;
     loading?: boolean;
     icon?: React.ReactNode;
 }
@@ -32,9 +32,9 @@ const PremiumInput = React.forwardRef<HTMLInputElement, PremiumInputProps>(
                     <Input
                         type={type}
                         className={cn(
-                            "h-14 font-bold px-6 transition-all",
+                            "h-14 font-bold px-6 transition-all rounded-2xl",
                             (prefix || icon) && "pl-16",
-                            suffix && "pr-20",
+                            suffix && "pr-14",
                             error && "border-red-500 focus-visible:ring-red-500 bg-red-50/50 dark:bg-red-950/20",
                             success && "border-emerald-500 focus-visible:ring-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/20",
                             loading && "opacity-50 cursor-wait",
@@ -45,9 +45,9 @@ const PremiumInput = React.forwardRef<HTMLInputElement, PremiumInputProps>(
                         {...props}
                     />
                     {suffix && !loading && !error && !success && (
-                        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-muted-foreground font-black pointer-events-none transition-colors group-focus-within:text-emerald-600 dark:group-focus-within:text-emerald-400">
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-black transition-colors group-focus-within:text-emerald-600 dark:group-focus-within:text-emerald-400">
                             {suffix}
-                        </span>
+                        </div>
                     )}
 
                     {/* Status Icons */}
