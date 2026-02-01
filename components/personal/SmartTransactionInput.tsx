@@ -24,6 +24,8 @@ export default function SmartTransactionInput() {
         type: "EXPENSE" as TransactionType,
         description: "",
         date: new Date().toISOString().split("T")[0],
+        lendingType: "" as "" | "GIVEN" | "TAKEN",
+        personName: "",
     });
 
     const handleSaveParsed = async () => {
@@ -68,6 +70,11 @@ export default function SmartTransactionInput() {
             return;
         }
 
+        if (manualEntry.lendingType && !manualEntry.personName) {
+            alert("Please enter the person's name");
+            return;
+        }
+
         setLoading(true);
         try {
             await createTransaction({
@@ -75,6 +82,8 @@ export default function SmartTransactionInput() {
                 type: manualEntry.type,
                 description: manualEntry.description,
                 date: new Date(manualEntry.date),
+                lendingType: manualEntry.lendingType as "GIVEN" | "TAKEN" | undefined,
+                counterpartyName: manualEntry.personName || undefined,
             });
 
             setManualEntry({
@@ -82,6 +91,8 @@ export default function SmartTransactionInput() {
                 type: "EXPENSE",
                 description: "",
                 date: new Date().toISOString().split("T")[0],
+                lendingType: "",
+                personName: "",
             });
             alert("Transaction saved!");
             router.refresh();
@@ -159,11 +170,22 @@ export default function SmartTransactionInput() {
                                 <label className="text-xs font-bold text-slate-400 ml-1">Type</label>
                                 <select
                                     className="w-full h-10 px-3 rounded-lg bg-slate-950 border border-slate-800 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm appearance-none"
-                                    value={manualEntry.type}
-                                    onChange={(e) => setManualEntry({ ...manualEntry, type: e.target.value as TransactionType })}
+                                    value={manualEntry.lendingType ? manualEntry.lendingType : manualEntry.type}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        if (val === "GIVEN") {
+                                            setManualEntry({ ...manualEntry, lendingType: "GIVEN", type: "EXPENSE" });
+                                        } else if (val === "TAKEN") {
+                                            setManualEntry({ ...manualEntry, lendingType: "TAKEN", type: "INCOME" });
+                                        } else {
+                                            setManualEntry({ ...manualEntry, lendingType: "", type: val as TransactionType });
+                                        }
+                                    }}
                                 >
                                     <option value="EXPENSE">Expense</option>
                                     <option value="INCOME">Income</option>
+                                    <option value="GIVEN">Loan Given</option>
+                                    <option value="TAKEN">Loan Taken</option>
                                 </select>
                             </div>
                             <div className="space-y-1.5">
@@ -180,6 +202,19 @@ export default function SmartTransactionInput() {
                                 </div>
                             </div>
                         </div>
+
+                        {manualEntry.lendingType && (
+                            <div className="space-y-1.5 animate-in fade-in slide-in-from-top-2">
+                                <label className="text-xs font-bold text-slate-400 ml-1">Person Name</label>
+                                <input
+                                    type="text"
+                                    className="w-full h-10 px-3 rounded-lg bg-slate-950 border border-slate-800 text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm"
+                                    placeholder="Who is this loan with?"
+                                    value={manualEntry.personName}
+                                    onChange={(e) => setManualEntry({ ...manualEntry, personName: e.target.value })}
+                                />
+                            </div>
+                        )}
 
                         <div className="space-y-1.5">
                             <label className="text-xs font-bold text-slate-400 ml-1">Description</label>

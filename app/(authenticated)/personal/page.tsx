@@ -8,6 +8,10 @@ import { redirect } from "next/navigation";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
 
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ArrowRightLeft } from "lucide-react";
+
 export default async function PersonalFinancePage() {
     const session = await getSession();
     if (!session?.userId) redirect("/login");
@@ -25,6 +29,14 @@ export default async function PersonalFinancePage() {
                 }
                 description={`Overview for ${format(new Date(), 'MMMM yyyy')}`}
                 badge="Money Management"
+                action={
+                    <Link href="/personal/lendings">
+                        <Button variant="outline" size="sm" className="gap-2">
+                            <ArrowRightLeft className="w-4 h-4" />
+                            Manage Lendings
+                        </Button>
+                    </Link>
+                }
             />
 
             <div className="space-y-8 animate-fade-in slide-in-from-bottom-4 duration-500">

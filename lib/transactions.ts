@@ -4,18 +4,54 @@ import { prisma } from "@/lib/prisma";
 import { TransactionType } from "@prisma/client";
 import { getSession } from "@/lib/auth";
 
+
 export type CreateTransactionInput = {
     amount: number;
     type: TransactionType;
     category?: string;
     description?: string;
     date?: Date;
+    lendingType?: "GIVEN" | "TAKEN"; // Optional lending type
+    counterpartyName?: string; // Optional person name for lending
 };
 
 export async function createTransaction(input: CreateTransactionInput) {
     const session = await getSession();
     if (!session?.userId) throw new Error("Unauthorized");
 
+    // If it's a lending transaction, we need to create both Transaction and Lending
+    if (input.lendingType && input.counterpartyName) {
+        return prisma.$transaction(async (tx) => {
+            // 1. Create the Transaction
+            const transaction = await tx.personalTransaction.create({
+                data: {
+                    userId: session.userId,
+                    amount: input.amount,
+                    type: input.type,
+                    category: input.category || "Debt", // Default category for lending
+                    description: input.description,
+                    date: input.date || new Date(),
+                },
+            });
+
+            // 2. Create the Lending record linked to the transaction
+            await tx.lending.create({
+                data: {
+                    userId: session.userId,
+                    transactionId: transaction.id,
+                    name: input.counterpartyName!,
+                    amount: input.amount,
+                    type: input.lendingType === "GIVEN" ? "GIVEN" : "TAKEN",
+                    status: "PENDING",
+                    // For debts, due date is not mandatory in this simple flow, but could be added later
+                },
+            });
+
+            return transaction;
+        });
+    }
+
+    // Standard transaction creation
     return prisma.personalTransaction.create({
         data: {
             userId: session.userId,
@@ -27,6 +63,7 @@ export async function createTransaction(input: CreateTransactionInput) {
         },
     });
 }
+
 
 export async function getTransactions(limit = 20, offset = 0) {
     const session = await getSession();
