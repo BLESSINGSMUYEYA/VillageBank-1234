@@ -363,6 +363,9 @@ export function NotificationCenter({
           {TriggerButton}
         </SheetTrigger>
         <SheetContent side="bottom" className="h-[85vh] rounded-t-[2.5rem] p-0 border-none bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl">
+          <SheetHeader className="sr-only">
+            <SheetTitle>Notifications</SheetTitle>
+          </SheetHeader>
           {/* Added a handle bar for sheer cue */}
           <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-slate-200 dark:bg-slate-700/50 rounded-full z-50"></div>
           <NotificationList />
