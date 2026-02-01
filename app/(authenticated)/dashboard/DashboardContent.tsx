@@ -45,9 +45,11 @@ export function DashboardContent({
             animate="animate"
             className="relative space-y-8 sm:space-y-12 pb-20"
         >
-            {/* Page-level Ambient Glows */}
-            <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
-            <div className="absolute top-1/2 right-0 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none translate-y-[-50%]" />
+            <div className="relative">
+                {/* Ambient Background Glows - Optimized for performance */}
+                <div className="absolute -top-32 -left-32 w-[400px] h-[400px] bg-emerald-500/5 rounded-full blur-[80px] pointer-events-none" />
+                <div className="absolute top-1/2 right-0 w-[350px] h-[350px] bg-blue-500/5 rounded-full blur-[80px] pointer-events-none translate-y-[-50%]" />
+            </div>
 
 
             {/* 1. Hero / Metrics (Full Width) */}

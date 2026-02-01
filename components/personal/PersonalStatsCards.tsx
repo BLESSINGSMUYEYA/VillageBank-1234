@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { ArrowUpRight, ArrowDownRight, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -12,7 +13,7 @@ interface PersonalStatsCardsProps {
     };
 }
 
-export function PersonalStatsCards({ stats }: PersonalStatsCardsProps) {
+export const PersonalStatsCards = memo(function PersonalStatsCards({ stats }: PersonalStatsCardsProps) {
     return (
         <GlassCard
             className="rounded-[2rem] sm:rounded-[2.5rem] bg-white/60 dark:bg-white/5 border border-slate-200/60 dark:border-white/5 shadow-2xl shadow-emerald-900/5 p-0 overflow-hidden"
@@ -77,4 +78,4 @@ export function PersonalStatsCards({ stats }: PersonalStatsCardsProps) {
             </div>
         </GlassCard>
     );
-}
+});

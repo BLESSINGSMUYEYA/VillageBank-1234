@@ -16,14 +16,17 @@ export default async function PersonalFinancePage() {
     const session = await getSession();
     if (!session?.userId) redirect("/login");
 
-    const stats = await getTransactionStats();
-    const transactions = await getTransactions();
+    // Parallelize data fetching for faster page load
+    const [stats, transactions] = await Promise.all([
+        getTransactionStats(),
+        getTransactions()
+    ]);
 
     return (
         <PageContainer className="relative">
-            {/* Ambient Background Glows */}
-            <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
-            <div className="absolute top-1/2 right-0 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none translate-y-[-50%]" />
+            {/* Ambient Background Glows - Optimized for performance */}
+            <div className="absolute -top-32 -left-32 w-[400px] h-[400px] bg-emerald-500/5 rounded-full blur-[80px] pointer-events-none" />
+            <div className="absolute top-1/2 right-0 w-[350px] h-[350px] bg-blue-500/5 rounded-full blur-[80px] pointer-events-none translate-y-[-50%]" />
 
             <PageHeader
                 title={
