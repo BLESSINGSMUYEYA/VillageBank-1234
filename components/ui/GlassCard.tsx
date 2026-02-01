@@ -23,10 +23,10 @@ export function GlassCard({
     ...props
 }: GlassCardProps) {
     const blurClasses = {
-        sm: "backdrop-blur-[2px]",
-        md: "backdrop-blur-sm",
-        lg: "backdrop-blur-md",
-        xl: "backdrop-blur-lg",
+        sm: "backdrop-blur-[1px] sm:backdrop-blur-[2px]",
+        md: "backdrop-blur-[2px] sm:backdrop-blur-sm",
+        lg: "backdrop-blur-sm sm:backdrop-blur-md",
+        xl: "backdrop-blur-md sm:backdrop-blur-lg",
     };
 
     return (
@@ -36,7 +36,7 @@ export function GlassCard({
             viewport={{ once: true, margin: "-50px" }} // Optimize viewport check
             whileHover={hover ? { y: -2, scale: 1.005, transition: { duration: 0.2 } } : undefined} // Reduced movement
             className={cn(
-                "relative overflow-hidden rounded-[32px] border border-white/20 dark:border-white/10 shadow-2xl transition-all duration-200", // Faster transition
+                "relative overflow-hidden rounded-[32px] border border-white/20 dark:border-white/10 shadow-2xl transition-all duration-200 transform-gpu", // Faster transition & GPU accel
                 "bg-white/60 dark:bg-slate-900/40",
                 blurClasses[blur],
                 gradient && "bg-gradient-to-br from-white/40 to-white/10 dark:from-white/5 dark:to-transparent",

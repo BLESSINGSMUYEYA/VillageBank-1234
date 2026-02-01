@@ -4,8 +4,11 @@ import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { QrCode, Copy, Check } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { QrCode, Copy, Check, Loader2 } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface PersonalQRCardProps {
     user?: {
@@ -19,9 +22,14 @@ interface PersonalQRCardProps {
 export function PersonalQRCard({ user: proppedUser, children }: PersonalQRCardProps = {}) {
     const { user: authUser } = useAuth();
     const user = proppedUser || authUser;
+    const router = useRouter();
 
     const [qrDataUrl, setQrDataUrl] = useState<string>("");
     const [copied, setCopied] = useState(false);
+
+    // Create ID State
+    const [isCreating, setIsCreating] = useState(false);
+    const [newId, setNewId] = useState("");
 
     useEffect(() => {
         if (user?.ubankId) {
@@ -45,6 +53,35 @@ export function PersonalQRCard({ user: proppedUser, children }: PersonalQRCardPr
             setTimeout(() => setCopied(false), 2000);
         }
     };
+
+    const handleCreateId = async () => {
+        if (!newId || newId.length < 3) {
+            toast.error("ID must be at least 3 characters");
+            return;
+        }
+
+        setIsCreating(true);
+        try {
+            const res = await fetch('/api/users/profile', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ubankId: newId })
+            });
+
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || "Failed to create ID");
+            }
+
+            toast.success("uBank ID created!");
+            window.location.reload(); // Reload to refresh session/context
+        } catch (error: any) {
+            toast.error(error.message);
+        } finally {
+            setIsCreating(false);
+        }
+    };
+
     if (!user) {
         return children ? <>{children}</> : null;
     }
@@ -105,7 +142,7 @@ export function PersonalQRCard({ user: proppedUser, children }: PersonalQRCardPr
                             <div>
                                 <h3 className="text-lg font-bold text-white">uBank ID Not Set</h3>
                                 <p className="text-sm text-slate-400 mt-1 max-w-[200px]">
-                                    Please go to your profile settings to create your unique uBank ID.
+                                    If this is unexpected, please contact support or try logging in again.
                                 </p>
                             </div>
                         </div>

@@ -22,7 +22,7 @@ export function PersonalStatsCards({ stats }: PersonalStatsCardsProps) {
             {/* Top Section: Net Balance - Gradient Background */}
             <div className="p-6 pb-5 relative z-10 bg-gradient-to-br from-emerald-900/10 to-emerald-950/10 dark:from-emerald-900/20 dark:to-emerald-950/20">
                 <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2">
                         <Wallet className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                         Net Balance
                     </span>
@@ -33,7 +33,7 @@ export function PersonalStatsCards({ stats }: PersonalStatsCardsProps) {
                     </div>
                 </div>
                 <h3 className={cn(
-                    "text-4xl font-black tracking-tight",
+                    "text-3xl font-black tracking-tight",
                     stats.net >= 0 ? "text-slate-900 dark:text-white" : "text-rose-600 dark:text-rose-400"
                 )}>
                     MWK {stats.net.toLocaleString()}
@@ -51,10 +51,10 @@ export function PersonalStatsCards({ stats }: PersonalStatsCardsProps) {
                         <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
                             <ArrowUpRight className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                         </div>
-                        <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Income</span>
+                        <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Income</span>
                     </div>
                     <div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
                             MWK {stats.income.toLocaleString()}
                         </h3>
                     </div>
@@ -66,10 +66,10 @@ export function PersonalStatsCards({ stats }: PersonalStatsCardsProps) {
                         <div className="w-8 h-8 rounded-full bg-rose-500/10 flex items-center justify-center border border-rose-500/20">
                             <ArrowDownRight className="w-4 h-4 text-rose-600 dark:text-rose-400" />
                         </div>
-                        <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Expenses</span>
+                        <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Expenses</span>
                     </div>
                     <div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
                             MWK {stats.expense.toLocaleString()}
                         </h3>
                     </div>

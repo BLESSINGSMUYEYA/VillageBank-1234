@@ -5,7 +5,7 @@ import { parseTransactionFromText as parseSMS } from "@/lib/sms-parser";
 import { createTransaction, getRecentCounterparties } from "@/lib/transactions";
 import { useRouter } from "next/navigation";
 import { TransactionType } from "@prisma/client";
-import { Scan, PenTool, Loader2, ArrowRight, ScanLine, Clock, MessageSquareText, ChevronRight, LayoutDashboard } from "lucide-react";
+import { Scan, PenTool, Loader2, ArrowRight, ScanLine, Clock, MessageSquareText, ChevronRight, LayoutDashboard, QrCode } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -130,8 +130,8 @@ export default function SmartTransactionInput({ compact = false, user: propUser 
     };
 
     const handleSaveManual = async () => {
-        if (!manualEntry.amount || !manualEntry.description) {
-            toast.error("Please fill in all fields");
+        if (!manualEntry.amount) {
+            toast.error("Please enter an amount");
             return;
         }
 
@@ -441,7 +441,7 @@ export default function SmartTransactionInput({ compact = false, user: propUser 
                                     <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                                         My uBank ID: <span className="text-slate-900 dark:text-white font-bold ml-1">{user?.ubankId || "Not Set"}</span>
                                     </span>
-                                    <Scan className="w-4 h-4 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform" />
+                                    <QrCode className="w-4 h-4 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform" />
                                 </button>
                             </PersonalQRCard>
                         </div>
@@ -538,7 +538,7 @@ export default function SmartTransactionInput({ compact = false, user: propUser 
                     >
                         <button className={buttonClasses}>
                             <div className={iconContainerClasses}>
-                                <ScanLine className={iconSize} />
+                                <QrCode className={iconSize} />
                             </div>
                             <span className={labelClasses}>Scan QR</span>
                         </button>
@@ -731,7 +731,7 @@ export default function SmartTransactionInput({ compact = false, user: propUser 
                             <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">
                                 My uBank ID: <span className="text-slate-900 dark:text-white font-bold ml-1">{user?.ubankId || "Not Set"}</span>
                             </span>
-                            <Scan className="w-5 h-5 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform" />
+                            <QrCode className="w-5 h-5 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform" />
                         </button>
                     </PersonalQRCard>
                 </div>

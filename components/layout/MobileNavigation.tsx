@@ -88,7 +88,7 @@ export function MobileNavigation() {
           <div className="flex items-center gap-1.5">
             <LanguageSwitcher />
             {user && <NotificationCenter />}
-            {user && <PersonalQRCard user={user} />} {/* Added PersonalQRCard */}
+            {/* QR Code Button Removed */}
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

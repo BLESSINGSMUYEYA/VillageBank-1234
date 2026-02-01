@@ -40,7 +40,7 @@ export function DashboardHeader() {
 
                         <NotificationCenter />
 
-                        <PersonalQRCard user={user} />
+                        {/* QR Code Button Removed */}
 
                         <DesktopUserMenu user={user} />
                     </div>

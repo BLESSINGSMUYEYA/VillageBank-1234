@@ -46,9 +46,20 @@ export const getDashboardStats = cache(async (): Promise<DashboardStats> => {
     return withCache(
         cacheKeys.dashboardStats(userId),
         async () => {
+            const now = new Date()
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+            const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
 
-            // Parallel fetch of main entities
-            const [userGroupsCount, contributions, loans] = await Promise.all([
+            // Parallelize optimized queries
+            const [
+                userGroupsCount,
+                contributionStats,
+                monthlyStats,
+                pendingLoansCount,
+                activeLoansCount,
+                loansWithRepayments
+            ] = await Promise.all([
+                // 1. Count groups directly
                 prisma.group.count({
                     where: {
                         members: {
@@ -59,46 +70,66 @@ export const getDashboardStats = cache(async (): Promise<DashboardStats> => {
                         },
                     },
                 }),
-                prisma.contribution.findMany({
+                // 2. Aggregate total contributions
+                prisma.contribution.aggregate({
+                    _sum: { amount: true },
                     where: {
                         userId: userId,
                         status: 'COMPLETED',
                     },
                 }),
+                // 3. Aggregate monthly contributions
+                prisma.contribution.aggregate({
+                    _sum: { amount: true },
+                    where: {
+                        userId: userId,
+                        status: 'COMPLETED',
+                        createdAt: {
+                            gte: startOfMonth,
+                            lte: endOfMonth
+                        }
+                    },
+                }),
+                // 4. Count pending loans
+                prisma.loan.count({
+                    where: {
+                        userId: userId,
+                        status: 'PENDING',
+                    },
+                }),
+                // 5. Count active loans
+                prisma.loan.count({
+                    where: {
+                        userId: userId,
+                        status: { in: ['APPROVED', 'ACTIVE'] },
+                    },
+                }),
+                // 6. Optimized loan fetch for calculation (only needed fields)
                 prisma.loan.findMany({
                     where: {
                         userId: userId,
+                        status: { in: ['APPROVED', 'ACTIVE', 'COMPLETED'] }
                     },
-                    include: {
-                        repayments: true
+                    select: {
+                        amountApproved: true,
+                        amountRequested: true,
+                        interestRate: true,
+                        repayments: {
+                            select: {
+                                amount: true
+                            }
+                        }
                     }
                 })
             ])
 
-            // Get current month info for filtering
-            const now = new Date()
-            const currentMonth = now.getMonth() + 1
-            const currentYear = now.getFullYear()
-
-            // Filter in memory to avoid extra DB calls
-            const monthlyContribution = contributions.find(c =>
-                c.month === currentMonth &&
-                c.year === currentYear
-            )
-
-            // Calculate stats
-            const totalContributions = contributions.reduce((sum, c) => sum + Number(c.amount), 0)
-            const pendingLoans = loans.filter(loan => loan.status === 'PENDING').length
-            const activeLoans = loans.filter(loan => ['APPROVED', 'ACTIVE'].includes(loan.status)).length
-
-            // Calculate repayment progress using the already fetched loans
+            // Calculate repayment progress in memory (lightweight now)
             let repaymentProgress = 0
-            const eligibleLoans = loans.filter(l => ['APPROVED', 'ACTIVE', 'COMPLETED'].includes(l.status))
-            if (eligibleLoans.length > 0) {
+            if (loansWithRepayments.length > 0) {
                 let totalToRepay = 0
                 let totalRepaid = 0
 
-                eligibleLoans.forEach(loan => {
+                loansWithRepayments.forEach(loan => {
                     const principal = loan.amountApproved || loan.amountRequested
                     const interest = (principal * loan.interestRate) / 100
                     totalToRepay += principal + interest
@@ -112,10 +143,10 @@ export const getDashboardStats = cache(async (): Promise<DashboardStats> => {
 
             return {
                 totalGroups: userGroupsCount,
-                totalContributions,
-                totalLoans: activeLoans,
-                pendingLoans,
-                monthlyContribution: monthlyContribution ? Number(monthlyContribution.amount) : 0,
+                totalContributions: Number(contributionStats._sum.amount || 0),
+                totalLoans: activeLoansCount,
+                pendingLoans: pendingLoansCount,
+                monthlyContribution: Number(monthlyStats._sum.amount || 0),
                 loanRepaymentProgress: repaymentProgress,
             }
         },

@@ -136,7 +136,18 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { firstName, lastName, phoneNumber, region } = body
+    const { firstName, lastName, phoneNumber, region, ubankId } = body
+
+    // Validate uBank ID uniqueness if provided
+    if (ubankId) {
+      // Simple check if it's already taken by someone else
+      const existing = await prisma.user.findUnique({
+        where: { ubankId }
+      })
+      if (existing && existing.id !== userId) {
+        return NextResponse.json({ error: 'uBank ID is already taken' }, { status: 409 })
+      }
+    }
 
     const updatedUser = await prisma.user.update({
       where: { id: userId as string },
@@ -144,7 +155,8 @@ export async function PUT(request: NextRequest) {
         firstName,
         lastName,
         phoneNumber,
-        region
+        region,
+        ...(ubankId && { ubankId }) // Only update if provided
       }
     })
 
@@ -156,9 +168,13 @@ export async function PUT(request: NextRequest) {
       phoneNumber: updatedUser.phoneNumber,
       role: updatedUser.role,
       region: updatedUser.region,
-      isActive: true // Default to true since User model doesn't have isActive field
+      ubankId: updatedUser.ubankId,
+      isActive: true
     })
-  } catch (error) {
+  } catch (error: any) {
+    if (error.code === 'P2002') {
+      return NextResponse.json({ error: 'uBank ID is already taken' }, { status: 409 })
+    }
     console.error('Profile update error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
