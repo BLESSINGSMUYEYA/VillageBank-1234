@@ -65,7 +65,7 @@ async function handleUserCreated(data: any) {
   const primaryEmail = email_addresses[0]?.email_address
   const primaryPhone = phone_numbers[0]?.phone_number
 
-  const ubankId = await generateUniqueUbankId(`${first_name || 'User'}.${last_name || 'Member'}`, 'USER')
+  const ubankId = await generateUniqueUbankId(first_name || 'User', last_name || 'Member', 'USER')
 
   await prisma.user.create({
     data: {

@@ -28,7 +28,7 @@ export async function POST(req: Request) {
         }
 
         const hashedPassword = await hashPassword(password);
-        const ubankId = await generateUniqueUbankId(`${firstName}.${lastName}`, 'USER');
+        const ubankId = await generateUniqueUbankId(firstName, lastName, 'USER');
 
         // Generate verification token
         const verificationToken = crypto.randomUUID();

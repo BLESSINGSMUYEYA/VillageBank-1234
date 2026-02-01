@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     // Create group and add creator as admin in a single transaction
     const group = await prisma.$transaction(async (tx) => {
 
-      const ubankId = await generateUniqueUbankId(validatedData.name, 'GROUP')
+      const ubankId = await generateUniqueUbankId(validatedData.name, '', 'GROUP')
 
       const newGroup = await tx.group.create({
         data: {
