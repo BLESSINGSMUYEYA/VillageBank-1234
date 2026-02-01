@@ -29,7 +29,7 @@ export default async function DashboardPage() {
   }
 
   // Fetch data for DashboardContent
-  const [stats, recentActivity, pendingApprovals, remindersResult, announcements] = await Promise.all([
+  const [stats, recentActivity, pendingApprovals, remindersResult, dbAnnouncements] = await Promise.all([
     getDashboardStats(),
     getRecentActivity(),
     getPendingApprovals(),
@@ -44,6 +44,27 @@ export default async function DashboardPage() {
       }
     })
   ])
+
+  // Custom Personal Finance Banner
+  const personalFinanceBanner = {
+    id: 'personal-finance-promo',
+    title: 'Manage Your Personal Finances',
+    message: 'Track income and expenses separately from your group savings.',
+    imageUrl: '/banners/personal-finance.png',
+    actionText: 'Go to Dashboard',
+    link: '/personal',
+    type: 'BANNER' as const,
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    createdById: 'system',
+    expiresAt: null,
+    target: 'ALL',
+    targetRegion: null
+  }
+
+  // Prepend custom banner to DB announcements
+  const announcements = [personalFinanceBanner, ...dbAnnouncements]
 
   const reminders = remindersResult.success ? remindersResult.data : []
 

@@ -50,7 +50,7 @@ export function MobileNavigation() {
     { name: t('common.pulse'), href: '/dashboard', icon: Zap },
     { name: t('common.vault'), href: '/vault', icon: Landmark },
     { name: t('common.groups'), href: '/groups', icon: Users },
-    { name: t('common.profile'), href: '/profile', icon: User },
+    { name: 'Personal', href: '/personal', icon: User },
   ]
 
   const adminNavigation = [

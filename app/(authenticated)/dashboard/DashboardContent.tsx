@@ -7,6 +7,7 @@ import { staggerContainer } from '@/lib/motions'
 import { SecurityVerificationModal } from './SecurityVerificationModal'
 import { DashboardHero } from '@/components/dashboard/DashboardHero'
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed'
+import { PersonalFinanceTeaser } from '@/components/dashboard/PersonalFinanceTeaser'
 import { QuickActions } from '@/components/dashboard/QuickActions'
 
 interface DashboardContentProps {
@@ -47,6 +48,8 @@ export function DashboardContent({
             {/* Page-level Ambient Glows */}
             <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
             <div className="absolute top-1/2 right-0 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none translate-y-[-50%]" />
+
+
             {/* 1. Hero / Metrics (Full Width) */}
             <DashboardHero
                 key="dashboard-hero"
@@ -55,6 +58,9 @@ export function DashboardContent({
                 pendingApprovalsCount={pendingApprovals?.length || 0}
                 recentActivityCount={recentActivity?.length || 0}
             />
+
+            {/* Personal Finance Teaser */}
+            <PersonalFinanceTeaser />
 
             {/* Quick Actions (Repositioned between Hero and Content) */}
             <QuickActions key="dashboard-quick-actions" pendingApprovals={pendingApprovals} user={user} />
