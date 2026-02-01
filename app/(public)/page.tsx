@@ -10,20 +10,15 @@ export default function Home() {
     const router = useRouter()
     const { user, loading, isAuthenticated } = useAuth()
     const [mounted, setMounted] = useState(false)
-    const [minLoadComplete, setMinLoadComplete] = useState(false)
+
 
     useEffect(() => {
         setMounted(true)
-        // Minimum visible time of 500ms to prevent flickering/flashing
-        const timer = setTimeout(() => {
-            setMinLoadComplete(true)
-        }, 500)
-        return () => clearTimeout(timer)
     }, [])
 
     useEffect(() => {
-        // Wait for BOTH auth to finish AND minimum timer to complete
-        if (!loading && mounted && minLoadComplete) {
+        // Wait for auth to finish
+        if (!loading && mounted) {
             if (isAuthenticated && user) {
                 if (user.role === 'REGIONAL_ADMIN') {
                     router.push('/admin/regional');
@@ -36,7 +31,7 @@ export default function Home() {
                 router.push('/login');
             }
         }
-    }, [loading, isAuthenticated, user, router, mounted, minLoadComplete])
+    }, [loading, isAuthenticated, user, router, mounted])
 
     if (!mounted) return null
 
