@@ -167,6 +167,54 @@ export async function verifyLending(lendingId: string, status: "CONFIRMED" | "RE
             data: { verificationStatus: status }
         });
 
+        // If Confirmed, create the mirrored transaction and lending record for the responder
+        if (status === 'CONFIRMED') {
+            const responderLendingType = lending.type === 'GIVEN' ? 'TAKEN' : 'GIVEN';
+            const responderTransactionType = responderLendingType === 'TAKEN' ? 'INCOME' : 'EXPENSE';
+            const creatorName = lending.user.firstName ? `${lending.user.firstName} ${lending.user.lastName || ''}`.trim() : 'Counterparty';
+
+            // 1. Create Personal Transaction for Responder
+            await tx.personalTransaction.create({
+                data: {
+                    userId: session.userId,
+                    amount: lending.amount,
+                    type: responderTransactionType,
+                    category: 'Debt',
+                    description: responderLendingType === 'TAKEN' ? `Loan from ${creatorName}` : `Loan to ${creatorName}`,
+                    date: lending.createdAt, // Match the original transaction date
+                }
+            });
+
+            // 2. Create Lending Record for Responder
+            await tx.lending.create({
+                data: {
+                    userId: session.userId,
+                    transactionId: undefined, // Not strictly linked to the personal transaction ID here to avoid circular dependency issues, or could be linked if we captured the ID above. Let's keep it simple for now or link it if the schema requires it. Schema says transactionId is unique optional.
+                    name: creatorName,
+                    amount: lending.amount,
+                    type: responderLendingType,
+                    status: 'PENDING',
+                    counterpartyId: lending.userId,
+                    verificationStatus: 'CONFIRMED', // Auto-confirmed since they just clicked confirm
+                    dueDate: lending.dueDate
+                }
+            });
+
+            // 3. Create Reminder if due date exists
+            if (lending.dueDate) {
+                await tx.reminder.create({
+                    data: {
+                        userId: session.userId,
+                        title: `Repayment Due: ${creatorName}`,
+                        description: `Reminder to settle the loan of MWK ${lending.amount.toLocaleString()}`,
+                        datetime: lending.dueDate,
+                        type: 'PAYMENT',
+                        isRecurring: false
+                    }
+                });
+            }
+        }
+
         // Notify the original creator
         const currentUser = await tx.user.findUnique({ where: { id: session.userId } });
         await createNotification(
@@ -176,4 +224,42 @@ export async function verifyLending(lendingId: string, status: "CONFIRMED" | "RE
             status === 'CONFIRMED' ? 'SUCCESS' : 'ERROR'
         );
     });
+}
+
+export async function getRecentCounterparties(limit = 10) {
+    const session = await getSession();
+    if (!session?.userId) return [];
+
+    const recentLendings = await prisma.lending.findMany({
+        where: { userId: session.userId },
+        orderBy: { createdAt: 'desc' },
+        take: 50, // Fetch more to filter distinct names locally
+        select: {
+            name: true,
+            counterparty: {
+                select: {
+                    firstName: true,
+                    lastName: true,
+                    ubankId: true,
+                }
+            },
+            createdAt: true
+        }
+    });
+
+    // Deduplicate by name
+    const uniqueMap = new Map();
+    recentLendings.forEach(l => {
+        const key = l.name.trim();
+        if (!uniqueMap.has(key)) {
+            uniqueMap.set(key, {
+                name: l.name,
+                ubankId: l.counterparty?.ubankId,
+                displayName: l.counterparty ? `${l.counterparty.firstName} ${l.counterparty.lastName}`.trim() : l.name,
+                lastTransactionDate: l.createdAt
+            });
+        }
+    });
+
+    return Array.from(uniqueMap.values()).slice(0, limit);
 }
