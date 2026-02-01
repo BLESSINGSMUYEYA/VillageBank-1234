@@ -29,6 +29,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { staggerContainer, itemFadeIn, fadeIn } from '@/lib/motions'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { EmptyState } from '@/components/ui/empty-state'
+import { PersonalQRCard } from '@/components/personal/PersonalQRCard'
 
 interface ProfileData {
     id: string
@@ -214,6 +215,9 @@ export function ProfileClient({ profile, memberships, financials }: ProfileClien
                                                 <span className="text-xs font-medium text-foreground tracking-wide font-mono">
                                                     {profile.ubankId || '---'}
                                                 </span>
+                                            </div>
+                                            <div className="ml-2">
+                                                <PersonalQRCard user={profile} />
                                             </div>
                                         </div>
 

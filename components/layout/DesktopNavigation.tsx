@@ -60,9 +60,9 @@ export function DesktopNavigation() {
 
   const menuItems = [
     { name: t('common.pulse'), href: '/dashboard', icon: Zap },
-    { name: t('common.vault'), href: '/vault', icon: Landmark },
-    { name: t('common.groups'), href: '/groups', icon: Users },
     { name: 'Personal', href: '/personal', icon: User },
+    { name: t('common.groups'), href: '/groups', icon: Users },
+    { name: t('common.vault'), href: '/vault', icon: Landmark },
   ]
 
   if (user?.role === 'SUPER_ADMIN') {

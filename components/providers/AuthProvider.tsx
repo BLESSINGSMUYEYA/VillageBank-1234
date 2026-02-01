@@ -11,6 +11,7 @@ interface User {
     role: string;
     region?: string | null;
     phoneNumber?: string | null;
+    ubankId?: string | null; // Added ubankId
 }
 
 interface AuthContextType {

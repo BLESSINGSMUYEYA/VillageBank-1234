@@ -13,6 +13,8 @@ import { AppLogo } from '@/components/ui/AppLogo' // Imported AppLogo
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher' // Imported LanguageSwitcher
 import { NotificationCenter } from '@/components/notifications/NotificationCenter' // Imported NotificationCenter
 
+import { PersonalQRCard } from '@/components/personal/PersonalQRCard' // Imported PersonalQRCard
+
 export function DashboardHeader() {
     const { user } = useAuth();
     const { t } = useLanguage();
@@ -37,6 +39,8 @@ export function DashboardHeader() {
                         <LanguageSwitcher />
 
                         <NotificationCenter />
+
+                        <PersonalQRCard />
 
                         <DesktopUserMenu user={user} />
                     </div>

@@ -5,15 +5,16 @@ import { parseTransactionFromText as parseSMS } from "@/lib/sms-parser";
 import { createTransaction } from "@/lib/transactions";
 import { useRouter } from "next/navigation";
 import { TransactionType } from "@prisma/client";
-import { GlassCard } from "@/components/ui/GlassCard";
-import { Scan, PenTool, Loader2, Plus, ArrowRight } from "lucide-react";
+import { Scan, PenTool, Loader2, ArrowRight, ScanLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { QRScannerDialog } from "@/components/shared/QRScannerDialog";
+import { toast } from "sonner";
 
 type InputMode = "scan" | "manual";
 
 export default function SmartTransactionInput() {
-    const [mode, setMode] = useState<InputMode>("scan");
+    const [mode, setMode] = useState<"sms" | "manual">("sms");
     const [smsText, setSmsText] = useState("");
     const [loading, setLoading] = useState(false);
     const router = useRouter();
@@ -26,7 +27,34 @@ export default function SmartTransactionInput() {
         date: new Date().toISOString().split("T")[0],
         lendingType: "" as "" | "GIVEN" | "TAKEN",
         personName: "",
+        ubankId: "", // Store scanned ID
     });
+
+    const handleQRScan = (decodedText: string) => {
+        // Check for uBank URI schema: "ubank://user/<id>"
+        if (decodedText.startsWith("ubank://user/")) {
+            const ubankId = decodedText.replace("ubank://user/", "");
+            setMode("manual");
+            setManualEntry(prev => ({
+                ...prev,
+                lendingType: "GIVEN", // Default to "Lent to..."
+                type: "EXPENSE",
+                personName: `User: ${ubankId}`, // Show verified ID temporarily
+                ubankId: ubankId
+            }));
+            toast.success("User verified! Please enter amount.");
+        } else {
+            console.log(`Scan result: ${decodedText}`);
+            toast.error("Invalid uBank QR Code");
+        }
+    };
+
+    const validateQR = (decodedText: string) => {
+        if (!decodedText.startsWith("ubank://user/")) {
+            return "Invalid QR code. Please scan a valid uBank Personal QR.";
+        }
+        return null;
+    };
 
     const handleSaveParsed = async () => {
         setLoading(true);
@@ -84,6 +112,7 @@ export default function SmartTransactionInput() {
                 date: new Date(manualEntry.date),
                 lendingType: manualEntry.lendingType as "GIVEN" | "TAKEN" | undefined,
                 counterpartyName: manualEntry.personName || undefined,
+                counterpartyUbankId: manualEntry.ubankId || undefined
             });
 
             setManualEntry({
@@ -93,6 +122,7 @@ export default function SmartTransactionInput() {
                 date: new Date().toISOString().split("T")[0],
                 lendingType: "",
                 personName: "",
+                ubankId: ""
             });
             alert("Transaction saved!");
             router.refresh();
@@ -112,37 +142,54 @@ export default function SmartTransactionInput() {
                     <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">New Transaction</h2>
                     <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">Record a new income or expense</p>
                 </div>
-                <div className="flex items-center p-1 bg-slate-100 dark:bg-black/20 rounded-full border border-slate-200 dark:border-white/10">
+                <div className="flex items-center p-1 bg-slate-100 dark:bg-black/20 rounded-full border border-slate-200 dark:border-white/10 w-full">
                     <button
-                        onClick={() => setMode("scan")}
+                        onClick={() => setMode("sms")}
                         className={cn(
-                            "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all",
-                            mode === "scan"
+                            "flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-bold transition-all min-w-0",
+                            mode === "sms"
                                 ? "bg-emerald-600 text-white shadow-lg shadow-emerald-900/20"
                                 : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                         )}
                     >
-                        <Scan className="w-3.5 h-3.5" />
-                        Scan
+                        <Scan className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate">SMS</span>
                     </button>
+
+                    <QRScannerDialog
+                        onScan={handleQRScan}
+                        title="Scan Personal QR"
+                        description="Scan a peer's Personal QR Code to verify them"
+                        validationFn={validateQR}
+                    >
+                        <button
+                            className={cn(
+                                "flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-bold transition-all min-w-0 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                            )}
+                        >
+                            <ScanLine className="w-3.5 h-3.5 shrink-0" />
+                            <span className="truncate">Code</span>
+                        </button>
+                    </QRScannerDialog>
+
                     <button
                         onClick={() => setMode("manual")}
                         className={cn(
-                            "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all",
+                            "flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-bold transition-all min-w-0",
                             mode === "manual"
                                 ? "bg-emerald-600 text-white shadow-lg shadow-emerald-900/20"
                                 : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                         )}
                     >
-                        <PenTool className="w-3.5 h-3.5" />
-                        Manual
+                        <PenTool className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate">Manual</span>
                     </button>
                 </div>
             </div>
 
             {/* Content Body */}
             <div className="space-y-4 relative z-10">
-                {mode === "scan" ? (
+                {mode === "sms" && (
                     <div className="space-y-4">
                         <textarea
                             className="w-full h-32 p-4 rounded-xl bg-white/50 dark:bg-black/20 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 resize-none text-sm transition-all"
@@ -152,7 +199,7 @@ export default function SmartTransactionInput() {
                         />
                         <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4">
                             <p className="text-xs text-emerald-400 leading-relaxed">
-                                <span className="font-bold">Tip:</span> We automatically detect the amount, date, and transaction type (Debit/Credit) from the SMS.
+                                <span className="font-bold">Tip:</span> We automatically detect the amount, date, and transaction type from the SMS.
                             </p>
                         </div>
                         <Button
@@ -163,7 +210,9 @@ export default function SmartTransactionInput() {
                             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Process SMS"}
                         </Button>
                     </div>
-                ) : (
+                )}
+
+                {mode === "manual" && (
                     <div className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1.5">
@@ -205,14 +254,22 @@ export default function SmartTransactionInput() {
 
                         {manualEntry.lendingType && (
                             <div className="space-y-1.5 animate-in fade-in slide-in-from-top-2">
-                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 ml-1">Person Name</label>
-                                <input
-                                    type="text"
-                                    className="w-full h-10 px-3 rounded-lg bg-white/50 dark:bg-black/20 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm"
-                                    placeholder="Who is this loan with?"
-                                    value={manualEntry.personName}
-                                    onChange={(e) => setManualEntry({ ...manualEntry, personName: e.target.value })}
-                                />
+                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 ml-1">Person</label>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        className="w-full h-10 px-3 rounded-lg bg-white/50 dark:bg-black/20 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm"
+                                        placeholder="Name or uBank ID"
+                                        value={manualEntry.personName}
+                                        onChange={(e) => setManualEntry({ ...manualEntry, personName: e.target.value })}
+                                        disabled={!!manualEntry.ubankId} // Lock if verified via QR
+                                    />
+                                    {manualEntry.ubankId && (
+                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                                            VERIFIED
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         )}
 

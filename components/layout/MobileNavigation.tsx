@@ -23,6 +23,8 @@ import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher'
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion'
 import { useState, memo } from 'react'
 
+import { PersonalQRCard } from '@/components/personal/PersonalQRCard' // Imported PersonalQRCard
+
 import { cn } from '@/lib/utils'
 import { UBankLogo } from '@/components/ui/Logo'
 import { AppLogo } from '@/components/ui/AppLogo'
@@ -48,9 +50,9 @@ export function MobileNavigation() {
   // Define member-specific navigation
   const defaultNavigation = [
     { name: t('common.pulse'), href: '/dashboard', icon: Zap },
-    { name: t('common.vault'), href: '/vault', icon: Landmark },
-    { name: t('common.groups'), href: '/groups', icon: Users },
     { name: 'Personal', href: '/personal', icon: User },
+    { name: t('common.groups'), href: '/groups', icon: Users },
+    { name: t('common.vault'), href: '/vault', icon: Landmark },
   ]
 
   const adminNavigation = [
@@ -86,6 +88,7 @@ export function MobileNavigation() {
           <div className="flex items-center gap-1.5">
             <LanguageSwitcher />
             {user && <NotificationCenter />}
+            {user && <PersonalQRCard />} {/* Added PersonalQRCard */}
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

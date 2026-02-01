@@ -38,6 +38,7 @@ model User {
   identityVerification IdentityVerification?
   personalTransactions PersonalTransaction[]
   lendings             Lending[]
+  lendingsAsCounterparty Lending[] @relation("LendingCounterparty")
   lastOnboardingNudgeSentAt DateTime?
   status               UserStatus         @default(ACTIVE)
 }
@@ -395,6 +396,7 @@ enum NotificationType {
   SUCCESS
   WARNING
   ERROR
+  LOAN_REQUEST
 }
 
 enum ShareType {
@@ -482,10 +484,15 @@ model Lending {
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 
+  counterpartyId     String?
+  counterparty       User?                     @relation("LendingCounterparty", fields: [counterpartyId], references: [id])
+  verificationStatus LendingVerificationStatus @default(PENDING)
+
   user        User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   transaction PersonalTransaction? @relation(fields: [transactionId], references: [id])
 
   @@index([userId, status])
+  @@index([counterpartyId, verificationStatus])
 }
 
 enum TransactionType {
@@ -501,4 +508,10 @@ enum LendingType {
 enum LendingStatus {
   PENDING
   PAID
+}
+
+enum LendingVerificationStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
 }

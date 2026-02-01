@@ -18,10 +18,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { LoanRequestAction } from './LoanRequestAction'
 
 interface Notification {
   id: string
-  type: 'INFO' | 'SUCCESS' | 'WARNING' | 'ERROR'
+  type: 'INFO' | 'SUCCESS' | 'WARNING' | 'ERROR' | 'LOAN_REQUEST'
   title: string
   message: string
   read: boolean
@@ -279,6 +280,20 @@ export function NotificationCenter({
                         <p className="text-[10px] font-bold text-muted-foreground/60 mt-2 uppercase tracking-tighter">
                           {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                         </p>
+                        {/* Interactive Action for Loan Requests */}
+                        {(notification.type === 'LOAN_REQUEST' || (notification.actionUrl && notification.actionUrl.startsWith('verify-loan:'))) && notification.actionUrl?.startsWith('verify-loan:') && (
+                          <div onClick={(e) => e.stopPropagation()}>
+                            <LoanRequestAction
+                              lendingId={notification.actionUrl.split(':')[1]}
+                              notificationId={notification.id}
+                              onComplete={() => {
+                                markAsRead(notification.id);
+                                // reload notifications to show updated state if needed, or rely on polling
+                                fetchNotifications();
+                              }}
+                            />
+                          </div>
+                        )}
                       </div>
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
                         {!notification.read && (

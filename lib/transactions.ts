@@ -13,7 +13,12 @@ export type CreateTransactionInput = {
     date?: Date;
     lendingType?: "GIVEN" | "TAKEN"; // Optional lending type
     counterpartyName?: string; // Optional person name for lending
+    counterpartyUbankId?: string; // New: Optional uBank ID for verified tagging
 };
+
+import { createNotification } from "@/lib/notifications";
+
+// ... existing imports
 
 export async function createTransaction(input: CreateTransactionInput) {
     const session = await getSession();
@@ -22,6 +27,17 @@ export async function createTransaction(input: CreateTransactionInput) {
     // If it's a lending transaction, we need to create both Transaction and Lending
     if (input.lendingType && input.counterpartyName) {
         return prisma.$transaction(async (tx) => {
+            // 0. Resolve Counterparty if provided
+            let counterpartyId: string | null = null;
+            if (input.counterpartyUbankId) {
+                const user = await tx.user.findUnique({
+                    where: { ubankId: input.counterpartyUbankId }
+                });
+                if (user) {
+                    counterpartyId = user.id;
+                }
+            }
+
             // 1. Create the Transaction
             const transaction = await tx.personalTransaction.create({
                 data: {
@@ -35,7 +51,7 @@ export async function createTransaction(input: CreateTransactionInput) {
             });
 
             // 2. Create the Lending record linked to the transaction
-            await tx.lending.create({
+            const lending = await tx.lending.create({
                 data: {
                     userId: session.userId,
                     transactionId: transaction.id,
@@ -43,9 +59,24 @@ export async function createTransaction(input: CreateTransactionInput) {
                     amount: input.amount,
                     type: input.lendingType === "GIVEN" ? "GIVEN" : "TAKEN",
                     status: "PENDING",
-                    // For debts, due date is not mandatory in this simple flow, but could be added later
+                    counterpartyId: counterpartyId,
+                    verificationStatus: counterpartyId ? "PENDING" : undefined, // Only PENDING if tagged
                 },
             });
+
+            // 3. Send Notification if tagged
+            if (counterpartyId) {
+                const currentUser = await tx.user.findUnique({ where: { id: session.userId } });
+                const direction = input.lendingType === "GIVEN" ? "lent you" : "borrowed from you";
+
+                await createNotification(
+                    counterpartyId,
+                    "Loan Verification Request",
+                    `${currentUser?.firstName || 'A user'} says they ${direction} MWK ${input.amount.toLocaleString()}. Is this correct?`,
+                    "LOAN_REQUEST",
+                    `verify-loan:${lending.id}`
+                );
+            }
 
             return transaction;
         });
@@ -63,6 +94,7 @@ export async function createTransaction(input: CreateTransactionInput) {
         },
     });
 }
+
 
 
 export async function getTransactions(limit = 20, offset = 0) {
@@ -113,4 +145,35 @@ export async function getTransactionStats() {
     const expense = stats.find((s) => s.type === "EXPENSE")?._sum.amount || 0;
 
     return { income, expense, net: income - expense };
+}
+
+export async function verifyLending(lendingId: string, status: "CONFIRMED" | "REJECTED") {
+    const session = await getSession();
+    if (!session?.userId) throw new Error("Unauthorized");
+
+    await prisma.$transaction(async (tx) => {
+        const lending = await tx.lending.findUnique({
+            where: { id: lendingId },
+            include: { user: true }
+        });
+
+        if (!lending || lending.counterpartyId !== session.userId) {
+            throw new Error("Loan not found or unauthorized");
+        }
+
+        // Update status
+        await tx.lending.update({
+            where: { id: lendingId },
+            data: { verificationStatus: status }
+        });
+
+        // Notify the original creator
+        const currentUser = await tx.user.findUnique({ where: { id: session.userId } });
+        await createNotification(
+            lending.userId,
+            `Loan ${status === 'CONFIRMED' ? 'Confirmed' : 'Rejected'}`,
+            `${currentUser?.firstName || 'Counterparty'} has ${status.toLowerCase()} the loan record.`,
+            status === 'CONFIRMED' ? 'SUCCESS' : 'ERROR'
+        );
+    });
 }
