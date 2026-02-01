@@ -105,21 +105,21 @@ export default function SmartTransactionInput() {
     };
 
     return (
-        <div className="p-6 rounded-[2rem] h-full relative overflow-hidden bg-slate-900/90 border border-slate-800 shadow-2xl">
+        <div className="p-6 rounded-[2rem] sm:rounded-[2.5rem] h-full relative overflow-hidden bg-white/60 dark:bg-white/5 border border-slate-200/60 dark:border-white/5 shadow-2xl shadow-emerald-900/5">
             {/* Header */}
             <div className="flex items-center justify-between mb-6 relative z-10">
                 <div>
-                    <h2 className="text-xl font-bold text-white tracking-tight">New Transaction</h2>
-                    <p className="text-slate-400 text-xs mt-1">Record a new income or expense</p>
+                    <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">New Transaction</h2>
+                    <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">Record a new income or expense</p>
                 </div>
-                <div className="flex items-center p-1 bg-slate-950 rounded-full border border-slate-800">
+                <div className="flex items-center p-1 bg-slate-100 dark:bg-black/20 rounded-full border border-slate-200 dark:border-white/10">
                     <button
                         onClick={() => setMode("scan")}
                         className={cn(
                             "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all",
                             mode === "scan"
                                 ? "bg-emerald-600 text-white shadow-lg shadow-emerald-900/20"
-                                : "text-slate-400 hover:text-white"
+                                : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                         )}
                     >
                         <Scan className="w-3.5 h-3.5" />
@@ -131,7 +131,7 @@ export default function SmartTransactionInput() {
                             "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all",
                             mode === "manual"
                                 ? "bg-emerald-600 text-white shadow-lg shadow-emerald-900/20"
-                                : "text-slate-400 hover:text-white"
+                                : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                         )}
                     >
                         <PenTool className="w-3.5 h-3.5" />
@@ -145,7 +145,7 @@ export default function SmartTransactionInput() {
                 {mode === "scan" ? (
                     <div className="space-y-4">
                         <textarea
-                            className="w-full h-32 p-4 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 resize-none text-sm transition-all"
+                            className="w-full h-32 p-4 rounded-xl bg-white/50 dark:bg-black/20 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 resize-none text-sm transition-all"
                             placeholder="Paste your bank SMS here..."
                             value={smsText}
                             onChange={(e) => setSmsText(e.target.value)}
@@ -167,9 +167,9 @@ export default function SmartTransactionInput() {
                     <div className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-slate-400 ml-1">Type</label>
+                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 ml-1">Type</label>
                                 <select
-                                    className="w-full h-10 px-3 rounded-lg bg-slate-950 border border-slate-800 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm appearance-none"
+                                    className="w-full h-10 px-3 rounded-lg bg-white/50 dark:bg-black/20 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm appearance-none"
                                     value={manualEntry.lendingType ? manualEntry.lendingType : manualEntry.type}
                                     onChange={(e) => {
                                         const val = e.target.value;
@@ -194,7 +194,7 @@ export default function SmartTransactionInput() {
                                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">MWK</span>
                                     <input
                                         type="number"
-                                        className="w-full h-10 pl-12 pr-3 rounded-lg bg-slate-950 border border-slate-800 text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm"
+                                        className="w-full h-10 pl-12 pr-3 rounded-lg bg-white/50 dark:bg-black/20 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm"
                                         placeholder="0.00"
                                         value={manualEntry.amount}
                                         onChange={(e) => setManualEntry({ ...manualEntry, amount: e.target.value })}
@@ -205,10 +205,10 @@ export default function SmartTransactionInput() {
 
                         {manualEntry.lendingType && (
                             <div className="space-y-1.5 animate-in fade-in slide-in-from-top-2">
-                                <label className="text-xs font-bold text-slate-400 ml-1">Person Name</label>
+                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 ml-1">Person Name</label>
                                 <input
                                     type="text"
-                                    className="w-full h-10 px-3 rounded-lg bg-slate-950 border border-slate-800 text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm"
+                                    className="w-full h-10 px-3 rounded-lg bg-white/50 dark:bg-black/20 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm"
                                     placeholder="Who is this loan with?"
                                     value={manualEntry.personName}
                                     onChange={(e) => setManualEntry({ ...manualEntry, personName: e.target.value })}
