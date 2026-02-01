@@ -3,13 +3,38 @@ import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
-import LendingList from "@/components/personal/LendingList"; // Assuming this is where I put it
+import LendingList from "@/components/personal/LendingList";
+import { ConnectionError } from "@/components/shared/ConnectionError";
 
 export default async function LendingsPage() {
     const session = await getSession();
     if (!session?.userId) redirect("/login");
 
-    const lendings = await getLendings();
+    let lendings = [];
+    let error = null;
+
+    try {
+        lendings = await getLendings();
+    } catch (e) {
+        console.error("Failed to fetch lendings:", e);
+        error = "Could not connect to the database. Please check your internet connection or try again later.";
+    }
+
+    if (error) {
+        return (
+            <PageContainer className="relative">
+                <PageHeader
+                    title="Lendings & Debts"
+                    description="Manage money you owe and money owed to you"
+                    badge="Personal Finance"
+                    backHref="/personal"
+                />
+                <div className="flex items-center justify-center min-h-[400px]">
+                    <ConnectionError message={error} />
+                </div>
+            </PageContainer>
+        );
+    }
 
     return (
         <PageContainer className="relative">

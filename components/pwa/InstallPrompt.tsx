@@ -50,8 +50,8 @@ export function InstallPrompt() {
                 className="fixed bottom-28 lg:bottom-4 right-4 z-[60] w-full max-w-sm px-4 sm:px-0"
             >
                 <GlassCard
-                    className="relative overflow-hidden border-emerald-500/30 dark:border-emerald-400/30 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)]"
-                    gradient
+                    className="relative overflow-hidden border-emerald-500/30 dark:border-emerald-400/30 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] bg-white dark:bg-slate-900"
+                    gradient={false}
                 >
                     {/* Decorative background element */}
                     <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-emerald-500/20 dark:bg-emerald-400/20 rounded-full blur-2xl" />

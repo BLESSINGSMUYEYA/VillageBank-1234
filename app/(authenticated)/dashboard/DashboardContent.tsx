@@ -7,8 +7,8 @@ import { staggerContainer } from '@/lib/motions'
 import { SecurityVerificationModal } from './SecurityVerificationModal'
 import { DashboardHero } from '@/components/dashboard/DashboardHero'
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed'
-import { PersonalFinanceTeaser } from '@/components/dashboard/PersonalFinanceTeaser'
 import { QuickActions } from '@/components/dashboard/QuickActions'
+import SmartTransactionInput from '@/components/personal/SmartTransactionInput'
 
 interface DashboardContentProps {
     user: any
@@ -59,8 +59,8 @@ export function DashboardContent({
                 recentActivityCount={recentActivity?.length || 0}
             />
 
-            {/* Personal Finance Teaser */}
-            <PersonalFinanceTeaser />
+            {/* Personal Finance Quick Actions */}
+            <SmartTransactionInput compact user={user} />
 
             {/* Quick Actions (Repositioned between Hero and Content) */}
             <QuickActions key="dashboard-quick-actions" pendingApprovals={pendingApprovals} user={user} />

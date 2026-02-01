@@ -78,7 +78,7 @@ export function MobileNavigation() {
         }}
         animate={isHidden ? "hidden" : "visible"}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed top-0 left-0 right-0 z-40 bg-white/60 dark:bg-slate-950/60 backdrop-blur-3xl border-b border-white/20 dark:border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.03)]"
+        className="fixed top-0 left-0 right-0 z-40 bg-white dark:bg-slate-950 border-b border-white/20 dark:border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.03)]"
       >
         <div className="flex items-center justify-between p-4 px-5">
           <Link href="/dashboard" className="group">
@@ -88,7 +88,7 @@ export function MobileNavigation() {
           <div className="flex items-center gap-1.5">
             <LanguageSwitcher />
             {user && <NotificationCenter />}
-            {user && <PersonalQRCard />} {/* Added PersonalQRCard */}
+            {user && <PersonalQRCard user={user} />} {/* Added PersonalQRCard */}
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -190,7 +190,7 @@ export function MobileNavigation() {
             initial={{ y: 80, opacity: 0, scale: 0.9 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             transition={{ type: "spring", stiffness: 260, damping: 20 }}
-            className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-[2.5rem] p-1.5 pointer-events-auto mx-auto max-w-sm"
+            className="bg-white dark:bg-slate-900 border border-white/20 dark:border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-[2.5rem] p-1.5 pointer-events-auto mx-auto max-w-sm"
           >
             <div className="flex items-center justify-around">
               {navigation.map((item) => {

@@ -22,7 +22,7 @@ export function DashboardHeader() {
     return (
         <header className="hidden lg:block sticky top-0 z-40 w-full px-6 py-4 transition-all duration-300">
             <GlassCard
-                className="relative rounded-2xl border-white/40 dark:border-white/5 bg-white/70 dark:bg-slate-900/60 backdrop-blur-2xl shadow-lg shadow-emerald-900/5 px-6 h-[72px] flex items-center justify-between overflow-visible"
+                className="relative rounded-2xl border-white/40 dark:border-white/5 bg-white dark:bg-slate-950 shadow-lg shadow-emerald-900/5 px-6 h-[72px] flex items-center justify-between overflow-visible"
                 hover={false}
             >
                 {/* Ambient Glow Effects within Header */}
@@ -40,7 +40,7 @@ export function DashboardHeader() {
 
                         <NotificationCenter />
 
-                        <PersonalQRCard />
+                        <PersonalQRCard user={user} />
 
                         <DesktopUserMenu user={user} />
                     </div>

@@ -144,6 +144,13 @@ export function QRScannerDialog({
         cleanupScanner()
     }
 
+    const handleOpenChange = (open: boolean) => {
+        setIsOpen(open)
+        if (!open) {
+            handleClose()
+        }
+    }
+
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -190,15 +197,14 @@ export function QRScannerDialog({
     }
 
     return (
-        <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+        <Dialog open={isOpen} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
                 {children ? (
-                    <div onClick={() => setIsOpen(true)}>{children}</div>
+                    children
                 ) : (
                     <Button
                         variant="outline"
                         className="shadow-emerald-500/20 group px-6 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
-                        onClick={() => setIsOpen(true)}
                     >
                         <ScanLine className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
                         Scan QR

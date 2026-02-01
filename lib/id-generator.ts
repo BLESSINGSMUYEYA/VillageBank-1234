@@ -15,7 +15,7 @@ export function isValidIdFormat(id: string): boolean {
 
 /**
  * Formats an ID for display
- * e.g., "john.doe.m@ubank" -> "@john.doe.m@ubank"
+ * e.g., "blessings" -> "@blessings"
  */
 export function formatUbankId(id: string | null): string {
     if (!id) return ''
@@ -35,43 +35,54 @@ function sanitizeForId(input: string): string {
 }
 
 /**
- * Generates a unique uBank ID
- * Format: firstname.lastname.m@ubank
- * Fallback: firstname.lastname{random}.m@ubank
+ * Generates a unique uBank ID (Handle Style)
+ * Priority:
+ * 1. firstname (e.g. "blessings")
+ * 2. firstname.lastname (e.g. "blessings.muyeya")
+ * 3. firstname + numbers (e.g. "blessings123")
  */
-export async function generateUniqueUbankId(name: string, type: 'USER' | 'GROUP'): Promise<string> {
-    const base = sanitizeForId(name)
-    const suffix = type === 'USER' ? '.m@ubank' : '.g@ubank'
+export async function generateUniqueUbankId(firstName: string, lastName: string = '', type: 'USER' | 'GROUP'): Promise<string> {
+    const cleanFirst = sanitizeForId(firstName);
+    const cleanLast = sanitizeForId(lastName);
 
-    // Try base name first
-    const primaryId = `${base}${suffix}`
+    // 1. Try just First Name (Most desirable)
+    // e.g. "blessings"
+    let candidate = cleanFirst;
+    if (candidate.length < 3) candidate = `${candidate}bank`; // Ensure min length
 
-    // Check collision in both tables to be safe (though suffix separates them usually)
-    // But conceptually, IDs should be globally unique or just unique per table. 
-    // Given the suffix, they are unique per table effectively.
+    if (!(await isTaken(candidate, type))) {
+        return candidate;
+    }
 
-    const isTaken = async (id: string) => {
-        if (type === 'USER') {
-            const user = await prisma.user.findUnique({ where: { ubankId: id } })
-            return !!user
-        } else {
-            const group = await prisma.group.findUnique({ where: { ubankId: id } })
-            return !!group
+    // 2. Try First.Last
+    // e.g. "blessings.muyeya"
+    if (cleanLast) {
+        candidate = `${cleanFirst}.${cleanLast}`;
+        if (!(await isTaken(candidate, type))) {
+            return candidate;
         }
     }
 
-    if (!(await isTaken(primaryId))) {
-        return primaryId
-    }
-
-    // Try up to 10 times with increasing numbers
-    for (let i = 1; i <= 10; i++) {
-        const candidate = `${base}${i}${suffix}`
-        if (!(await isTaken(candidate))) {
-            return candidate
+    // 3. Try First + Random Number (Short)
+    // e.g. "blessings1" to "blessings999"
+    for (let i = 1; i <= 20; i++) {
+        const num = Math.floor(Math.random() * 999) + 1; // 1-999
+        candidate = `${cleanFirst}${num}`;
+        if (!(await isTaken(candidate, type))) {
+            return candidate;
         }
     }
 
-    // Fallback: use timestamp if highly congested
-    return `${base}${Date.now()}${suffix}`
+    // 4. Fallback: Timestamp (Last resort)
+    return `${cleanFirst}${Date.now().toString().slice(-4)}`;
+}
+
+async function isTaken(id: string, type: 'USER' | 'GROUP'): Promise<boolean> {
+    if (type === 'USER') {
+        const user = await prisma.user.findUnique({ where: { ubankId: id } });
+        return !!user;
+    } else {
+        const group = await prisma.group.findUnique({ where: { ubankId: id } });
+        return !!group;
+    }
 }

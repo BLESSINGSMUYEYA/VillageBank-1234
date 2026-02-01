@@ -1,6 +1,6 @@
-
 'use client'
 
+import { format } from 'date-fns'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Zap, ArrowRight } from 'lucide-react'
@@ -61,7 +61,7 @@ export function ActivityFeed({ recentActivity }: ActivityFeedProps) {
                                                         {activity.description}
                                                     </p>
                                                     <p className="text-[10px] font-medium text-slate-400 uppercase tracking-tight mt-0.5 truncate">
-                                                        {activity.groupTag ? `@${activity.groupTag}` : activity.groupName} • {new Date(activity.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                                        {activity.groupTag ? `@${activity.groupTag}` : activity.groupName} • {format(new Date(activity.createdAt), 'MMM d')}
                                                     </p>
                                                 </div>
                                                 <div className="text-left sm:text-right shrink-0 mt-1 sm:mt-0 flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 sm:gap-0">
