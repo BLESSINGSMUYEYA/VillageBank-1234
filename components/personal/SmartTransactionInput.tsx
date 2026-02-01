@@ -94,22 +94,20 @@ export default function SmartTransactionInput() {
     };
 
     return (
-        <GlassCard className="p-6 rounded-[2rem] border-white/10 bg-white/5 h-full relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-[60px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-
+        <div className="p-6 rounded-[2rem] h-full relative overflow-hidden bg-slate-900/90 border border-slate-800 shadow-2xl">
             {/* Header */}
             <div className="flex items-center justify-between mb-6 relative z-10">
                 <div>
                     <h2 className="text-xl font-bold text-white tracking-tight">New Transaction</h2>
                     <p className="text-slate-400 text-xs mt-1">Record a new income or expense</p>
                 </div>
-                <div className="flex items-center p-1 bg-white/5 rounded-full border border-white/5">
+                <div className="flex items-center p-1 bg-slate-950 rounded-full border border-slate-800">
                     <button
                         onClick={() => setMode("scan")}
                         className={cn(
                             "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all",
                             mode === "scan"
-                                ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
+                                ? "bg-emerald-600 text-white shadow-lg shadow-emerald-900/20"
                                 : "text-slate-400 hover:text-white"
                         )}
                     >
@@ -121,7 +119,7 @@ export default function SmartTransactionInput() {
                         className={cn(
                             "flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all",
                             mode === "manual"
-                                ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
+                                ? "bg-emerald-600 text-white shadow-lg shadow-emerald-900/20"
                                 : "text-slate-400 hover:text-white"
                         )}
                     >
@@ -136,13 +134,13 @@ export default function SmartTransactionInput() {
                 {mode === "scan" ? (
                     <div className="space-y-4">
                         <textarea
-                            className="w-full h-32 p-4 rounded-xl bg-black/20 border border-white/5 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 resize-none text-sm"
+                            className="w-full h-32 p-4 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 resize-none text-sm transition-all"
                             placeholder="Paste your bank SMS here..."
                             value={smsText}
                             onChange={(e) => setSmsText(e.target.value)}
                         />
-                        <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-xl p-4">
-                            <p className="text-xs text-emerald-400/80 leading-relaxed">
+                        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4">
+                            <p className="text-xs text-emerald-400 leading-relaxed">
                                 <span className="font-bold">Tip:</span> We automatically detect the amount, date, and transaction type (Debit/Credit) from the SMS.
                             </p>
                         </div>
@@ -160,7 +158,7 @@ export default function SmartTransactionInput() {
                             <div className="space-y-1.5">
                                 <label className="text-xs font-bold text-slate-400 ml-1">Type</label>
                                 <select
-                                    className="w-full h-10 px-3 rounded-lg bg-black/20 border border-white/5 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm"
+                                    className="w-full h-10 px-3 rounded-lg bg-slate-950 border border-slate-800 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm appearance-none"
                                     value={manualEntry.type}
                                     onChange={(e) => setManualEntry({ ...manualEntry, type: e.target.value as TransactionType })}
                                 >
@@ -174,7 +172,7 @@ export default function SmartTransactionInput() {
                                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">MWK</span>
                                     <input
                                         type="number"
-                                        className="w-full h-10 pl-12 pr-3 rounded-lg bg-black/20 border border-white/5 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm"
+                                        className="w-full h-10 pl-12 pr-3 rounded-lg bg-slate-950 border border-slate-800 text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm"
                                         placeholder="0.00"
                                         value={manualEntry.amount}
                                         onChange={(e) => setManualEntry({ ...manualEntry, amount: e.target.value })}
@@ -187,7 +185,7 @@ export default function SmartTransactionInput() {
                             <label className="text-xs font-bold text-slate-400 ml-1">Description</label>
                             <input
                                 type="text"
-                                className="w-full h-10 px-3 rounded-lg bg-black/20 border border-white/5 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm"
+                                className="w-full h-10 px-3 rounded-lg bg-slate-950 border border-slate-800 text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm"
                                 placeholder="e.g. Groceries, Salary, Rent"
                                 value={manualEntry.description}
                                 onChange={(e) => setManualEntry({ ...manualEntry, description: e.target.value })}
@@ -198,7 +196,7 @@ export default function SmartTransactionInput() {
                             <label className="text-xs font-bold text-slate-400 ml-1">Date</label>
                             <input
                                 type="date"
-                                className="w-full h-10 px-3 rounded-lg bg-black/20 border border-white/5 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm"
+                                className="w-full h-10 px-3 rounded-lg bg-slate-950 border border-slate-800 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm"
                                 value={manualEntry.date}
                                 onChange={(e) => setManualEntry({ ...manualEntry, date: e.target.value })}
                             />
@@ -218,6 +216,6 @@ export default function SmartTransactionInput() {
                     </div>
                 )}
             </div>
-        </GlassCard>
+        </div>
     );
 }

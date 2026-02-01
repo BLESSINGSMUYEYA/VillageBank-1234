@@ -18,25 +18,17 @@ type Transaction = {
     category: string | null;
 };
 
-export default function TransactionList() {
-    const [transactions, setTransactions] = useState<Transaction[]>([]);
-    const [loading, setLoading] = useState(true);
+interface TransactionListProps {
+    initialTransactions: Transaction[];
+}
+
+export default function TransactionList({ initialTransactions }: TransactionListProps) {
+    const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
     const router = useRouter();
 
-    const fetchTransactions = async () => {
-        try {
-            const data = await getTransactions();
-            setTransactions(data);
-        } catch (error) {
-            console.error("Failed to fetch transactions", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
-        fetchTransactions();
-    }, []);
+        setTransactions(initialTransactions);
+    }, [initialTransactions]);
 
     const handleDelete = async (id: string) => {
         if (!confirm("Are you sure?")) return;
@@ -49,45 +41,38 @@ export default function TransactionList() {
         }
     };
 
-    if (loading) return (
-        <GlassCard className="p-12 flex flex-col items-center justify-center min-h-[400px]">
-            <div className="w-10 h-10 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin" />
-            <p className="mt-4 text-slate-400 text-sm font-medium">Loading history...</p>
-        </GlassCard>
-    );
-
     if (transactions.length === 0) {
         return (
-            <GlassCard className="p-12 flex flex-col items-center justify-center text-center min-h-[400px]">
-                <div className="w-16 h-16 rounded-3xl bg-slate-800/50 flex items-center justify-center mb-4">
-                    <Search className="w-8 h-8 text-slate-500" />
+            <div className="p-12 flex flex-col items-center justify-center text-center min-h-[400px] rounded-[2rem] bg-slate-900/90 border border-slate-800 shadow-2xl">
+                <div className="w-16 h-16 rounded-3xl bg-slate-950 flex items-center justify-center mb-4 border border-slate-800">
+                    <Search className="w-8 h-8 text-slate-400" />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">No transactions yet</h3>
                 <p className="text-slate-400 max-w-xs mx-auto text-sm">
                     Start by scanning an SMS or manually adding your first income or expense.
                 </p>
-            </GlassCard>
+            </div>
         );
     }
 
     return (
-        <GlassCard className="p-0 overflow-hidden min-h-[400px]">
-            <div className="p-6 border-b border-white/5">
+        <div className="rounded-[2rem] overflow-hidden min-h-[400px] bg-slate-900/90 border border-slate-800 shadow-2xl">
+            <div className="p-6 border-b border-slate-800 bg-slate-950/30">
                 <h2 className="text-xl font-bold text-white tracking-tight">Recent Activity</h2>
             </div>
 
-            <div className="divide-y divide-white/5">
+            <div className="divide-y divide-slate-800">
                 {transactions.map((t) => (
                     <div
                         key={t.id}
-                        className="group flex items-center justify-between p-4 hover:bg-white/[0.02] transition-colors"
+                        className="group flex items-center justify-between p-4 hover:bg-slate-800/50 transition-colors"
                     >
                         <div className="flex items-center gap-4">
                             <div className={cn(
                                 "w-10 h-10 rounded-xl flex items-center justify-center border",
                                 t.type === "INCOME"
-                                    ? "bg-emerald-500/10 border-emerald-500/10 text-emerald-400"
-                                    : "bg-rose-500/10 border-rose-500/10 text-rose-400"
+                                    ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                                    : "bg-rose-500/10 border-rose-500/20 text-rose-400"
                             )}>
                                 {t.type === "INCOME" ? (
                                     <ArrowUpRight className="w-5 h-5" />
@@ -127,6 +112,6 @@ export default function TransactionList() {
                     </div>
                 ))}
             </div>
-        </GlassCard>
+        </div>
     );
 }

@@ -1,6 +1,6 @@
 import SmartTransactionInput from "@/components/personal/SmartTransactionInput";
 import TransactionList from "@/components/personal/TransactionList";
-import { getTransactionStats } from "@/lib/transactions";
+import { getTransactionStats, getTransactions } from "@/lib/transactions";
 import { PersonalStatsCards } from "@/components/personal/PersonalStatsCards";
 import { format } from "date-fns";
 import { getSession } from "@/lib/auth";
@@ -13,6 +13,7 @@ export default async function PersonalFinancePage() {
     if (!session?.userId) redirect("/login");
 
     const stats = await getTransactionStats();
+    const transactions = await getTransactions();
 
     return (
         <PageContainer>
@@ -39,7 +40,7 @@ export default async function PersonalFinancePage() {
 
                     {/* History Section (Right - 7 cols) */}
                     <div className="lg:col-span-12 xl:col-span-7">
-                        <TransactionList />
+                        <TransactionList initialTransactions={transactions} />
                     </div>
                 </div>
             </div>
