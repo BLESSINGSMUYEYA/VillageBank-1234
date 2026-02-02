@@ -26,7 +26,10 @@ import {
   Search,
   MoreVertical,
   Lock,
-  Download
+  Download,
+  Trash2,
+  Ban,
+  CheckCircle
 } from 'lucide-react'
 import {
   Dialog,
@@ -44,6 +47,7 @@ import { AdminStatsCard } from '@/components/admin/AdminStatsCard'
 import { GrowthChart, RegionDistributionChart } from '@/components/admin/SuperAdminCharts'
 import { ViralFunnelChart, RetentionPulse, GrowthLeaderboard, HealthPulse } from '@/components/admin/GrowthEngineCharts'
 import { QuickActionsWidget } from '@/components/admin/QuickActionsWidget'
+import { deleteUser, toggleUserBlockStatus } from '@/app/actions/admin'
 
 interface SystemData {
   totalUsers: number
@@ -124,6 +128,8 @@ export default function SystemAdminPage() {
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null)
   const [isUserDialogOpen, setIsUserDialogOpen] = useState(false)
   const [newRole, setNewRole] = useState('')
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [isActionLoading, setIsActionLoading] = useState(false)
 
   useEffect(() => {
     if (user?.role === 'SUPER_ADMIN') {
@@ -197,6 +203,54 @@ export default function SystemAdminPage() {
 
   const handleSystemMaintenance = async () => {
     toast.info('System maintenance mode toggled')
+  }
+
+  const handleDeleteUser = async () => {
+    if (!selectedUser) return
+
+    setIsActionLoading(true)
+    try {
+      const result = await deleteUser(selectedUser.id)
+
+      if (result.success) {
+        toast.success(result.message || 'User deleted successfully')
+        setIsDeleteDialogOpen(false)
+        setIsUserDialogOpen(false)
+        fetchSystemData()
+      } else {
+        toast.error(result.error || 'Failed to delete user')
+      }
+    } catch (error) {
+      console.error(error)
+      toast.error('An unexpected error occurred')
+    } finally {
+      setIsActionLoading(false)
+    }
+  }
+
+  const handleToggleBlockStatus = async () => {
+    if (!selectedUser) return
+
+    setIsActionLoading(true)
+    try {
+      const result = await toggleUserBlockStatus(
+        selectedUser.id,
+        selectedUser.status as any
+      )
+
+      if (result.success) {
+        toast.success(result.message || 'User status updated successfully')
+        setIsUserDialogOpen(false)
+        fetchSystemData()
+      } else {
+        toast.error(result.error || 'Failed to update user status')
+      }
+    } catch (error) {
+      console.error(error)
+      toast.error('An unexpected error occurred')
+    } finally {
+      setIsActionLoading(false)
+    }
   }
 
   if (user?.role !== 'SUPER_ADMIN') {
@@ -795,14 +849,112 @@ export default function SystemAdminPage() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                {/* Action Buttons Section */}
+                <div className="pt-4 border-t border-border/50 space-y-3">
+                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Account Actions</h4>
+
+                  {/* Block/Unblock Button */}
+                  <Button
+                    variant="outline"
+                    className={`w-full justify-start ${selectedUser.status === 'BLOCKED'
+                        ? 'border-emerald-200 hover:bg-emerald-50 dark:border-emerald-800 dark:hover:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400'
+                        : 'border-amber-200 hover:bg-amber-50 dark:border-amber-800 dark:hover:bg-amber-900/20 text-amber-700 dark:text-amber-400'
+                      }`}
+                    onClick={handleToggleBlockStatus}
+                    disabled={isActionLoading}
+                  >
+                    {selectedUser.status === 'BLOCKED' ? (
+                      <>
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        Unblock User
+                      </>
+                    ) : (
+                      <>
+                        <Ban className="w-4 h-4 mr-2" />
+                        Block User
+                      </>
+                    )}
+                  </Button>
+
+                  {/* Delete Button */}
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start border-red-200 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-900/20 text-red-700 dark:text-red-400"
+                    onClick={() => setIsDeleteDialogOpen(true)}
+                    disabled={isActionLoading}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete Account
+                  </Button>
+                </div>
               </div>
             )}
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsUserDialogOpen(false)}>
+              <Button variant="outline" onClick={() => setIsUserDialogOpen(false)} disabled={isActionLoading}>
                 Cancel
               </Button>
-              <Button onClick={handleChangeRole} disabled={newRole === selectedUser?.role}>
-                Save Changes
+              <Button onClick={handleChangeRole} disabled={newRole === selectedUser?.role || isActionLoading}>
+                {isActionLoading ? 'Saving...' : 'Save Role'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <DialogContent className="w-[95vw] sm:w-full sm:max-w-[425px] glass-morphism border-red-200 dark:border-red-800">
+            <DialogHeader>
+              <DialogTitle className="text-red-700 dark:text-red-400 flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5" />
+                Confirm Account Deletion
+              </DialogTitle>
+              <DialogDescription className="text-slate-700 dark:text-slate-300">
+                This action cannot be undone. This will permanently delete the user account and all associated data.
+              </DialogDescription>
+            </DialogHeader>
+            {selectedUser && (
+              <div className="p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="font-medium text-red-900 dark:text-red-300">User:</span>
+                  <span className="font-bold text-red-900 dark:text-red-200">{selectedUser.name}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="font-medium text-red-900 dark:text-red-300">Email:</span>
+                  <span className="font-bold text-red-900 dark:text-red-200">{selectedUser.email}</span>
+                </div>
+                <div className="mt-3 p-3 bg-white/50 dark:bg-slate-900/50 rounded border border-red-200 dark:border-red-700">
+                  <p className="text-xs text-red-800 dark:text-red-300 font-medium">
+                    ⚠️ All user data including contributions, loans, and group memberships will be permanently deleted.
+                  </p>
+                </div>
+              </div>
+            )}
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setIsDeleteDialogOpen(false)}
+                disabled={isActionLoading}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleDeleteUser}
+                disabled={isActionLoading}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {isActionLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete Permanently
+                  </>
+                )}
               </Button>
             </DialogFooter>
           </DialogContent>
