@@ -2,8 +2,9 @@
 
 import { memo } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
-import { ArrowUpRight, ArrowDownRight, Wallet } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, Wallet, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface PersonalStatsCardsProps {
     stats: {
@@ -12,9 +13,10 @@ interface PersonalStatsCardsProps {
         net: number;
         totalLoansOwed: number;
     };
+    monthlyCommitment?: number;
 }
 
-export const PersonalStatsCards = memo(function PersonalStatsCards({ stats }: PersonalStatsCardsProps) {
+export const PersonalStatsCards = memo(function PersonalStatsCards({ stats, monthlyCommitment }: PersonalStatsCardsProps) {
     return (
         <GlassCard
             className="rounded-[2rem] sm:rounded-[2.5rem] bg-white/60 dark:bg-white/5 border border-slate-200/60 dark:border-white/5 shadow-2xl shadow-emerald-900/5 p-0 overflow-hidden"
@@ -48,6 +50,19 @@ export const PersonalStatsCards = memo(function PersonalStatsCards({ stats }: Pe
                             💳 You owe <span className="font-bold">MWK {stats.totalLoansOwed.toLocaleString()}</span> in loans
                         </p>
                     </div>
+                )}
+
+                {/* Monthly Commitment */}
+                {monthlyCommitment !== undefined && monthlyCommitment > 0 && (
+                    <Link href="/personal/payments">
+                        <div className="mt-3 px-3 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl hover:bg-emerald-500/20 transition-colors cursor-pointer group">
+                            <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1.5">
+                                <Calendar className="w-3 h-3" />
+                                Monthly commitment: <span className="font-bold">MWK {monthlyCommitment.toLocaleString()}</span>
+                                <span className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                            </p>
+                        </div>
+                    </Link>
                 )}
             </div>
 

@@ -4,7 +4,7 @@ import { getTransactionStats, getTransactions, getRecentUsersWithBalance } from 
 import { PersonalStatsCards } from "@/components/personal/PersonalStatsCards";
 import { RecentUsers } from "@/components/personal/RecentUsers";
 import { RecurringPaymentsModal } from "@/components/personal/RecurringPaymentsModal";
-import { RecurringPaymentsList } from "@/components/personal/RecurringPaymentsList";
+import { getRecurringPayments } from "@/lib/recurring-payments";
 import { format } from "date-fns";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -20,11 +20,17 @@ export default async function PersonalFinancePage() {
     if (!session?.userId) redirect("/login");
 
     // Parallelize data fetching for faster page load
-    const [stats, transactions, recentUsers] = await Promise.all([
+    const [stats, transactions, recentUsers, recurringPayments] = await Promise.all([
         getTransactionStats(),
         getTransactions(),
-        getRecentUsersWithBalance()
+        getRecentUsersWithBalance(),
+        getRecurringPayments()
     ]);
+
+    // Calculate total monthly commitment
+    const monthlyCommitment = recurringPayments
+        .filter((p: any) => p.frequency === "MONTHLY" && p.status === "ACTIVE")
+        .reduce((sum: number, p: any) => sum + p.amount, 0);
 
     return (
         <PageContainer className="relative">
@@ -42,12 +48,21 @@ export default async function PersonalFinancePage() {
                 badge="Money Management"
                 action={
                     <div className="flex gap-2">
-                        <RecurringPaymentsModal>
-                            <Button variant="outline" size="sm" className="gap-2">
-                                <Calendar className="w-4 h-4" />
-                                Manage Payments
-                            </Button>
-                        </RecurringPaymentsModal>
+                        {recurringPayments.length === 0 ? (
+                            <RecurringPaymentsModal>
+                                <Button variant="outline" size="sm" className="gap-2">
+                                    <Calendar className="w-4 h-4" />
+                                    Manage Payments
+                                </Button>
+                            </RecurringPaymentsModal>
+                        ) : (
+                            <Link href="/personal/payments">
+                                <Button variant="outline" size="sm" className="gap-2">
+                                    <Calendar className="w-4 h-4" />
+                                    Manage Payments
+                                </Button>
+                            </Link>
+                        )}
 
                         <Link href="/personal/lendings">
                             <Button variant="outline" size="sm" className="gap-2">
@@ -61,13 +76,10 @@ export default async function PersonalFinancePage() {
 
             <div className="space-y-8 animate-fade-in slide-in-from-bottom-4 duration-500">
                 {/* Stats Cards */}
-                <PersonalStatsCards stats={stats} />
+                <PersonalStatsCards stats={stats} monthlyCommitment={monthlyCommitment} />
 
                 {/* Recent Users Section */}
                 <RecentUsers users={recentUsers} />
-
-                {/* Recurring Payments Section */}
-                <RecurringPaymentsList />
 
                 {/* Main Content Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

@@ -72,7 +72,8 @@ export function RecurringPaymentsModal({ children }: { children: React.ReactNode
             setFrequency("MONTHLY");
             setIncomeDay("1");
 
-            router.refresh();
+            // Redirect to payments page
+            router.push('/personal/payments');
         } catch (error) {
             console.error(error);
             toast.error("Failed to create recurring payments");
@@ -105,8 +106,8 @@ export function RecurringPaymentsModal({ children }: { children: React.ReactNode
                                 type="button"
                                 onClick={() => setFrequency("WEEKLY")}
                                 className={`px-4 py-3 rounded-xl border-2 font-medium transition-all ${frequency === "WEEKLY"
-                                        ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300"
-                                        : "border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20"
+                                    ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300"
+                                    : "border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20"
                                     }`}
                             >
                                 <Calendar className="w-4 h-4 inline mr-2" />
@@ -116,8 +117,8 @@ export function RecurringPaymentsModal({ children }: { children: React.ReactNode
                                 type="button"
                                 onClick={() => setFrequency("MONTHLY")}
                                 className={`px-4 py-3 rounded-xl border-2 font-medium transition-all ${frequency === "MONTHLY"
-                                        ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300"
-                                        : "border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20"
+                                    ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300"
+                                    : "border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20"
                                     }`}
                             >
                                 <Calendar className="w-4 h-4 inline mr-2" />
