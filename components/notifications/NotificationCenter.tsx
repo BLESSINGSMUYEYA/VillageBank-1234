@@ -19,10 +19,11 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { LoanRequestAction } from './LoanRequestAction'
+import { PaymentConfirmationAction } from './PaymentConfirmationAction'
 
 interface Notification {
   id: string
-  type: 'INFO' | 'SUCCESS' | 'WARNING' | 'ERROR' | 'LOAN_REQUEST'
+  type: 'INFO' | 'SUCCESS' | 'WARNING' | 'ERROR' | 'LOAN_REQUEST' | 'PAYMENT_REMINDER' | 'PAYMENT_CONFIRMED'
   title: string
   message: string
   read: boolean
@@ -289,6 +290,21 @@ export function NotificationCenter({
                               onComplete={() => {
                                 markAsRead(notification.id);
                                 // reload notifications to show updated state if needed, or rely on polling
+                                fetchNotifications();
+                              }}
+                            />
+                          </div>
+                        )}
+
+                        {/* Interactive Action for Payment Reminders */}
+                        {(notification.type === 'PAYMENT_REMINDER' || (notification.actionUrl && notification.actionUrl.startsWith('confirm-payment:'))) && notification.actionUrl?.startsWith('confirm-payment:') && (
+                          <div onClick={(e) => e.stopPropagation()} className="mt-3">
+                            <PaymentConfirmationAction
+                              confirmationId={notification.actionUrl.split(':')[1]}
+                              paymentName={notification.title.replace('Payment Reminder: ', '')}
+                              amount={parseFloat(notification.message.match(/MWK ([0-9,]+)/)?.[1]?.replace(/,/g, '') || '0')}
+                              onConfirm={() => {
+                                markAsRead(notification.id);
                                 fetchNotifications();
                               }}
                             />

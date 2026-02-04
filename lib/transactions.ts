@@ -144,7 +144,21 @@ export async function getTransactionStats() {
     const income = stats.find((s) => s.type === "INCOME")?._sum.amount || 0;
     const expense = stats.find((s) => s.type === "EXPENSE")?._sum.amount || 0;
 
-    return { income, expense, net: income - expense };
+    // Calculate total loans owed (TAKEN loans that are still pending)
+    const lendingsTaken = await prisma.lending.findMany({
+        where: {
+            userId: session.userId,
+            type: "TAKEN",
+            status: "PENDING"
+        },
+        select: {
+            amount: true
+        }
+    });
+
+    const totalLoansOwed = lendingsTaken.reduce((sum, lending) => sum + lending.amount, 0);
+
+    return { income, expense, net: income - expense, totalLoansOwed };
 }
 
 export async function verifyLending(lendingId: string, status: "CONFIRMED" | "REJECTED") {

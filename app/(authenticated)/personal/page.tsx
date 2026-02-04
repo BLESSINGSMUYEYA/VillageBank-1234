@@ -3,6 +3,8 @@ import TransactionList from "@/components/personal/TransactionList";
 import { getTransactionStats, getTransactions, getRecentUsersWithBalance } from "@/lib/transactions";
 import { PersonalStatsCards } from "@/components/personal/PersonalStatsCards";
 import { RecentUsers } from "@/components/personal/RecentUsers";
+import { RecurringPaymentsModal } from "@/components/personal/RecurringPaymentsModal";
+import { RecurringPaymentsList } from "@/components/personal/RecurringPaymentsList";
 import { format } from "date-fns";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -11,7 +13,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowRightLeft } from "lucide-react";
+import { ArrowRightLeft, Calendar } from "lucide-react";
 
 export default async function PersonalFinancePage() {
     const session = await getSession();
@@ -39,12 +41,21 @@ export default async function PersonalFinancePage() {
                 description={`Overview for ${format(new Date(), 'MMMM yyyy')}`}
                 badge="Money Management"
                 action={
-                    <Link href="/personal/lendings">
-                        <Button variant="outline" size="sm" className="gap-2">
-                            <ArrowRightLeft className="w-4 h-4" />
-                            Manage Lendings
-                        </Button>
-                    </Link>
+                    <div className="flex gap-2">
+                        <RecurringPaymentsModal>
+                            <Button variant="outline" size="sm" className="gap-2">
+                                <Calendar className="w-4 h-4" />
+                                Manage Payments
+                            </Button>
+                        </RecurringPaymentsModal>
+
+                        <Link href="/personal/lendings">
+                            <Button variant="outline" size="sm" className="gap-2">
+                                <ArrowRightLeft className="w-4 h-4" />
+                                Manage Lendings
+                            </Button>
+                        </Link>
+                    </div>
                 }
             />
 
@@ -54,6 +65,9 @@ export default async function PersonalFinancePage() {
 
                 {/* Recent Users Section */}
                 <RecentUsers users={recentUsers} />
+
+                {/* Recurring Payments Section */}
+                <RecurringPaymentsList />
 
                 {/* Main Content Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

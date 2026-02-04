@@ -10,6 +10,7 @@ interface PersonalStatsCardsProps {
         income: number;
         expense: number;
         net: number;
+        totalLoansOwed: number;
     };
 }
 
@@ -39,6 +40,15 @@ export const PersonalStatsCards = memo(function PersonalStatsCards({ stats }: Pe
                 )}>
                     MWK {stats.net.toLocaleString()}
                 </h3>
+
+                {/* Loans Owed Notification */}
+                {stats.totalLoansOwed > 0 && (
+                    <div className="mt-3 px-3 py-2 bg-rose-500/10 border border-rose-500/20 rounded-xl">
+                        <p className="text-[10px] text-rose-600 dark:text-rose-400 font-medium">
+                            💳 You owe <span className="font-bold">MWK {stats.totalLoansOwed.toLocaleString()}</span> in loans
+                        </p>
+                    </div>
+                )}
             </div>
 
             {/* Divider */}
