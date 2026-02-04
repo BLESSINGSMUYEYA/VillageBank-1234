@@ -263,3 +263,72 @@ export async function getRecentCounterparties(limit = 10) {
 
     return Array.from(uniqueMap.values()).slice(0, limit);
 }
+
+export async function getRecentUsersWithBalance() {
+    const session = await getSession();
+    if (!session?.userId) return [];
+
+    // Fetch all lendings for the current user
+    const lendings = await prisma.lending.findMany({
+        where: { userId: session.userId },
+        orderBy: { createdAt: 'desc' },
+        include: {
+            counterparty: {
+                select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    ubankId: true,
+                }
+            }
+        }
+    });
+
+    // Group by counterparty and calculate net balance
+    const balanceMap = new Map<string, {
+        name: string;
+        displayName: string;
+        ubankId?: string;
+        initials: string;
+        netBalance: number;
+        lastTransactionDate: Date;
+    }>();
+
+    lendings.forEach(lending => {
+        // Use counterparty ID if available, otherwise use name as key
+        const key = lending.counterpartyId || lending.name;
+
+        // Calculate balance: GIVEN = they owe you (positive), TAKEN = you owe them (negative)
+        const balanceChange = lending.type === 'GIVEN' ? lending.amount : -lending.amount;
+
+        if (balanceMap.has(key)) {
+            const existing = balanceMap.get(key)!;
+            existing.netBalance += balanceChange;
+            // Keep the most recent transaction date
+            if (lending.createdAt > existing.lastTransactionDate) {
+                existing.lastTransactionDate = lending.createdAt;
+            }
+        } else {
+            const displayName = lending.counterparty
+                ? `${lending.counterparty.firstName} ${lending.counterparty.lastName || ''}`.trim()
+                : lending.name;
+
+            const initials = lending.counterparty
+                ? `${lending.counterparty.firstName?.[0] || ''}${lending.counterparty.lastName?.[0] || ''}`.toUpperCase()
+                : lending.name.substring(0, 2).toUpperCase();
+
+            balanceMap.set(key, {
+                name: lending.name,
+                displayName,
+                ubankId: lending.counterparty?.ubankId,
+                initials,
+                netBalance: balanceChange,
+                lastTransactionDate: lending.createdAt
+            });
+        }
+    });
+
+    // Convert to array and sort by most recent transaction
+    return Array.from(balanceMap.values())
+        .sort((a, b) => b.lastTransactionDate.getTime() - a.lastTransactionDate.getTime());
+}

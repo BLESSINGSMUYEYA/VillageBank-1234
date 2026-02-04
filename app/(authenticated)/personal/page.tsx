@@ -1,7 +1,8 @@
 import SmartTransactionInput from "@/components/personal/SmartTransactionInput";
 import TransactionList from "@/components/personal/TransactionList";
-import { getTransactionStats, getTransactions } from "@/lib/transactions";
+import { getTransactionStats, getTransactions, getRecentUsersWithBalance } from "@/lib/transactions";
 import { PersonalStatsCards } from "@/components/personal/PersonalStatsCards";
+import { RecentUsers } from "@/components/personal/RecentUsers";
 import { format } from "date-fns";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -17,9 +18,10 @@ export default async function PersonalFinancePage() {
     if (!session?.userId) redirect("/login");
 
     // Parallelize data fetching for faster page load
-    const [stats, transactions] = await Promise.all([
+    const [stats, transactions, recentUsers] = await Promise.all([
         getTransactionStats(),
-        getTransactions()
+        getTransactions(),
+        getRecentUsersWithBalance()
     ]);
 
     return (
@@ -49,6 +51,9 @@ export default async function PersonalFinancePage() {
             <div className="space-y-8 animate-fade-in slide-in-from-bottom-4 duration-500">
                 {/* Stats Cards */}
                 <PersonalStatsCards stats={stats} />
+
+                {/* Recent Users Section */}
+                <RecentUsers users={recentUsers} />
 
                 {/* Main Content Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
