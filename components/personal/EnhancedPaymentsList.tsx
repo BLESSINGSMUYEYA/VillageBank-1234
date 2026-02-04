@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
+import { RecurringPaymentsModal } from "./RecurringPaymentsModal";
 
 interface RecurringPayment {
     id: string;
@@ -125,38 +126,55 @@ export function EnhancedPaymentsList() {
 
     return (
         <div className="space-y-6">
-            {/* Summary Cards Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Monthly Commitment Card */}
-                <div className="rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden bg-gradient-to-br from-emerald-50/80 to-teal-50/80 dark:from-emerald-900/10 dark:to-teal-900/10 border border-emerald-200/60 dark:border-emerald-500/20 shadow-xl shadow-emerald-900/5 backdrop-blur-sm p-5">
-                    <div className="flex items-center gap-2 mb-2">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <p className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
-                            Monthly Commitment
-                        </p>
+            {/* Unified Summary Card */}
+            <div className="rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden bg-white/60 dark:bg-white/5 border border-slate-200/60 dark:border-white/5 shadow-xl backdrop-blur-sm p-6 sm:p-8">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+                    {/* Add Payment Action */}
+                    <div className="w-full md:w-auto flex-shrink-0">
+                        <RecurringPaymentsModal>
+                            <Button className="w-full md:w-auto h-14 px-8 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-lg shadow-emerald-900/20 text-lg transition-all hover:scale-[1.02] active:scale-[0.98]">
+                                <span className="mr-2">+</span> Add Payment
+                            </Button>
+                        </RecurringPaymentsModal>
                     </div>
-                    <p className="text-2xl sm:text-3xl font-black text-emerald-900 dark:text-emerald-300">
-                        MWK {totalMonthly.toLocaleString()}
-                    </p>
-                    <p className="text-xs text-emerald-600/70 dark:text-emerald-400/70 mt-1 font-medium">
-                        {recurringPayments.filter(p => p.status === "ACTIVE").length} active payment{recurringPayments.filter(p => p.status === "ACTIVE").length !== 1 ? 's' : ''}
-                    </p>
-                </div>
 
-                {/* This Month's Expenses Card */}
-                <div className="rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden bg-gradient-to-br from-blue-50/80 to-indigo-50/80 dark:from-blue-900/10 dark:to-indigo-900/10 border border-blue-200/60 dark:border-blue-500/20 shadow-xl shadow-blue-900/5 backdrop-blur-sm p-5">
-                    <div className="flex items-center gap-2 mb-2">
-                        <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                        <p className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider">
-                            This Month's Expenses
-                        </p>
+                    {/* Stats Grid */}
+                    <div className="w-full md:w-auto flex flex-col sm:flex-row gap-8 sm:gap-12 md:gap-16">
+                        {/* Monthly Commitment */}
+                        <div className="space-y-1">
+                            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                Monthly Commitment
+                            </p>
+                            <p className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+                                MWK {totalMonthly.toLocaleString()}
+                            </p>
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                                    {recurringPayments.filter(p => p.status === "ACTIVE").length} active payments
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Divider */}
+                        <div className="hidden sm:block w-px bg-slate-200 dark:bg-white/10 self-stretch" />
+
+                        {/* This Month's Expenses */}
+                        <div className="space-y-1">
+                            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                This Month's Expenses
+                            </p>
+                            <p className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+                                MWK {totalMonthlyExpenses.toLocaleString()}
+                            </p>
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                                    {monthlyTransactions.length} transaction{monthlyTransactions.length !== 1 ? 's' : ''}
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                    <p className="text-2xl sm:text-3xl font-black text-blue-900 dark:text-blue-300">
-                        MWK {totalMonthlyExpenses.toLocaleString()}
-                    </p>
-                    <p className="text-xs text-blue-600/70 dark:text-blue-400/70 mt-1 font-medium">
-                        {monthlyTransactions.length} transaction{monthlyTransactions.length !== 1 ? 's' : ''}
-                    </p>
                 </div>
             </div>
 
@@ -325,8 +343,8 @@ function PaymentCard({
                             </h3>
                             <span
                                 className={`px-2 py-0.5 rounded-full text-[10px] font-medium uppercase ${payment.status === "ACTIVE"
-                                        ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
-                                        : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                                    ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
+                                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
                                     }`}
                             >
                                 {payment.status}
@@ -543,8 +561,8 @@ function PaymentCard({
                                         <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Status</p>
                                         <span
                                             className={`inline-block px-3 py-1 rounded-full text-xs font-medium uppercase ${payment.status === "ACTIVE"
-                                                    ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
-                                                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                                                ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
+                                                : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
                                                 }`}
                                         >
                                             {payment.status}

@@ -22,14 +22,6 @@ export default async function PaymentsPage() {
                 description="Track your automatic payments and monthly expenses"
                 badge="Personal Finance"
                 backHref="/personal"
-                action={
-                    <RecurringPaymentsModal>
-                        <Button variant="outline" size="sm" className="gap-2">
-                            <Plus className="w-4 h-4" />
-                            Add Payment
-                        </Button>
-                    </RecurringPaymentsModal>
-                }
             />
 
             <div className="animate-fade-in slide-in-from-bottom-4 duration-500">
